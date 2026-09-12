@@ -1,0 +1,199 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #111827, #1e3a8a);
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+h1,
+h2,
+h3 {
+  margin-bottom: 12px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  margin: 8px 0 12px;
+  background: #ffffff;
+  color: #111827;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 13px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+  margin: 5px;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.primary-btn {
+  background: #f59e0b;
+  color: #111827;
+}
+
+.secondary-btn {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.danger-btn {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.success-btn {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Ludo Board */
+
+.ludo-board {
+  width: min(92vw, 520px);
+  aspect-ratio: 1;
+  margin: 25px auto;
+  background: #ffffff;
+  border: 8px solid #111827;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+  overflow: hidden;
+}
+
+.ludo-cell {
+  border: 1px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.red {
+  background: #ef4444;
+}
+
+.green {
+  background: #22c55e;
+}
+
+.yellow {
+  background: #facc15;
+  color: #111827;
+}
+
+.blue {
+  background: #3b82f6;
+}
+
+.white {
+  background: #ffffff;
+}
+
+.safe {
+  background: #e5e7eb;
+}
+
+/* Player area */
+
+.players {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.player {
+  padding: 15px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.coin-box {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.room-code {
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-align: center;
+  margin: 15px 0;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .players {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  h1 {
+    font-size: 25px;
+  }
+}
