@@ -5,12 +5,27 @@ export default {
     const url = new URL(request.url);
 
     // =========================
+    // ADMIN CONFIG CHECK
+    // =========================
+    // यह सिर्फ यह बताएगा कि variables मौजूद हैं या नहीं।
+    // इनके actual values कभी दिखाई नहीं जाएंगी।
+    if (url.pathname === "/api/admin/status") {
+      return json({
+        adminIdConfigured: !!env.BALAJI_ADMIN_ID,
+        passwordConfigured: !!env.BALAJI_ADMIN_PASSWORD,
+      });
+    }
+
+    // =========================
     // ADMIN LOGIN API
     // =========================
     if (url.pathname === "/api/admin/login") {
       if (request.method !== "POST") {
         return json(
-          { success: false, message: "Method not allowed" },
+          {
+            success: false,
+            message: "Method not allowed",
+          },
           405
         );
       }
@@ -18,12 +33,13 @@ export default {
       try {
         const body = await request.json();
 
-        const adminId = String(body.adminId || "");
+        const adminId = String(body.adminId || "").trim();
         const password = String(body.password || "");
 
+        // Check Admin ID and Password
         if (
-          adminId !== env.BALAJI_ADMIN_ID ||
-          password !== env.BALAJI_ADMIN_PASSWORD
+          adminId !== String(env.BALAJI_ADMIN_ID || "").trim() ||
+          password !== String(env.BALAJI_ADMIN_PASSWORD || "")
         ) {
           return json(
             {
@@ -34,6 +50,7 @@ export default {
           );
         }
 
+        // Create session token
         const sessionToken = crypto.randomUUID();
 
         return new Response(
@@ -98,6 +115,9 @@ export default {
   },
 };
 
+// =========================
+// JSON RESPONSE HELPER
+// =========================
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -124,6 +144,7 @@ export class LudoRoom {
     }
 
     const pair = new WebSocketPair();
+
     const client = pair[0];
     const server = pair[1];
 
@@ -161,6 +182,7 @@ export class LudoRoom {
 
     this.players.set(playerId, player);
 
+    // First player gets first turn
     if (!this.turnPlayerId) {
       this.turnPlayerId = playerId;
     }
@@ -201,6 +223,9 @@ export class LudoRoom {
     });
   }
 
+  // =========================
+  // GET PLAYERS
+  // =========================
   getPlayers() {
     return [...this.players.values()].map((player) => ({
       id: player.id,
@@ -208,15 +233,24 @@ export class LudoRoom {
     }));
   }
 
+  // =========================
+  // HANDLE MESSAGE
+  // =========================
   handleMessage(playerId, data) {
     try {
       const message = JSON.parse(data);
 
+      // =========================
+      // ROLL DICE
+      // =========================
       if (message.type === "ROLL_DICE") {
         const player = this.players.get(playerId);
 
-        if (!player) return;
+        if (!player) {
+          return;
+        }
 
+        // Only current player can roll
         if (this.turnPlayerId !== playerId) {
           player.socket.send(
             JSON.stringify({
@@ -227,6 +261,7 @@ export class LudoRoom {
           return;
         }
 
+        // Server-authoritative dice
         const dice = Math.floor(Math.random() * 6) + 1;
 
         this.broadcast({
@@ -236,11 +271,15 @@ export class LudoRoom {
           dice: dice,
         });
 
+        // If dice is not 6, change turn
         if (dice !== 6) {
           this.changeTurn(playerId);
         }
       }
 
+      // =========================
+      // PING
+      // =========================
       if (message.type === "PING") {
         const player = this.players.get(playerId);
 
@@ -257,6 +296,9 @@ export class LudoRoom {
     }
   }
 
+  // =========================
+  // CHANGE TURN
+  // =========================
   changeTurn(currentPlayerId) {
     const playerIds = [...this.players.keys()];
 
@@ -278,6 +320,9 @@ export class LudoRoom {
     });
   }
 
+  // =========================
+  // BROADCAST PLAYERS
+  // =========================
   broadcastPlayers() {
     this.broadcast({
       type: "PLAYERS_UPDATE",
@@ -286,6 +331,9 @@ export class LudoRoom {
     });
   }
 
+  // =========================
+  // BROADCAST MESSAGE
+  // =========================
   broadcast(message) {
     const text = JSON.stringify(message);
 
