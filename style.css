@@ -1,0 +1,123 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f4f8;
+  color: #222;
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: #111827;
+  color: white;
+  text-align: center;
+  padding: 25px 15px;
+}
+
+.topbar h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.topbar p {
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 25px 15px;
+  flex: 1;
+}
+
+.welcome-card,
+.game-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-card {
+  text-align: center;
+}
+
+.welcome-card h2 {
+  margin-bottom: 10px;
+}
+
+.welcome-card p {
+  margin-bottom: 20px;
+  color: #666;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #111827;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 13px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #111827;
+  color: white;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+#message {
+  margin-top: 15px;
+  min-height: 20px;
+}
+
+.player-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.player-info div {
+  background: #f3f4f6;
+  padding: 15px;
+  border-radius: 10px;
+  flex: 1;
+}
+
+.player-info span {
+  display: block;
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.player-info strong {
+ 
