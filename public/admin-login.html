@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Balaji Ludo King - Admin Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+    }
+
+    .login-box {
+      width: 92%;
+      max-width: 400px;
+      background: white;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .admin-text {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #555;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #111827;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    #message {
+      margin-top: 15px;
+      text-align: center;
+      min-height: 20px;
+      font-size: 14px;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      color: #555;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <div class="logo">Balaji Ludo King</div>
+
+    <div class="admin-text">
+      Admin Login
+    </div>
+
+    <form id="loginForm">
+
+      <label for="adminId">Admin ID</label>
+
+      <input
+        type="text"
+        id="adminId"
+        placeholder="Enter Admin ID"
+        autocomplete="username"
+        required
+      >
+
+      <label for="password">Password</label>
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Enter Password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit" id="loginButton">
+        Login
+      </button>
+
+      <div id="message"></div>
+
+    </form>
+
+    <a href="/admin.html" class="back">
+      Back to Admin Dashboard
+    </a>
+
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const button = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const adminId = document.getElementById("adminId").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!adminId || !password) {
+        message.textContent = "Please enter Admin ID and Password.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Logging in...";
+      message.textContent = "";
+
+      try {
+        const response = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            adminId: adminId,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          message.textContent = "Login successful.";
+
+          setTimeout(() => {
+            window.location.href = "/admin.html";
+          }, 500);
+        } else {
+          message.textContent =
+            data.message || "Invalid Admin ID or Password.";
+        }
+
+      } catch (error) {
+        message.textContent =
+          "Server connection error. Please try again.";
+      }
+
+      button.disabled = false;
+      button.textContent = "Login";
+    });
+  </script>
+
+</body>
+</html>
