@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Balaji Ludo King - Admin Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #222;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 21px;
+        }
+
+        .admin-badge {
+            background: #16a34a;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 65px);
+        }
+
+        .sidebar {
+            width: 230px;
+            background: #1f2937;
+            color: white;
+            padding: 18px 10px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: #d1d5db;
+            padding: 13px 12px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .sidebar button:hover,
+        .sidebar button.active {
+            background: #374151;
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+            padding: 22px;
+            overflow-x: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .section-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .stat-card span {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .stat-card h3 {
+            font-size: 25px;
+            margin-top: 9px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f9fafb;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 15px;
+            font-size: 11px;
+        }
+
+        .online {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .completed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-btn {
+            border: 0;
+            padding: 7px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+
+        .approve {
+            background: #16a34a;
+            color: white;
+        }
+
+        .reject {
+            background: #dc2626;
+            color: white;
+        }
+
+        .view {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 20px !important;
+            color: #fca5a5 !important;
+        }
+
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sidebar {
+                width: 190px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                display: flex;
+                overflow-x: auto;
+                gap: 5px;
+            }
+
+            .sidebar button {
+                min-width: 125px;
+                margin: 0;
+            }
+
+            .main {
+                padding: 14px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card h3 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>🎮 Balaji Ludo King</h1>
+    <div class="admin-badge">ADMIN</div>
+</header>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <button class="menu active" data-section="dashboard">
+            📊 Dashboard
+        </button>
+
+        <button class="menu" data-section="customers">
+            👥 Customers
+        </button>
+
+        <button class="menu" data-section="battles">
+            🎮 Live Battles
+        </button>
+
+        <button class="menu" data-section="deposits">
+            💰 Deposits
+        </button>
+
+        <button class="menu" data-section="withdrawals">
+            📤 Withdrawals
+        </button>
+
+        <button class="menu" data-section="wallet">
+            💳 Wallet
+        </button>
+
+        <button class="menu" data-section="results">
+            🏆 Game Results
+        </button>
+
+        <button class="menu" data-section="settings">
+            ⚙️ Settings
+        </button>
+
+        <button class="menu logout" onclick="logout()">
+            🚪 Logout
+        </button>
+
+    </aside>
+
+    <main class="main">
+
+        <!-- DASHBOARD -->
+
+        <section id="dashboard" class="section active">
+
+            <div class="section-title">
+                <h2>Dashboard</h2>
+                <p>Balaji Ludo King admin overview</p>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <span>Total Customers</span>
+                    <h3 id="totalCustomers">0</h3>
+                </div>
+
+                <div class="stat-card">
+                    <span>Live Battles</span>
+                    <h3 id="liveBattles">0</h3>
+                </div>
+
+                <div class="stat-card">
+                    <span>Pending Deposits</span>
+                    <h3 id="pendingDeposits">0</h3>
+                </div>
+
+                <div class="stat-card">
+                    <span>Pending Withdrawals</span>
+                    <h3 id="pendingWithdrawals">0</h3>
+                </div>
+
+            </div>
+
+            <div class="card">
+                <h3>Recent Activity</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>Demo Deposit</td>
+                            <td>Player 1</td>
+                            <td>
+                                <span class="status pending">Pending</span>
+                            </td>
+                            <td>Just now</td>
+                        </tr>
+
+                        <tr>
+                            <td>Demo Battle</td>
+                            <td>Player 2</td>
+                            <td>
+                                <span class="status online">Live</span>
+                            </td>
+                            <td>2 min ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- CUSTOMERS -->
+
+        <section id="customers" class="section">
+
+            <div class="section-title">
+                <h2>Customers</h2>
+                <p>Manage registered players</p>
+            </div>
+
+            <div class="card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Wallet</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>#1001</td>
+                            <td>Demo Player</td>
+                            <td>₹0</td>
+                            <td>
+                                <span class="status online">Active</span>
+                            </td>
+                            <td>
+                                <button class="action-btn view">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- BATTLES -->
+
+        <section id="battles" class="section">
+
+            <div class="section-title">
+                <h2>Live Battles</h2>
+                <p>Monitor active 2-player games</p>
+            </div>
+
+            <div class="card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Room</th>
+                            <th>Player 1</th>
+                            <th>Player 2</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>------</td>
+                            <td>Waiting</td>
+                            <td>Waiting</td>
+                            <td>
+                                <span class="status pending">
+                                    No active battle
+                                </span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- DEPOSITS -->
+
+        <section id="deposits" class="section">
+
+            <div class="section-title">
+                <h2>Deposits</h2>
+                <p>Review customer deposit requests</p>
+            </div>
+
+            <div class="card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Request</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>#DEP001</td>
+                            <td>Demo Player</td>
+                            <td>₹0</td>
+                            <td>
+                                <span class="status pending">
+                                    Pending
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn approve">
+                                    Approve
+                                </button>
+
+                                <button class="action-btn reject">
+                                    Reject
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- WITHDRAWALS -->
+
+        <section id="withdrawals" class="section">
+
+            <div class="section-title">
+                <h2>Withdrawals</h2>
+                <p>Review customer withdrawal requests</p>
+            </div>
+
+            <div class="card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Request</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>#WD001</td>
+                            <td>Demo Player</td>
+                            <td>₹0</td>
+                            <td>
+                                <span class="status pending">
+                                    Pending
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn view">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- WALLET -->
+
+        <section id="wallet" class="section">
+
+            <div class="section-title">
+                <h2>Wallet</h2>
+                <p>Wallet and transaction overview</p>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <span>Total Deposits</span>
+                    <h3>₹0</h3>
+                </div>
+
+                <div class="stat-card">
+                    <span>Total Withdrawals</span>
+                    <h3>₹0</h3>
+                </div>
+
+                <div class="stat-card">
+                    <span>Platform Balance</span>
+                    <h3>₹0</h3>
+                </div>
+
+                <div class="stat-card">
+                    <span>Transactions</span>
+                    <h3>0</h3>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESULTS -->
+
+        <section id="results" class="section">
+
+            <div class="section-title">
+                <h2>Game Results</h2>
+                <p>Completed Ludo battle results</p>
+            </div>
+
+            <div class="card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Winner</th>
+                            <th>Loser</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>No games yet</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- SETTINGS -->
+
+        <section id="settings" class="section">
+
+            <div class="section-title">
+                <h2>Settings</h2>
+                <p>Admin and platform settings</p>
+            </div>
+
+            <div class="card">
+
+                <h3>Platform Status</h3>
+
+                <p>
+                    🟢 Balaji Ludo King system is online.
+                </p>
+
+                <br>
+
+                <p>
+                    Admin authentication and secure settings
+                    will be connected in the next step.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    const menuButtons =
+        document.querySelectorAll(".menu");
+
+    const sections =
+        document.querySelectorAll(".section");
+
+
+    menuButtons.forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const target =
+                button.dataset.section;
+
+            if (!target) {
+                return;
+            }
+
+            menuButtons.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            sections.forEach(section => {
+                section.classList.remove("active");
+            });
+
+            const targetSection =
+                document.getElementById(target);
+
+            if (targetSection) {
+                targetSection.classList.add("active");
+            }
+
+        });
+
+    });
+
+
+    function logout() {
+
+        alert(
+            "Secure admin logout will be connected after authentication is completed."
+        );
+
+    }
+
+
+    document.getElementById("totalCustomers")
+        .textContent = "0";
+
+    document.getElementById("liveBattles")
+        .textContent = "0";
+
+    document.getElementById("pendingDeposits")
+        .textContent = "0";
+
+    document.getElementById("pendingWithdrawals")
+        .textContent = "0";
+
+</script>
+
+</body>
+</html>
