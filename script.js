@@ -29,13 +29,20 @@ let playerId = "";
 let socket = null;
 let myTurn = false;
 
+// ----------------------------------------
 // Initial screen
+// ----------------------------------------
+
 roomCard.classList.add("hidden");
 ludoCard.classList.add("hidden");
 rollDiceBtn.disabled = true;
 
+// ----------------------------------------
 // Continue
+// ----------------------------------------
+
 startBtn.addEventListener("click", () => {
+
     const name = playerNameInput.value.trim();
 
     if (!name) {
@@ -61,8 +68,12 @@ startBtn.addEventListener("click", () => {
     message.textContent = "";
 });
 
-// Create room
+// ----------------------------------------
+// Create Room
+// ----------------------------------------
+
 createRoomBtn.addEventListener("click", () => {
+
     if (!currentPlayer) {
         alert("Please enter your name first.");
         return;
@@ -70,18 +81,23 @@ createRoomBtn.addEventListener("click", () => {
 
     currentRoom = generateRoomCode();
 
+    // Show room code immediately
     roomInfo.innerHTML = `
-        <p>Room Created</p>
+        <p>🎮 Room Created</p>
         <div class="room-code">${currentRoom}</div>
-        <p>Share this code with Player 2.</p>
-        <p>Connecting...</p>
+        <p>Share this 6-digit code with Player 2.</p>
+        <p id="connectionStatus">Connecting...</p>
     `;
 
     connectToRoom(currentRoom);
 });
 
-// Join room
+// ----------------------------------------
+// Join Room
+// ----------------------------------------
+
 joinRoomBtn.addEventListener("click", () => {
+
     if (!currentPlayer) {
         alert("Please enter your name first.");
         return;
@@ -90,28 +106,37 @@ joinRoomBtn.addEventListener("click", () => {
     const code = joinRoomInput.value.trim();
 
     if (!/^\d{6}$/.test(code)) {
+
         roomInfo.innerHTML = `
-            <p>Enter a valid 6-digit room code.</p>
+            <p>❌ Enter a valid 6-digit room code.</p>
         `;
+
         return;
     }
 
     currentRoom = code;
 
     roomInfo.innerHTML = `
-        <p>Joining Room</p>
+        <p>🎮 Joining Room</p>
         <div class="room-code">${currentRoom}</div>
-        <p>Connecting...</p>
+        <p id="connectionStatus">Connecting...</p>
     `;
 
     connectToRoom(currentRoom);
 });
 
-// WebSocket connection
+// ----------------------------------------
+// WebSocket Connection
+// ----------------------------------------
+
 function connectToRoom(room) {
 
     if (socket) {
-        socket.close();
+        try {
+            socket.close();
+        } catch (error) {
+            console.log("Old socket close failed");
+        }
     }
 
     const protocol =
@@ -124,35 +149,54 @@ function connectToRoom(room) {
         `?room=${encodeURIComponent(room)}` +
         `&name=${encodeURIComponent(currentPlayer)}`;
 
+    console.log("Connecting to:", wsUrl);
+
     socket = new WebSocket(wsUrl);
 
     socket.addEventListener("open", () => {
 
+        console.log("WebSocket connected");
+
         roomInfo.innerHTML = `
-            <p>Connected to Room</p>
+            <p>✅ Room Connected</p>
             <div class="room-code">${room}</div>
-            <p>Waiting for another player...</p>
+            <p>Player: ${currentPlayer}</p>
+            <p>Waiting for Player 2...</p>
         `;
 
         ludoCard.classList.remove("hidden");
 
         turnText.textContent =
-            "Waiting for players...";
+            "Waiting for Player 2...";
+
     });
 
     socket.addEventListener("message", (event) => {
 
+        console.log("Server:", event.data);
+
         try {
+
             const data = JSON.parse(event.data);
 
             handleServerMessage(data);
 
         } catch (error) {
-            console.log("Invalid server message");
+
+            console.log(
+                "Invalid server message:",
+                error
+            );
         }
     });
 
-    socket.addEventListener("close", () => {
+    socket.addEventListener("close", (event) => {
+
+        console.log(
+            "WebSocket closed:",
+            event.code,
+            event.reason
+        );
 
         rollDiceBtn.disabled = true;
         myTurn = false;
@@ -161,16 +205,26 @@ function connectToRoom(room) {
             "Disconnected from room.";
     });
 
-    socket.addEventListener("error", () => {
+    socket.addEventListener("error", (error) => {
+
+        console.log(
+            "WebSocket error:",
+            error
+        );
 
         roomInfo.innerHTML = `
-            <p>Unable to connect to room.</p>
-            <p>Check Worker deployment.</p>
+            <p>❌ Unable to connect to room.</p>
+            <div class="room-code">${room}</div>
+            <p>Room code was created successfully.</p>
+            <p>Connection to server failed.</p>
         `;
     });
 }
 
-// Server messages
+// ----------------------------------------
+// Server Messages
+// ----------------------------------------
+
 function handleServerMessage(data) {
 
     if (data.type === "CONNECTED") {
@@ -180,7 +234,7 @@ function handleServerMessage(data) {
         updatePlayers(data.players);
 
         roomInfo.innerHTML = `
-            <p>Room Connected</p>
+            <p>✅ Room Connected</p>
             <div class="room-code">${currentRoom}</div>
             <p>Players: ${data.players.length}/2</p>
         `;
@@ -241,7 +295,7 @@ function handleServerMessage(data) {
     if (data.type === "ROOM_FULL") {
 
         roomInfo.innerHTML = `
-            <p>Room Full</p>
+            <p>❌ Room Full</p>
             <p>This room already has 2 players.</p>
         `;
 
@@ -251,7 +305,10 @@ function handleServerMessage(data) {
     }
 }
 
-// Update players
+// ----------------------------------------
+// Update Players
+// ----------------------------------------
+
 function updatePlayers(players) {
 
     player1Name.textContent =
@@ -265,7 +322,10 @@ function updatePlayers(players) {
             : "Waiting...";
 }
 
-// Turn system
+// ----------------------------------------
+// Turn System
+// ----------------------------------------
+
 function setTurn(turnPlayerId) {
 
     myTurn =
@@ -274,20 +334,23 @@ function setTurn(turnPlayerId) {
     if (myTurn) {
 
         turnText.textContent =
-            "Your Turn";
+            "🎲 Your Turn";
 
         rollDiceBtn.disabled = false;
 
     } else {
 
         turnText.textContent =
-            "Opponent's Turn";
+            "⏳ Opponent's Turn";
 
         rollDiceBtn.disabled = true;
     }
 }
 
-// Roll dice
+// ----------------------------------------
+// Roll Dice
+// ----------------------------------------
+
 rollDiceBtn.addEventListener("click", () => {
 
     if (!socket ||
@@ -314,16 +377,25 @@ rollDiceBtn.addEventListener("click", () => {
     );
 });
 
-// Generate 6 digit room code
+// ----------------------------------------
+// Generate 6 Digit Room Code
+// ----------------------------------------
+
 function generateRoomCode() {
 
-    return Math.floor(
-        100000 +
-        Math.random() * 900000
-    ).toString();
+    const code =
+        Math.floor(
+            100000 +
+            Math.random() * 900000
+        );
+
+    return String(code);
 }
 
-// Dice emoji
+// ----------------------------------------
+// Dice Emoji
+// ----------------------------------------
+
 function getDiceEmoji(number) {
 
     const faces = {
@@ -338,7 +410,10 @@ function getDiceEmoji(number) {
     return faces[number] || "🎲";
 }
 
-// Load saved name
+// ----------------------------------------
+// Load Saved Name
+// ----------------------------------------
+
 window.addEventListener("load", () => {
 
     const savedName =
