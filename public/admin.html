@@ -230,6 +230,7 @@ th{
 }
 
 @media(max-width:900px){
+
     .stats{
         grid-template-columns:repeat(2,1fr);
     }
@@ -240,6 +241,7 @@ th{
 }
 
 @media(max-width:650px){
+
     .layout{
         flex-direction:column;
     }
@@ -275,108 +277,188 @@ th{
 <body>
 
 <header class="header">
+
     <h1>🎮 Balaji Ludo King</h1>
-    <div class="admin-badge">ADMIN</div>
+
+    <div class="admin-badge">
+        ADMIN
+    </div>
+
 </header>
 
 <div class="layout">
 
 <aside class="sidebar">
 
-<button class="menu active" data-section="dashboard">
+<button type="button" class="menu active" data-section="dashboard">
 📊 Dashboard
 </button>
 
-<button class="menu" data-section="customers">
+<button type="button" class="menu" data-section="customers">
 👥 Customers
 </button>
 
-<button class="menu" data-section="battles">
+<button type="button" class="menu" data-section="battles">
 🎮 Live Battles
 </button>
 
-<button class="menu" data-section="deposits">
+<button type="button" class="menu" data-section="deposits">
 💰 Deposits
 </button>
 
-<button class="menu" data-section="withdrawals">
+<button type="button" class="menu" data-section="withdrawals">
 📤 Withdrawals
 </button>
 
-<button class="menu" data-section="wallet">
+<button type="button" class="menu" data-section="wallet">
 💳 Wallet
 </button>
 
-<button class="menu" data-section="results">
+<button type="button" class="menu" data-section="results">
 🏆 Game Results
 </button>
 
-<button class="menu" data-section="settings">
+<button type="button" class="menu" data-section="settings">
 ⚙️ Settings
 </button>
 
-<button class="menu logout" id="logoutButton">
+<button type="button" class="menu logout" id="logoutButton">
 🚪 Logout
 </button>
 
 </aside>
 
+
 <main class="main">
 
-<!-- ================= DASHBOARD ================= -->
+
+<!-- DASHBOARD -->
 
 <section id="dashboard" class="section active">
 
 <div class="section-title">
+
 <h2>Dashboard</h2>
-<p>Balaji Ludo King admin overview</p>
+
+<p>
+Balaji Ludo King admin overview
+</p>
+
 </div>
+
 
 <div class="stats">
 
 <div class="stat-card">
-<span>Total Customers</span>
-<h3 id="totalCustomers">0</h3>
+
+<span>
+Total Customers
+</span>
+
+<h3 id="totalCustomers">
+0
+</h3>
+
 </div>
+
 
 <div class="stat-card">
-<span>Live Battles</span>
-<h3 id="liveBattles">0</h3>
+
+<span>
+Live Battles
+</span>
+
+<h3 id="liveBattles">
+0
+</h3>
+
 </div>
+
 
 <div class="stat-card">
-<span>Pending Deposits</span>
-<h3 id="pendingDeposits">0</h3>
+
+<span>
+Pending Deposits
+</span>
+
+<h3 id="pendingDeposits">
+0
+</h3>
+
 </div>
+
 
 <div class="stat-card">
-<span>Pending Withdrawals</span>
-<h3 id="pendingWithdrawals">0</h3>
+
+<span>
+Pending Withdrawals
+</span>
+
+<h3 id="pendingWithdrawals">
+0
+</h3>
+
 </div>
 
 </div>
+
 
 <div class="card">
-<h3>Recent Activity</h3>
+
+<h3>
+Recent Activity
+</h3>
 
 <table>
+
 <thead>
+
 <tr>
-<th>Activity</th>
-<th>User</th>
-<th>Status</th>
-<th>Time</th>
+
+<th>
+Activity
+</th>
+
+<th>
+User
+</th>
+
+<th>
+Status
+</th>
+
+<th>
+Time
+</th>
+
 </tr>
+
 </thead>
 
 <tbody>
+
 <tr>
-<td>No activity yet</td>
-<td>-</td>
-<td>-</td>
-<td>-</td>
+
+<td>
+No activity yet
+</td>
+
+<td>
+-
+</td>
+
+<td>
+-
+</td>
+
+<td>
+-
+</td>
+
 </tr>
+
 </tbody>
+
 </table>
 
 </div>
@@ -384,42 +466,68 @@ th{
 </section>
 
 
-<!-- ================= CUSTOMERS ================= -->
+
+<!-- CUSTOMERS -->
 
 <section id="customers" class="section">
 
 <div class="section-title">
-<h2>Customers</h2>
-<p>Manage registered players</p>
+
+<h2>
+Customers
+</h2>
+
+<p>
+Manage registered players
+</p>
+
 </div>
 
-<button class="refresh" id="refreshCustomers">
+
+<button
+type="button"
+class="refresh"
+id="refreshCustomers">
+
 🔄 Refresh Customers
+
 </button>
 
-<div id="customerMessage" class="message"></div>
+
+<div
+id="customerMessage"
+class="message">
+</div>
+
 
 <div class="card">
 
 <table>
 
 <thead>
+
 <tr>
+
 <th>ID</th>
 <th>Name</th>
 <th>Mobile</th>
 <th>Wallet</th>
 <th>Status</th>
 <th>Action</th>
+
 </tr>
+
 </thead>
+
 
 <tbody id="customersTableBody">
 
 <tr>
+
 <td colspan="6">
 Loading customers...
 </td>
+
 </tr>
 
 </tbody>
@@ -431,39 +539,67 @@ Loading customers...
 </section>
 
 
-<!-- ================= LIVE BATTLES ================= -->
+
+<!-- LIVE BATTLES -->
 
 <section id="battles" class="section">
 
 <div class="section-title">
-<h2>Live Battles</h2>
-<p>Monitor active 2-player games</p>
+
+<h2>
+Live Battles
+</h2>
+
+<p>
+Monitor active 2-player games
+</p>
+
 </div>
+
 
 <div class="card">
 
 <table>
 
 <thead>
+
 <tr>
+
 <th>Room</th>
 <th>Player 1</th>
 <th>Player 2</th>
 <th>Status</th>
+
 </tr>
+
 </thead>
 
 <tbody>
+
 <tr>
-<td>------</td>
-<td>Waiting</td>
-<td>Waiting</td>
+
 <td>
+------
+</td>
+
+<td>
+Waiting
+</td>
+
+<td>
+Waiting
+</td>
+
+<td>
+
 <span class="status pending">
 No active battle
 </span>
+
 </td>
+
 </tr>
+
 </tbody>
 
 </table>
@@ -473,35 +609,52 @@ No active battle
 </section>
 
 
-<!-- ================= DEPOSITS ================= -->
+
+<!-- DEPOSITS -->
 
 <section id="deposits" class="section">
 
 <div class="section-title">
-<h2>Deposits</h2>
-<p>Review customer deposit requests</p>
+
+<h2>
+Deposits
+</h2>
+
+<p>
+Review customer deposit requests
+</p>
+
 </div>
+
 
 <div class="card">
 
 <table>
 
 <thead>
+
 <tr>
+
 <th>Request</th>
 <th>Customer</th>
 <th>Amount</th>
 <th>Status</th>
 <th>Action</th>
+
 </tr>
+
 </thead>
 
 <tbody>
+
 <tr>
+
 <td colspan="5">
 No deposit requests yet
 </td>
+
 </tr>
+
 </tbody>
 
 </table>
@@ -511,35 +664,52 @@ No deposit requests yet
 </section>
 
 
-<!-- ================= WITHDRAWALS ================= -->
+
+<!-- WITHDRAWALS -->
 
 <section id="withdrawals" class="section">
 
 <div class="section-title">
-<h2>Withdrawals</h2>
-<p>Review customer withdrawal requests</p>
+
+<h2>
+Withdrawals
+</h2>
+
+<p>
+Review customer withdrawal requests
+</p>
+
 </div>
+
 
 <div class="card">
 
 <table>
 
 <thead>
+
 <tr>
+
 <th>Request</th>
 <th>Customer</th>
 <th>Amount</th>
 <th>Status</th>
 <th>Action</th>
+
 </tr>
+
 </thead>
 
 <tbody>
+
 <tr>
+
 <td colspan="5">
 No withdrawal requests yet
 </td>
+
 </tr>
+
 </tbody>
 
 </table>
@@ -549,35 +719,75 @@ No withdrawal requests yet
 </section>
 
 
-<!-- ================= WALLET ================= -->
+
+<!-- WALLET -->
 
 <section id="wallet" class="section">
 
 <div class="section-title">
-<h2>Wallet</h2>
-<p>Wallet and transaction overview</p>
+
+<h2>
+Wallet
+</h2>
+
+<p>
+Wallet and transaction overview
+</p>
+
 </div>
+
 
 <div class="stats">
 
 <div class="stat-card">
-<span>Total Deposits</span>
-<h3>₹0</h3>
+
+<span>
+Total Deposits
+</span>
+
+<h3>
+₹0
+</h3>
+
 </div>
 
-<div class="stat-card">
-<span>Total Withdrawals</span>
-<h3>₹0</h3>
-</div>
 
 <div class="stat-card">
-<span>Platform Balance</span>
-<h3>₹0</h3>
+
+<span>
+Total Withdrawals
+</span>
+
+<h3>
+₹0
+</h3>
+
 </div>
 
+
 <div class="stat-card">
-<span>Transactions</span>
-<h3>0</h3>
+
+<span>
+Platform Balance
+</span>
+
+<h3>
+₹0
+</h3>
+
+</div>
+
+
+<div class="stat-card">
+
+<span>
+Transactions
+</span>
+
+<h3>
+0
+</h3>
+
 </div>
 
 </div>
@@ -585,35 +795,63 @@ No withdrawal requests yet
 </section>
 
 
-<!-- ================= RESULTS ================= -->
+
+<!-- RESULTS -->
 
 <section id="results" class="section">
 
 <div class="section-title">
-<h2>Game Results</h2>
-<p>Completed Ludo battle results</p>
+
+<h2>
+Game Results
+</h2>
+
+<p>
+Completed Ludo battle results
+</p>
+
 </div>
+
 
 <div class="card">
 
 <table>
 
 <thead>
+
 <tr>
+
 <th>Game</th>
 <th>Winner</th>
 <th>Loser</th>
 <th>Result</th>
+
 </tr>
+
 </thead>
 
 <tbody>
+
 <tr>
-<td>No games yet</td>
-<td>-</td>
-<td>-</td>
-<td>-</td>
+
+<td>
+No games yet
+</td>
+
+<td>
+-
+</td>
+
+<td>
+-
+</td>
+
+<td>
+-
+</td>
+
 </tr>
+
 </tbody>
 
 </table>
@@ -623,18 +861,29 @@ No withdrawal requests yet
 </section>
 
 
-<!-- ================= SETTINGS ================= -->
+
+<!-- SETTINGS -->
 
 <section id="settings" class="section">
 
 <div class="section-title">
-<h2>Settings</h2>
-<p>Admin and platform settings</p>
+
+<h2>
+Settings
+</h2>
+
+<p>
+Admin and platform settings
+</p>
+
 </div>
+
 
 <div class="card">
 
-<h3>Platform Status</h3>
+<h3>
+Platform Status
+</h3>
 
 <p>
 🟢 Balaji Ludo King system is online.
@@ -650,9 +899,11 @@ Admin authentication is active.
 
 </section>
 
+
 </main>
 
 </div>
+
 
 
 <script>
@@ -675,14 +926,26 @@ async function checkAdminSession(){
         );
 
         if(!response.ok){
-            window.location.replace("/admin-login.html");
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
             return false;
         }
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
-        if(!data.success || !data.authenticated){
-            window.location.replace("/admin-login.html");
+        if(
+            !data.success ||
+            !data.authenticated
+        ){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
             return false;
         }
 
@@ -690,11 +953,14 @@ async function checkAdminSession(){
 
     }catch(error){
 
-        window.location.replace("/admin-login.html");
-        return false;
+        window.location.replace(
+            "/admin-login.html"
+        );
 
+        return false;
     }
 }
+
 
 
 // ======================================================
@@ -704,10 +970,17 @@ async function checkAdminSession(){
 async function logout(){
 
     const button =
-        document.getElementById("logoutButton");
+        document.getElementById(
+            "logoutButton"
+        );
 
-    button.disabled = true;
-    button.textContent = "Logging out...";
+    if(button){
+
+        button.disabled = true;
+
+        button.textContent =
+            "Logging out...";
+    }
 
     try{
 
@@ -722,57 +995,107 @@ async function logout(){
 
     }catch(error){
 
+        console.log(
+            "Logout request failed",
+            error
+        );
+
     }
 
-    window.location.replace("/admin-login.html");
+    window.location.replace(
+        "/admin-login.html"
+    );
 }
 
 
+
 // ======================================================
-// MENU
+// MENU NAVIGATION
 // ======================================================
 
 const menuButtons =
-    document.querySelectorAll(".menu");
+    document.querySelectorAll(
+        ".menu"
+    );
 
 const sections =
-    document.querySelectorAll(".section");
+    document.querySelectorAll(
+        ".section"
+    );
 
-menuButtons.forEach(button => {
 
-    button.addEventListener("click", async () => {
+menuButtons.forEach(
+    button => {
 
-        const target =
-            button.dataset.section;
+        button.addEventListener(
+            "click",
+            async function(){
 
-        if(!target){
-            return;
-        }
+                const target =
+                    this.dataset.section;
 
-        menuButtons.forEach(item => {
-            item.classList.remove("active");
-        });
+                if(!target){
 
-        button.classList.add("active");
+                    return;
+                }
 
-        sections.forEach(section => {
-            section.classList.remove("active");
-        });
 
-        const targetSection =
-            document.getElementById(target);
+                menuButtons.forEach(
+                    item => {
 
-        if(targetSection){
-            targetSection.classList.add("active");
-        }
+                        item.classList.remove(
+                            "active"
+                        );
 
-        if(target === "customers"){
-            await loadCustomers();
-        }
+                    }
+                );
 
-    });
 
-});
+                this.classList.add(
+                    "active"
+                );
+
+
+                sections.forEach(
+                    section => {
+
+                        section.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                const targetSection =
+                    document.getElementById(
+                        target
+                    );
+
+
+                if(targetSection){
+
+                    targetSection.classList.add(
+                        "active"
+                    );
+                }
+
+
+                if(
+                    target ===
+                    "customers"
+                ){
+
+                    await loadCustomers();
+
+                }
+
+            }
+        );
+
+    }
+);
+
 
 
 // ======================================================
@@ -782,19 +1105,38 @@ menuButtons.forEach(button => {
 function showCustomerMessage(text){
 
     const box =
-        document.getElementById("customerMessage");
+        document.getElementById(
+            "customerMessage"
+        );
+
+    if(!box){
+
+        return;
+    }
 
     box.textContent = text;
-    box.style.display = "block";
+
+    box.style.display =
+        "block";
 }
+
 
 function hideCustomerMessage(){
 
     const box =
-        document.getElementById("customerMessage");
+        document.getElementById(
+            "customerMessage"
+        );
 
-    box.style.display = "none";
+    if(!box){
+
+        return;
+    }
+
+    box.style.display =
+        "none";
 }
+
 
 
 // ======================================================
@@ -808,6 +1150,12 @@ async function loadCustomers(){
             "customersTableBody"
         );
 
+    if(!tbody){
+
+        return;
+    }
+
+
     tbody.innerHTML = `
         <tr>
             <td colspan="6">
@@ -816,7 +1164,9 @@ async function loadCustomers(){
         </tr>
     `;
 
+
     hideCustomerMessage();
+
 
     try{
 
@@ -830,7 +1180,11 @@ async function loadCustomers(){
                 }
             );
 
-        if(response.status === 401){
+
+        if(
+            response.status ===
+            401
+        ){
 
             window.location.replace(
                 "/admin-login.html"
@@ -839,8 +1193,10 @@ async function loadCustomers(){
             return;
         }
 
+
         const data =
             await response.json();
+
 
         if(!data.success){
 
@@ -850,17 +1206,32 @@ async function loadCustomers(){
             );
         }
 
+
         const customers =
-            Array.isArray(data.customers)
-                ? data.customers
-                : [];
+            Array.isArray(
+                data.customers
+            )
+            ? data.customers
+            : [];
 
-        document.getElementById(
-            "totalCustomers"
-        ).textContent =
-            customers.length;
 
-        if(customers.length === 0){
+        const total =
+            document.getElementById(
+                "totalCustomers"
+            );
+
+
+        if(total){
+
+            total.textContent =
+                customers.length;
+        }
+
+
+        if(
+            customers.length ===
+            0
+        ){
 
             tbody.innerHTML = `
                 <tr>
@@ -873,83 +1244,117 @@ async function loadCustomers(){
             return;
         }
 
+
         tbody.innerHTML = "";
 
-        customers.forEach(customer => {
 
-            const row =
-                document.createElement("tr");
+        customers.forEach(
+            customer => {
 
-            const status =
-                customer.status === "Blocked"
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const status =
+                    customer.status ===
+                    "Blocked"
                     ? "Blocked"
                     : "Active";
 
-            const statusClass =
-                status === "Blocked"
+
+                const statusClass =
+                    status === "Blocked"
                     ? "danger"
                     : "online";
 
-            const actionClass =
-                status === "Blocked"
+
+                const actionClass =
+                    status === "Blocked"
                     ? "unblock"
                     : "block";
 
-            const actionText =
-                status === "Blocked"
+
+                const actionText =
+                    status === "Blocked"
                     ? "Unblock"
                     : "Block";
 
-            row.innerHTML = `
-                <td>#${customer.id}</td>
 
-                <td>
-                    ${escapeHtml(
-                        customer.name || "-"
-                    )}
-                </td>
+                row.innerHTML = `
 
-                <td>
-                    ${escapeHtml(
-                        customer.mobile || "-"
-                    )}
-                </td>
+                    <td>
+                        #${Number(
+                            customer.id
+                        )}
+                    </td>
 
-                <td>
-                    ₹${Number(
-                        customer.wallet || 0
-                    ).toFixed(2)}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            customer.name ||
+                            "-"
+                        )}
+                    </td>
 
-                <td>
-                    <span class="status ${statusClass}">
-                        ${status}
-                    </span>
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            customer.mobile ||
+                            "-"
+                        )}
+                    </td>
 
-                <td>
+                    <td>
+                        ₹${Number(
+                            customer.wallet ||
+                            0
+                        ).toFixed(2)}
+                    </td>
 
-                    <button
-                        class="action-btn view"
-                        data-action="view"
-                        data-id="${customer.id}">
-                        View
-                    </button>
+                    <td>
 
-                    <button
-                        class="action-btn ${actionClass}"
-                        data-action="toggle"
-                        data-id="${customer.id}"
-                        data-status="${status}">
-                        ${actionText}
-                    </button>
+                        <span
+                            class="status ${statusClass}">
+                            ${status}
+                        </span>
 
-                </td>
-            `;
+                    </td>
 
-            tbody.appendChild(row);
+                    <td>
 
-        });
+                        <button
+                            type="button"
+                            class="action-btn view"
+                            data-action="view"
+                            data-id="${Number(
+                                customer.id
+                            )}">
+                            View
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="action-btn ${actionClass}"
+                            data-action="toggle"
+                            data-id="${Number(
+                                customer.id
+                            )}"
+                            data-status="${status}">
+                            ${actionText}
+                        </button>
+
+                    </td>
+                `;
+
+
+                tbody.appendChild(
+                    row
+                );
+
+            }
+        );
+
 
     }catch(error){
 
@@ -961,6 +1366,7 @@ async function loadCustomers(){
             </tr>
         `;
 
+
         showCustomerMessage(
             error.message ||
             "Customer API error."
@@ -968,6 +1374,7 @@ async function loadCustomers(){
 
     }
 }
+
 
 
 // ======================================================
@@ -988,7 +1395,11 @@ async function viewCustomer(id){
                 }
             );
 
-        if(response.status === 401){
+
+        if(
+            response.status ===
+            401
+        ){
 
             window.location.replace(
                 "/admin-login.html"
@@ -997,8 +1408,10 @@ async function viewCustomer(id){
             return;
         }
 
+
         const data =
             await response.json();
+
 
         if(!data.success){
 
@@ -1010,22 +1423,36 @@ async function viewCustomer(id){
             return;
         }
 
+
         const customer =
             data.customer;
 
+
         alert(
             "Customer Details\n\n" +
-            "ID: #" + customer.id + "\n" +
-            "Name: " + customer.name + "\n" +
-            "Mobile: " +
-                (customer.mobile || "-") + "\n" +
-            "Wallet: ₹" +
-                Number(
-                    customer.wallet || 0
-                ).toFixed(2) + "\n" +
-            "Status: " +
-                customer.status
+
+            "ID: #" +
+            customer.id +
+
+            "\nName: " +
+            customer.name +
+
+            "\nMobile: " +
+            (
+                customer.mobile ||
+                "-"
+            ) +
+
+            "\nWallet: ₹" +
+            Number(
+                customer.wallet ||
+                0
+            ).toFixed(2) +
+
+            "\nStatus: " +
+            customer.status
         );
+
 
     }catch(error){
 
@@ -1037,25 +1464,37 @@ async function viewCustomer(id){
 }
 
 
+
 // ======================================================
 // BLOCK / UNBLOCK CUSTOMER
 // ======================================================
 
-async function toggleCustomer(id,status){
+async function toggleCustomer(
+    id,
+    status
+){
 
     const newStatus =
         status === "Blocked"
-            ? "Active"
-            : "Blocked";
+        ? "Active"
+        : "Blocked";
+
 
     const confirmMessage =
         newStatus === "Blocked"
-            ? "Block this customer?"
-            : "Unblock this customer?";
+        ? "Block this customer?"
+        : "Unblock this customer?";
 
-    if(!confirm(confirmMessage)){
+
+    if(
+        !window.confirm(
+            confirmMessage
+        )
+    ){
+
         return;
     }
+
 
     try{
 
@@ -1065,17 +1504,24 @@ async function toggleCustomer(id,status){
                 {
                     method:"PATCH",
                     credentials:"same-origin",
+
                     headers:{
                         "Content-Type":
                             "application/json"
                     },
+
                     body:JSON.stringify({
-                        status:newStatus
+                        status:
+                            newStatus
                     })
                 }
             );
 
-        if(response.status === 401){
+
+        if(
+            response.status ===
+            401
+        ){
 
             window.location.replace(
                 "/admin-login.html"
@@ -1084,8 +1530,10 @@ async function toggleCustomer(id,status){
             return;
         }
 
+
         const data =
             await response.json();
+
 
         if(!data.success){
 
@@ -1097,7 +1545,9 @@ async function toggleCustomer(id,status){
             return;
         }
 
+
         await loadCustomers();
+
 
     }catch(error){
 
@@ -1109,13 +1559,20 @@ async function toggleCustomer(id,status){
 }
 
 
+
 // ======================================================
 // CUSTOMER TABLE ACTIONS
 // ======================================================
 
-document
-    .getElementById("customersTableBody")
-    .addEventListener(
+const customerTable =
+    document.getElementById(
+        "customersTableBody"
+    );
+
+
+if(customerTable){
+
+    customerTable.addEventListener(
         "click",
         event => {
 
@@ -1124,14 +1581,18 @@ document
                     "button"
                 );
 
+
             if(!button){
+
                 return;
             }
+
 
             const id =
                 Number(
                     button.dataset.id
                 );
+
 
             if(
                 button.dataset.action ===
@@ -1140,7 +1601,9 @@ document
 
                 viewCustomer(id);
 
+                return;
             }
+
 
             if(
                 button.dataset.action ===
@@ -1157,17 +1620,29 @@ document
         }
     );
 
+}
+
+
 
 // ======================================================
-// REFRESH
+// REFRESH CUSTOMERS
 // ======================================================
 
-document
-    .getElementById("refreshCustomers")
-    .addEventListener(
+const refreshButton =
+    document.getElementById(
+        "refreshCustomers"
+    );
+
+
+if(refreshButton){
+
+    refreshButton.addEventListener(
         "click",
         loadCustomers
     );
+
+}
+
 
 
 // ======================================================
@@ -1177,17 +1652,63 @@ document
 function escapeHtml(value){
 
     return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
+
 
 
 // ======================================================
 // LOGOUT BUTTON
 // ======================================================
 
-document
-    .getEl
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+if(logoutButton){
+
+    logoutButton.addEventListener(
+        "click",
+        logout
+    );
+
+}
+
+
+
+// ======================================================
+// START ADMIN
+// ======================================================
+
+checkAdminSession();
+
+</script>
+
+</body>
+</html>
