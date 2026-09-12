@@ -9,13 +9,17 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // =========================
+    // ==================================================
     // ADMIN LOGIN
-    // =========================
+    // ==================================================
+
     if (url.pathname === "/api/admin/login") {
       if (request.method !== "POST") {
         return json(
-          { success: false, message: "Method not allowed" },
+          {
+            success: false,
+            message: "Method not allowed",
+          },
           405
         );
       }
@@ -23,14 +27,21 @@ export default {
       try {
         const body = await request.json();
 
-        const adminId = String(body.adminId || "").trim();
-        const password = String(body.password || "");
+        const adminId = String(
+          body.adminId || ""
+        ).trim();
 
-        const correctAdminId =
-          String(env.BALAJI_ADMIN_ID || "").trim();
+        const password = String(
+          body.password || ""
+        );
 
-        const correctPassword =
-          String(env.BALAJI_ADMIN_PASSWORD || "");
+        const correctAdminId = String(
+          env.BALAJI_ADMIN_ID || ""
+        ).trim();
+
+        const correctPassword = String(
+          env.BALAJI_ADMIN_PASSWORD || ""
+        );
 
         if (
           !correctAdminId ||
@@ -47,10 +58,11 @@ export default {
           );
         }
 
-        const sessionToken = await createSessionToken(
-          env,
-          adminId
-        );
+        const sessionToken =
+          await createSessionToken(
+            env,
+            adminId
+          );
 
         return new Response(
           JSON.stringify({
@@ -60,7 +72,8 @@ export default {
           {
             status: 200,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type":
+                "application/json",
               "Set-Cookie":
                 `${SESSION_COOKIE}=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_MAX_AGE}`,
             },
@@ -77,11 +90,19 @@ export default {
       }
     }
 
-    // =========================
+    // ==================================================
     // CHECK ADMIN SESSION
-    // =========================
-    if (url.pathname === "/api/admin/session") {
-      const valid = await verifySession(request, env);
+    // ==================================================
+
+    if (
+      url.pathname ===
+      "/api/admin/session"
+    ) {
+      const valid =
+        await verifySession(
+          request,
+          env
+        );
 
       if (!valid) {
         return json(
@@ -99,10 +120,14 @@ export default {
       });
     }
 
-    // =========================
+    // ==================================================
     // ADMIN LOGOUT
-    // =========================
-    if (url.pathname === "/api/admin/logout") {
+    // ==================================================
+
+    if (
+      url.pathname ===
+      "/api/admin/logout"
+    ) {
       return new Response(
         JSON.stringify({
           success: true,
@@ -111,7 +136,8 @@ export default {
         {
           status: 200,
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
             "Set-Cookie":
               `${SESSION_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`,
           },
@@ -124,10 +150,17 @@ export default {
     // ==================================================
 
     if (
-      url.pathname === "/api/admin/customers" ||
-      url.pathname.startsWith("/api/admin/customers/")
+      url.pathname ===
+        "/api/admin/customers" ||
+      url.pathname.startsWith(
+        "/api/admin/customers/"
+      )
     ) {
-      const valid = await verifySession(request, env);
+      const valid =
+        await verifySession(
+          request,
+          env
+        );
 
       if (!valid) {
         return json(
@@ -140,18 +173,28 @@ export default {
       }
 
       const id =
-        env.CUSTOMER_STORE.idFromName("customers");
+        env.CUSTOMER_STORE.idFromName(
+          "customers"
+        );
 
-      const stub = env.CUSTOMER_STORE.get(id);
+      const stub =
+        env.CUSTOMER_STORE.get(id);
 
       return stub.fetch(request);
     }
 
-    // =========================
+    // ==================================================
     // PROTECT ADMIN DASHBOARD
-    // =========================
-    if (url.pathname === "/admin.html") {
-      const valid = await verifySession(request, env);
+    // ==================================================
+
+    if (
+      url.pathname === "/admin.html"
+    ) {
+      const valid =
+        await verifySession(
+          request,
+          env
+        );
 
       if (!valid) {
         return Response.redirect(
@@ -161,37 +204,63 @@ export default {
       }
     }
 
-    // =========================
+    // ==================================================
     // WEBSOCKET LUDO ROOM
-    // =========================
+    // ==================================================
+
     if (url.pathname === "/ws") {
-      if (request.headers.get("Upgrade") !== "websocket") {
-        return new Response("Expected WebSocket", {
-          status: 426,
-        });
+      if (
+        request.headers.get(
+          "Upgrade"
+        ) !== "websocket"
+      ) {
+        return new Response(
+          "Expected WebSocket",
+          {
+            status: 426,
+          }
+        );
       }
 
-      const room = url.searchParams.get("room");
+      const room =
+        url.searchParams.get(
+          "room"
+        );
 
-      if (!room || !/^\d{6}$/.test(room)) {
-        return new Response("Invalid room code", {
-          status: 400,
-        });
+      if (
+        !room ||
+        !/^\d{6}$/.test(room)
+      ) {
+        return new Response(
+          "Invalid room code",
+          {
+            status: 400,
+          }
+        );
       }
 
-      const id = env.LUDO_ROOM.idFromName(room);
-      const stub = env.LUDO_ROOM.get(id);
+      const id =
+        env.LUDO_ROOM.idFromName(
+          room
+        );
+
+      const stub =
+        env.LUDO_ROOM.get(id);
 
       return stub.fetch(request);
     }
 
-    // =========================
+    // ==================================================
     // WEBSITE FILES
-    // =========================
+    // ==================================================
+
     if (!env.ASSETS) {
-      return new Response("ASSETS binding is missing", {
-        status: 500,
-      });
+      return new Response(
+        "ASSETS binding is missing",
+        {
+          status: 500,
+        }
+      );
     }
 
     return env.ASSETS.fetch(request);
@@ -202,15 +271,20 @@ export default {
 // SESSION TOKEN
 // ======================================================
 
-async function createSessionToken(env, adminId) {
+async function createSessionToken(
+  env,
+  adminId
+) {
   const timestamp = Date.now();
 
-  const payload = `${adminId}:${timestamp}`;
+  const payload =
+    `${adminId}:${timestamp}`;
 
-  const signature = await signData(
-    payload,
-    env.BALAJI_ADMIN_PASSWORD
-  );
+  const signature =
+    await signData(
+      payload,
+      env.BALAJI_ADMIN_PASSWORD
+    );
 
   return `${timestamp}.${signature}`;
 }
@@ -219,29 +293,47 @@ async function createSessionToken(env, adminId) {
 // VERIFY SESSION
 // ======================================================
 
-async function verifySession(request, env) {
+async function verifySession(
+  request,
+  env
+) {
   try {
-    const cookies = request.headers.get("Cookie") || "";
+    const cookies =
+      request.headers.get(
+        "Cookie"
+      ) || "";
 
-    const match = cookies.match(
-      new RegExp(`${SESSION_COOKIE}=([^;]+)`)
-    );
+    const match =
+      cookies.match(
+        new RegExp(
+          `${SESSION_COOKIE}=([^;]+)`
+        )
+      );
 
     if (!match) {
       return false;
     }
 
     const token = match[1];
-    const parts = token.split(".");
+
+    const parts =
+      token.split(".");
 
     if (parts.length !== 2) {
       return false;
     }
 
-    const timestamp = Number(parts[0]);
-    const signature = parts[1];
+    const timestamp =
+      Number(parts[0]);
 
-    if (!Number.isFinite(timestamp)) {
+    const signature =
+      parts[1];
+
+    if (
+      !Number.isFinite(
+        timestamp
+      )
+    ) {
       return false;
     }
 
@@ -253,14 +345,18 @@ async function verifySession(request, env) {
     }
 
     const adminId =
-      String(env.BALAJI_ADMIN_ID || "").trim();
+      String(
+        env.BALAJI_ADMIN_ID || ""
+      ).trim();
 
-    const payload = `${adminId}:${timestamp}`;
+    const payload =
+      `${adminId}:${timestamp}`;
 
-    const expectedSignature = await signData(
-      payload,
-      env.BALAJI_ADMIN_PASSWORD
-    );
+    const expectedSignature =
+      await signData(
+        payload,
+        env.BALAJI_ADMIN_PASSWORD
+      );
 
     return timingSafeEqual(
       signature,
@@ -275,41 +371,56 @@ async function verifySession(request, env) {
 // SIGN DATA
 // ======================================================
 
-async function signData(data, secret) {
-  const encoder = new TextEncoder();
+async function signData(
+  data,
+  secret
+) {
+  const encoder =
+    new TextEncoder();
 
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    {
-      name: "HMAC",
-      hash: "SHA-256",
-    },
-    false,
-    ["sign"]
+  const key =
+    await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(secret),
+      {
+        name: "HMAC",
+        hash: "SHA-256",
+      },
+      false,
+      ["sign"]
+    );
+
+  const signature =
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      encoder.encode(data)
+    );
+
+  return arrayBufferToHex(
+    signature
   );
-
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(data)
-  );
-
-  return arrayBufferToHex(signature);
 }
 
 // ======================================================
 // TIMING SAFE COMPARISON
 // ======================================================
 
-function timingSafeEqual(a, b) {
+function timingSafeEqual(
+  a,
+  b
+) {
   if (a.length !== b.length) {
     return false;
   }
 
   let result = 0;
 
-  for (let i = 0; i < a.length; i++) {
+  for (
+    let i = 0;
+    i < a.length;
+    i++
+  ) {
     result |=
       a.charCodeAt(i) ^
       b.charCodeAt(i);
@@ -322,10 +433,16 @@ function timingSafeEqual(a, b) {
 // ARRAY BUFFER → HEX
 // ======================================================
 
-function arrayBufferToHex(buffer) {
-  return [...new Uint8Array(buffer)]
+function arrayBufferToHex(
+  buffer
+) {
+  return [
+    ...new Uint8Array(buffer),
+  ]
     .map((byte) =>
-      byte.toString(16).padStart(2, "0")
+      byte
+        .toString(16)
+        .padStart(2, "0")
     )
     .join("");
 }
@@ -334,13 +451,17 @@ function arrayBufferToHex(buffer) {
 // JSON RESPONSE
 // ======================================================
 
-function json(data, status = 200) {
+function json(
+  data,
+  status = 200
+) {
   return new Response(
     JSON.stringify(data),
     {
       status,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type":
+          "application/json",
       },
     }
   );
@@ -353,9 +474,14 @@ function json(data, status = 200) {
 export class CustomerStore {
   constructor(state) {
     this.state = state;
-    this.sql = state.storage.sql;
+    this.sql =
+      state.storage.sql;
     this.initialized = false;
   }
+
+  // ==================================================
+  // DATABASE INITIALIZATION
+  // ==================================================
 
   init() {
     if (this.initialized) {
@@ -400,32 +526,39 @@ export class CustomerStore {
     this.initialized = true;
   }
 
+  // ==================================================
+  // CUSTOMER API
+  // ==================================================
+
   async fetch(request) {
     this.init();
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
     // ==================================================
-    // GET CUSTOMERS
+    // GET ALL CUSTOMERS
     // ==================================================
 
     if (
       request.method === "GET" &&
-      url.pathname === "/api/admin/customers"
+      url.pathname ===
+        "/api/admin/customers"
     ) {
-      const rows = this.sql
-        .exec(`
-          SELECT
-            id,
-            name,
-            mobile,
-            wallet,
-            status,
-            created_at
-          FROM customers
-          ORDER BY id DESC
-        `)
-        .toArray();
+      const rows =
+        this.sql
+          .exec(`
+            SELECT
+              id,
+              name,
+              mobile,
+              wallet,
+              status,
+              created_at
+            FROM customers
+            ORDER BY id DESC
+          `)
+          .toArray();
 
       return json({
         success: true,
@@ -439,62 +572,83 @@ export class CustomerStore {
 
     if (
       request.method === "POST" &&
-      url.pathname === "/api/admin/customers"
+      url.pathname ===
+        "/api/admin/customers"
     ) {
       try {
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        const name = String(body.name || "").trim();
-        const mobile = String(body.mobile || "").trim();
+        const name =
+          String(
+            body.name || ""
+          ).trim();
+
+        const mobile =
+          String(
+            body.mobile || ""
+          ).trim();
 
         if (!name) {
           return json(
             {
               success: false,
-              message: "Customer name is required.",
+              message:
+                "Customer name is required.",
             },
             400
           );
         }
 
-        const now = Date.now();
+        const now =
+          Date.now();
 
         this.sql.exec(
           `
           INSERT INTO customers
-          (name, mobile, wallet, status, created_at)
-          VALUES (?, ?, 0, 'Active', ?)
+          (
+            name,
+            mobile,
+            wallet,
+            status,
+            created_at
+          )
+          VALUES
+          (?, ?, 0, 'Active', ?)
           `,
           name,
           mobile,
           now
         );
 
-        const customer = this.sql
-          .exec(`
-            SELECT
-              id,
-              name,
-              mobile,
-              wallet,
-              status,
-              created_at
-            FROM customers
-            ORDER BY id DESC
-            LIMIT 1
-          `)
-          .toArray()[0];
+        const customer =
+          this.sql
+            .exec(`
+              SELECT
+                id,
+                name,
+                mobile,
+                wallet,
+                status,
+                created_at
+              FROM customers
+              ORDER BY id DESC
+              LIMIT 1
+            `)
+            .toArray()[0];
 
         return json({
           success: true,
-          message: "Customer created.",
+          message:
+            "Customer created.",
           customer,
         });
       } catch {
         return json(
           {
             success: false,
-            message: "Unable to create customer.",
+            message:
+              "Unable to create customer.",
           },
           400
         );
@@ -511,32 +665,37 @@ export class CustomerStore {
         url.pathname
       )
     ) {
-      const id = Number(
-        url.pathname.split("/").pop()
-      );
+      const id =
+        Number(
+          url.pathname
+            .split("/")
+            .pop()
+        );
 
-      const customer = this.sql
-        .exec(
-          `
-          SELECT
-            id,
-            name,
-            mobile,
-            wallet,
-            status,
-            created_at
-          FROM customers
-          WHERE id = ?
-          `,
-          id
-        )
-        .toArray()[0];
+      const customer =
+        this.sql
+          .exec(
+            `
+            SELECT
+              id,
+              name,
+              mobile,
+              wallet,
+              status,
+              created_at
+            FROM customers
+            WHERE id = ?
+            `,
+            id
+          )
+          .toArray()[0];
 
       if (!customer) {
         return json(
           {
             success: false,
-            message: "Customer not found.",
+            message:
+              "Customer not found.",
           },
           404
         );
@@ -558,15 +717,20 @@ export class CustomerStore {
         url.pathname
       )
     ) {
-      const id = Number(
-        url.pathname.split("/").pop()
-      );
+      const id =
+        Number(
+          url.pathname
+            .split("/")
+            .pop()
+        );
 
       try {
-        const body = await request.json();
+        const body =
+          await request.json();
 
         const status =
-          body.status === "Blocked"
+          body.status ===
+          "Blocked"
             ? "Blocked"
             : "Active";
 
@@ -582,13 +746,15 @@ export class CustomerStore {
 
         return json({
           success: true,
-          message: `Customer ${status}.`,
+          message:
+            `Customer ${status}.`,
         });
       } catch {
         return json(
           {
             success: false,
-            message: "Unable to update customer.",
+            message:
+              "Unable to update customer.",
           },
           400
         );
@@ -605,60 +771,67 @@ export class CustomerStore {
         url.pathname
       )
     ) {
-      const parts = url.pathname.split("/");
-      const customerId = Number(parts[4]);
+      const parts =
+        url.pathname.split("/");
 
-      const customer = this.sql
-        .exec(
-          `
-          SELECT
-            id,
-            name,
-            mobile,
-            wallet,
-            status,
-            created_at
-          FROM customers
-          WHERE id = ?
-          `,
-          customerId
-        )
-        .toArray()[0];
+      const customerId =
+        Number(parts[4]);
+
+      const customer =
+        this.sql
+          .exec(
+            `
+            SELECT
+              id,
+              name,
+              mobile,
+              wallet,
+              status,
+              created_at
+            FROM customers
+            WHERE id = ?
+            `,
+            customerId
+          )
+          .toArray()[0];
 
       if (!customer) {
         return json(
           {
             success: false,
-            message: "Customer not found.",
+            message:
+              "Customer not found.",
           },
           404
         );
       }
 
-      const kyc = this.sql
-        .exec(
-          `
-          SELECT
-            id,
-            customer_id,
-            document_type,
-            document_number,
-            document_url,
-            status,
-            rejection_reason,
-            submitted_at,
-            verified_at
-          FROM customer_kyc
-          WHERE customer_id = ?
-          `,
-          customerId
-        )
-        .toArray()[0];
+      const kyc =
+        this.sql
+          .exec(
+            `
+            SELECT
+              id,
+              customer_id,
+              document_type,
+              document_number,
+              document_url,
+              status,
+              rejection_reason,
+              submitted_at,
+              verified_at
+            FROM customer_kyc
+            WHERE customer_id = ?
+            `,
+            customerId
+          )
+          .toArray()[0];
 
       return json({
         success: true,
         customer,
-        kyc: kyc || null,
+        kyc:
+          kyc || null,
       });
     }
 
@@ -672,26 +845,37 @@ export class CustomerStore {
         url.pathname
       )
     ) {
-      const parts = url.pathname.split("/");
-      const customerId = Number(parts[4]);
+      const parts =
+        url.pathname.split("/");
+
+      const customerId =
+        Number(parts[4]);
 
       try {
-        const body = await request.json();
+        const body =
+          await request.json();
 
         const documentType =
-          String(body.documentType || "").trim();
+          String(
+            body.documentType || ""
+          ).trim();
 
         const documentNumber =
-          String(body.documentNumber || "").trim();
+          String(
+            body.documentNumber || ""
+          ).trim();
 
         const documentUrl =
-          String(body.documentUrl || "").trim();
+          String(
+            body.documentUrl || ""
+          ).trim();
 
         if (!documentType) {
           return json(
             {
               success: false,
-              message: "Document type is required.",
+              message:
+                "Document type is required.",
             },
             400
           );
@@ -701,45 +885,50 @@ export class CustomerStore {
           return json(
             {
               success: false,
-              message: "Document number is required.",
+              message:
+                "Document number is required.",
             },
             400
           );
         }
 
-        const customer = this.sql
-          .exec(
-            `
-            SELECT id
-            FROM customers
-            WHERE id = ?
-            `,
-            customerId
-          )
-          .toArray()[0];
+        const customer =
+          this.sql
+            .exec(
+              `
+              SELECT id
+              FROM customers
+              WHERE id = ?
+              `,
+              customerId
+            )
+            .toArray()[0];
 
         if (!customer) {
           return json(
             {
               success: false,
-              message: "Customer not found.",
+              message:
+                "Customer not found.",
             },
             404
           );
         }
 
-        const now = Date.now();
+        const now =
+          Date.now();
 
-        const existing = this.sql
-          .exec(
-            `
-            SELECT id
-            FROM customer_kyc
-            WHERE customer_id = ?
-            `,
-            customerId
-          )
-          .toArray()[0];
+        const existing =
+          this.sql
+            .exec(
+              `
+              SELECT id
+              FROM customer_kyc
+              WHERE customer_id = ?
+              `,
+              customerId
+            )
+            .toArray()[0];
 
         if (existing) {
           this.sql.exec(
@@ -775,7 +964,8 @@ export class CustomerStore {
               submitted_at,
               verified_at
             )
-            VALUES (?, ?, ?, ?, 'Pending', '', ?, NULL)
+            VALUES
+            (?, ?, ?, ?, 'Pending', '', ?, NULL)
             `,
             customerId,
             documentType,
@@ -785,36 +975,39 @@ export class CustomerStore {
           );
         }
 
-        const kyc = this.sql
-          .exec(
-            `
-            SELECT
-              id,
-              customer_id,
-              document_type,
-              document_number,
-              document_url,
-              status,
-              rejection_reason,
-              submitted_at,
-              verified_at
-            FROM customer_kyc
-            WHERE customer_id = ?
-            `,
-            customerId
-          )
-          .toArray()[0];
+        const kyc =
+          this.sql
+            .exec(
+              `
+              SELECT
+                id,
+                customer_id,
+                document_type,
+                document_number,
+                document_url,
+                status,
+                rejection_reason,
+                submitted_at,
+                verified_at
+              FROM customer_kyc
+              WHERE customer_id = ?
+              `,
+              customerId
+            )
+            .toArray()[0];
 
         return json({
           success: true,
-          message: "KYC submitted successfully.",
+          message:
+            "KYC submitted successfully.",
           kyc,
         });
       } catch {
         return json(
           {
             success: false,
-            message: "Unable to save KYC.",
+            message:
+              "Unable to save KYC.",
           },
           400
         );
@@ -831,40 +1024,49 @@ export class CustomerStore {
         url.pathname
       )
     ) {
-      const parts = url.pathname.split("/");
-      const customerId = Number(parts[4]);
+      const parts =
+        url.pathname.split("/");
+
+      const customerId =
+        Number(parts[4]);
 
       try {
-        const body = await request.json();
+        const body =
+          await request.json();
 
         const status =
-          body.status === "Verified"
+          body.status ===
+          "Verified"
             ? "Verified"
-            : body.status === "Rejected"
+            : body.status ===
+              "Rejected"
               ? "Rejected"
               : "Pending";
 
         const rejectionReason =
           String(
-            body.rejectionReason || ""
+            body.rejectionReason ||
+              ""
           ).trim();
 
-        const existing = this.sql
-          .exec(
-            `
-            SELECT id
-            FROM customer_kyc
-            WHERE customer_id = ?
-            `,
-            customerId
-          )
-          .toArray()[0];
+        const existing =
+          this.sql
+            .exec(
+              `
+              SELECT id
+              FROM customer_kyc
+              WHERE customer_id = ?
+              `,
+              customerId
+            )
+            .toArray()[0];
 
         if (!existing) {
           return json(
             {
               success: false,
-              message: "KYC record not found.",
+              message:
+                "KYC record not found.",
             },
             404
           );
@@ -892,23 +1094,30 @@ export class CustomerStore {
 
         return json({
           success: true,
-          message: `KYC ${status}.`,
+          message:
+            `KYC ${status}.`,
         });
       } catch {
         return json(
           {
             success: false,
-            message: "Unable to update KYC.",
+            message:
+              "Unable to update KYC.",
           },
           400
         );
       }
     }
 
+    // ==================================================
+    // UNKNOWN CUSTOMER API
+    // ==================================================
+
     return json(
       {
         success: false,
-        message: "Customer API endpoint not found.",
+        message:
+          "Customer API endpoint not found.",
       },
       404
     );
@@ -928,30 +1137,44 @@ export class LudoRoom {
 
   async fetch(request) {
     if (
-      request.headers.get("Upgrade") !== "websocket"
+      request.headers.get(
+        "Upgrade"
+      ) !== "websocket"
     ) {
-      return new Response("Ludo Room Server");
+      return new Response(
+        "Ludo Room Server"
+      );
     }
 
-    const pair = new WebSocketPair();
+    const pair =
+      new WebSocketPair();
 
-    const client = pair[0];
-    const server = pair[1];
+    const client =
+      pair[0];
 
-    const url = new URL(request.url);
+    const server =
+      pair[1];
+
+    const url =
+      new URL(request.url);
 
     const name =
-      url.searchParams.get("name") ||
-      "Player";
+      url.searchParams.get(
+        "name"
+      ) || "Player";
 
-    // Maximum 2 players
+    // ==================================================
+    // MAXIMUM 2 PLAYERS
+    // ==================================================
+
     if (this.players.size >= 2) {
       server.accept();
 
       server.send(
         JSON.stringify({
           type: "ROOM_FULL",
-          message: "Room already has 2 players.",
+          message:
+            "Room already has 2 players.",
         })
       );
 
@@ -965,26 +1188,36 @@ export class LudoRoom {
 
     server.accept();
 
-    const playerId = crypto.randomUUID();
+    const playerId =
+      crypto.randomUUID();
 
     const player = {
       id: playerId,
-      name: name.substring(0, 20),
+      name: name.substring(
+        0,
+        20
+      ),
       socket: server,
     };
 
-    this.players.set(playerId, player);
+    this.players.set(
+      playerId,
+      player
+    );
 
     if (!this.turnPlayerId) {
-      this.turnPlayerId = playerId;
+      this.turnPlayerId =
+        playerId;
     }
 
     server.send(
       JSON.stringify({
         type: "CONNECTED",
         playerId,
-        playerNumber: this.players.size,
-        players: this.getPlayers(),
+        playerNumber:
+          this.players.size,
+        players:
+          this.getPlayers(),
       })
     );
 
@@ -1003,11 +1236,19 @@ export class LudoRoom {
     server.addEventListener(
       "close",
       () => {
-        this.players.delete(playerId);
+        this.players.delete(
+          playerId
+        );
 
-        if (this.turnPlayerId === playerId) {
+        if (
+          this.turnPlayerId ===
+          playerId
+        ) {
           const remainingPlayer =
-            this.players.values().next().value;
+            this.players
+              .values()
+              .next()
+              .value;
 
           this.turnPlayerId =
             remainingPlayer
@@ -1025,6 +1266,10 @@ export class LudoRoom {
     });
   }
 
+  // ==================================================
+  // GET PLAYERS
+  // ==================================================
+
   getPlayers() {
     return [
       ...this.players.values(),
@@ -1034,22 +1279,43 @@ export class LudoRoom {
     }));
   }
 
-  handleMessage(playerId, data) {
-    try {
-      const message = JSON.parse(data);
+  // ==================================================
+  // HANDLE LUDO MESSAGE
+  // ==================================================
 
-      if (message.type === "ROLL_DICE") {
+  handleMessage(
+    playerId,
+    data
+  ) {
+    try {
+      const message =
+        JSON.parse(data);
+
+      // =========================
+      // ROLL DICE
+      // =========================
+
+      if (
+        message.type ===
+        "ROLL_DICE"
+      ) {
         const player =
-          this.players.get(playerId);
+          this.players.get(
+            playerId
+          );
 
         if (!player) {
           return;
         }
 
-        if (this.turnPlayerId !== playerId) {
+        if (
+          this.turnPlayerId !==
+          playerId
+        ) {
           player.socket.send(
             JSON.stringify({
-              type: "NOT_YOUR_TURN",
+              type:
+                "NOT_YOUR_TURN",
             })
           );
 
@@ -1062,20 +1328,34 @@ export class LudoRoom {
           ) + 1;
 
         this.broadcast({
-          type: "DICE_RESULT",
+          type:
+            "DICE_RESULT",
           playerId,
-          playerName: player.name,
+          playerName:
+            player.name,
           dice,
         });
 
+        // 6 = same player's turn
         if (dice !== 6) {
-          this.changeTurn(playerId);
+          this.changeTurn(
+            playerId
+          );
         }
       }
 
-      if (message.type === "PING") {
+      // =========================
+      // PING
+      // =========================
+
+      if (
+        message.type ===
+        "PING"
+      ) {
         const player =
-          this.players.get(playerId);
+          this.players.get(
+            playerId
+          );
 
         if (player) {
           player.socket.send(
@@ -1086,21 +1366,33 @@ export class LudoRoom {
         }
       }
     } catch {
-      console.log("Invalid message");
+      console.log(
+        "Invalid message"
+      );
     }
   }
 
-  changeTurn(currentPlayerId) {
+  // ==================================================
+  // CHANGE TURN
+  // ==================================================
+
+  changeTurn(
+    currentPlayerId
+  ) {
     const playerIds = [
       ...this.players.keys(),
     ];
 
-    if (playerIds.length < 2) {
+    if (
+      playerIds.length < 2
+    ) {
       return;
     }
 
     const currentIndex =
-      playerIds.indexOf(currentPlayerId);
+      playerIds.indexOf(
+        currentPlayerId
+      );
 
     const nextIndex =
       (currentIndex + 1) %
@@ -1110,27 +1402,50 @@ export class LudoRoom {
       playerIds[nextIndex];
 
     this.broadcast({
-      type: "TURN_UPDATE",
-      playerId: this.turnPlayerId,
+      type:
+        "TURN_UPDATE",
+      playerId:
+        this.turnPlayerId,
     });
   }
+
+  // ==================================================
+  // BROADCAST PLAYERS
+  // ==================================================
 
   broadcastPlayers() {
     this.broadcast({
-      type: "PLAYERS_UPDATE",
-      players: this.getPlayers(),
-      turnPlayerId: this.turnPlayerId,
+      type:
+        "PLAYERS_UPDATE",
+      players:
+        this.getPlayers(),
+      turnPlayerId:
+        this.turnPlayerId,
     });
   }
 
-  broadcast(message) {
-    const text = JSON.stringify(message);
+  // ==================================================
+  // BROADCAST
+  // ==================================================
 
-    for (const player of this.players.values()) {
+  broadcast(message) {
+    const text =
+      JSON.stringify(
+        message
+      );
+
+    for (
+      const player of
+      this.players.values()
+    ) {
       try {
-        player.socket.send(text);
+        player.socket.send(
+          text
+        );
       } catch {
-        console.log("Send failed");
+        console.log(
+          "Send failed"
+        );
       }
     }
   }
