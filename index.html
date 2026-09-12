@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Balaji Ludo King</title>
-
+  <title>Balaji Ludo King - 2 Player</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -14,13 +13,14 @@
 
     <header class="topbar">
       <h1>🎲 Balaji Ludo King</h1>
-      <p>Play • Battle • Win</p>
+      <p>2 Player Battle</p>
     </header>
 
     <main class="container">
 
-      <section class="welcome-card">
-        <h2>Welcome to Balaji Ludo King</h2>
+      <!-- Login -->
+      <section class="welcome-card" id="welcomeCard">
+        <h2>Welcome</h2>
         <p>Enter your name to continue</p>
 
         <input
@@ -30,32 +30,124 @@
           maxlength="20"
         >
 
-        <button id="startBtn">Start Game</button>
+        <button id="startBtn">Continue</button>
 
         <p id="message"></p>
       </section>
 
-      <section class="game-card" id="gameCard">
+      <!-- Room -->
+      <section class="game-card" id="roomCard">
 
-        <div class="player-info">
-          <div>
-            <span>Player</span>
-            <strong id="displayName">Guest</strong>
-          </div>
+        <h2>🎮 2 Player Room</h2>
 
-          <div>
-            <span>Coins</span>
-            <strong id="coins">100</strong> 🪙
-          </div>
-        </div>
+        <button id="createRoomBtn">
+          Create Room
+        </button>
 
-        <div class="actions">
-          <button id="addCoinsBtn">+20 Coins</button>
-          <button id="createRoomBtn">Create Room</button>
-        </div>
+        <div class="divider">OR</div>
+
+        <input
+          type="text"
+          id="joinRoomInput"
+          placeholder="Enter Room Code"
+          maxlength="6"
+        >
+
+        <button id="joinRoomBtn">
+          Join Room
+        </button>
 
         <div class="room-info" id="roomInfo">
-          <p>No room created</p>
+          <p>No room selected</p>
+        </div>
+
+      </section>
+
+      <!-- Ludo Game -->
+      <section class="ludo-card" id="ludoCard">
+
+        <div class="game-header">
+          <div>
+            <span>Player 1</span>
+            <strong id="player1Name">Waiting...</strong>
+          </div>
+
+          <div class="vs">VS</div>
+
+          <div>
+            <span>Player 2</span>
+            <strong id="player2Name">Waiting...</strong>
+          </div>
+        </div>
+
+        <div class="turn-info">
+          <p id="turnText">Waiting for Player 2...</p>
+        </div>
+
+        <div class="ludo-board">
+
+          <div class="home red-home">
+            <span>🔴</span>
+            <span>🔴</span>
+            <span>🔴</span>
+            <span>🔴</span>
+          </div>
+
+          <div class="path">
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+          </div>
+
+          <div class="center-home">
+            🏆
+          </div>
+
+          <div class="home blue-home">
+            <span>🔵</span>
+            <span>🔵</span>
+            <span>🔵</span>
+            <span>🔵</span>
+          </div>
+
+        </div>
+
+        <div class="dice-area">
+
+          <div class="dice" id="dice">
+            🎲
+          </div>
+
+          <button id="rollDiceBtn">
+            Roll Dice
+          </button>
+
+          <p id="diceResult">
+            Dice: -
+          </p>
+
         </div>
 
       </section>
@@ -72,4 +164,3 @@
 
 </body>
 </html>
-
