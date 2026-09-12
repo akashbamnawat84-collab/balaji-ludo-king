@@ -6,234 +6,190 @@
 
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #111827, #1e3a8a);
-  color: #fff;
   min-height: 100vh;
+  padding: 15px;
+  background: linear-gradient(135deg, #111827, #1e3a8a);
+  color: white;
 }
 
 .container {
   width: 100%;
-  max-width: 700px;
+  max-width: 520px;
   margin: auto;
-  padding: 15px;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 18px;
   padding: 20px;
   margin-bottom: 18px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
-h1 {
+.header {
+  text-align: center;
+}
+
+.header h1 {
   font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.header p {
+  opacity: 0.75;
+}
+
+.wallet-card {
   text-align: center;
-  margin-bottom: 6px;
 }
 
-h2 {
-  margin-bottom: 10px;
+.wallet-label {
+  opacity: 0.75;
+  margin-bottom: 8px;
 }
 
-header p,
-footer p {
-  text-align: center;
-  opacity: 0.8;
+.wallet-card h2 {
+  font-size: 38px;
+  margin-bottom: 20px;
 }
 
-input {
-  width: 100%;
-  padding: 14px;
-  margin: 10px 0;
-  border: 0;
-  border-radius: 10px;
-  font-size: 16px;
-  outline: none;
+.wallet-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 button {
-  width: 100%;
-  padding: 14px;
-  margin: 6px 0;
-  border: 0;
+  border: none;
   border-radius: 10px;
+  padding: 14px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
 }
 
-.primary-btn {
-  background: #f59e0b;
-  color: #111827;
+.deposit-btn {
+  background: #22c55e;
+  color: white;
 }
 
-.secondary-btn {
-  background: #2563eb;
-  color: #fff;
+.withdraw-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.info {
+  background: rgba(0, 0, 0, 0.20);
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 12px;
 }
 
 .message {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
   text-align: center;
+  margin-top: 12px;
+  line-height: 1.5;
 }
 
 .hidden {
   display: none !important;
 }
 
-.room-code {
-  margin: 15px 0;
-  padding: 15px;
-  text-align: center;
-  font-size: 28px;
-  font-weight: bold;
-  letter-spacing: 5px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 12px;
-}
-
-.players {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 15px;
-}
-
-.player {
-  padding: 15px;
-  text-align: center;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.player h3 {
-  margin-top: 6px;
-}
-
-/* Ludo Board */
-
-.ludo-board {
-  width: min(92vw, 500px);
-  aspect-ratio: 1;
-  margin: 20px auto;
-  padding: 8px;
-  background: #fff;
-  border: 6px solid #111827;
-  border-radius: 12px;
-
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-
-  gap: 2px;
-  position: relative;
-}
-
-.home {
-  grid-column: span 2;
-  grid-row: span 2;
-
+.transaction {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-
-  text-align: center;
-  font-size: 24px;
-  line-height: 1.8;
-
+  gap: 10px;
+  padding: 13px;
+  margin-top: 10px;
   border-radius: 10px;
+  background: rgba(0, 0, 0, 0.20);
 }
 
-.red {
-  background: #ef4444;
-}
-
-.blue {
-  background: #3b82f6;
-}
-
-.green {
-  background: #22c55e;
-}
-
-.yellow {
-  background: #facc15;
-  color: #111827;
-}
-
-.ludo-cell {
-  min-height: 35px;
-  border: 1px solid #d1d5db;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 16px;
-}
-
-.white {
-  background: #fff;
-  color: #111827;
-}
-
-.safe {
-  background: #e5e7eb;
-  color: #111827;
+.transaction-title {
   font-weight: bold;
 }
 
-.center-home {
-  position: absolute;
-
-  width: 25%;
-  height: 25%;
-
-  left: 37.5%;
-  top: 37.5%;
-
-  background: #fff;
-  border: 5px solid #111827;
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 35px;
-  z-index: 5;
+.transaction-date {
+  font-size: 12px;
+  opacity: 0.65;
+  margin-top: 4px;
 }
 
-.dice {
-  width: 75px;
-  height: 75px;
-  margin: 10px auto 15px;
+.transaction-amount {
+  font-weight: bold;
+  white-space: nowrap;
+}
 
-  background: #fff;
-  color: #111827;
+.deposit-text {
+  color: #86efac;
+}
 
-  border-radius: 15px;
+.withdraw-text {
+  color: #fcd34d;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.status {
+  font-size: 12px;
+  margin-top: 4px;
+  opacity: 0.8;
+}
 
-  font-size: 45px;
+.empty {
+  text-align: center;
+  opacity: 0.6;
+  padding: 15px;
+}
 
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+.notice {
+  border-left: 4px solid #f59e0b;
+}
+
+.notice h3 {
+  margin-bottom: 8px;
+}
+
+.notice p {
+  line-height: 1.5;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
 footer {
-  padding: 15px 0;
+  text-align: center;
+  opacity: 0.6;
+  padding: 15px;
+  font-size: 13px;
 }
 
-@media (max-width: 500px) {
-  .container {
+@media (max-width: 420px) {
+
+  body {
     padding: 10px;
   }
 
@@ -241,21 +197,11 @@ footer {
     padding: 15px;
   }
 
-  h1 {
-    font-size: 24px;
+  .wallet-buttons {
+    grid-template-columns: 1fr;
   }
 
-  .players {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .ludo-board {
-    width: 94vw;
-  }
-
-  .dice {
-    width: 65px;
-    height: 65px;
-    font-size: 38px;
+  .wallet-card h2 {
+    font-size: 32px;
   }
 }
