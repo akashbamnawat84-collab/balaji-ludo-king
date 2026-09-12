@@ -2,7 +2,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // WebSocket connection
+    // WebSocket room
     if (url.pathname === "/ws") {
       if (request.headers.get("Upgrade") !== "websocket") {
         return new Response("Expected WebSocket", { status: 426 });
@@ -21,10 +21,15 @@ export default {
     }
 
     // Website files
+    if (!env.ASSETS) {
+      return new Response("ASSETS binding is missing", {
+        status: 500,
+      });
+    }
+
     return env.ASSETS.fetch(request);
   },
 };
-
 
 export class LudoRoom {
   constructor(state) {
@@ -52,7 +57,7 @@ export class LudoRoom {
       server.send(
         JSON.stringify({
           type: "ROOM_FULL",
-          message: "Room already has 2 players."
+          message: "Room already has 2 players.",
         })
       );
 
@@ -60,7 +65,7 @@ export class LudoRoom {
 
       return new Response(null, {
         status: 101,
-        webSocket: client
+        webSocket: client,
       });
     }
 
@@ -71,7 +76,7 @@ export class LudoRoom {
     const player = {
       id: playerId,
       name: name.substring(0, 20),
-      socket: server
+      socket: server,
     };
 
     this.players.set(playerId, player);
@@ -86,7 +91,7 @@ export class LudoRoom {
         type: "CONNECTED",
         playerId: playerId,
         playerNumber: this.players.size,
-        players: this.getPlayers()
+        players: this.getPlayers(),
       })
     );
 
@@ -112,14 +117,14 @@ export class LudoRoom {
 
     return new Response(null, {
       status: 101,
-      webSocket: client
+      webSocket: client,
     });
   }
 
   getPlayers() {
     return [...this.players.values()].map((player) => ({
       id: player.id,
-      name: player.name
+      name: player.name,
     }));
   }
 
@@ -127,34 +132,29 @@ export class LudoRoom {
     try {
       const message = JSON.parse(data);
 
-      // =========================
-      // ROLL DICE
-      // =========================
-
+      // Roll dice
       if (message.type === "ROLL_DICE") {
         const player = this.players.get(playerId);
 
         if (!player) return;
 
-        // Only current player can roll
         if (this.turnPlayerId !== playerId) {
           player.socket.send(
             JSON.stringify({
-              type: "NOT_YOUR_TURN"
+              type: "NOT_YOUR_TURN",
             })
           );
 
           return;
         }
 
-        // Server-side random dice
         const dice = Math.floor(Math.random() * 6) + 1;
 
         this.broadcast({
           type: "DICE_RESULT",
           playerId: playerId,
           playerName: player.name,
-          dice: dice
+          dice: dice,
         });
 
         // 6 means same player gets another turn
@@ -163,17 +163,14 @@ export class LudoRoom {
         }
       }
 
-      // =========================
-      // PING
-      // =========================
-
+      // Ping
       if (message.type === "PING") {
         const player = this.players.get(playerId);
 
         if (player) {
           player.socket.send(
             JSON.stringify({
-              type: "PONG"
+              type: "PONG",
             })
           );
         }
@@ -197,7 +194,7 @@ export class LudoRoom {
 
     this.broadcast({
       type: "TURN_UPDATE",
-      playerId: this.turnPlayerId
+      playerId: this.turnPlayerId,
     });
   }
 
@@ -205,7 +202,7 @@ export class LudoRoom {
     this.broadcast({
       type: "PLAYERS_UPDATE",
       players: this.getPlayers(),
-      turnPlayerId: this.turnPlayerId
+      turnPlayerId: this.turnPlayerId,
     });
   }
 
