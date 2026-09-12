@@ -1,0 +1,14 @@
+name = "balaji-ludo-king"
+main = "worker.js"
+compatibility_date = "2026-09-12"
+
+[assets]
+directory = "."
+
+[[durable_objects.bindings]]
+name = "LUDO_ROOM"
+class_name = "LudoRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["LudoRoom"]
