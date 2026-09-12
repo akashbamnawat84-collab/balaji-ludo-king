@@ -12,14 +12,21 @@
 
   <div class="container">
 
+    <!-- Header -->
     <header class="card">
       <h1>🎲 Balaji Ludo King</h1>
       <p>2 Player Battle</p>
     </header>
 
-    <!-- Login -->
+
+    <!-- ========================= -->
+    <!-- WELCOME -->
+    <!-- ========================= -->
+
     <section class="card" id="welcomeCard">
+
       <h2>Welcome 👋</h2>
+
       <p>Enter your name to continue</p>
 
       <input
@@ -27,20 +34,38 @@
         id="playerName"
         placeholder="Enter your name"
         maxlength="20"
+        autocomplete="name"
       >
 
-      <button id="startBtn" class="primary-btn">
+      <button
+        id="startBtn"
+        class="primary-btn"
+        type="button"
+      >
         Continue
       </button>
 
       <p id="message" class="message"></p>
+
     </section>
 
-    <!-- Room -->
-    <section class="card hidden" id="roomCard">
+
+    <!-- ========================= -->
+    <!-- ROOM -->
+    <!-- ========================= -->
+
+    <section
+      class="card hidden"
+      id="roomCard"
+    >
+
       <h2>🎮 2 Player Room</h2>
 
-      <button id="createRoomBtn" class="primary-btn">
+      <button
+        id="createRoomBtn"
+        class="primary-btn"
+        type="button"
+      >
         Create Room
       </button>
 
@@ -51,40 +76,75 @@
         id="joinRoomInput"
         placeholder="Enter Room Code"
         maxlength="6"
+        inputmode="numeric"
       >
 
-      <button id="joinRoomBtn" class="secondary-btn">
+      <button
+        id="joinRoomBtn"
+        class="secondary-btn"
+        type="button"
+      >
         Join Room
       </button>
 
-      <div class="room-code" id="roomInfo">
-        ------
+      <div
+        class="room-info"
+        id="roomInfo"
+      >
+        <p>No room selected</p>
       </div>
+
     </section>
 
-    <!-- Ludo Game -->
-    <section class="card hidden" id="ludoCard">
+
+    <!-- ========================= -->
+    <!-- LUDO GAME -->
+    <!-- ========================= -->
+
+    <section
+      class="card hidden"
+      id="ludoCard"
+    >
+
+      <!-- Players -->
 
       <div class="players">
 
         <div class="player">
           <small>Player 1</small>
-          <h3 id="player1Name">Waiting...</h3>
+          <h3 id="player1Name">
+            Waiting...
+          </h3>
         </div>
 
         <div class="player">
           <small>Player 2</small>
-          <h3 id="player2Name">Waiting...</h3>
+          <h3 id="player2Name">
+            Waiting...
+          </h3>
         </div>
 
       </div>
 
+
+      <!-- Turn -->
+
       <div class="message">
-        <p id="turnText">Waiting for Player 2...</p>
+
+        <p id="turnText">
+          Waiting for Player 2...
+        </p>
+
       </div>
 
-      <!-- Ludo Board -->
+
+      <!-- ========================= -->
+      <!-- LUDO BOARD -->
+      <!-- ========================= -->
+
       <div class="ludo-board">
+
+        <!-- Red Home -->
 
         <div class="home red">
           🔴 🔴
@@ -92,6 +152,9 @@
           🔴 🔴
         </div>
 
+
+        <!-- Board Cells -->
+
         <div class="ludo-cell white"></div>
         <div class="ludo-cell white"></div>
         <div class="ludo-cell blue"></div>
@@ -134,22 +197,41 @@
         <div class="ludo-cell safe">★</div>
         <div class="ludo-cell white"></div>
 
-        <div class="center-home">🏆</div>
+
+        <!-- Center -->
+
+        <div class="center-home">
+          🏆
+        </div>
 
       </div>
 
-      <!-- Dice -->
+
+      <!-- ========================= -->
+      <!-- DICE -->
+      <!-- ========================= -->
+
       <div class="card">
 
-        <div class="dice" id="dice">
+        <div
+          class="dice"
+          id="dice"
+        >
           🎲
         </div>
 
-        <button id="rollDiceBtn" class="primary-btn">
+        <button
+          id="rollDiceBtn"
+          class="primary-btn"
+          type="button"
+        >
           Roll Dice
         </button>
 
-        <p id="diceResult" class="message">
+        <p
+          id="diceResult"
+          class="message"
+        >
           Dice: -
         </p>
 
@@ -157,11 +239,17 @@
 
     </section>
 
+
+    <!-- Footer -->
+
     <footer>
       <p>© 2026 Balaji Ludo King</p>
     </footer>
 
   </div>
+
+
+  <!-- ONLY ONE JavaScript file -->
 
   <script src="../script.js"></script>
 
