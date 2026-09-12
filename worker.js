@@ -1,5 +1,9 @@
 const SESSION_COOKIE = "balaji_admin_session";
-const SESSION_MAX_AGE = 86400; // 24 hours
+const SESSION_MAX_AGE = 86400;
+
+// ======================================================
+// MAIN WORKER
+// ======================================================
 
 export default {
   async fetch(request, env) {
@@ -11,10 +15,7 @@ export default {
     if (url.pathname === "/api/admin/login") {
       if (request.method !== "POST") {
         return json(
-          {
-            success: false,
-            message: "Method not allowed",
-          },
+          { success: false, message: "Method not allowed" },
           405
         );
       }
@@ -65,7 +66,7 @@ export default {
             },
           }
         );
-      } catch (error) {
+      } catch {
         return json(
           {
             success: false,
@@ -116,6 +117,29 @@ export default {
           },
         }
       );
+    }
+
+    // =========================
+    // ADMIN CUSTOMERS API
+    // =========================
+
+    if (url.pathname === "/api/admin/customers") {
+      const valid = await verifySession(request, env);
+
+      if (!valid) {
+        return json(
+          {
+            success: false,
+            message: "Unauthorized",
+          },
+          401
+        );
+      }
+
+      const id = env.CUSTOMER_STORE.idFromName("customers");
+      const stub = env.CUSTOMER_STORE.get(id);
+
+      return stub.fetch(request);
     }
 
     // =========================
@@ -203,7 +227,6 @@ async function verifySession(request, env) {
     }
 
     const token = match[1];
-
     const parts = token.split(".");
 
     if (parts.length !== 2) {
@@ -238,7 +261,7 @@ async function verifySession(request, env) {
       signature,
       expectedSignature
     );
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -319,6 +342,257 @@ function json(data, status = 200) {
 }
 
 // ======================================================
+// CUSTOMER STORE
+// ======================================================
+
+export class CustomerStore {
+  constructor(state) {
+    this.state = state;
+    this.sql = state.storage.sql;
+    this.initialized = false;
+  }
+
+  init() {
+    if (this.initialized) {
+      return;
+    }
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS customers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        mobile TEXT DEFAULT '',
+        wallet REAL DEFAULT 0,
+        status TEXT DEFAULT 'Active',
+        created_at INTEGER NOT NULL
+      )
+    `);
+
+    this.initialized = true;
+  }
+
+  async fetch(request) {
+    this.init();
+
+    const url = new URL(request.url);
+
+    // =========================
+    // GET CUSTOMERS
+    // =========================
+
+    if (
+      request.method === "GET" &&
+      url.pathname === "/api/admin/customers"
+    ) {
+      const rows = this.sql
+        .exec(`
+          SELECT
+            id,
+            name,
+            mobile,
+            wallet,
+            status,
+            created_at
+          FROM customers
+          ORDER BY id DESC
+        `)
+        .toArray();
+
+      return json({
+        success: true,
+        customers: rows,
+      });
+    }
+
+    // =========================
+    // CREATE CUSTOMER
+    // =========================
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/api/admin/customers"
+    ) {
+      try {
+        const body = await request.json();
+
+        const name = String(body.name || "").trim();
+        const mobile = String(body.mobile || "").trim();
+
+        if (!name) {
+          return json(
+            {
+              success: false,
+              message: "Customer name is required.",
+            },
+            400
+          );
+        }
+
+        const now = Date.now();
+
+        this.sql.exec(
+          `
+          INSERT INTO customers
+          (name, mobile, wallet, status, created_at)
+          VALUES (?, ?, 0, 'Active', ?)
+          `,
+          name,
+          mobile,
+          now
+        );
+
+        const customer = this.sql
+          .exec(`
+            SELECT
+              id,
+              name,
+              mobile,
+              wallet,
+              status,
+              created_at
+            FROM customers
+            ORDER BY id DESC
+            LIMIT 1
+          `)
+          .toArray()[0];
+
+        return json({
+          success: true,
+          message: "Customer created.",
+          customer,
+        });
+      } catch {
+        return json(
+          {
+            success: false,
+            message: "Unable to create customer.",
+          },
+          400
+        );
+      }
+    }
+
+    // =========================
+    // CUSTOMER DETAILS
+    // =========================
+
+    if (
+      request.method === "GET" &&
+      url.pathname.startsWith("/api/admin/customers/")
+    ) {
+      const id = Number(
+        url.pathname.split("/").pop()
+      );
+
+      if (!Number.isInteger(id)) {
+        return json(
+          {
+            success: false,
+            message: "Invalid customer ID.",
+          },
+          400
+        );
+      }
+
+      const customer = this.sql
+        .exec(
+          `
+          SELECT
+            id,
+            name,
+            mobile,
+            wallet,
+            status,
+            created_at
+          FROM customers
+          WHERE id = ?
+          `,
+          id
+        )
+        .toArray()[0];
+
+      if (!customer) {
+        return json(
+          {
+            success: false,
+            message: "Customer not found.",
+          },
+          404
+        );
+      }
+
+      return json({
+        success: true,
+        customer,
+      });
+    }
+
+    // =========================
+    // BLOCK / UNBLOCK
+    // =========================
+
+    if (
+      request.method === "PATCH" &&
+      url.pathname.startsWith("/api/admin/customers/")
+    ) {
+      const id = Number(
+        url.pathname.split("/").pop()
+      );
+
+      if (!Number.isInteger(id)) {
+        return json(
+          {
+            success: false,
+            message: "Invalid customer ID.",
+          },
+          400
+        );
+      }
+
+      try {
+        const body = await request.json();
+
+        const status =
+          body.status === "Blocked"
+            ? "Blocked"
+            : "Active";
+
+        this.sql.exec(
+          `
+          UPDATE customers
+          SET status = ?
+          WHERE id = ?
+          `,
+          status,
+          id
+        );
+
+        return json({
+          success: true,
+          message: `Customer ${status}.`,
+        });
+      } catch {
+        return json(
+          {
+            success: false,
+            message: "Unable to update customer.",
+          },
+          400
+        );
+      }
+    }
+
+    return json(
+      {
+        success: false,
+        message: "Customer API endpoint not found.",
+      },
+      404
+    );
+  }
+}
+
+// ======================================================
 // LUDO DURABLE OBJECT
 // ======================================================
 
@@ -331,8 +605,7 @@ export class LudoRoom {
 
   async fetch(request) {
     if (
-      request.headers.get("Upgrade") !==
-      "websocket"
+      request.headers.get("Upgrade") !== "websocket"
     ) {
       return new Response("Ludo Room Server");
     }
@@ -355,8 +628,7 @@ export class LudoRoom {
       server.send(
         JSON.stringify({
           type: "ROOM_FULL",
-          message:
-            "Room already has 2 players.",
+          message: "Room already has 2 players.",
         })
       );
 
@@ -370,8 +642,7 @@ export class LudoRoom {
 
     server.accept();
 
-    const playerId =
-      crypto.randomUUID();
+    const playerId = crypto.randomUUID();
 
     const player = {
       id: playerId,
@@ -379,25 +650,18 @@ export class LudoRoom {
       socket: server,
     };
 
-    this.players.set(
-      playerId,
-      player
-    );
+    this.players.set(playerId, player);
 
-    // First player gets first turn
     if (!this.turnPlayerId) {
-      this.turnPlayerId =
-        playerId;
+      this.turnPlayerId = playerId;
     }
 
     server.send(
       JSON.stringify({
         type: "CONNECTED",
-        playerId: playerId,
-        playerNumber:
-          this.players.size,
-        players:
-          this.getPlayers(),
+        playerId,
+        playerNumber: this.players.size,
+        players: this.getPlayers(),
       })
     );
 
@@ -416,19 +680,11 @@ export class LudoRoom {
     server.addEventListener(
       "close",
       () => {
-        this.players.delete(
-          playerId
-        );
+        this.players.delete(playerId);
 
-        if (
-          this.turnPlayerId ===
-          playerId
-        ) {
+        if (this.turnPlayerId === playerId) {
           const remainingPlayer =
-            this.players
-              .values()
-              .next()
-              .value;
+            this.players.values().next().value;
 
           this.turnPlayerId =
             remainingPlayer
@@ -446,10 +702,6 @@ export class LudoRoom {
     });
   }
 
-  // =========================
-  // GET PLAYERS
-  // =========================
-
   getPlayers() {
     return [
       ...this.players.values(),
@@ -459,85 +711,48 @@ export class LudoRoom {
     }));
   }
 
-  // =========================
-  // HANDLE MESSAGE
-  // =========================
-
-  handleMessage(
-    playerId,
-    data
-  ) {
+  handleMessage(playerId, data) {
     try {
-      const message =
-        JSON.parse(data);
+      const message = JSON.parse(data);
 
-      // =========================
-      // ROLL DICE
-      // =========================
-
-      if (
-        message.type ===
-        "ROLL_DICE"
-      ) {
+      if (message.type === "ROLL_DICE") {
         const player =
-          this.players.get(
-            playerId
-          );
+          this.players.get(playerId);
 
         if (!player) {
           return;
         }
 
-        if (
-          this.turnPlayerId !==
-          playerId
-        ) {
+        if (this.turnPlayerId !== playerId) {
           player.socket.send(
             JSON.stringify({
-              type:
-                "NOT_YOUR_TURN",
+              type: "NOT_YOUR_TURN",
             })
           );
 
           return;
         }
 
-        // Server-authoritative dice
         const dice =
           Math.floor(
             Math.random() * 6
           ) + 1;
 
         this.broadcast({
-          type:
-            "DICE_RESULT",
-          playerId:
-            playerId,
-          playerName:
-            player.name,
-          dice: dice,
+          type: "DICE_RESULT",
+          playerId,
+          playerName: player.name,
+          dice,
         });
 
-        // 6 = same player gets another turn
         if (dice !== 6) {
-          this.changeTurn(
-            playerId
-          );
+          this.changeTurn(playerId);
         }
       }
 
-      // =========================
-      // PING
-      // =========================
-
-      if (
-        message.type ===
-        "PING"
-      ) {
+      if (message.type === "PING") {
         const player =
-          this.players.get(
-            playerId
-          );
+          this.players.get(playerId);
 
         if (player) {
           player.socket.send(
@@ -547,20 +762,12 @@ export class LudoRoom {
           );
         }
       }
-    } catch (error) {
-      console.log(
-        "Invalid message"
-      );
+    } catch {
+      console.log("Invalid message");
     }
   }
 
-  // =========================
-  // CHANGE TURN
-  // =========================
-
-  changeTurn(
-    currentPlayerId
-  ) {
+  changeTurn(currentPlayerId) {
     const playerIds = [
       ...this.players.keys(),
     ];
@@ -570,9 +777,7 @@ export class LudoRoom {
     }
 
     const currentIndex =
-      playerIds.indexOf(
-        currentPlayerId
-      );
+      playerIds.indexOf(currentPlayerId);
 
     const nextIndex =
       (currentIndex + 1) %
@@ -582,48 +787,27 @@ export class LudoRoom {
       playerIds[nextIndex];
 
     this.broadcast({
-      type:
-        "TURN_UPDATE",
-      playerId:
-        this.turnPlayerId,
+      type: "TURN_UPDATE",
+      playerId: this.turnPlayerId,
     });
   }
-
-  // =========================
-  // BROADCAST PLAYERS
-  // =========================
 
   broadcastPlayers() {
     this.broadcast({
-      type:
-        "PLAYERS_UPDATE",
-      players:
-        this.getPlayers(),
-      turnPlayerId:
-        this.turnPlayerId,
+      type: "PLAYERS_UPDATE",
+      players: this.getPlayers(),
+      turnPlayerId: this.turnPlayerId,
     });
   }
 
-  // =========================
-  // BROADCAST
-  // =========================
-
   broadcast(message) {
-    const text =
-      JSON.stringify(message);
+    const text = JSON.stringify(message);
 
-    for (
-      const player of
-      this.players.values()
-    ) {
+    for (const player of this.players.values()) {
       try {
-        player.socket.send(
-          text
-        );
-      } catch (error) {
-        console.log(
-          "Send failed"
-        );
+        player.socket.send(text);
+      } catch {
+        console.log("Send failed");
       }
     }
   }
