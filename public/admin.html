@@ -292,15 +292,13 @@
             ⚙️ Settings
         </button>
 
-        <button class="menu logout" onclick="logout()">
+        <button class="menu logout" id="logoutButton">
             🚪 Logout
         </button>
 
     </aside>
 
     <main class="main">
-
-        <!-- DASHBOARD -->
 
         <section id="dashboard" class="section active">
 
@@ -371,9 +369,6 @@
 
         </section>
 
-
-        <!-- CUSTOMERS -->
-
         <section id="customers" class="section">
 
             <div class="section-title">
@@ -419,9 +414,6 @@
 
         </section>
 
-
-        <!-- BATTLES -->
-
         <section id="battles" class="section">
 
             <div class="section-title">
@@ -462,9 +454,6 @@
             </div>
 
         </section>
-
-
-        <!-- DEPOSITS -->
 
         <section id="deposits" class="section">
 
@@ -517,9 +506,6 @@
 
         </section>
 
-
-        <!-- WITHDRAWALS -->
-
         <section id="withdrawals" class="section">
 
             <div class="section-title">
@@ -567,9 +553,6 @@
 
         </section>
 
-
-        <!-- WALLET -->
-
         <section id="wallet" class="section">
 
             <div class="section-title">
@@ -602,9 +585,6 @@
             </div>
 
         </section>
-
-
-        <!-- RESULTS -->
 
         <section id="results" class="section">
 
@@ -643,9 +623,6 @@
 
         </section>
 
-
-        <!-- SETTINGS -->
-
         <section id="settings" class="section">
 
             <div class="section-title">
@@ -664,8 +641,7 @@
                 <br>
 
                 <p>
-                    Admin authentication and secure settings
-                    will be connected in the next step.
+                    Admin authentication is active.
                 </p>
 
             </div>
@@ -676,8 +652,82 @@
 
 </div>
 
-
 <script>
+
+    // ==========================================
+    // SECURE ADMIN SESSION CHECK
+    // ==========================================
+
+    async function checkAdminSession() {
+
+        try {
+
+            const response = await fetch(
+                "/api/admin/session",
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store"
+                }
+            );
+
+            if (!response.ok) {
+                window.location.replace("/admin-login.html");
+                return false;
+            }
+
+            const data = await response.json();
+
+            if (!data.success || !data.authenticated) {
+                window.location.replace("/admin-login.html");
+                return false;
+            }
+
+            return true;
+
+        } catch (error) {
+
+            window.location.replace("/admin-login.html");
+            return false;
+
+        }
+    }
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    async function logout() {
+
+        const button =
+            document.getElementById("logoutButton");
+
+        button.disabled = true;
+        button.textContent = "Logging out...";
+
+        try {
+
+            await fetch(
+                "/api/admin/logout",
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    cache: "no-store"
+                }
+            );
+
+        } catch (error) {
+            // Continue to login page even if request fails
+        }
+
+        window.location.replace("/admin-login.html");
+    }
+
+
+    // ==========================================
+    // MENU
+    // ==========================================
 
     const menuButtons =
         document.querySelectorAll(".menu");
@@ -719,14 +769,25 @@
     });
 
 
-    function logout() {
+    // ==========================================
+    // LOGOUT BUTTON
+    // ==========================================
 
-        alert(
-            "Secure admin logout will be connected after authentication is completed."
-        );
+    document
+        .getElementById("logoutButton")
+        .addEventListener("click", logout);
 
-    }
 
+    // ==========================================
+    // START SESSION CHECK
+    // ==========================================
+
+    checkAdminSession();
+
+
+    // ==========================================
+    // DASHBOARD VALUES
+    // ==========================================
 
     document.getElementById("totalCustomers")
         .textContent = "0";
