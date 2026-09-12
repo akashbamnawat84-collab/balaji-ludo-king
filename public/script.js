@@ -1,427 +1,363 @@
-// ========================================
-// Balaji Ludo King - 2 Player Client
-// ========================================
+const balanceElement = document.getElementById("balance");
 
-const welcomeCard = document.getElementById("welcomeCard");
-const roomCard = document.getElementById("roomCard");
-const ludoCard = document.getElementById("ludoCard");
+const depositBtn = document.getElementById("depositBtn");
+const withdrawBtn = document.getElementById("withdrawBtn");
 
-const playerNameInput = document.getElementById("playerName");
-const startBtn = document.getElementById("startBtn");
-const message = document.getElementById("message");
+const depositSection = document.getElementById("depositSection");
+const withdrawSection = document.getElementById("withdrawSection");
 
-const createRoomBtn = document.getElementById("createRoomBtn");
-const joinRoomInput = document.getElementById("joinRoomInput");
-const joinRoomBtn = document.getElementById("joinRoomBtn");
-const roomInfo = document.getElementById("roomInfo");
+const depositAmount = document.getElementById("depositAmount");
+const withdrawAmount = document.getElementById("withdrawAmount");
 
-const player1Name = document.getElementById("player1Name");
-const player2Name = document.getElementById("player2Name");
-const turnText = document.getElementById("turnText");
+const demoUpi = document.getElementById("demoUpi");
 
-const dice = document.getElementById("dice");
-const rollDiceBtn = document.getElementById("rollDiceBtn");
-const diceResult = document.getElementById("diceResult");
+const submitDeposit = document.getElementById("submitDeposit");
+const submitWithdraw = document.getElementById("submitWithdraw");
 
-let currentPlayer = "";
-let currentRoom = "";
-let playerId = "";
-let socket = null;
-let myTurn = false;
+const depositMessage = document.getElementById("depositMessage");
+const withdrawMessage = document.getElementById("withdrawMessage");
 
-// ----------------------------------------
-// Initial screen
-// ----------------------------------------
+const transactionsElement = document.getElementById("transactions");
 
-roomCard.classList.add("hidden");
-ludoCard.classList.add("hidden");
-rollDiceBtn.disabled = true;
 
-// ----------------------------------------
-// Continue
-// ----------------------------------------
+/*
+  ============================
+  DEMO WALLET DATA
+  ============================
+*/
 
-startBtn.addEventListener("click", () => {
+let balance = Number(
+  localStorage.getItem("balajiDemoBalance")
+) || 0;
 
-    const name = playerNameInput.value.trim();
+let transactions = JSON.parse(
+  localStorage.getItem("balajiDemoTransactions")
+) || [];
 
-    if (!name) {
-        message.textContent = "Please enter your name.";
-        return;
-    }
 
-    if (name.length < 2) {
-        message.textContent = "Name must be at least 2 characters.";
-        return;
-    }
+/*
+  ============================
+  UPDATE BALANCE
+  ============================
+*/
 
-    currentPlayer = name.substring(0, 20);
+function updateBalance() {
 
-    localStorage.setItem(
-        "balajiPlayerName",
-        currentPlayer
-    );
+  balanceElement.textContent =
+    balance.toFixed(2);
 
-    welcomeCard.classList.add("hidden");
-    roomCard.classList.remove("hidden");
+  localStorage.setItem(
+    "balajiDemoBalance",
+    balance.toString()
+  );
+}
 
-    message.textContent = "";
-});
 
-// ----------------------------------------
-// Create Room
-// ----------------------------------------
+/*
+  ============================
+  SAVE TRANSACTIONS
+  ============================
+*/
 
-createRoomBtn.addEventListener("click", () => {
+function saveTransactions() {
 
-    if (!currentPlayer) {
-        alert("Please enter your name first.");
-        return;
-    }
+  localStorage.setItem(
+    "balajiDemoTransactions",
+    JSON.stringify(transactions)
+  );
+}
 
-    currentRoom = generateRoomCode();
 
-    // Show room code immediately
-    roomInfo.innerHTML = `
-        <p>🎮 Room Created</p>
-        <div class="room-code">${currentRoom}</div>
-        <p>Share this 6-digit code with Player 2.</p>
-        <p id="connectionStatus">Connecting...</p>
-    `;
+/*
+  ============================
+  SHOW TRANSACTIONS
+  ============================
+*/
 
-    connectToRoom(currentRoom);
-});
+function showTransactions() {
 
-// ----------------------------------------
-// Join Room
-// ----------------------------------------
+  if (transactions.length === 0) {
 
-joinRoomBtn.addEventListener("click", () => {
+    transactionsElement.innerHTML =
+      '<p class="empty">No transactions yet</p>';
 
-    if (!currentPlayer) {
-        alert("Please enter your name first.");
-        return;
-    }
+    return;
+  }
 
-    const code = joinRoomInput.value.trim();
 
-    if (!/^\d{6}$/.test(code)) {
+  transactionsElement.innerHTML = "";
 
-        roomInfo.innerHTML = `
-            <p>❌ Enter a valid 6-digit room code.</p>
-        `;
 
-        return;
-    }
+  transactions
+    .slice()
+    .reverse()
+    .forEach(transaction => {
 
-    currentRoom = code;
+      const div =
+        document.createElement("div");
 
-    roomInfo.innerHTML = `
-        <p>🎮 Joining Room</p>
-        <div class="room-code">${currentRoom}</div>
-        <p id="connectionStatus">Connecting...</p>
-    `;
+      div.className = "transaction";
 
-    connectToRoom(currentRoom);
-});
 
-// ----------------------------------------
-// WebSocket Connection
-// ----------------------------------------
+      const left =
+        document.createElement("div");
 
-function connectToRoom(room) {
+      const title =
+        document.createElement("div");
 
-    if (socket) {
-        try {
-            socket.close();
-        } catch (error) {
-            console.log("Old socket close failed");
-        }
-    }
+      title.className = "transaction-title";
 
-    const protocol =
-        window.location.protocol === "https:"
-            ? "wss:"
-            : "ws:";
+      title.textContent =
+        transaction.type === "deposit"
+          ? "💰 Demo Deposit"
+          : "🏦 Demo Withdrawal";
 
-    const wsUrl =
-        `${protocol}//${window.location.host}/ws` +
-        `?room=${encodeURIComponent(room)}` +
-        `&name=${encodeURIComponent(currentPlayer)}`;
 
-    console.log("Connecting to:", wsUrl);
+      const date =
+        document.createElement("div");
 
-    socket = new WebSocket(wsUrl);
+      date.className = "transaction-date";
 
-    socket.addEventListener("open", () => {
+      date.textContent =
+        transaction.date;
 
-        console.log("WebSocket connected");
 
-        roomInfo.innerHTML = `
-            <p>✅ Room Connected</p>
-            <div class="room-code">${room}</div>
-            <p>Player: ${currentPlayer}</p>
-            <p>Waiting for Player 2...</p>
-        `;
+      const status =
+        document.createElement("div");
 
-        ludoCard.classList.remove("hidden");
+      status.className = "status";
 
-        turnText.textContent =
-            "Waiting for Player 2...";
+      status.textContent =
+        "Status: " + transaction.status;
+
+
+      left.appendChild(title);
+      left.appendChild(date);
+      left.appendChild(status);
+
+
+      const amount =
+        document.createElement("div");
+
+      amount.className =
+        "transaction-amount " +
+        (transaction.type === "deposit"
+          ? "deposit-text"
+          : "withdraw-text");
+
+
+      amount.textContent =
+        (transaction.type === "deposit"
+          ? "+"
+          : "-") +
+        " ₹" +
+        transaction.amount.toFixed(2);
+
+
+      div.appendChild(left);
+      div.appendChild(amount);
+
+      transactionsElement.appendChild(div);
 
     });
 
-    socket.addEventListener("message", (event) => {
-
-        console.log("Server:", event.data);
-
-        try {
-
-            const data = JSON.parse(event.data);
-
-            handleServerMessage(data);
-
-        } catch (error) {
-
-            console.log(
-                "Invalid server message:",
-                error
-            );
-        }
-    });
-
-    socket.addEventListener("close", (event) => {
-
-        console.log(
-            "WebSocket closed:",
-            event.code,
-            event.reason
-        );
-
-        rollDiceBtn.disabled = true;
-        myTurn = false;
-
-        turnText.textContent =
-            "Disconnected from room.";
-    });
-
-    socket.addEventListener("error", (error) => {
-
-        console.log(
-            "WebSocket error:",
-            error
-        );
-
-        roomInfo.innerHTML = `
-            <p>❌ Unable to connect to room.</p>
-            <div class="room-code">${room}</div>
-            <p>Room code was created successfully.</p>
-            <p>Connection to server failed.</p>
-        `;
-    });
 }
 
-// ----------------------------------------
-// Server Messages
-// ----------------------------------------
 
-function handleServerMessage(data) {
+/*
+  ============================
+  DEPOSIT BUTTON
+  ============================
+*/
 
-    if (data.type === "CONNECTED") {
+depositBtn.addEventListener("click", () => {
 
-        playerId = data.playerId;
+  depositSection.classList.remove("hidden");
 
-        updatePlayers(data.players);
+  withdrawSection.classList.add("hidden");
 
-        roomInfo.innerHTML = `
-            <p>✅ Room Connected</p>
-            <div class="room-code">${currentRoom}</div>
-            <p>Players: ${data.players.length}/2</p>
-        `;
+  depositMessage.textContent = "";
 
-        return;
-    }
+  depositAmount.focus();
 
-    if (data.type === "PLAYERS_UPDATE") {
-
-        updatePlayers(data.players);
-
-        if (data.players.length < 2) {
-
-            turnText.textContent =
-                "Waiting for Player 2...";
-
-            rollDiceBtn.disabled = true;
-            myTurn = false;
-
-            return;
-        }
-
-        if (data.turnPlayerId) {
-            setTurn(data.turnPlayerId);
-        }
-
-        return;
-    }
-
-    if (data.type === "DICE_RESULT") {
-
-        const number = Number(data.dice);
-
-        dice.textContent =
-            getDiceEmoji(number);
-
-        diceResult.textContent =
-            `${data.playerName} rolled: ${number}`;
-
-        return;
-    }
-
-    if (data.type === "TURN_UPDATE") {
-
-        setTurn(data.playerId);
-
-        return;
-    }
-
-    if (data.type === "NOT_YOUR_TURN") {
-
-        turnText.textContent =
-            "It's not your turn.";
-
-        return;
-    }
-
-    if (data.type === "ROOM_FULL") {
-
-        roomInfo.innerHTML = `
-            <p>❌ Room Full</p>
-            <p>This room already has 2 players.</p>
-        `;
-
-        rollDiceBtn.disabled = true;
-
-        return;
-    }
-}
-
-// ----------------------------------------
-// Update Players
-// ----------------------------------------
-
-function updatePlayers(players) {
-
-    player1Name.textContent =
-        players[0]
-            ? players[0].name
-            : "Waiting...";
-
-    player2Name.textContent =
-        players[1]
-            ? players[1].name
-            : "Waiting...";
-}
-
-// ----------------------------------------
-// Turn System
-// ----------------------------------------
-
-function setTurn(turnPlayerId) {
-
-    myTurn =
-        turnPlayerId === playerId;
-
-    if (myTurn) {
-
-        turnText.textContent =
-            "🎲 Your Turn";
-
-        rollDiceBtn.disabled = false;
-
-    } else {
-
-        turnText.textContent =
-            "⏳ Opponent's Turn";
-
-        rollDiceBtn.disabled = true;
-    }
-}
-
-// ----------------------------------------
-// Roll Dice
-// ----------------------------------------
-
-rollDiceBtn.addEventListener("click", () => {
-
-    if (!socket ||
-        socket.readyState !== WebSocket.OPEN) {
-
-        diceResult.textContent =
-            "Not connected to room.";
-
-        return;
-    }
-
-    if (!myTurn) {
-
-        turnText.textContent =
-            "It's not your turn.";
-
-        return;
-    }
-
-    socket.send(
-        JSON.stringify({
-            type: "ROLL_DICE"
-        })
-    );
 });
 
-// ----------------------------------------
-// Generate 6 Digit Room Code
-// ----------------------------------------
 
-function generateRoomCode() {
+/*
+  ============================
+  WITHDRAW BUTTON
+  ============================
+*/
 
-    const code =
-        Math.floor(
-            100000 +
-            Math.random() * 900000
-        );
+withdrawBtn.addEventListener("click", () => {
 
-    return String(code);
-}
+  withdrawSection.classList.remove("hidden");
 
-// ----------------------------------------
-// Dice Emoji
-// ----------------------------------------
+  depositSection.classList.add("hidden");
 
-function getDiceEmoji(number) {
+  withdrawMessage.textContent = "";
 
-    const faces = {
-        1: "⚀",
-        2: "⚁",
-        3: "⚂",
-        4: "⚃",
-        5: "⚄",
-        6: "⚅"
-    };
+  withdrawAmount.focus();
 
-    return faces[number] || "🎲";
-}
-
-// ----------------------------------------
-// Load Saved Name
-// ----------------------------------------
-
-window.addEventListener("load", () => {
-
-    const savedName =
-        localStorage.getItem(
-            "balajiPlayerName"
-        );
-
-    if (savedName) {
-        playerNameInput.value = savedName;
-    }
 });
+
+
+/*
+  ============================
+  DEMO DEPOSIT
+  ============================
+*/
+
+submitDeposit.addEventListener("click", () => {
+
+  const amount =
+    Number(depositAmount.value);
+
+
+  if (!amount || amount <= 0) {
+
+    depositMessage.textContent =
+      "कृपया सही amount डालें।";
+
+    return;
+  }
+
+
+  if (amount > 100000) {
+
+    depositMessage.textContent =
+      "Demo limit: ₹100000";
+
+    return;
+  }
+
+
+  balance += amount;
+
+
+  transactions.push({
+
+    type: "deposit",
+
+    amount: amount,
+
+    status: "APPROVED - DEMO",
+
+    date: new Date().toLocaleString("en-IN")
+
+  });
+
+
+  saveTransactions();
+
+  updateBalance();
+
+  showTransactions();
+
+
+  depositAmount.value = "";
+
+
+  depositMessage.textContent =
+    "✅ Demo balance successfully added.";
+
+
+});
+
+
+/*
+  ============================
+  DEMO WITHDRAWAL
+  ============================
+*/
+
+submitWithdraw.addEventListener("click", () => {
+
+  const amount =
+    Number(withdrawAmount.value);
+
+  const upi =
+    demoUpi.value.trim();
+
+
+  if (!amount || amount <= 0) {
+
+    withdrawMessage.textContent =
+      "कृपया सही withdrawal amount डालें।";
+
+    return;
+  }
+
+
+  if (!upi) {
+
+    withdrawMessage.textContent =
+      "कृपया Demo UPI ID डालें।";
+
+    return;
+  }
+
+
+  if (!upi.includes("@")) {
+
+    withdrawMessage.textContent =
+      "Demo UPI ID का format सही नहीं है।";
+
+    return;
+  }
+
+
+  if (amount > balance) {
+
+    withdrawMessage.textContent =
+      "❌ Insufficient demo balance.";
+
+    return;
+  }
+
+
+  balance -= amount;
+
+
+  transactions.push({
+
+    type: "withdraw",
+
+    amount: amount,
+
+    upi: upi,
+
+    status: "PENDING - DEMO",
+
+    date: new Date().toLocaleString("en-IN")
+
+  });
+
+
+  saveTransactions();
+
+  updateBalance();
+
+  showTransactions();
+
+
+  withdrawAmount.value = "";
+
+  demoUpi.value = "";
+
+
+  withdrawMessage.textContent =
+    "✅ Demo withdrawal request created.";
+
+});
+
+
+/*
+  ============================
+  START
+  ============================
+*/
+
+updateBalance();
+
+showTransactions();
