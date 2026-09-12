@@ -1,252 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Balaji Ludo King - Admin Dashboard</title>
+<title>Balaji Ludo King - Admin Dashboard</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
 
-        body {
-            background: #f4f6fb;
-            color: #222;
-        }
+body{
+    background:#f4f6fb;
+    color:#222;
+}
 
-        .header {
-            background: #111827;
-            color: white;
-            padding: 18px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.header{
+    background:#111827;
+    color:white;
+    padding:18px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
 
-        .header h1 {
-            font-size: 21px;
-        }
+.header h1{
+    font-size:21px;
+}
 
-        .admin-badge {
-            background: #16a34a;
-            padding: 7px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
+.admin-badge{
+    background:#16a34a;
+    padding:7px 12px;
+    border-radius:20px;
+    font-size:12px;
+}
 
-        .layout {
-            display: flex;
-            min-height: calc(100vh - 65px);
-        }
+.layout{
+    display:flex;
+    min-height:calc(100vh - 65px);
+}
 
-        .sidebar {
-            width: 230px;
-            background: #1f2937;
-            color: white;
-            padding: 18px 10px;
-        }
+.sidebar{
+    width:230px;
+    background:#1f2937;
+    color:white;
+    padding:18px 10px;
+}
 
-        .sidebar button {
-            width: 100%;
-            border: 0;
-            background: transparent;
-            color: #d1d5db;
-            padding: 13px 12px;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
-        }
+.sidebar button{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#d1d5db;
+    padding:13px 12px;
+    margin-bottom:5px;
+    border-radius:8px;
+    text-align:left;
+    cursor:pointer;
+    font-size:14px;
+}
 
-        .sidebar button:hover,
-        .sidebar button.active {
-            background: #374151;
-            color: white;
-        }
+.sidebar button:hover,
+.sidebar button.active{
+    background:#374151;
+    color:white;
+}
 
-        .main {
-            flex: 1;
-            padding: 22px;
-            overflow-x: auto;
-        }
+.main{
+    flex:1;
+    padding:22px;
+    overflow-x:auto;
+}
 
-        .section {
-            display: none;
-        }
+.section{
+    display:none;
+}
 
-        .section.active {
-            display: block;
-        }
+.section.active{
+    display:block;
+}
 
-        .section-title {
-            margin-bottom: 18px;
-        }
+.section-title{
+    margin-bottom:18px;
+}
 
-        .section-title h2 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
+.section-title h2{
+    font-size:24px;
+    margin-bottom:5px;
+}
 
-        .section-title p {
-            color: #6b7280;
-            font-size: 14px;
-        }
+.section-title p{
+    color:#6b7280;
+    font-size:14px;
+}
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 22px;
-        }
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:22px;
+}
 
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
+.stat-card{
+    background:white;
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
 
-        .stat-card span {
-            color: #6b7280;
-            font-size: 13px;
-        }
+.stat-card span{
+    color:#6b7280;
+    font-size:13px;
+}
 
-        .stat-card h3 {
-            font-size: 25px;
-            margin-top: 9px;
-        }
+.stat-card h3{
+    font-size:25px;
+    margin-top:9px;
+}
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
+.card{
+    background:white;
+    border-radius:12px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
 
-        .card h3 {
-            margin-bottom: 15px;
-        }
+.card h3{
+    margin-bottom:15px;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+}
 
-        th,
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: left;
-            font-size: 13px;
-        }
+th,td{
+    padding:12px 10px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+    font-size:13px;
+}
 
-        th {
-            background: #f9fafb;
-        }
+th{
+    background:#f9fafb;
+}
 
-        .status {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 15px;
-            font-size: 11px;
-        }
+.status{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:15px;
+    font-size:11px;
+}
 
-        .online {
-            background: #dcfce7;
-            color: #166534;
-        }
+.online{
+    background:#dcfce7;
+    color:#166534;
+}
 
-        .pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
+.pending{
+    background:#fef3c7;
+    color:#92400e;
+}
 
-        .completed {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
+.completed{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
 
-        .danger {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+.danger{
+    background:#fee2e2;
+    color:#991b1b;
+}
 
-        .action-btn {
-            border: 0;
-            padding: 7px 11px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 4px;
-        }
+.action-btn{
+    border:0;
+    padding:7px 11px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-right:4px;
+}
 
-        .approve {
-            background: #16a34a;
-            color: white;
-        }
+.action-btn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
 
-        .reject {
-            background: #dc2626;
-            color: white;
-        }
+.view{
+    background:#2563eb;
+    color:white;
+}
 
-        .view {
-            background: #2563eb;
-            color: white;
-        }
+.block{
+    background:#dc2626;
+    color:white;
+}
 
-        .logout {
-            margin-top: 20px !important;
-            color: #fca5a5 !important;
-        }
+.unblock{
+    background:#16a34a;
+    color:white;
+}
 
-        @media (max-width: 900px) {
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
+.refresh{
+    background:#111827;
+    color:white;
+    padding:9px 14px;
+    border:0;
+    border-radius:7px;
+    cursor:pointer;
+    margin-bottom:15px;
+}
 
-            .sidebar {
-                width: 190px;
-            }
-        }
+.message{
+    padding:12px;
+    border-radius:8px;
+    background:#f3f4f6;
+    color:#4b5563;
+    margin-bottom:12px;
+    display:none;
+}
 
-        @media (max-width: 650px) {
-            .layout {
-                flex-direction: column;
-            }
+.logout{
+    margin-top:20px !important;
+    color:#fca5a5 !important;
+}
 
-            .sidebar {
-                width: 100%;
-                display: flex;
-                overflow-x: auto;
-                gap: 5px;
-            }
+@media(max-width:900px){
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
 
-            .sidebar button {
-                min-width: 125px;
-                margin: 0;
-            }
+    .sidebar{
+        width:190px;
+    }
+}
 
-            .main {
-                padding: 14px;
-            }
+@media(max-width:650px){
+    .layout{
+        flex-direction:column;
+    }
 
-            .stats {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
+    .sidebar{
+        width:100%;
+        display:flex;
+        overflow-x:auto;
+        gap:5px;
+    }
 
-            .stat-card h3 {
-                font-size: 20px;
-            }
-        }
-    </style>
+    .sidebar button{
+        min-width:125px;
+        margin:0;
+    }
+
+    .main{
+        padding:14px;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .stat-card h3{
+        font-size:20px;
+    }
+}
+</style>
 </head>
 
 <body>
@@ -258,550 +281,913 @@
 
 <div class="layout">
 
-    <aside class="sidebar">
-
-        <button class="menu active" data-section="dashboard">
-            📊 Dashboard
-        </button>
-
-        <button class="menu" data-section="customers">
-            👥 Customers
-        </button>
-
-        <button class="menu" data-section="battles">
-            🎮 Live Battles
-        </button>
-
-        <button class="menu" data-section="deposits">
-            💰 Deposits
-        </button>
-
-        <button class="menu" data-section="withdrawals">
-            📤 Withdrawals
-        </button>
-
-        <button class="menu" data-section="wallet">
-            💳 Wallet
-        </button>
-
-        <button class="menu" data-section="results">
-            🏆 Game Results
-        </button>
-
-        <button class="menu" data-section="settings">
-            ⚙️ Settings
-        </button>
-
-        <button class="menu logout" id="logoutButton">
-            🚪 Logout
-        </button>
-
-    </aside>
-
-    <main class="main">
-
-        <section id="dashboard" class="section active">
-
-            <div class="section-title">
-                <h2>Dashboard</h2>
-                <p>Balaji Ludo King admin overview</p>
-            </div>
-
-            <div class="stats">
-
-                <div class="stat-card">
-                    <span>Total Customers</span>
-                    <h3 id="totalCustomers">0</h3>
-                </div>
-
-                <div class="stat-card">
-                    <span>Live Battles</span>
-                    <h3 id="liveBattles">0</h3>
-                </div>
-
-                <div class="stat-card">
-                    <span>Pending Deposits</span>
-                    <h3 id="pendingDeposits">0</h3>
-                </div>
-
-                <div class="stat-card">
-                    <span>Pending Withdrawals</span>
-                    <h3 id="pendingWithdrawals">0</h3>
-                </div>
-
-            </div>
-
-            <div class="card">
-                <h3>Recent Activity</h3>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Activity</th>
-                            <th>User</th>
-                            <th>Status</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td>Demo Deposit</td>
-                            <td>Player 1</td>
-                            <td>
-                                <span class="status pending">Pending</span>
-                            </td>
-                            <td>Just now</td>
-                        </tr>
-
-                        <tr>
-                            <td>Demo Battle</td>
-                            <td>Player 2</td>
-                            <td>
-                                <span class="status online">Live</span>
-                            </td>
-                            <td>2 min ago</td>
-                        </tr>
-                    </tbody>
-                </table>
+<aside class="sidebar">
 
-            </div>
+<button class="menu active" data-section="dashboard">
+📊 Dashboard
+</button>
 
-        </section>
+<button class="menu" data-section="customers">
+👥 Customers
+</button>
 
-        <section id="customers" class="section">
+<button class="menu" data-section="battles">
+🎮 Live Battles
+</button>
 
-            <div class="section-title">
-                <h2>Customers</h2>
-                <p>Manage registered players</p>
-            </div>
-
-            <div class="card">
+<button class="menu" data-section="deposits">
+💰 Deposits
+</button>
 
-                <table>
+<button class="menu" data-section="withdrawals">
+📤 Withdrawals
+</button>
 
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Wallet</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>#1001</td>
-                            <td>Demo Player</td>
-                            <td>₹0</td>
-                            <td>
-                                <span class="status online">Active</span>
-                            </td>
-                            <td>
-                                <button class="action-btn view">
-                                    View
-                                </button>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
+<button class="menu" data-section="wallet">
+💳 Wallet
+</button>
 
-            </div>
-
-        </section>
+<button class="menu" data-section="results">
+🏆 Game Results
+</button>
 
-        <section id="battles" class="section">
+<button class="menu" data-section="settings">
+⚙️ Settings
+</button>
 
-            <div class="section-title">
-                <h2>Live Battles</h2>
-                <p>Monitor active 2-player games</p>
-            </div>
+<button class="menu logout" id="logoutButton">
+🚪 Logout
+</button>
 
-            <div class="card">
+</aside>
 
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Room</th>
-                            <th>Player 1</th>
-                            <th>Player 2</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>------</td>
-                            <td>Waiting</td>
-                            <td>Waiting</td>
-                            <td>
-                                <span class="status pending">
-                                    No active battle
-                                </span>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-        <section id="deposits" class="section">
-
-            <div class="section-title">
-                <h2>Deposits</h2>
-                <p>Review customer deposit requests</p>
-            </div>
-
-            <div class="card">
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Request</th>
-                            <th>Customer</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>#DEP001</td>
-                            <td>Demo Player</td>
-                            <td>₹0</td>
-                            <td>
-                                <span class="status pending">
-                                    Pending
-                                </span>
-                            </td>
-                            <td>
-                                <button class="action-btn approve">
-                                    Approve
-                                </button>
-
-                                <button class="action-btn reject">
-                                    Reject
-                                </button>
-                            </td>
-                        </tr>
+<main class="main">
 
-                    </tbody>
+<!-- ================= DASHBOARD ================= -->
 
-                </table>
+<section id="dashboard" class="section active">
 
-            </div>
-
-        </section>
-
-        <section id="withdrawals" class="section">
-
-            <div class="section-title">
-                <h2>Withdrawals</h2>
-                <p>Review customer withdrawal requests</p>
-            </div>
-
-            <div class="card">
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Request</th>
-                            <th>Customer</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+<div class="section-title">
+<h2>Dashboard</h2>
+<p>Balaji Ludo King admin overview</p>
+</div>
 
-                    <tbody>
+<div class="stats">
 
-                        <tr>
-                            <td>#WD001</td>
-                            <td>Demo Player</td>
-                            <td>₹0</td>
-                            <td>
-                                <span class="status pending">
-                                    Pending
-                                </span>
-                            </td>
-                            <td>
-                                <button class="action-btn view">
-                                    View
-                                </button>
-                            </td>
-                        </tr>
+<div class="stat-card">
+<span>Total Customers</span>
+<h3 id="totalCustomers">0</h3>
+</div>
 
-                    </tbody>
+<div class="stat-card">
+<span>Live Battles</span>
+<h3 id="liveBattles">0</h3>
+</div>
 
-                </table>
+<div class="stat-card">
+<span>Pending Deposits</span>
+<h3 id="pendingDeposits">0</h3>
+</div>
 
-            </div>
-
-        </section>
-
-        <section id="wallet" class="section">
-
-            <div class="section-title">
-                <h2>Wallet</h2>
-                <p>Wallet and transaction overview</p>
-            </div>
-
-            <div class="stats">
-
-                <div class="stat-card">
-                    <span>Total Deposits</span>
-                    <h3>₹0</h3>
-                </div>
-
-                <div class="stat-card">
-                    <span>Total Withdrawals</span>
-                    <h3>₹0</h3>
-                </div>
-
-                <div class="stat-card">
-                    <span>Platform Balance</span>
-                    <h3>₹0</h3>
-                </div>
-
-                <div class="stat-card">
-                    <span>Transactions</span>
-                    <h3>0</h3>
-                </div>
-
-            </div>
-
-        </section>
-
-        <section id="results" class="section">
-
-            <div class="section-title">
-                <h2>Game Results</h2>
-                <p>Completed Ludo battle results</p>
-            </div>
-
-            <div class="card">
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Game</th>
-                            <th>Winner</th>
-                            <th>Loser</th>
-                            <th>Result</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>No games yet</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-        <section id="settings" class="section">
-
-            <div class="section-title">
-                <h2>Settings</h2>
-                <p>Admin and platform settings</p>
-            </div>
-
-            <div class="card">
-
-                <h3>Platform Status</h3>
-
-                <p>
-                    🟢 Balaji Ludo King system is online.
-                </p>
-
-                <br>
-
-                <p>
-                    Admin authentication is active.
-                </p>
-
-            </div>
-
-        </section>
-
-    </main>
+<div class="stat-card">
+<span>Pending Withdrawals</span>
+<h3 id="pendingWithdrawals">0</h3>
+</div>
 
 </div>
 
+<div class="card">
+<h3>Recent Activity</h3>
+
+<table>
+<thead>
+<tr>
+<th>Activity</th>
+<th>User</th>
+<th>Status</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>No activity yet</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ================= CUSTOMERS ================= -->
+
+<section id="customers" class="section">
+
+<div class="section-title">
+<h2>Customers</h2>
+<p>Manage registered players</p>
+</div>
+
+<button class="refresh" id="refreshCustomers">
+🔄 Refresh Customers
+</button>
+
+<div id="customerMessage" class="message"></div>
+
+<div class="card">
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Mobile</th>
+<th>Wallet</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="customersTableBody">
+
+<tr>
+<td colspan="6">
+Loading customers...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ================= LIVE BATTLES ================= -->
+
+<section id="battles" class="section">
+
+<div class="section-title">
+<h2>Live Battles</h2>
+<p>Monitor active 2-player games</p>
+</div>
+
+<div class="card">
+
+<table>
+
+<thead>
+<tr>
+<th>Room</th>
+<th>Player 1</th>
+<th>Player 2</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>------</td>
+<td>Waiting</td>
+<td>Waiting</td>
+<td>
+<span class="status pending">
+No active battle
+</span>
+</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ================= DEPOSITS ================= -->
+
+<section id="deposits" class="section">
+
+<div class="section-title">
+<h2>Deposits</h2>
+<p>Review customer deposit requests</p>
+</div>
+
+<div class="card">
+
+<table>
+
+<thead>
+<tr>
+<th>Request</th>
+<th>Customer</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td colspan="5">
+No deposit requests yet
+</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ================= WITHDRAWALS ================= -->
+
+<section id="withdrawals" class="section">
+
+<div class="section-title">
+<h2>Withdrawals</h2>
+<p>Review customer withdrawal requests</p>
+</div>
+
+<div class="card">
+
+<table>
+
+<thead>
+<tr>
+<th>Request</th>
+<th>Customer</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td colspan="5">
+No withdrawal requests yet
+</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ================= WALLET ================= -->
+
+<section id="wallet" class="section">
+
+<div class="section-title">
+<h2>Wallet</h2>
+<p>Wallet and transaction overview</p>
+</div>
+
+<div class="stats">
+
+<div class="stat-card">
+<span>Total Deposits</span>
+<h3>₹0</h3>
+</div>
+
+<div class="stat-card">
+<span>Total Withdrawals</span>
+<h3>₹0</h3>
+</div>
+
+<div class="stat-card">
+<span>Platform Balance</span>
+<h3>₹0</h3>
+</div>
+
+<div class="stat-card">
+<span>Transactions</span>
+<h3>0</h3>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= RESULTS ================= -->
+
+<section id="results" class="section">
+
+<div class="section-title">
+<h2>Game Results</h2>
+<p>Completed Ludo battle results</p>
+</div>
+
+<div class="card">
+
+<table>
+
+<thead>
+<tr>
+<th>Game</th>
+<th>Winner</th>
+<th>Loser</th>
+<th>Result</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>No games yet</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section id="settings" class="section">
+
+<div class="section-title">
+<h2>Settings</h2>
+<p>Admin and platform settings</p>
+</div>
+
+<div class="card">
+
+<h3>Platform Status</h3>
+
+<p>
+🟢 Balaji Ludo King system is online.
+</p>
+
+<br>
+
+<p>
+Admin authentication is active.
+</p>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+
 <script>
 
-    // ==========================================
-    // SECURE ADMIN SESSION CHECK
-    // ==========================================
+// ======================================================
+// ADMIN SESSION
+// ======================================================
 
-    async function checkAdminSession() {
+async function checkAdminSession(){
 
-        try {
+    try{
 
-            const response = await fetch(
-                "/api/admin/session",
-                {
-                    method: "GET",
-                    credentials: "same-origin",
-                    cache: "no-store"
-                }
-            );
-
-            if (!response.ok) {
-                window.location.replace("/admin-login.html");
-                return false;
+        const response = await fetch(
+            "/api/admin/session",
+            {
+                method:"GET",
+                credentials:"same-origin",
+                cache:"no-store"
             }
+        );
 
-            const data = await response.json();
-
-            if (!data.success || !data.authenticated) {
-                window.location.replace("/admin-login.html");
-                return false;
-            }
-
-            return true;
-
-        } catch (error) {
-
+        if(!response.ok){
             window.location.replace("/admin-login.html");
             return false;
-
         }
-    }
 
+        const data = await response.json();
 
-    // ==========================================
-    // LOGOUT
-    // ==========================================
-
-    async function logout() {
-
-        const button =
-            document.getElementById("logoutButton");
-
-        button.disabled = true;
-        button.textContent = "Logging out...";
-
-        try {
-
-            await fetch(
-                "/api/admin/logout",
-                {
-                    method: "POST",
-                    credentials: "same-origin",
-                    cache: "no-store"
-                }
-            );
-
-        } catch (error) {
-            // Continue to login page even if request fails
+        if(!data.success || !data.authenticated){
+            window.location.replace("/admin-login.html");
+            return false;
         }
+
+        return true;
+
+    }catch(error){
 
         window.location.replace("/admin-login.html");
+        return false;
+
+    }
+}
+
+
+// ======================================================
+// LOGOUT
+// ======================================================
+
+async function logout(){
+
+    const button =
+        document.getElementById("logoutButton");
+
+    button.disabled = true;
+    button.textContent = "Logging out...";
+
+    try{
+
+        await fetch(
+            "/api/admin/logout",
+            {
+                method:"POST",
+                credentials:"same-origin",
+                cache:"no-store"
+            }
+        );
+
+    }catch(error){
+
     }
 
-
-    // ==========================================
-    // MENU
-    // ==========================================
-
-    const menuButtons =
-        document.querySelectorAll(".menu");
-
-    const sections =
-        document.querySelectorAll(".section");
+    window.location.replace("/admin-login.html");
+}
 
 
-    menuButtons.forEach(button => {
+// ======================================================
+// MENU
+// ======================================================
 
-        button.addEventListener("click", () => {
+const menuButtons =
+    document.querySelectorAll(".menu");
 
-            const target =
-                button.dataset.section;
+const sections =
+    document.querySelectorAll(".section");
 
-            if (!target) {
-                return;
-            }
+menuButtons.forEach(button => {
 
-            menuButtons.forEach(item => {
-                item.classList.remove("active");
-            });
+    button.addEventListener("click", async () => {
 
-            button.classList.add("active");
+        const target =
+            button.dataset.section;
 
-            sections.forEach(section => {
-                section.classList.remove("active");
-            });
+        if(!target){
+            return;
+        }
 
-            const targetSection =
-                document.getElementById(target);
-
-            if (targetSection) {
-                targetSection.classList.add("active");
-            }
-
+        menuButtons.forEach(item => {
+            item.classList.remove("active");
         });
+
+        button.classList.add("active");
+
+        sections.forEach(section => {
+            section.classList.remove("active");
+        });
+
+        const targetSection =
+            document.getElementById(target);
+
+        if(targetSection){
+            targetSection.classList.add("active");
+        }
+
+        if(target === "customers"){
+            await loadCustomers();
+        }
 
     });
 
-
-    // ==========================================
-    // LOGOUT BUTTON
-    // ==========================================
-
-    document
-        .getElementById("logoutButton")
-        .addEventListener("click", logout);
+});
 
 
-    // ==========================================
-    // START SESSION CHECK
-    // ==========================================
+// ======================================================
+// CUSTOMER MESSAGE
+// ======================================================
 
-    checkAdminSession();
+function showCustomerMessage(text){
+
+    const box =
+        document.getElementById("customerMessage");
+
+    box.textContent = text;
+    box.style.display = "block";
+}
+
+function hideCustomerMessage(){
+
+    const box =
+        document.getElementById("customerMessage");
+
+    box.style.display = "none";
+}
 
 
-    // ==========================================
-    // DASHBOARD VALUES
-    // ==========================================
+// ======================================================
+// LOAD CUSTOMERS
+// ======================================================
 
-    document.getElementById("totalCustomers")
-        .textContent = "0";
+async function loadCustomers(){
 
-    document.getElementById("liveBattles")
-        .textContent = "0";
+    const tbody =
+        document.getElementById(
+            "customersTableBody"
+        );
 
-    document.getElementById("pendingDeposits")
-        .textContent = "0";
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="6">
+                Loading customers...
+            </td>
+        </tr>
+    `;
 
-    document.getElementById("pendingWithdrawals")
-        .textContent = "0";
+    hideCustomerMessage();
 
-</script>
+    try{
 
-</body>
-</html>
+        const response =
+            await fetch(
+                "/api/admin/customers",
+                {
+                    method:"GET",
+                    credentials:"same-origin",
+                    cache:"no-store"
+                }
+            );
+
+        if(response.status === 401){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if(!data.success){
+
+            throw new Error(
+                data.message ||
+                "Unable to load customers."
+            );
+        }
+
+        const customers =
+            Array.isArray(data.customers)
+                ? data.customers
+                : [];
+
+        document.getElementById(
+            "totalCustomers"
+        ).textContent =
+            customers.length;
+
+        if(customers.length === 0){
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        No customers registered yet.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        tbody.innerHTML = "";
+
+        customers.forEach(customer => {
+
+            const row =
+                document.createElement("tr");
+
+            const status =
+                customer.status === "Blocked"
+                    ? "Blocked"
+                    : "Active";
+
+            const statusClass =
+                status === "Blocked"
+                    ? "danger"
+                    : "online";
+
+            const actionClass =
+                status === "Blocked"
+                    ? "unblock"
+                    : "block";
+
+            const actionText =
+                status === "Blocked"
+                    ? "Unblock"
+                    : "Block";
+
+            row.innerHTML = `
+                <td>#${customer.id}</td>
+
+                <td>
+                    ${escapeHtml(
+                        customer.name || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        customer.mobile || "-"
+                    )}
+                </td>
+
+                <td>
+                    ₹${Number(
+                        customer.wallet || 0
+                    ).toFixed(2)}
+                </td>
+
+                <td>
+                    <span class="status ${statusClass}">
+                        ${status}
+                    </span>
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-btn view"
+                        data-action="view"
+                        data-id="${customer.id}">
+                        View
+                    </button>
+
+                    <button
+                        class="action-btn ${actionClass}"
+                        data-action="toggle"
+                        data-id="${customer.id}"
+                        data-status="${status}">
+                        ${actionText}
+                    </button>
+
+                </td>
+            `;
+
+            tbody.appendChild(row);
+
+        });
+
+    }catch(error){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Unable to load customers.
+                </td>
+            </tr>
+        `;
+
+        showCustomerMessage(
+            error.message ||
+            "Customer API error."
+        );
+
+    }
+}
+
+
+// ======================================================
+// VIEW CUSTOMER
+// ======================================================
+
+async function viewCustomer(id){
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/admin/customers/${id}`,
+                {
+                    method:"GET",
+                    credentials:"same-origin",
+                    cache:"no-store"
+                }
+            );
+
+        if(response.status === 401){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if(!data.success){
+
+            alert(
+                data.message ||
+                "Customer not found."
+            );
+
+            return;
+        }
+
+        const customer =
+            data.customer;
+
+        alert(
+            "Customer Details\n\n" +
+            "ID: #" + customer.id + "\n" +
+            "Name: " + customer.name + "\n" +
+            "Mobile: " +
+                (customer.mobile || "-") + "\n" +
+            "Wallet: ₹" +
+                Number(
+                    customer.wallet || 0
+                ).toFixed(2) + "\n" +
+            "Status: " +
+                customer.status
+        );
+
+    }catch(error){
+
+        alert(
+            "Unable to load customer details."
+        );
+
+    }
+}
+
+
+// ======================================================
+// BLOCK / UNBLOCK CUSTOMER
+// ======================================================
+
+async function toggleCustomer(id,status){
+
+    const newStatus =
+        status === "Blocked"
+            ? "Active"
+            : "Blocked";
+
+    const confirmMessage =
+        newStatus === "Blocked"
+            ? "Block this customer?"
+            : "Unblock this customer?";
+
+    if(!confirm(confirmMessage)){
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/admin/customers/${id}`,
+                {
+                    method:"PATCH",
+                    credentials:"same-origin",
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body:JSON.stringify({
+                        status:newStatus
+                    })
+                }
+            );
+
+        if(response.status === 401){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if(!data.success){
+
+            alert(
+                data.message ||
+                "Unable to update customer."
+            );
+
+            return;
+        }
+
+        await loadCustomers();
+
+    }catch(error){
+
+        alert(
+            "Unable to update customer."
+        );
+
+    }
+}
+
+
+// ======================================================
+// CUSTOMER TABLE ACTIONS
+// ======================================================
+
+document
+    .getElementById("customersTableBody")
+    .addEventListener(
+        "click",
+        event => {
+
+            const button =
+                event.target.closest(
+                    "button"
+                );
+
+            if(!button){
+                return;
+            }
+
+            const id =
+                Number(
+                    button.dataset.id
+                );
+
+            if(
+                button.dataset.action ===
+                "view"
+            ){
+
+                viewCustomer(id);
+
+            }
+
+            if(
+                button.dataset.action ===
+                "toggle"
+            ){
+
+                toggleCustomer(
+                    id,
+                    button.dataset.status
+                );
+
+            }
+
+        }
+    );
+
+
+// ======================================================
+// REFRESH
+// ======================================================
+
+document
+    .getElementById("refreshCustomers")
+    .addEventListener(
+        "click",
+        loadCustomers
+    );
+
+
+// ======================================================
+// HTML ESCAPE
+// ======================================================
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+// ======================================================
+// LOGOUT BUTTON
+// ======================================================
+
+document
+    .getEl
