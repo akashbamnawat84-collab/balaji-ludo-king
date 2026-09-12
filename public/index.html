@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Balaji Ludo King - 2 Player</title>
 
   <link rel="stylesheet" href="../new-style.css">
@@ -12,17 +13,14 @@
 
   <div class="container">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <header class="card">
       <h1>🎲 Balaji Ludo King</h1>
       <p>2 Player Battle</p>
     </header>
 
 
-    <!-- ========================= -->
     <!-- WELCOME -->
-    <!-- ========================= -->
-
     <section class="card" id="welcomeCard">
 
       <h2>Welcome 👋</h2>
@@ -34,7 +32,7 @@
         id="playerName"
         placeholder="Enter your name"
         maxlength="20"
-        autocomplete="name"
+        autocomplete="off"
       >
 
       <button
@@ -50,14 +48,8 @@
     </section>
 
 
-    <!-- ========================= -->
     <!-- ROOM -->
-    <!-- ========================= -->
-
-    <section
-      class="card hidden"
-      id="roomCard"
-    >
+    <section class="card hidden" id="roomCard">
 
       <h2>🎮 2 Player Room</h2>
 
@@ -69,7 +61,7 @@
         Create Room
       </button>
 
-      <div class="message">OR</div>
+      <p class="message">OR</p>
 
       <input
         type="text"
@@ -77,6 +69,7 @@
         placeholder="Enter Room Code"
         maxlength="6"
         inputmode="numeric"
+        autocomplete="off"
       >
 
       <button
@@ -97,64 +90,44 @@
     </section>
 
 
-    <!-- ========================= -->
     <!-- LUDO GAME -->
-    <!-- ========================= -->
+    <section class="card hidden" id="ludoCard">
 
-    <section
-      class="card hidden"
-      id="ludoCard"
-    >
-
-      <!-- Players -->
-
+      <!-- PLAYERS -->
       <div class="players">
 
         <div class="player">
           <small>Player 1</small>
-          <h3 id="player1Name">
-            Waiting...
-          </h3>
+          <h3 id="player1Name">Waiting...</h3>
         </div>
 
         <div class="player">
           <small>Player 2</small>
-          <h3 id="player2Name">
-            Waiting...
-          </h3>
+          <h3 id="player2Name">Waiting...</h3>
         </div>
 
       </div>
 
 
-      <!-- Turn -->
-
+      <!-- TURN -->
       <div class="message">
-
         <p id="turnText">
           Waiting for Player 2...
         </p>
-
       </div>
 
 
-      <!-- ========================= -->
       <!-- LUDO BOARD -->
-      <!-- ========================= -->
-
       <div class="ludo-board">
 
-        <!-- Red Home -->
-
+        <!-- RED HOME -->
         <div class="home red">
           🔴 🔴
           <br>
           🔴 🔴
         </div>
 
-
-        <!-- Board Cells -->
-
+        <!-- BOARD -->
         <div class="ludo-cell white"></div>
         <div class="ludo-cell white"></div>
         <div class="ludo-cell blue"></div>
@@ -197,9 +170,7 @@
         <div class="ludo-cell safe">★</div>
         <div class="ludo-cell white"></div>
 
-
-        <!-- Center -->
-
+        <!-- CENTER -->
         <div class="center-home">
           🏆
         </div>
@@ -207,10 +178,7 @@
       </div>
 
 
-      <!-- ========================= -->
       <!-- DICE -->
-      <!-- ========================= -->
-
       <div class="card">
 
         <div
@@ -224,6 +192,7 @@
           id="rollDiceBtn"
           class="primary-btn"
           type="button"
+          disabled
         >
           Roll Dice
         </button>
@@ -240,8 +209,7 @@
     </section>
 
 
-    <!-- Footer -->
-
+    <!-- FOOTER -->
     <footer>
       <p>© 2026 Balaji Ludo King</p>
     </footer>
@@ -249,9 +217,8 @@
   </div>
 
 
-  <!-- ONLY ONE JavaScript file -->
-
-  <script src="../script.js"></script>
+  <!-- SCRIPT IS INSIDE PUBLIC FOLDER -->
+  <script src="script.js"></script>
 
 </body>
 </html>
