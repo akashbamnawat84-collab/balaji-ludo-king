@@ -134,9 +134,39 @@ body{
     margin-bottom:15px;
 }
 
+.input{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:1px solid #d1d5db;
+    border-radius:7px;
+    font-size:14px;
+    outline:none;
+}
+
+.input:focus{
+    border-color:#2563eb;
+}
+
+.add-btn{
+    background:#16a34a;
+    color:white;
+    border:0;
+    padding:11px 16px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.add-btn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
 table{
     width:100%;
     border-collapse:collapse;
+    min-width:650px;
 }
 
 th,td{
@@ -183,6 +213,7 @@ th{
     border-radius:6px;
     cursor:pointer;
     margin-right:4px;
+    margin-bottom:4px;
 }
 
 .action-btn:disabled{
@@ -224,9 +255,25 @@ th{
     display:none;
 }
 
+.success-message{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.error-message{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
 .logout{
     margin-top:20px !important;
     color:#fca5a5 !important;
+}
+
+.empty{
+    text-align:center;
+    color:#6b7280;
+    padding:20px;
 }
 
 @media(max-width:900px){
@@ -251,6 +298,7 @@ th{
         display:flex;
         overflow-x:auto;
         gap:5px;
+        padding:10px;
     }
 
     .sidebar button{
@@ -265,6 +313,10 @@ th{
     .stats{
         grid-template-columns:1fr 1fr;
         gap:10px;
+    }
+
+    .stat-card{
+        padding:14px;
     }
 
     .stat-card h3{
@@ -286,48 +338,73 @@ th{
 
 </header>
 
+
 <div class="layout">
+
+
+<!-- SIDEBAR -->
 
 <aside class="sidebar">
 
-<button type="button" class="menu active" data-section="dashboard">
+<button type="button"
+        class="menu active"
+        data-section="dashboard">
 📊 Dashboard
 </button>
 
-<button type="button" class="menu" data-section="customers">
+<button type="button"
+        class="menu"
+        data-section="customers">
 👥 Customers
 </button>
 
-<button type="button" class="menu" data-section="battles">
+<button type="button"
+        class="menu"
+        data-section="battles">
 🎮 Live Battles
 </button>
 
-<button type="button" class="menu" data-section="deposits">
+<button type="button"
+        class="menu"
+        data-section="deposits">
 💰 Deposits
 </button>
 
-<button type="button" class="menu" data-section="withdrawals">
+<button type="button"
+        class="menu"
+        data-section="withdrawals">
 📤 Withdrawals
 </button>
 
-<button type="button" class="menu" data-section="wallet">
+<button type="button"
+        class="menu"
+        data-section="wallet">
 💳 Wallet
 </button>
 
-<button type="button" class="menu" data-section="results">
+<button type="button"
+        class="menu"
+        data-section="results">
 🏆 Game Results
 </button>
 
-<button type="button" class="menu" data-section="settings">
+<button type="button"
+        class="menu"
+        data-section="settings">
 ⚙️ Settings
 </button>
 
-<button type="button" class="menu logout" id="logoutButton">
+<button type="button"
+        class="menu logout"
+        id="logoutButton">
 🚪 Logout
 </button>
 
 </aside>
 
+
+
+<!-- MAIN -->
 
 <main class="main">
 
@@ -348,6 +425,7 @@ Balaji Ludo King admin overview
 
 
 <div class="stats">
+
 
 <div class="stat-card">
 
@@ -414,23 +492,10 @@ Recent Activity
 <thead>
 
 <tr>
-
-<th>
-Activity
-</th>
-
-<th>
-User
-</th>
-
-<th>
-Status
-</th>
-
-<th>
-Time
-</th>
-
+<th>Activity</th>
+<th>User</th>
+<th>Status</th>
+<th>Time</th>
 </tr>
 
 </thead>
@@ -443,17 +508,11 @@ Time
 No activity yet
 </td>
 
-<td>
--
-</td>
+<td>-</td>
 
-<td>
--
-</td>
+<td>-</td>
 
-<td>
--
-</td>
+<td>-</td>
 
 </tr>
 
@@ -484,19 +543,59 @@ Manage registered players
 </div>
 
 
+
+<!-- ADD CUSTOMER -->
+
+<div class="card">
+
+<h3>
+➕ Add Customer
+</h3>
+
+
+<input
+    type="text"
+    id="newCustomerName"
+    class="input"
+    placeholder="Customer Name"
+    autocomplete="off"
+>
+
+
+<input
+    type="tel"
+    id="newCustomerMobile"
+    class="input"
+    placeholder="Mobile Number"
+    maxlength="10"
+    inputmode="numeric"
+    autocomplete="off"
+>
+
+
 <button
-type="button"
-class="refresh"
-id="refreshCustomers">
+    type="button"
+    class="add-btn"
+    id="addCustomerButton">
+➕ Add Customer
+</button>
 
+
+</div>
+
+
+
+<button
+    type="button"
+    class="refresh"
+    id="refreshCustomers">
 🔄 Refresh Customers
-
 </button>
 
 
 <div
-id="customerMessage"
-class="message">
+    id="customerMessage"
+    class="message">
 </div>
 
 
@@ -524,8 +623,11 @@ class="message">
 
 <tr>
 
-<td colspan="6">
+<td colspan="6"
+    class="empty">
+
 Loading customers...
+
 </td>
 
 </tr>
@@ -649,8 +751,11 @@ Review customer deposit requests
 
 <tr>
 
-<td colspan="5">
+<td colspan="5"
+    class="empty">
+
 No deposit requests yet
+
 </td>
 
 </tr>
@@ -704,8 +809,11 @@ Review customer withdrawal requests
 
 <tr>
 
-<td colspan="5">
+<td colspan="5"
+    class="empty">
+
 No withdrawal requests yet
+
 </td>
 
 </tr>
@@ -738,6 +846,7 @@ Wallet and transaction overview
 
 
 <div class="stats">
+
 
 <div class="stat-card">
 
@@ -790,6 +899,7 @@ Transactions
 
 </div>
 
+
 </div>
 
 </section>
@@ -834,21 +944,15 @@ Completed Ludo battle results
 
 <tr>
 
-<td>
+<td class="empty">
 No games yet
 </td>
 
-<td>
--
-</td>
+<td>-</td>
 
-<td>
--
-</td>
+<td>-</td>
 
-<td>
--
-</td>
+<td>-</td>
 
 </tr>
 
@@ -916,14 +1020,16 @@ async function checkAdminSession(){
 
     try{
 
-        const response = await fetch(
-            "/api/admin/session",
-            {
-                method:"GET",
-                credentials:"same-origin",
-                cache:"no-store"
-            }
-        );
+        const response =
+            await fetch(
+                "/api/admin/session",
+                {
+                    method:"GET",
+                    credentials:"same-origin",
+                    cache:"no-store"
+                }
+            );
+
 
         if(!response.ok){
 
@@ -934,8 +1040,10 @@ async function checkAdminSession(){
             return false;
         }
 
+
         const data =
             await response.json();
+
 
         if(
             !data.success ||
@@ -948,6 +1056,7 @@ async function checkAdminSession(){
 
             return false;
         }
+
 
         return true;
 
@@ -974,6 +1083,7 @@ async function logout(){
             "logoutButton"
         );
 
+
     if(button){
 
         button.disabled = true;
@@ -981,6 +1091,7 @@ async function logout(){
         button.textContent =
             "Logging out...";
     }
+
 
     try{
 
@@ -996,11 +1107,12 @@ async function logout(){
     }catch(error){
 
         console.log(
-            "Logout request failed",
+            "Logout error",
             error
         );
 
     }
+
 
     window.location.replace(
         "/admin-login.html"
@@ -1010,13 +1122,14 @@ async function logout(){
 
 
 // ======================================================
-// MENU NAVIGATION
+// MENU
 // ======================================================
 
 const menuButtons =
     document.querySelectorAll(
         ".menu"
     );
+
 
 const sections =
     document.querySelectorAll(
@@ -1033,6 +1146,7 @@ menuButtons.forEach(
 
                 const target =
                     this.dataset.section;
+
 
                 if(!target){
 
@@ -1078,6 +1192,7 @@ menuButtons.forEach(
                     targetSection.classList.add(
                         "active"
                     );
+
                 }
 
 
@@ -1102,19 +1217,48 @@ menuButtons.forEach(
 // CUSTOMER MESSAGE
 // ======================================================
 
-function showCustomerMessage(text){
+function showCustomerMessage(
+    text,
+    type="normal"
+){
 
     const box =
         document.getElementById(
             "customerMessage"
         );
 
+
     if(!box){
 
         return;
     }
 
-    box.textContent = text;
+
+    box.textContent =
+        text;
+
+
+    box.className =
+        "message";
+
+
+    if(type === "success"){
+
+        box.classList.add(
+            "success-message"
+        );
+
+    }
+
+
+    if(type === "error"){
+
+        box.classList.add(
+            "error-message"
+        );
+
+    }
+
 
     box.style.display =
         "block";
@@ -1128,10 +1272,12 @@ function hideCustomerMessage(){
             "customerMessage"
         );
 
+
     if(!box){
 
         return;
     }
+
 
     box.style.display =
         "none";
@@ -1150,6 +1296,7 @@ async function loadCustomers(){
             "customersTableBody"
         );
 
+
     if(!tbody){
 
         return;
@@ -1158,7 +1305,7 @@ async function loadCustomers(){
 
     tbody.innerHTML = `
         <tr>
-            <td colspan="6">
+            <td colspan="6" class="empty">
                 Loading customers...
             </td>
         </tr>
@@ -1235,7 +1382,7 @@ async function loadCustomers(){
 
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6">
+                    <td colspan="6" class="empty">
                         No customers registered yet.
                     </td>
                 </tr>
@@ -1332,7 +1479,6 @@ async function loadCustomers(){
                             View
                         </button>
 
-
                         <button
                             type="button"
                             class="action-btn ${actionClass}"
@@ -1360,7 +1506,7 @@ async function loadCustomers(){
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="6">
+                <td colspan="6" class="empty">
                     Unable to load customers.
                 </td>
             </tr>
@@ -1369,9 +1515,161 @@ async function loadCustomers(){
 
         showCustomerMessage(
             error.message ||
-            "Customer API error."
+            "Customer API error.",
+            "error"
         );
 
+    }
+}
+
+
+
+// ======================================================
+// ADD CUSTOMER
+// ======================================================
+
+async function addCustomer(){
+
+    const nameInput =
+        document.getElementById(
+            "newCustomerName"
+        );
+
+
+    const mobileInput =
+        document.getElementById(
+            "newCustomerMobile"
+        );
+
+
+    const button =
+        document.getElementById(
+            "addCustomerButton"
+        );
+
+
+    const name =
+        nameInput.value.trim();
+
+
+    const mobile =
+        mobileInput.value.trim();
+
+
+    if(!name){
+
+        showCustomerMessage(
+            "Customer name is required.",
+            "error"
+        );
+
+        nameInput.focus();
+
+        return;
+    }
+
+
+    if(
+        mobile &&
+        !/^\d{10}$/.test(mobile)
+    ){
+
+        showCustomerMessage(
+            "Mobile number must be 10 digits.",
+            "error"
+        );
+
+        mobileInput.focus();
+
+        return;
+    }
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Adding...";
+
+
+    hideCustomerMessage();
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/admin/customers",
+                {
+                    method:"POST",
+                    credentials:"same-origin",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        name:name,
+                        mobile:mobile
+                    })
+                }
+            );
+
+
+        if(
+            response.status ===
+            401
+        ){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if(!data.success){
+
+            throw new Error(
+                data.message ||
+                "Unable to create customer."
+            );
+        }
+
+
+        nameInput.value = "";
+
+        mobileInput.value = "";
+
+
+        showCustomerMessage(
+            "Customer added successfully.",
+            "success"
+        );
+
+
+        await loadCustomers();
+
+
+    }catch(error){
+
+        showCustomerMessage(
+            error.message ||
+            "Unable to add customer.",
+            "error"
+        );
+
+    }finally{
+
+        button.disabled = false;
+
+        button.textContent =
+            "➕ Add Customer";
     }
 }
 
@@ -1466,7 +1764,7 @@ async function viewCustomer(id){
 
 
 // ======================================================
-// BLOCK / UNBLOCK CUSTOMER
+// BLOCK / UNBLOCK
 // ======================================================
 
 async function toggleCustomer(
@@ -1511,8 +1809,7 @@ async function toggleCustomer(
                     },
 
                     body:JSON.stringify({
-                        status:
-                            newStatus
+                        status:newStatus
                     })
                 }
             );
@@ -1625,7 +1922,7 @@ if(customerTable){
 
 
 // ======================================================
-// REFRESH CUSTOMERS
+// REFRESH
 // ======================================================
 
 const refreshButton =
@@ -1639,6 +1936,27 @@ if(refreshButton){
     refreshButton.addEventListener(
         "click",
         loadCustomers
+    );
+
+}
+
+
+
+// ======================================================
+// ADD CUSTOMER BUTTON
+// ======================================================
+
+const addCustomerButton =
+    document.getElementById(
+        "addCustomerButton"
+    );
+
+
+if(addCustomerButton){
+
+    addCustomerButton.addEventListener(
+        "click",
+        addCustomer
     );
 
 }
@@ -1703,7 +2021,7 @@ if(logoutButton){
 
 
 // ======================================================
-// START ADMIN
+// START
 // ======================================================
 
 checkAdminSession();
