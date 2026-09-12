@@ -1,23 +1,12 @@
 const SESSION_COOKIE = "balaji_admin_session";
+const SESSION_MAX_AGE = 86400; // 24 hours
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
     // =========================
-    // ADMIN CONFIG CHECK
-    // =========================
-    // यह सिर्फ यह बताएगा कि variables मौजूद हैं या नहीं।
-    // इनके actual values कभी दिखाई नहीं जाएंगी।
-    if (url.pathname === "/api/admin/status") {
-      return json({
-        adminIdConfigured: !!env.BALAJI_ADMIN_ID,
-        passwordConfigured: !!env.BALAJI_ADMIN_PASSWORD,
-      });
-    }
-
-    // =========================
-    // ADMIN LOGIN API
+    // ADMIN LOGIN
     // =========================
     if (url.pathname === "/api/admin/login") {
       if (request.method !== "POST") {
@@ -36,10 +25,17 @@ export default {
         const adminId = String(body.adminId || "").trim();
         const password = String(body.password || "");
 
-        // Check Admin ID and Password
+        const correctAdminId =
+          String(env.BALAJI_ADMIN_ID || "").trim();
+
+        const correctPassword =
+          String(env.BALAJI_ADMIN_PASSWORD || "");
+
         if (
-          adminId !== String(env.BALAJI_ADMIN_ID || "").trim() ||
-          password !== String(env.BALAJI_ADMIN_PASSWORD || "")
+          !correctAdminId ||
+          !correctPassword ||
+          adminId !== correctAdminId ||
+          password !== correctPassword
         ) {
           return json(
             {
@@ -50,8 +46,11 @@ export default {
           );
         }
 
-        // Create session token
-        const sessionToken = crypto.randomUUID();
+        // Create signed session token
+        const sessionToken = await createSessionToken(
+          env,
+          adminId
+        );
 
         return new Response(
           JSON.stringify({
@@ -63,7 +62,7 @@ export default {
             headers: {
               "Content-Type": "application/json",
               "Set-Cookie":
-                `${SESSION_COOKIE}=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`,
+                `${SESSION_COOKIE}=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_MAX_AGE}`,
             },
           }
         );
@@ -74,6 +73,62 @@ export default {
             message: "Invalid request.",
           },
           400
+        );
+      }
+    }
+
+    // =========================
+    // CHECK ADMIN SESSION
+    // =========================
+    if (url.pathname === "/api/admin/session") {
+      const valid = await verifySession(request, env);
+
+      if (!valid) {
+        return json(
+          {
+            success: false,
+            authenticated: false,
+          },
+          401
+        );
+      }
+
+      return json({
+        success: true,
+        authenticated: true,
+      });
+    }
+
+    // =========================
+    // ADMIN LOGOUT
+    // =========================
+    if (url.pathname === "/api/admin/logout") {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Logged out.",
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Set-Cookie":
+              `${SESSION_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`,
+          },
+        }
+      );
+    }
+
+    // =========================
+    // PROTECT ADMIN DASHBOARD
+    // =========================
+    if (url.pathname === "/admin.html") {
+      const valid = await verifySession(request, env);
+
+      if (!valid) {
+        return Response.redirect(
+          `${url.origin}/admin-login.html`,
+          302
         );
       }
     }
@@ -115,9 +170,139 @@ export default {
   },
 };
 
-// =========================
-// JSON RESPONSE HELPER
-// =========================
+// ======================================================
+// SESSION TOKEN
+// ======================================================
+
+async function createSessionToken(env, adminId) {
+  const timestamp = Date.now();
+
+  const payload = `${adminId}:${timestamp}`;
+
+  const signature = await signData(
+    payload,
+    env.BALAJI_ADMIN_PASSWORD
+  );
+
+  return `${timestamp}.${signature}`;
+}
+
+// ======================================================
+// VERIFY SESSION
+// ======================================================
+
+async function verifySession(request, env) {
+  try {
+    const cookies = request.headers.get("Cookie") || "";
+
+    const match = cookies.match(
+      new RegExp(`${SESSION_COOKIE}=([^;]+)`)
+    );
+
+    if (!match) {
+      return false;
+    }
+
+    const token = match[1];
+
+    const parts = token.split(".");
+
+    if (parts.length !== 2) {
+      return false;
+    }
+
+    const timestamp = Number(parts[0]);
+    const signature = parts[1];
+
+    if (!Number.isFinite(timestamp)) {
+      return false;
+    }
+
+    // Session expires after 24 hours
+    if (Date.now() - timestamp > SESSION_MAX_AGE * 1000) {
+      return false;
+    }
+
+    const adminId =
+      String(env.BALAJI_ADMIN_ID || "").trim();
+
+    const payload = `${adminId}:${timestamp}`;
+
+    const expectedSignature = await signData(
+      payload,
+      env.BALAJI_ADMIN_PASSWORD
+    );
+
+    return timingSafeEqual(
+      signature,
+      expectedSignature
+    );
+  } catch (error) {
+    return false;
+  }
+}
+
+// ======================================================
+// SIGN DATA
+// ======================================================
+
+async function signData(data, secret) {
+  const encoder = new TextEncoder();
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    {
+      name: "HMAC",
+      hash: "SHA-256",
+    },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(data)
+  );
+
+  return arrayBufferToHex(signature);
+}
+
+// ======================================================
+// TIMING SAFE COMPARISON
+// ======================================================
+
+function timingSafeEqual(a, b) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  let result = 0;
+
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+
+  return result === 0;
+}
+
+// ======================================================
+// ARRAY BUFFER → HEX
+// ======================================================
+
+function arrayBufferToHex(buffer) {
+  return [...new Uint8Array(buffer)]
+    .map((byte) =>
+      byte.toString(16).padStart(2, "0")
+    )
+    .join("");
+}
+
+// ======================================================
+// JSON RESPONSE
+// ======================================================
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -149,7 +334,9 @@ export class LudoRoom {
     const server = pair[1];
 
     const url = new URL(request.url);
-    const name = url.searchParams.get("name") || "Player";
+
+    const name =
+      url.searchParams.get("name") || "Player";
 
     // Maximum 2 players
     if (this.players.size >= 2) {
@@ -226,16 +413,20 @@ export class LudoRoom {
   // =========================
   // GET PLAYERS
   // =========================
+
   getPlayers() {
-    return [...this.players.values()].map((player) => ({
-      id: player.id,
-      name: player.name,
-    }));
+    return [...this.players.values()].map(
+      (player) => ({
+        id: player.id,
+        name: player.name,
+      })
+    );
   }
 
   // =========================
   // HANDLE MESSAGE
   // =========================
+
   handleMessage(playerId, data) {
     try {
       const message = JSON.parse(data);
@@ -243,14 +434,15 @@ export class LudoRoom {
       // =========================
       // ROLL DICE
       // =========================
+
       if (message.type === "ROLL_DICE") {
-        const player = this.players.get(playerId);
+        const player =
+          this.players.get(playerId);
 
         if (!player) {
           return;
         }
 
-        // Only current player can roll
         if (this.turnPlayerId !== playerId) {
           player.socket.send(
             JSON.stringify({
@@ -262,7 +454,8 @@ export class LudoRoom {
         }
 
         // Server-authoritative dice
-        const dice = Math.floor(Math.random() * 6) + 1;
+        const dice =
+          Math.floor(Math.random() * 6) + 1;
 
         this.broadcast({
           type: "DICE_RESULT",
@@ -271,7 +464,7 @@ export class LudoRoom {
           dice: dice,
         });
 
-        // If dice is not 6, change turn
+        // 6 = same player gets another turn
         if (dice !== 6) {
           this.changeTurn(playerId);
         }
@@ -280,8 +473,10 @@ export class LudoRoom {
       // =========================
       // PING
       // =========================
+
       if (message.type === "PING") {
-        const player = this.players.get(playerId);
+        const player =
+          this.players.get(playerId);
 
         if (player) {
           player.socket.send(
@@ -299,8 +494,10 @@ export class LudoRoom {
   // =========================
   // CHANGE TURN
   // =========================
+
   changeTurn(currentPlayerId) {
-    const playerIds = [...this.players.keys()];
+    const playerIds =
+      [...this.players.keys()];
 
     if (playerIds.length < 2) {
       return;
@@ -312,7 +509,8 @@ export class LudoRoom {
     const nextIndex =
       (currentIndex + 1) % playerIds.length;
 
-    this.turnPlayerId = playerIds[nextIndex];
+    this.turnPlayerId =
+      playerIds[nextIndex];
 
     this.broadcast({
       type: "TURN_UPDATE",
@@ -323,6 +521,7 @@ export class LudoRoom {
   // =========================
   // BROADCAST PLAYERS
   // =========================
+
   broadcastPlayers() {
     this.broadcast({
       type: "PLAYERS_UPDATE",
@@ -332,8 +531,9 @@ export class LudoRoom {
   }
 
   // =========================
-  // BROADCAST MESSAGE
+  // BROADCAST
   // =========================
+
   broadcast(message) {
     const text = JSON.stringify(message);
 
