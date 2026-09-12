@@ -4,1169 +4,147 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Balaji Ludo King</title>
+  <title>Balaji Ludo King - Wallet</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background: #f4f5f9;
-      color: #222;
-      padding-bottom: 75px;
-    }
-
-    .topbar {
-      background: #5b16d0;
-      color: white;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .menu-btn {
-      background: transparent;
-      border: 0;
-      color: white;
-      font-size: 28px;
-      cursor: pointer;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .wallet-mini {
-      background: rgba(255,255,255,.18);
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 15px;
-    }
-
-    .welcome {
-      background: linear-gradient(135deg, #6919df, #8d36f2);
-      color: white;
-      border-radius: 18px;
-      padding: 22px;
-      margin-bottom: 15px;
-    }
-
-    .welcome h2 {
-      margin-bottom: 8px;
-    }
-
-    .balance-card {
-      background: white;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.07);
-    }
-
-    .balance-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .balance {
-      font-size: 27px;
-      font-weight: bold;
-      margin-top: 5px;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 18px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 15px;
-    }
-
-    .primary {
-      background: #6415d5;
-      color: white;
-    }
-
-    .green {
-      background: #16a34a;
-      color: white;
-    }
-
-    .orange {
-      background: #f59e0b;
-      color: white;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.07);
-    }
-
-    .card h3 {
-      margin-bottom: 15px;
-    }
-
-    .battle {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-
-    .battle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .amount {
-      font-size: 20px;
-      font-weight: bold;
-      color: #6415d5;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      margin: 8px 0 12px;
-      font-size: 16px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #6415d5;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .drawer {
-      position: fixed;
-      top: 0;
-      left: -290px;
-      width: 280px;
-      height: 100%;
-      background: white;
-      z-index: 100;
-      box-shadow: 5px 0 20px rgba(0,0,0,.2);
-      transition: .25s;
-      padding: 20px;
-    }
-
-    .drawer.open {
-      left: 0;
-    }
-
-    .drawer-header {
-      background: #6415d5;
-      color: white;
-      padding: 20px;
-      border-radius: 14px;
-      margin-bottom: 15px;
-    }
-
-    .drawer button {
-      width: 100%;
-      text-align: left;
-      background: transparent;
-      border: 0;
-      padding: 15px 8px;
-      font-size: 16px;
-      cursor: pointer;
-      border-bottom: 1px solid #eee;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.45);
-      z-index: 90;
-      display: none;
-    }
-
-    .overlay.show {
-      display: block;
-    }
-
-    .withdraw-box {
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 15px;
-    }
-
-    .qr-box {
-      text-align: center;
-      margin: 15px 0;
-      padding: 15px;
-      background: #fafafa;
-      border-radius: 12px;
-    }
-
-    .qr-box img {
-      width: 180px;
-      height: 180px;
-      object-fit: contain;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-
-    .status {
-      padding: 10px;
-      border-radius: 8px;
-      background: #fff7ed;
-      color: #9a3412;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -2px 12px rgba(0,0,0,.12);
-      z-index: 50;
-    }
-
-    .nav-item {
-      border: 0;
-      background: transparent;
-      font-size: 12px;
-      color: #555;
-      cursor: pointer;
-    }
-
-    .nav-item span {
-      display: block;
-      font-size: 21px;
-      margin-bottom: 2px;
-    }
-
-    .notice {
-      background: #fff7ed;
-      border-left: 4px solid #f59e0b;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 13px;
-    }
-
-    .success {
-      background: #ecfdf5;
-      color: #166534;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- SIDE MENU -->
-  <div class="overlay" id="overlay"></div>
+  <div class="container">
 
-  <aside class="drawer" id="drawer">
-
-    <div class="drawer-header">
-      <h2>🎲 Balaji Ludo</h2>
-      <p>2 Player Battle</p>
-    </div>
-
-    <button onclick="showHome()">🏠 Home</button>
-    <button onclick="showWallet()">💰 My Wallet</button>
-    <button onclick="showWithdraw()">📤 Withdraw</button>
-    <button onclick="showHistory()">📜 History</button>
-    <button onclick="showProfile()">👤 My Profile</button>
-    <button onclick="showSupport()">🎧 Support</button>
-
-  </aside>
+    <!-- HEADER -->
+    <header class="card header">
+      <h1>🎮 Balaji Ludo King</h1>
+      <p>Demo Wallet System</p>
+    </header>
 
 
-  <!-- TOP BAR -->
-  <header class="topbar">
+    <!-- WALLET -->
+    <section class="card wallet-card">
 
-    <button class="menu-btn" onclick="openMenu()">☰</button>
+      <p class="wallet-label">Available Balance</p>
 
-    <div class="logo">🎲 Balaji Ludo</div>
+      <h2>₹ <span id="balance">0.00</span></h2>
 
-    <div class="wallet-mini">
-      ₹<span id="topBalance">0.00</span>
-    </div>
+      <div class="wallet-buttons">
 
-  </header>
-
-
-  <main class="container">
-
-    <!-- HOME -->
-    <section id="homePage">
-
-      <div class="welcome">
-        <h2>Welcome 👋</h2>
-        <p id="welcomeName">Play 2 Player Battle</p>
-      </div>
-
-      <div class="balance-card">
-
-        <div class="balance-row">
-
-          <div>
-            <small>Wallet Balance</small>
-            <div class="balance">
-              ₹<span id="walletBalance">0.00</span>
-            </div>
-          </div>
-
-          <button class="btn green" onclick="showWallet()">
-            Wallet
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div class="notice">
-        🎮 Only 2 players can play in one battle.
-      </div>
-
-
-      <div class="card">
-
-        <h3>⚔️ Create a Battle</h3>
-
-        <input
-          type="number"
-          id="battleAmount"
-          placeholder="Enter battle amount"
-          min="1"
-        >
-
-        <button
-          class="btn primary"
-          style="width:100%"
-          onclick="createBattle()"
-        >
-          Create Battle
+        <button id="depositBtn" class="deposit-btn">
+          💰 Deposit
         </button>
 
-      </div>
-
-
-      <div class="card">
-
-        <h3>🔥 Open Battles</h3>
-
-        <div id="battleList">
-
-          <div class="battle">
-
-            <div class="battle-row">
-
-              <div>
-                <small>2 Player Battle</small>
-                <div class="amount">₹10</div>
-              </div>
-
-              <button
-                class="btn primary"
-                onclick="joinBattle(10)"
-              >
-                Join
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <div class="battle">
-
-            <div class="battle-row">
-
-              <div>
-                <small>2 Player Battle</small>
-                <div class="amount">₹20</div>
-              </div>
-
-              <button
-                class="btn primary"
-                onclick="joinBattle(20)"
-              >
-                Join
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
+        <button id="withdrawBtn" class="withdraw-btn">
+          🏦 Withdraw
+        </button>
 
       </div>
 
     </section>
 
 
-    <!-- WALLET -->
-    <section id="walletPage" class="hidden">
+    <!-- DEPOSIT -->
+    <section id="depositSection" class="card hidden">
 
-      <div class="card">
+      <h2>💰 Demo Deposit</h2>
 
-        <h2>💰 My Wallet</h2>
+      <p class="info">
+        यह केवल testing/demo wallet है। कोई वास्तविक payment नहीं होगी।
+      </p>
 
-        <br>
+      <label>Deposit Amount</label>
 
-        <small>Available Test Credits</small>
+      <input
+        type="number"
+        id="depositAmount"
+        placeholder="Enter amount"
+        min="1"
+        inputmode="numeric"
+      >
 
-        <div class="balance">
-          ₹<span id="walletBalance2">0.00</span>
-        </div>
+      <button id="submitDeposit" class="deposit-btn">
+        Add Demo Balance
+      </button>
 
-        <br>
-
-        <button class="btn primary" onclick="showWithdraw()">
-          📤 Withdraw
-        </button>
-
-      </div>
-
-      <div class="card">
-
-        <h3>Wallet Information</h3>
-
-        <p style="font-size:14px;color:#666;">
-          This wallet currently uses demo/test credits.
-          No real-money transfer is performed.
-        </p>
-
-      </div>
+      <p id="depositMessage" class="message"></p>
 
     </section>
 
 
     <!-- WITHDRAW -->
-    <section id="withdrawPage" class="hidden">
+    <section id="withdrawSection" class="card hidden">
 
-      <div class="card">
+      <h2>🏦 Demo Withdrawal</h2>
 
-        <h2>📤 UPI QR Withdrawal</h2>
+      <p class="info">
+        यह केवल testing/demo withdrawal request है।
+      </p>
 
-        <br>
+      <label>Withdrawal Amount</label>
 
-        <div class="notice">
-          Demo/Test Withdrawal Request
-        </div>
+      <input
+        type="number"
+        id="withdrawAmount"
+        placeholder="Enter amount"
+        min="1"
+        inputmode="numeric"
+      >
 
-        <div class="withdraw-box">
+      <label>Demo UPI ID</label>
 
-          <p><b>Available Balance</b></p>
+      <input
+        type="text"
+        id="demoUpi"
+        placeholder="example@upi"
+        autocomplete="off"
+      >
 
-          <div class="balance">
-            ₹<span id="withdrawBalance">0.00</span>
-          </div>
+      <button id="submitWithdraw" class="withdraw-btn">
+        Submit Demo Request
+      </button>
 
-          <br>
-
-          <label>Withdrawal Amount</label>
-
-          <input
-            type="number"
-            id="withdrawAmount"
-            placeholder="Enter amount"
-            min="1"
-          >
-
-
-          <label>UPI ID</label>
-
-          <input
-            type="text"
-            id="upiId"
-            placeholder="example@upi"
-            autocomplete="off"
-          >
-
-
-          <label>UPI QR Code Image</label>
-
-          <input
-            type="url"
-            id="qrUrl"
-            placeholder="Paste QR image URL"
-            autocomplete="off"
-          >
-
-          <div class="qr-box">
-
-            <p style="margin-bottom:10px;">
-              QR Preview
-            </p>
-
-            <img
-              id="qrPreview"
-              src=""
-              alt="UPI QR"
-              class="hidden"
-            >
-
-            <p
-              id="qrText"
-              style="font-size:13px;color:#777;"
-            >
-              QR image preview will appear here
-            </p>
-
-          </div>
-
-
-          <button
-            class="btn primary"
-            style="width:100%"
-            onclick="submitWithdraw()"
-          >
-            Submit Withdrawal Request
-          </button>
-
-
-          <div
-            id="withdrawMessage"
-            class="status hidden"
-          ></div>
-
-        </div>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>📜 Latest Withdrawal</h3>
-
-        <div id="latestWithdrawal">
-          No withdrawal request yet.
-        </div>
-
-      </div>
+      <p id="withdrawMessage" class="message"></p>
 
     </section>
 
 
-    <!-- HISTORY -->
-    <section id="historyPage" class="hidden">
+    <!-- TRANSACTIONS -->
+    <section class="card">
 
-      <div class="card">
+      <h2>📋 Transaction History</h2>
 
-        <h2>📜 Withdrawal History</h2>
+      <div id="transactions">
 
-        <br>
-
-        <div id="historyList">
-          <p style="color:#777;">
-            No withdrawal requests yet.
-          </p>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- PROFILE -->
-    <section id="profilePage" class="hidden">
-
-      <div class="card">
-
-        <h2>👤 My Profile</h2>
-
-        <br>
-
-        <label>Player Name</label>
-
-        <input
-          type="text"
-          id="playerName"
-          placeholder="Enter your name"
-          maxlength="20"
-        >
-
-        <button
-          class="btn primary"
-          onclick="saveProfile()"
-        >
-          Save Profile
-        </button>
-
-        <p
-          id="profileMessage"
-          style="margin-top:12px;color:#16803c;"
-        ></p>
-
-      </div>
-
-    </section>
-
-
-    <!-- SUPPORT -->
-    <section id="supportPage" class="hidden">
-
-      <div class="card">
-
-        <h2>🎧 Support</h2>
-
-        <br>
-
-        <p>
-          अगर आपको किसी Battle, Wallet या Withdrawal Request
-          में समस्या है तो Support से संपर्क करें।
+        <p class="empty">
+          No transactions yet
         </p>
 
-        <br>
-
-        <button class="btn primary">
-          Contact Support
-        </button>
-
       </div>
 
     </section>
 
-  </main>
 
+    <!-- NOTICE -->
+    <section class="card notice">
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
+      <h3>⚠️ Demo Mode</h3>
 
-    <button class="nav-item" onclick="showWallet()">
-      <span>💰</span>
-      Wallet
-    </button>
+      <p>
+        इस version में balance और transactions केवल
+        आपके browser में testing के लिए save होंगे।
+        कोई वास्तविक UPI payment या withdrawal नहीं होगा।
+      </p>
 
-    <button class="nav-item">
-      <span>🎁</span>
-      Refer
-    </button>
+    </section>
 
-    <button class="nav-item" onclick="showHome()">
-      <span>🏠</span>
-      Home
-    </button>
 
-    <button class="nav-item" onclick="showSupport()">
-      <span>🎧</span>
-      Support
-    </button>
+    <footer>
+      © 2026 Balaji Ludo King
+    </footer>
 
-    <button class="nav-item" onclick="showProfile()">
-      <span>👤</span>
-      Profile
-    </button>
+  </div>
 
-  </nav>
 
+  <script src="script.js"></script>
 
-  <script>
-
-    let balance =
-      Number(localStorage.getItem("balaji_balance") || 0);
-
-    let withdrawals =
-      JSON.parse(
-        localStorage.getItem("balaji_withdrawals") || "[]"
-      );
-
-
-    function updateBalance() {
-
-      document.getElementById("walletBalance").textContent =
-        balance.toFixed(2);
-
-      document.getElementById("walletBalance2").textContent =
-        balance.toFixed(2);
-
-      document.getElementById("withdrawBalance").textContent =
-        balance.toFixed(2);
-
-      document.getElementById("topBalance").textContent =
-        balance.toFixed(2);
-
-    }
-
-
-    function hidePages() {
-
-      document.querySelectorAll("main section")
-        .forEach(section => {
-          section.classList.add("hidden");
-        });
-
-    }
-
-
-    function showHome() {
-
-      hidePages();
-
-      document
-        .getElementById("homePage")
-        .classList.remove("hidden");
-
-      closeMenu();
-
-    }
-
-
-    function showWallet() {
-
-      hidePages();
-
-      document
-        .getElementById("walletPage")
-        .classList.remove("hidden");
-
-      updateBalance();
-      closeMenu();
-
-    }
-
-
-    function showWithdraw() {
-
-      hidePages();
-
-      document
-        .getElementById("withdrawPage")
-        .classList.remove("hidden");
-
-      updateBalance();
-      renderHistory();
-
-      closeMenu();
-
-    }
-
-
-    function showHistory() {
-
-      hidePages();
-
-      document
-        .getElementById("historyPage")
-        .classList.remove("hidden");
-
-      renderHistory();
-      closeMenu();
-
-    }
-
-
-    function showProfile() {
-
-      hidePages();
-
-      document
-        .getElementById("profilePage")
-        .classList.remove("hidden");
-
-      const savedName =
-        localStorage.getItem("balaji_player_name") || "";
-
-      document.getElementById("playerName").value =
-        savedName;
-
-      closeMenu();
-
-    }
-
-
-    function showSupport() {
-
-      hidePages();
-
-      document
-        .getElementById("supportPage")
-        .classList.remove("hidden");
-
-      closeMenu();
-
-    }
-
-
-    function openMenu() {
-
-      document
-        .getElementById("drawer")
-        .classList.add("open");
-
-      document
-        .getElementById("overlay")
-        .classList.add("show");
-
-    }
-
-
-    function closeMenu() {
-
-      document
-        .getElementById("drawer")
-        .classList.remove("open");
-
-      document
-        .getElementById("overlay")
-        .classList.remove("show");
-
-    }
-
-
-    document
-      .getElementById("overlay")
-      .addEventListener("click", closeMenu);
-
-
-    document
-      .getElementById("qrUrl")
-      .addEventListener("input", function() {
-
-        const url = this.value.trim();
-
-        const image =
-          document.getElementById("qrPreview");
-
-        const text =
-          document.getElementById("qrText");
-
-        if (url) {
-
-          image.src = url;
-          image.classList.remove("hidden");
-          text.classList.add("hidden");
-
-        } else {
-
-          image.classList.add("hidden");
-          text.classList.remove("hidden");
-
-        }
-
-      });
-
-
-    function submitWithdraw() {
-
-      const amount =
-        Number(
-          document.getElementById("withdrawAmount").value
-        );
-
-      const upi =
-        document.getElementById("upiId").value.trim();
-
-      const qr =
-        document.getElementById("qrUrl").value.trim();
-
-
-      const message =
-        document.getElementById("withdrawMessage");
-
-
-      if (!amount || amount <= 0) {
-
-        showWithdrawMessage(
-          "कृपया सही withdrawal amount डालें।",
-          false
-        );
-
-        return;
-
-      }
-
-
-      if (!upi) {
-
-        showWithdrawMessage(
-          "कृपया UPI ID डालें।",
-          false
-        );
-
-        return;
-
-      }
-
-
-      if (!qr) {
-
-        showWithdrawMessage(
-          "कृपया UPI QR image URL डालें।",
-          false
-        );
-
-        return;
-
-      }
-
-
-      if (amount > balance) {
-
-        showWithdrawMessage(
-          "आपके पास पर्याप्त test credits नहीं हैं।",
-          false
-        );
-
-        return;
-
-      }
-
-
-      const request = {
-
-        id:
-          "WD" +
-          Date.now(),
-
-        amount: amount,
-
-        upiId: upi,
-
-        qrUrl: qr,
-
-        status: "Pending",
-
-        createdAt:
-          new Date().toLocaleString("en-IN")
-
-      };
-
-
-      withdrawals.unshift(request);
-
-      /*
-       * Demo system:
-       * Request amount is reserved locally.
-       * No real UPI transfer is performed.
-       */
-
-      balance -= amount;
-
-      localStorage.setItem(
-        "balaji_balance",
-        balance
-      );
-
-      localStorage.setItem(
-        "balaji_withdrawals",
-        JSON.stringify(withdrawals)
-      );
-
-
-      document.getElementById("withdrawAmount").value = "";
-
-      updateBalance();
-
-      showWithdrawMessage(
-        "Withdrawal request successfully submitted. Status: Pending.",
-        true
-      );
-
-      renderLatest();
-
-      renderHistory();
-
-    }
-
-
-    function showWithdrawMessage(text, success) {
-
-      const box =
-        document.getElementById("withdrawMessage");
-
-      box.textContent = text;
-
-      box.classList.remove("hidden");
-
-      if (success) {
-
-        box.classList.add("success");
-
-      } else {
-
-        box.classList.remove("success");
-
-      }
-
-    }
-
-
-    function renderLatest() {
-
-      const box =
-        document.getElementById("latestWithdrawal");
-
-      if (!withdrawals.length) {
-
-        box.innerHTML =
-          "No withdrawal request yet.";
-
-        return;
-
-      }
-
-
-      const w = withdrawals[0];
-
-      box.innerHTML = `
-
-        <div class="battle">
-
-          <b>Request ID</b>
-          <p>${escapeHtml(w.id)}</p>
-
-          <br>
-
-          <b>Amount</b>
-          <p>₹${Number(w.amount).toFixed(2)}</p>
-
-          <br>
-
-          <b>UPI ID</b>
-          <p>${escapeHtml(w.upiId)}</p>
-
-          <br>
-
-          <b>Status</b>
-          <p class="status">${escapeHtml(w.status)}</p>
-
-          <small>${escapeHtml(w.createdAt)}</small>
-
-        </div>
-
-      `;
-
-    }
-
-
-    function renderHistory() {
-
-      const list =
-        document.getElementById("historyList");
-
-      if (!withdrawals.length) {
-
-        list.innerHTML =
-          `<p style="color:#777;">
-             No withdrawal requests yet.
-           </p>`;
-
-        renderLatest();
-
-        return;
-
-      }
-
-
-      list.innerHTML =
-        withdrawals.map(w => `
-
-          <div class="battle">
-
-            <div class="battle-row">
-
-              <div>
-
-                <b>₹${Number(w.amount).toFixed(2)}</b>
-
-                <br>
-
-                <small>
-                  ${escapeHtml(w.upiId)}
-                </small>
-
-                <br>
-
-                <small>
-                  ${escapeHtml(w.createdAt)}
-                </small>
-
-              </div>
-
-              <span class="status">
-                ${escapeHtml(w.status)}
-              </span>
-
-            </div>
-
-          </div>
-
-        `).join("");
-
-
-      renderLatest();
-
-    }
-
-
-    function saveProfile() {
-
-      const name =
-        document
-          .getElementById("playerName")
-          .value
-          .trim();
-
-
-      if (!name) return;
-
-
-      localStorage.setItem(
-        "balaji_player_name",
-        name
-      );
-
-
-      document.getElementById("welcomeName")
-        .textContent =
-        "Welcome " + name + " 👋";
-
-
-      document.getElementById("profileMessage")
-        .textContent =
-        "Profile saved successfully.";
-
-    }
-
-
-    function createBattle() {
-
-      const amount =
-        Number(
-          document.getElementById("battleAmount").value
-        );
-
-
-      if (!amount || amount <= 0) {
-
-        alert(
+</body>
+</html>
