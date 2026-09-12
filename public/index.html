@@ -4,155 +4,158 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Balaji Ludo King - 2 Player</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="../new-style.css">
 </head>
 
 <body>
 
-  <div class="app">
+  <div class="container">
 
-    <header class="topbar">
+    <header class="card">
       <h1>🎲 Balaji Ludo King</h1>
       <p>2 Player Battle</p>
     </header>
 
-    <main class="container">
+    <!-- Login -->
+    <section class="card" id="welcomeCard">
+      <h2>Welcome 👋</h2>
+      <p>Enter your name to continue</p>
 
-      <!-- Login -->
-      <section class="welcome-card" id="welcomeCard">
-        <h2>Welcome</h2>
-        <p>Enter your name to continue</p>
+      <input
+        type="text"
+        id="playerName"
+        placeholder="Enter your name"
+        maxlength="20"
+      >
 
-        <input
-          type="text"
-          id="playerName"
-          placeholder="Enter your name"
-          maxlength="20"
-        >
+      <button id="startBtn" class="primary-btn">
+        Continue
+      </button>
 
-        <button id="startBtn">Continue</button>
+      <p id="message" class="message"></p>
+    </section>
 
-        <p id="message"></p>
-      </section>
+    <!-- Room -->
+    <section class="card hidden" id="roomCard">
+      <h2>🎮 2 Player Room</h2>
 
-      <!-- Room -->
-      <section class="game-card" id="roomCard">
+      <button id="createRoomBtn" class="primary-btn">
+        Create Room
+      </button>
 
-        <h2>🎮 2 Player Room</h2>
+      <div class="message">OR</div>
 
-        <button id="createRoomBtn">
-          Create Room
+      <input
+        type="text"
+        id="joinRoomInput"
+        placeholder="Enter Room Code"
+        maxlength="6"
+      >
+
+      <button id="joinRoomBtn" class="secondary-btn">
+        Join Room
+      </button>
+
+      <div class="room-code" id="roomInfo">
+        ------
+      </div>
+    </section>
+
+    <!-- Ludo Game -->
+    <section class="card hidden" id="ludoCard">
+
+      <div class="players">
+
+        <div class="player">
+          <small>Player 1</small>
+          <h3 id="player1Name">Waiting...</h3>
+        </div>
+
+        <div class="player">
+          <small>Player 2</small>
+          <h3 id="player2Name">Waiting...</h3>
+        </div>
+
+      </div>
+
+      <div class="message">
+        <p id="turnText">Waiting for Player 2...</p>
+      </div>
+
+      <!-- Ludo Board -->
+      <div class="ludo-board">
+
+        <div class="home red">
+          🔴 🔴
+          <br>
+          🔴 🔴
+        </div>
+
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell blue"></div>
+        <div class="ludo-cell blue"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell safe">★</div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell safe">★</div>
+        <div class="ludo-cell white"></div>
+
+        <div class="ludo-cell yellow"></div>
+        <div class="ludo-cell yellow"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell green"></div>
+        <div class="ludo-cell green"></div>
+
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell safe">★</div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell safe">★</div>
+
+        <div class="ludo-cell blue"></div>
+        <div class="ludo-cell blue"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell red"></div>
+        <div class="ludo-cell red"></div>
+
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell safe">★</div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell white"></div>
+        <div class="ludo-cell safe">★</div>
+        <div class="ludo-cell white"></div>
+
+        <div class="center-home">🏆</div>
+
+      </div>
+
+      <!-- Dice -->
+      <div class="card">
+
+        <div class="dice" id="dice">
+          🎲
+        </div>
+
+        <button id="rollDiceBtn" class="primary-btn">
+          Roll Dice
         </button>
 
-        <div class="divider">OR</div>
+        <p id="diceResult" class="message">
+          Dice: -
+        </p>
 
-        <input
-          type="text"
-          id="joinRoomInput"
-          placeholder="Enter Room Code"
-          maxlength="6"
-        >
+      </div>
 
-        <button id="joinRoomBtn">
-          Join Room
-        </button>
-
-        <div class="room-info" id="roomInfo">
-          <p>No room selected</p>
-        </div>
-
-      </section>
-
-      <!-- Ludo Game -->
-      <section class="ludo-card" id="ludoCard">
-
-        <div class="game-header">
-          <div>
-            <span>Player 1</span>
-            <strong id="player1Name">Waiting...</strong>
-          </div>
-
-          <div class="vs">VS</div>
-
-          <div>
-            <span>Player 2</span>
-            <strong id="player2Name">Waiting...</strong>
-          </div>
-        </div>
-
-        <div class="turn-info">
-          <p id="turnText">Waiting for Player 2...</p>
-        </div>
-
-        <div class="ludo-board">
-
-          <div class="home red-home">
-            <span>🔴</span>
-            <span>🔴</span>
-            <span>🔴</span>
-            <span>🔴</span>
-          </div>
-
-          <div class="path">
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-          </div>
-
-          <div class="center-home">
-            🏆
-          </div>
-
-          <div class="home blue-home">
-            <span>🔵</span>
-            <span>🔵</span>
-            <span>🔵</span>
-            <span>🔵</span>
-          </div>
-
-        </div>
-
-        <div class="dice-area">
-
-          <div class="dice" id="dice">
-            🎲
-          </div>
-
-          <button id="rollDiceBtn">
-            Roll Dice
-          </button>
-
-          <p id="diceResult">
-            Dice: -
-          </p>
-
-        </div>
-
-      </section>
-
-    </main>
+    </section>
 
     <footer>
       <p>© 2026 Balaji Ludo King</p>
@@ -160,7 +163,7 @@
 
   </div>
 
-  <script src="script.js"></script>
+  <script src="../script.js"></script>
 
 </body>
 </html>
