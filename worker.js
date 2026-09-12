@@ -46,7 +46,6 @@ export default {
           );
         }
 
-        // Create signed session token
         const sessionToken = await createSessionToken(
           env,
           adminId
@@ -218,8 +217,10 @@ async function verifySession(request, env) {
       return false;
     }
 
-    // Session expires after 24 hours
-    if (Date.now() - timestamp > SESSION_MAX_AGE * 1000) {
+    if (
+      Date.now() - timestamp >
+      SESSION_MAX_AGE * 1000
+    ) {
       return false;
     }
 
@@ -281,7 +282,9 @@ function timingSafeEqual(a, b) {
   let result = 0;
 
   for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    result |=
+      a.charCodeAt(i) ^
+      b.charCodeAt(i);
   }
 
   return result === 0;
@@ -304,12 +307,15 @@ function arrayBufferToHex(buffer) {
 // ======================================================
 
 function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 }
 
 // ======================================================
@@ -324,7 +330,10 @@ export class LudoRoom {
   }
 
   async fetch(request) {
-    if (request.headers.get("Upgrade") !== "websocket") {
+    if (
+      request.headers.get("Upgrade") !==
+      "websocket"
+    ) {
       return new Response("Ludo Room Server");
     }
 
@@ -336,7 +345,8 @@ export class LudoRoom {
     const url = new URL(request.url);
 
     const name =
-      url.searchParams.get("name") || "Player";
+      url.searchParams.get("name") ||
+      "Player";
 
     // Maximum 2 players
     if (this.players.size >= 2) {
@@ -345,7 +355,8 @@ export class LudoRoom {
       server.send(
         JSON.stringify({
           type: "ROOM_FULL",
-          message: "Room already has 2 players.",
+          message:
+            "Room already has 2 players.",
         })
       );
 
@@ -359,7 +370,8 @@ export class LudoRoom {
 
     server.accept();
 
-    const playerId = crypto.randomUUID();
+    const playerId =
+      crypto.randomUUID();
 
     const player = {
       id: playerId,
@@ -367,42 +379,66 @@ export class LudoRoom {
       socket: server,
     };
 
-    this.players.set(playerId, player);
+    this.players.set(
+      playerId,
+      player
+    );
 
     // First player gets first turn
     if (!this.turnPlayerId) {
-      this.turnPlayerId = playerId;
+      this.turnPlayerId =
+        playerId;
     }
 
     server.send(
       JSON.stringify({
         type: "CONNECTED",
         playerId: playerId,
-        playerNumber: this.players.size,
-        players: this.getPlayers(),
+        playerNumber:
+          this.players.size,
+        players:
+          this.getPlayers(),
       })
     );
 
     this.broadcastPlayers();
 
-    server.addEventListener("message", (event) => {
-      this.handleMessage(playerId, event.data);
-    });
-
-    server.addEventListener("close", () => {
-      this.players.delete(playerId);
-
-      if (this.turnPlayerId === playerId) {
-        const remainingPlayer =
-          this.players.values().next().value;
-
-        this.turnPlayerId = remainingPlayer
-          ? remainingPlayer.id
-          : null;
+    server.addEventListener(
+      "message",
+      (event) => {
+        this.handleMessage(
+          playerId,
+          event.data
+        );
       }
+    );
 
-      this.broadcastPlayers();
-    });
+    server.addEventListener(
+      "close",
+      () => {
+        this.players.delete(
+          playerId
+        );
+
+        if (
+          this.turnPlayerId ===
+          playerId
+        ) {
+          const remainingPlayer =
+            this.players
+              .values()
+              .next()
+              .value;
+
+          this.turnPlayerId =
+            remainingPlayer
+              ? remainingPlayer.id
+              : null;
+        }
+
+        this.broadcastPlayers();
+      }
+    );
 
     return new Response(null, {
       status: 101,
@@ -415,38 +451,51 @@ export class LudoRoom {
   // =========================
 
   getPlayers() {
-    return [...this.players.values()].map(
-      (player) => ({
-        id: player.id,
-        name: player.name,
-      })
-    );
+    return [
+      ...this.players.values(),
+    ].map((player) => ({
+      id: player.id,
+      name: player.name,
+    }));
   }
 
   // =========================
   // HANDLE MESSAGE
   // =========================
 
-  handleMessage(playerId, data) {
+  handleMessage(
+    playerId,
+    data
+  ) {
     try {
-      const message = JSON.parse(data);
+      const message =
+        JSON.parse(data);
 
       // =========================
       // ROLL DICE
       // =========================
 
-      if (message.type === "ROLL_DICE") {
+      if (
+        message.type ===
+        "ROLL_DICE"
+      ) {
         const player =
-          this.players.get(playerId);
+          this.players.get(
+            playerId
+          );
 
         if (!player) {
           return;
         }
 
-        if (this.turnPlayerId !== playerId) {
+        if (
+          this.turnPlayerId !==
+          playerId
+        ) {
           player.socket.send(
             JSON.stringify({
-              type: "NOT_YOUR_TURN",
+              type:
+                "NOT_YOUR_TURN",
             })
           );
 
@@ -455,18 +504,25 @@ export class LudoRoom {
 
         // Server-authoritative dice
         const dice =
-          Math.floor(Math.random() * 6) + 1;
+          Math.floor(
+            Math.random() * 6
+          ) + 1;
 
         this.broadcast({
-          type: "DICE_RESULT",
-          playerId: playerId,
-          playerName: player.name,
+          type:
+            "DICE_RESULT",
+          playerId:
+            playerId,
+          playerName:
+            player.name,
           dice: dice,
         });
 
         // 6 = same player gets another turn
         if (dice !== 6) {
-          this.changeTurn(playerId);
+          this.changeTurn(
+            playerId
+          );
         }
       }
 
@@ -474,9 +530,14 @@ export class LudoRoom {
       // PING
       // =========================
 
-      if (message.type === "PING") {
+      if (
+        message.type ===
+        "PING"
+      ) {
         const player =
-          this.players.get(playerId);
+          this.players.get(
+            playerId
+          );
 
         if (player) {
           player.socket.send(
@@ -487,7 +548,9 @@ export class LudoRoom {
         }
       }
     } catch (error) {
-      console.log("Invalid message");
+      console.log(
+        "Invalid message"
+      );
     }
   }
 
@@ -495,26 +558,34 @@ export class LudoRoom {
   // CHANGE TURN
   // =========================
 
-  changeTurn(currentPlayerId) {
-    const playerIds =
-      [...this.players.keys()];
+  changeTurn(
+    currentPlayerId
+  ) {
+    const playerIds = [
+      ...this.players.keys(),
+    ];
 
     if (playerIds.length < 2) {
       return;
     }
 
     const currentIndex =
-      playerIds.indexOf(currentPlayerId);
+      playerIds.indexOf(
+        currentPlayerId
+      );
 
     const nextIndex =
-      (currentIndex + 1) % playerIds.length;
+      (currentIndex + 1) %
+      playerIds.length;
 
     this.turnPlayerId =
       playerIds[nextIndex];
 
     this.broadcast({
-      type: "TURN_UPDATE",
-      playerId: this.turnPlayerId,
+      type:
+        "TURN_UPDATE",
+      playerId:
+        this.turnPlayerId,
     });
   }
 
@@ -524,9 +595,12 @@ export class LudoRoom {
 
   broadcastPlayers() {
     this.broadcast({
-      type: "PLAYERS_UPDATE",
-      players: this.getPlayers(),
-      turnPlayerId: this.turnPlayerId,
+      type:
+        "PLAYERS_UPDATE",
+      players:
+        this.getPlayers(),
+      turnPlayerId:
+        this.turnPlayerId,
     });
   }
 
@@ -535,13 +609,21 @@ export class LudoRoom {
   // =========================
 
   broadcast(message) {
-    const text = JSON.stringify(message);
+    const text =
+      JSON.stringify(message);
 
-    for (const player of this.players.values()) {
+    for (
+      const player of
+      this.players.values()
+    ) {
       try {
-        player.socket.send(text);
+        player.socket.send(
+          text
+        );
       } catch (error) {
-        console.log("Send failed");
+        console.log(
+          "Send failed"
+        );
       }
     }
   }
