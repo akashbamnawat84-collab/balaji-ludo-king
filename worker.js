@@ -1,17 +1,82 @@
+const SESSION_COOKIE = "balaji_admin_session";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // WebSocket room
+    // =========================
+    // ADMIN LOGIN API
+    // =========================
+    if (url.pathname === "/api/admin/login") {
+      if (request.method !== "POST") {
+        return json(
+          { success: false, message: "Method not allowed" },
+          405
+        );
+      }
+
+      try {
+        const body = await request.json();
+
+        const adminId = String(body.adminId || "");
+        const password = String(body.password || "");
+
+        if (
+          adminId !== env.BALAJI_ADMIN_ID ||
+          password !== env.BALAJI_ADMIN_PASSWORD
+        ) {
+          return json(
+            {
+              success: false,
+              message: "Invalid Admin ID or Password.",
+            },
+            401
+          );
+        }
+
+        const sessionToken = crypto.randomUUID();
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: "Login successful.",
+          }),
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json",
+              "Set-Cookie":
+                `${SESSION_COOKIE}=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`,
+            },
+          }
+        );
+      } catch (error) {
+        return json(
+          {
+            success: false,
+            message: "Invalid request.",
+          },
+          400
+        );
+      }
+    }
+
+    // =========================
+    // WEBSOCKET LUDO ROOM
+    // =========================
     if (url.pathname === "/ws") {
       if (request.headers.get("Upgrade") !== "websocket") {
-        return new Response("Expected WebSocket", { status: 426 });
+        return new Response("Expected WebSocket", {
+          status: 426,
+        });
       }
 
       const room = url.searchParams.get("room");
 
       if (!room || !/^\d{6}$/.test(room)) {
-        return new Response("Invalid room code", { status: 400 });
+        return new Response("Invalid room code", {
+          status: 400,
+        });
       }
 
       const id = env.LUDO_ROOM.idFromName(room);
@@ -20,7 +85,9 @@ export default {
       return stub.fetch(request);
     }
 
-    // Website files
+    // =========================
+    // WEBSITE FILES
+    // =========================
     if (!env.ASSETS) {
       return new Response("ASSETS binding is missing", {
         status: 500,
@@ -30,6 +97,19 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+// ======================================================
+// LUDO DURABLE OBJECT
+// ======================================================
 
 export class LudoRoom {
   constructor(state) {
@@ -81,7 +161,6 @@ export class LudoRoom {
 
     this.players.set(playerId, player);
 
-    // First player gets first turn
     if (!this.turnPlayerId) {
       this.turnPlayerId = playerId;
     }
@@ -105,7 +184,8 @@ export class LudoRoom {
       this.players.delete(playerId);
 
       if (this.turnPlayerId === playerId) {
-        const remainingPlayer = this.players.values().next().value;
+        const remainingPlayer =
+          this.players.values().next().value;
 
         this.turnPlayerId = remainingPlayer
           ? remainingPlayer.id
@@ -132,7 +212,6 @@ export class LudoRoom {
     try {
       const message = JSON.parse(data);
 
-      // Roll dice
       if (message.type === "ROLL_DICE") {
         const player = this.players.get(playerId);
 
@@ -157,13 +236,11 @@ export class LudoRoom {
           dice: dice,
         });
 
-        // 6 means same player gets another turn
         if (dice !== 6) {
           this.changeTurn(playerId);
         }
       }
 
-      // Ping
       if (message.type === "PING") {
         const player = this.players.get(playerId);
 
@@ -187,8 +264,11 @@ export class LudoRoom {
       return;
     }
 
-    const currentIndex = playerIds.indexOf(currentPlayerId);
-    const nextIndex = (currentIndex + 1) % playerIds.length;
+    const currentIndex =
+      playerIds.indexOf(currentPlayerId);
+
+    const nextIndex =
+      (currentIndex + 1) % playerIds.length;
 
     this.turnPlayerId = playerIds[nextIndex];
 
