@@ -9,6 +9,14 @@ directory = "./public"
 name = "LUDO_ROOM"
 class_name = "LudoRoom"
 
+[[durable_objects.bindings]]
+name = "CUSTOMER_STORE"
+class_name = "CustomerStore"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["LudoRoom"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["CustomerStore"]
