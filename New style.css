@@ -1,0 +1,261 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #111827, #1e3a8a);
+  color: #fff;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+  padding: 15px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+header p,
+footer p {
+  text-align: center;
+  opacity: 0.8;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: 0;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin: 6px 0;
+  border: 0;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: #f59e0b;
+  color: #111827;
+}
+
+.secondary-btn {
+  background: #2563eb;
+  color: #fff;
+}
+
+.message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.room-code {
+  margin: 15px 0;
+  padding: 15px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 5px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+}
+
+.players {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.player {
+  padding: 15px;
+  text-align: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.player h3 {
+  margin-top: 6px;
+}
+
+/* Ludo Board */
+
+.ludo-board {
+  width: min(92vw, 500px);
+  aspect-ratio: 1;
+  margin: 20px auto;
+  padding: 8px;
+  background: #fff;
+  border: 6px solid #111827;
+  border-radius: 12px;
+
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+
+  gap: 2px;
+  position: relative;
+}
+
+.home {
+  grid-column: span 2;
+  grid-row: span 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  font-size: 24px;
+  line-height: 1.8;
+
+  border-radius: 10px;
+}
+
+.red {
+  background: #ef4444;
+}
+
+.blue {
+  background: #3b82f6;
+}
+
+.green {
+  background: #22c55e;
+}
+
+.yellow {
+  background: #facc15;
+  color: #111827;
+}
+
+.ludo-cell {
+  min-height: 35px;
+  border: 1px solid #d1d5db;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+}
+
+.white {
+  background: #fff;
+  color: #111827;
+}
+
+.safe {
+  background: #e5e7eb;
+  color: #111827;
+  font-weight: bold;
+}
+
+.center-home {
+  position: absolute;
+
+  width: 25%;
+  height: 25%;
+
+  left: 37.5%;
+  top: 37.5%;
+
+  background: #fff;
+  border: 5px solid #111827;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 35px;
+  z-index: 5;
+}
+
+.dice {
+  width: 75px;
+  height: 75px;
+  margin: 10px auto 15px;
+
+  background: #fff;
+  color: #111827;
+
+  border-radius: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 45px;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+footer {
+  padding: 15px 0;
+}
+
+@media (max-width: 500px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .players {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ludo-board {
+    width: 94vw;
+  }
+
+  .dice {
+    width: 65px;
+    height: 65px;
+    font-size: 38px;
+  }
+}
