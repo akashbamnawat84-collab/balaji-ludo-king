@@ -22,7 +22,7 @@ body{
 .header{
     background:#111827;
     color:white;
-    padding:18px 20px;
+    padding:16px 20px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -41,14 +41,14 @@ body{
 
 .layout{
     display:flex;
-    min-height:calc(100vh - 65px);
+    min-height:calc(100vh - 62px);
 }
 
 .sidebar{
     width:230px;
     background:#1f2937;
     color:white;
-    padding:18px 10px;
+    padding:15px 10px;
 }
 
 .sidebar button{
@@ -56,7 +56,7 @@ body{
     border:0;
     background:transparent;
     color:#d1d5db;
-    padding:13px 12px;
+    padding:12px;
     margin-bottom:5px;
     border-radius:8px;
     text-align:left;
@@ -68,6 +68,11 @@ body{
 .sidebar button.active{
     background:#374151;
     color:white;
+}
+
+.logout{
+    margin-top:20px !important;
+    color:#fca5a5 !important;
 }
 
 .main{
@@ -134,7 +139,9 @@ body{
     margin-bottom:15px;
 }
 
-.input{
+.input,
+.select,
+.textarea{
     width:100%;
     padding:12px;
     margin-bottom:10px;
@@ -144,7 +151,14 @@ body{
     outline:none;
 }
 
-.input:focus{
+.textarea{
+    min-height:80px;
+    resize:vertical;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus{
     border-color:#2563eb;
 }
 
@@ -155,29 +169,78 @@ body{
     padding:11px 16px;
     border-radius:7px;
     cursor:pointer;
-    font-size:14px;
 }
 
 .add-btn:disabled{
     opacity:.6;
+}
+
+.refresh{
+    background:#111827;
+    color:white;
+    padding:9px 14px;
+    border:0;
+    border-radius:7px;
+    cursor:pointer;
+    margin-bottom:15px;
+}
+
+.action-btn{
+    border:0;
+    padding:7px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    margin:2px;
+}
+
+.action-btn:disabled{
+    opacity:.6;
     cursor:not-allowed;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:650px;
+.view{
+    background:#2563eb;
+    color:white;
 }
 
-th,td{
-    padding:12px 10px;
-    border-bottom:1px solid #e5e7eb;
-    text-align:left;
-    font-size:13px;
+.kyc-btn{
+    background:#7c3aed;
+    color:white;
 }
 
-th{
-    background:#f9fafb;
+.block{
+    background:#dc2626;
+    color:white;
+}
+
+.unblock{
+    background:#16a34a;
+    color:white;
+}
+
+.verify{
+    background:#16a34a;
+    color:white;
+}
+
+.reject{
+    background:#dc2626;
+    color:white;
+}
+
+.pending-btn{
+    background:#d97706;
+    color:white;
+}
+
+.back-btn{
+    background:#6b7280;
+    color:white;
+    border:0;
+    padding:9px 14px;
+    border-radius:7px;
+    cursor:pointer;
+    margin-bottom:15px;
 }
 
 .status{
@@ -197,53 +260,20 @@ th{
     color:#92400e;
 }
 
-.completed{
-    background:#dbeafe;
-    color:#1d4ed8;
+.verified{
+    background:#dcfce7;
+    color:#166534;
 }
 
+.rejected,
 .danger{
     background:#fee2e2;
     color:#991b1b;
 }
 
-.action-btn{
-    border:0;
-    padding:7px 11px;
-    border-radius:6px;
-    cursor:pointer;
-    margin-right:4px;
-    margin-bottom:4px;
-}
-
-.action-btn:disabled{
-    opacity:.6;
-    cursor:not-allowed;
-}
-
-.view{
-    background:#2563eb;
-    color:white;
-}
-
-.block{
-    background:#dc2626;
-    color:white;
-}
-
-.unblock{
-    background:#16a34a;
-    color:white;
-}
-
-.refresh{
-    background:#111827;
-    color:white;
-    padding:9px 14px;
-    border:0;
-    border-radius:7px;
-    cursor:pointer;
-    margin-bottom:15px;
+.completed{
+    background:#dbeafe;
+    color:#1d4ed8;
 }
 
 .message{
@@ -265,30 +295,53 @@ th{
     color:#991b1b;
 }
 
-.logout{
-    margin-top:20px !important;
-    color:#fca5a5 !important;
-}
-
 .empty{
     text-align:center;
     color:#6b7280;
     padding:20px;
 }
 
-@media(max-width:900px){
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
 
+.info-box{
+    background:#f9fafb;
+    padding:13px;
+    border-radius:8px;
+}
+
+.info-box small{
+    display:block;
+    color:#6b7280;
+    margin-bottom:5px;
+}
+
+.kyc-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:15px;
+}
+
+.warning{
+    background:#fff7ed;
+    color:#9a3412;
+    padding:10px;
+    border-radius:7px;
+    margin-bottom:12px;
+    font-size:13px;
+}
+
+@media(max-width:900px){
     .stats{
         grid-template-columns:repeat(2,1fr);
-    }
-
-    .sidebar{
-        width:190px;
     }
 }
 
 @media(max-width:650px){
-
     .layout{
         flex-direction:column;
     }
@@ -315,13 +368,30 @@ th{
         gap:10px;
     }
 
-    .stat-card{
-        padding:14px;
+    .info-grid{
+        grid-template-columns:1fr;
     }
 
-    .stat-card h3{
-        font-size:20px;
+    table{
+        min-width:850px;
     }
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:650px;
+}
+
+th,td{
+    padding:11px 9px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#f9fafb;
 }
 </style>
 </head>
@@ -329,195 +399,111 @@ th{
 <body>
 
 <header class="header">
-
     <h1>🎮 Balaji Ludo King</h1>
-
-    <div class="admin-badge">
-        ADMIN
-    </div>
-
+    <div class="admin-badge">ADMIN</div>
 </header>
-
 
 <div class="layout">
 
-
-<!-- SIDEBAR -->
-
 <aside class="sidebar">
 
-<button type="button"
-        class="menu active"
-        data-section="dashboard">
+<button class="menu active" data-section="dashboard">
 📊 Dashboard
 </button>
 
-<button type="button"
-        class="menu"
-        data-section="customers">
+<button class="menu" data-section="customers">
 👥 Customers
 </button>
 
-<button type="button"
-        class="menu"
-        data-section="battles">
+<button class="menu" data-section="battles">
 🎮 Live Battles
 </button>
 
-<button type="button"
-        class="menu"
-        data-section="deposits">
+<button class="menu" data-section="deposits">
 💰 Deposits
 </button>
 
-<button type="button"
-        class="menu"
-        data-section="withdrawals">
+<button class="menu" data-section="withdrawals">
 📤 Withdrawals
 </button>
 
-<button type="button"
-        class="menu"
-        data-section="wallet">
+<button class="menu" data-section="wallet">
 💳 Wallet
 </button>
 
-<button type="button"
-        class="menu"
-        data-section="results">
+<button class="menu" data-section="results">
 🏆 Game Results
 </button>
 
-<button type="button"
-        class="menu"
-        data-section="settings">
+<button class="menu" data-section="settings">
 ⚙️ Settings
 </button>
 
-<button type="button"
-        class="menu logout"
-        id="logoutButton">
+<button class="menu logout" id="logoutButton">
 🚪 Logout
 </button>
 
 </aside>
 
-
-
-<!-- MAIN -->
-
 <main class="main">
 
-
-<!-- DASHBOARD -->
+<!-- ==================================================
+DASHBOARD
+================================================== -->
 
 <section id="dashboard" class="section active">
 
 <div class="section-title">
-
 <h2>Dashboard</h2>
-
-<p>
-Balaji Ludo King admin overview
-</p>
-
+<p>Balaji Ludo King admin overview</p>
 </div>
-
 
 <div class="stats">
 
+<div class="stat-card">
+<span>Total Customers</span>
+<h3 id="totalCustomers">0</h3>
+</div>
 
 <div class="stat-card">
-
-<span>
-Total Customers
-</span>
-
-<h3 id="totalCustomers">
-0
-</h3>
-
+<span>Live Battles</span>
+<h3 id="liveBattles">0</h3>
 </div>
-
 
 <div class="stat-card">
-
-<span>
-Live Battles
-</span>
-
-<h3 id="liveBattles">
-0
-</h3>
-
+<span>Pending Deposits</span>
+<h3 id="pendingDeposits">0</h3>
 </div>
-
 
 <div class="stat-card">
-
-<span>
-Pending Deposits
-</span>
-
-<h3 id="pendingDeposits">
-0
-</h3>
-
-</div>
-
-
-<div class="stat-card">
-
-<span>
-Pending Withdrawals
-</span>
-
-<h3 id="pendingWithdrawals">
-0
-</h3>
-
+<span>Pending Withdrawals</span>
+<h3 id="pendingWithdrawals">0</h3>
 </div>
 
 </div>
-
 
 <div class="card">
 
-<h3>
-Recent Activity
-</h3>
+<h3>Recent Activity</h3>
 
 <table>
-
 <thead>
-
 <tr>
 <th>Activity</th>
 <th>User</th>
 <th>Status</th>
 <th>Time</th>
 </tr>
-
 </thead>
 
 <tbody>
-
 <tr>
-
-<td>
-No activity yet
-</td>
-
+<td>No activity yet</td>
 <td>-</td>
-
 <td>-</td>
-
 <td>-</td>
-
 </tr>
-
 </tbody>
-
 </table>
 
 </div>
@@ -525,111 +511,79 @@ No activity yet
 </section>
 
 
-
-<!-- CUSTOMERS -->
+<!-- ==================================================
+CUSTOMERS
+================================================== -->
 
 <section id="customers" class="section">
 
 <div class="section-title">
-
-<h2>
-Customers
-</h2>
-
-<p>
-Manage registered players
-</p>
-
+<h2>Customers</h2>
+<p>Manage registered players</p>
 </div>
-
-
-
-<!-- ADD CUSTOMER -->
 
 <div class="card">
 
-<h3>
-➕ Add Customer
-</h3>
-
+<h3>➕ Add Customer</h3>
 
 <input
-    type="text"
-    id="newCustomerName"
-    class="input"
-    placeholder="Customer Name"
-    autocomplete="off"
+type="text"
+id="newCustomerName"
+class="input"
+placeholder="Customer Name"
+autocomplete="off"
 >
-
 
 <input
-    type="tel"
-    id="newCustomerMobile"
-    class="input"
-    placeholder="Mobile Number"
-    maxlength="10"
-    inputmode="numeric"
-    autocomplete="off"
+type="tel"
+id="newCustomerMobile"
+class="input"
+placeholder="Mobile Number"
+maxlength="10"
+inputmode="numeric"
+autocomplete="off"
 >
-
 
 <button
-    type="button"
-    class="add-btn"
-    id="addCustomerButton">
+class="add-btn"
+id="addCustomerButton"
+>
 ➕ Add Customer
 </button>
 
-
 </div>
 
-
-
 <button
-    type="button"
-    class="refresh"
-    id="refreshCustomers">
+class="refresh"
+id="refreshCustomers"
+>
 🔄 Refresh Customers
 </button>
 
-
-<div
-    id="customerMessage"
-    class="message">
-</div>
-
+<div id="customerMessage" class="message"></div>
 
 <div class="card">
 
 <table>
 
 <thead>
-
 <tr>
-
 <th>ID</th>
 <th>Name</th>
 <th>Mobile</th>
 <th>Wallet</th>
 <th>Status</th>
+<th>KYC</th>
 <th>Action</th>
-
 </tr>
-
 </thead>
-
 
 <tbody id="customersTableBody">
 
 <tr>
-
-<td colspan="6"
-    class="empty">
-
+<td colspan="7" class="empty">
 Loading customers...
-
 </td>
-
 </tr>
 
 </tbody>
@@ -641,65 +595,166 @@ Loading customers...
 </section>
 
 
+<!-- ==================================================
+CUSTOMER VIEW
+================================================== -->
 
-<!-- LIVE BATTLES -->
+<section id="customerView" class="section">
+
+<div class="section-title">
+
+<h2>👤 Customer Profile</h2>
+<p>Customer details</p>
+
+</div>
+
+<button
+class="back-btn"
+id="backToCustomers"
+>
+← Back to Customers
+</button>
+
+<div id="customerViewMessage" class="message"></div>
+
+<div class="card" id="customerProfileCard">
+
+<div class="empty">
+Select a customer to view details.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ==================================================
+KYC
+================================================== -->
+
+<section id="kyc" class="section">
+
+<div class="section-title">
+
+<h2>🪪 Customer KYC</h2>
+<p>Review and manage customer verification</p>
+
+</div>
+
+<button
+class="back-btn"
+id="backFromKyc"
+>
+← Back to Customers
+</button>
+
+<div id="kycMessage" class="message"></div>
+
+<div class="card" id="kycCustomerCard">
+
+<div class="empty">
+Loading customer...
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>🪪 KYC Information</h3>
+
+<div id="kycDetails">
+
+<div class="empty">
+Loading KYC...
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>➕ Submit / Update KYC</h3>
+
+<div class="warning">
+Testing के लिए केवल dummy document number इस्तेमाल करें। असली Aadhaar/PAN नंबर यहाँ paste न करें।
+</div>
+
+<select
+id="kycDocumentType"
+class="select"
+>
+<option value="">Select Document Type</option>
+<option value="Aadhaar">Aadhaar</option>
+<option value="PAN">PAN</option>
+<option value="Driving License">Driving License</option>
+<option value="Voter ID">Voter ID</option>
+<option value="Passport">Passport</option>
+</select>
+
+<input
+type="text"
+id="kycDocumentNumber"
+class="input"
+placeholder="Document Number"
+autocomplete="off"
+>
+
+<input
+type="url"
+id="kycDocumentUrl"
+class="input"
+placeholder="Document Image URL (optional)"
+autocomplete="off"
+>
+
+<button
+class="add-btn"
+id="saveKycButton"
+>
+💾 Save KYC
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ==================================================
+LIVE BATTLES
+================================================== -->
 
 <section id="battles" class="section">
 
 <div class="section-title">
-
-<h2>
-Live Battles
-</h2>
-
-<p>
-Monitor active 2-player games
-</p>
-
+<h2>🎮 Live Battles</h2>
+<p>Monitor active 2-player games</p>
 </div>
-
 
 <div class="card">
 
 <table>
 
 <thead>
-
 <tr>
-
 <th>Room</th>
 <th>Player 1</th>
 <th>Player 2</th>
 <th>Status</th>
-
 </tr>
-
 </thead>
 
 <tbody>
 
 <tr>
-
+<td>------</td>
+<td>Waiting</td>
+<td>Waiting</td>
 <td>
-------
-</td>
-
-<td>
-Waiting
-</td>
-
-<td>
-Waiting
-</td>
-
-<td>
-
 <span class="status pending">
 No active battle
 </span>
-
 </td>
-
 </tr>
 
 </tbody>
@@ -711,53 +766,37 @@ No active battle
 </section>
 
 
-
-<!-- DEPOSITS -->
+<!-- ==================================================
+DEPOSITS
+================================================== -->
 
 <section id="deposits" class="section">
 
 <div class="section-title">
-
-<h2>
-Deposits
-</h2>
-
-<p>
-Review customer deposit requests
-</p>
-
+<h2>💰 Deposits</h2>
+<p>Review customer deposit requests</p>
 </div>
-
 
 <div class="card">
 
 <table>
 
 <thead>
-
 <tr>
-
 <th>Request</th>
 <th>Customer</th>
 <th>Amount</th>
 <th>Status</th>
 <th>Action</th>
-
 </tr>
-
 </thead>
 
 <tbody>
 
 <tr>
-
-<td colspan="5"
-    class="empty">
-
+<td colspan="5" class="empty">
 No deposit requests yet
-
 </td>
-
 </tr>
 
 </tbody>
@@ -769,53 +808,37 @@ No deposit requests yet
 </section>
 
 
-
-<!-- WITHDRAWALS -->
+<!-- ==================================================
+WITHDRAWALS
+================================================== -->
 
 <section id="withdrawals" class="section">
 
 <div class="section-title">
-
-<h2>
-Withdrawals
-</h2>
-
-<p>
-Review customer withdrawal requests
-</p>
-
+<h2>📤 Withdrawals</h2>
+<p>Review customer withdrawal requests</p>
 </div>
-
 
 <div class="card">
 
 <table>
 
 <thead>
-
 <tr>
-
 <th>Request</th>
 <th>Customer</th>
 <th>Amount</th>
 <th>Status</th>
 <th>Action</th>
-
 </tr>
-
 </thead>
 
 <tbody>
 
 <tr>
-
-<td colspan="5"
-    class="empty">
-
+<td colspan="5" class="empty">
 No withdrawal requests yet
-
 </td>
-
 </tr>
 
 </tbody>
@@ -827,133 +850,75 @@ No withdrawal requests yet
 </section>
 
 
-
-<!-- WALLET -->
+<!-- ==================================================
+WALLET
+================================================== -->
 
 <section id="wallet" class="section">
 
 <div class="section-title">
-
-<h2>
-Wallet
-</h2>
-
-<p>
-Wallet and transaction overview
-</p>
-
+<h2>💳 Wallet</h2>
+<p>Wallet and transaction overview</p>
 </div>
-
 
 <div class="stats">
 
-
 <div class="stat-card">
-
-<span>
-Total Deposits
-</span>
-
-<h3>
-₹0
-</h3>
-
+<span>Total Deposits</span>
+<h3>₹0</h3>
 </div>
 
-
 <div class="stat-card">
-
-<span>
-Total Withdrawals
-</span>
-
-<h3>
-₹0
-</h3>
-
+<span>Total Withdrawals</span>
+<h3>₹0</h3>
 </div>
 
-
 <div class="stat-card">
-
-<span>
-Platform Balance
-</span>
-
-<h3>
-₹0
-</h3>
-
+<span>Platform Balance</span>
+<h3>₹0</h3>
 </div>
 
-
 <div class="stat-card">
-
-<span>
-Transactions
-</span>
-
-<h3>
-0
-</h3>
-
+<span>Transactions</span>
+<h3>0</h3>
 </div>
-
 
 </div>
 
 </section>
 
 
-
-<!-- RESULTS -->
+<!-- ==================================================
+RESULTS
+================================================== -->
 
 <section id="results" class="section">
 
 <div class="section-title">
-
-<h2>
-Game Results
-</h2>
-
-<p>
-Completed Ludo battle results
-</p>
-
+<h2>🏆 Game Results</h2>
+<p>Completed Ludo battle results</p>
 </div>
-
 
 <div class="card">
 
 <table>
 
 <thead>
-
 <tr>
-
 <th>Game</th>
 <th>Winner</th>
 <th>Loser</th>
 <th>Result</th>
-
 </tr>
-
 </thead>
 
 <tbody>
 
 <tr>
-
-<td class="empty">
-No games yet
-</td>
-
+<td class="empty">No games yet</td>
 <td>-</td>
-
 <td>-</td>
-
 <td>-</td>
-
 </tr>
 
 </tbody>
@@ -965,55 +930,55 @@ No games yet
 </section>
 
 
-
-<!-- SETTINGS -->
+<!-- ==================================================
+SETTINGS
+================================================== -->
 
 <section id="settings" class="section">
 
 <div class="section-title">
-
-<h2>
-Settings
-</h2>
-
-<p>
-Admin and platform settings
-</p>
-
+<h2>⚙️ Settings</h2>
+<p>Admin and platform settings</p>
 </div>
-
 
 <div class="card">
 
-<h3>
-Platform Status
-</h3>
+<h3>Platform Status</h3>
 
-<p>
-🟢 Balaji Ludo King system is online.
-</p>
+<p>🟢 Balaji Ludo King system is online.</p>
 
 <br>
 
-<p>
-Admin authentication is active.
-</p>
+<p>Admin authentication is active.</p>
+
+<br>
+
+<p>👥 Customer management is active.</p>
+
+<br>
+
+<p>🪪 KYC management is active.</p>
 
 </div>
 
 </section>
-
 
 </main>
 
 </div>
 
 
-
 <script>
 
 // ======================================================
-// ADMIN SESSION
+// GLOBAL STATE
+// ======================================================
+
+let currentCustomerId = null;
+
+
+// ======================================================
+// SESSION CHECK
 // ======================================================
 
 async function checkAdminSession(){
@@ -1030,7 +995,6 @@ async function checkAdminSession(){
                 }
             );
 
-
         if(!response.ok){
 
             window.location.replace(
@@ -1040,10 +1004,8 @@ async function checkAdminSession(){
             return false;
         }
 
-
         const data =
             await response.json();
-
 
         if(
             !data.success ||
@@ -1056,7 +1018,6 @@ async function checkAdminSession(){
 
             return false;
         }
-
 
         return true;
 
@@ -1071,130 +1032,147 @@ async function checkAdminSession(){
 }
 
 
-
 // ======================================================
-// LOGOUT
+// ESCAPE HTML
 // ======================================================
 
-async function logout(){
+function escapeHtml(value){
 
-    const button =
-        document.getElementById(
-            "logoutButton"
-        );
-
-
-    if(button){
-
-        button.disabled = true;
-
-        button.textContent =
-            "Logging out...";
-    }
-
-
-    try{
-
-        await fetch(
-            "/api/admin/logout",
-            {
-                method:"POST",
-                credentials:"same-origin",
-                cache:"no-store"
-            }
-        );
-
-    }catch(error){
-
-        console.log(
-            "Logout error",
-            error
-        );
-
-    }
-
-
-    window.location.replace(
-        "/admin-login.html"
-    );
+    return String(
+        value ?? ""
+    )
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
+
+// ======================================================
+// SHOW MESSAGE
+// ======================================================
+
+function showMessage(
+    elementId,
+    text,
+    type="normal"
+){
+
+    const box =
+        document.getElementById(
+            elementId
+        );
+
+    if(!box) return;
+
+    box.textContent = text;
+
+    box.className = "message";
+
+    if(type === "success"){
+        box.classList.add(
+            "success-message"
+        );
+    }
+
+    if(type === "error"){
+        box.classList.add(
+            "error-message"
+        );
+    }
+
+    box.style.display = "block";
+}
+
+
+// ======================================================
+// HIDE MESSAGE
+// ======================================================
+
+function hideMessage(elementId){
+
+    const box =
+        document.getElementById(
+            elementId
+        );
+
+    if(box){
+        box.style.display = "none";
+    }
+}
+
+
+// ======================================================
+// OPEN SECTION
+// ======================================================
+
+function openSection(sectionId){
+
+    document
+        .querySelectorAll(".section")
+        .forEach(section => {
+
+            section.classList.remove(
+                "active"
+            );
+
+        });
+
+    const section =
+        document.getElementById(
+            sectionId
+        );
+
+    if(section){
+        section.classList.add(
+            "active"
+        );
+    }
+
+    document
+        .querySelectorAll(".menu")
+        .forEach(button => {
+
+            button.classList.remove(
+                "active"
+            );
+
+            if(
+                button.dataset.section ===
+                sectionId
+            ){
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+        });
+}
 
 
 // ======================================================
 // MENU
 // ======================================================
 
-const menuButtons =
-    document.querySelectorAll(
-        ".menu"
-    );
-
-
-const sections =
-    document.querySelectorAll(
-        ".section"
-    );
-
-
-menuButtons.forEach(
-    button => {
+document
+    .querySelectorAll(".menu")
+    .forEach(button => {
 
         button.addEventListener(
             "click",
-            async function(){
+            async () => {
 
                 const target =
-                    this.dataset.section;
-
+                    button.dataset.section;
 
                 if(!target){
-
                     return;
                 }
 
-
-                menuButtons.forEach(
-                    item => {
-
-                        item.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                this.classList.add(
-                    "active"
-                );
-
-
-                sections.forEach(
-                    section => {
-
-                        section.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                const targetSection =
-                    document.getElementById(
-                        target
-                    );
-
-
-                if(targetSection){
-
-                    targetSection.classList.add(
-                        "active"
-                    );
-
-                }
-
+                openSection(target);
 
                 if(
                     target ===
@@ -1208,81 +1186,57 @@ menuButtons.forEach(
             }
         );
 
-    }
-);
-
+    });
 
 
 // ======================================================
-// CUSTOMER MESSAGE
+// LOGOUT
 // ======================================================
 
-function showCustomerMessage(
-    text,
-    type="normal"
-){
+document
+    .getElementById(
+        "logoutButton"
+    )
+    .addEventListener(
+        "click",
+        async () => {
 
-    const box =
-        document.getElementById(
-            "customerMessage"
-        );
+            const button =
+                document.getElementById(
+                    "logoutButton"
+                );
 
+            button.disabled = true;
 
-    if(!box){
+            button.textContent =
+                "Logging out...";
 
-        return;
-    }
+            try{
 
+                await fetch(
+                    "/api/admin/logout",
+                    {
+                        method:"POST",
+                        credentials:
+                            "same-origin",
+                        cache:"no-store"
+                    }
+                );
 
-    box.textContent =
-        text;
+            }catch(error){
 
+                console.log(
+                    error
+                );
 
-    box.className =
-        "message";
+            }
 
+            window.location.replace(
+                "/admin-login.html"
+            );
 
-    if(type === "success"){
-
-        box.classList.add(
-            "success-message"
-        );
-
-    }
-
-
-    if(type === "error"){
-
-        box.classList.add(
-            "error-message"
-        );
-
-    }
-
-
-    box.style.display =
-        "block";
-}
-
-
-function hideCustomerMessage(){
-
-    const box =
-        document.getElementById(
-            "customerMessage"
-        );
-
-
-    if(!box){
-
-        return;
-    }
-
-
-    box.style.display =
-        "none";
-}
-
+        }
+    );
 
 
 // ======================================================
@@ -1296,24 +1250,17 @@ async function loadCustomers(){
             "customersTableBody"
         );
 
-
     if(!tbody){
-
         return;
     }
 
-
     tbody.innerHTML = `
         <tr>
-            <td colspan="6" class="empty">
+            <td colspan="7" class="empty">
                 Loading customers...
             </td>
         </tr>
     `;
-
-
-    hideCustomerMessage();
-
 
     try{
 
@@ -1322,11 +1269,11 @@ async function loadCustomers(){
                 "/api/admin/customers",
                 {
                     method:"GET",
-                    credentials:"same-origin",
+                    credentials:
+                        "same-origin",
                     cache:"no-store"
                 }
             );
-
 
         if(
             response.status ===
@@ -1340,10 +1287,8 @@ async function loadCustomers(){
             return;
         }
 
-
         const data =
             await response.json();
-
 
         if(!data.success){
 
@@ -1351,8 +1296,8 @@ async function loadCustomers(){
                 data.message ||
                 "Unable to load customers."
             );
-        }
 
+        }
 
         const customers =
             Array.isArray(
@@ -1361,19 +1306,10 @@ async function loadCustomers(){
             ? data.customers
             : [];
 
-
-        const total =
-            document.getElementById(
-                "totalCustomers"
-            );
-
-
-        if(total){
-
-            total.textContent =
-                customers.length;
-        }
-
+        document.getElementById(
+            "totalCustomers"
+        ).textContent =
+            customers.length;
 
         if(
             customers.length ===
@@ -1382,7 +1318,7 @@ async function loadCustomers(){
 
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="empty">
+                    <td colspan="7" class="empty">
                         No customers registered yet.
                     </td>
                 </tr>
@@ -1391,129 +1327,198 @@ async function loadCustomers(){
             return;
         }
 
-
         tbody.innerHTML = "";
 
+        for(
+            const customer of customers
+        ){
 
-        customers.forEach(
-            customer => {
+            const status =
+                customer.status ===
+                "Blocked"
+                ? "Blocked"
+                : "Active";
 
-                const row =
-                    document.createElement(
-                        "tr"
+            const statusClass =
+                status === "Blocked"
+                ? "danger"
+                : "online";
+
+            const actionClass =
+                status === "Blocked"
+                ? "unblock"
+                : "block";
+
+            const actionText =
+                status === "Blocked"
+                ? "Unblock"
+                : "Block";
+
+            let kycStatus = "Not Submitted";
+            let kycClass = "pending";
+
+            try{
+
+                const kycResponse =
+                    await fetch(
+                        `/api/admin/customers/${Number(customer.id)}/kyc`,
+                        {
+                            method:"GET",
+                            credentials:
+                                "same-origin",
+                            cache:"no-store"
+                        }
                     );
 
+                if(
+                    kycResponse.ok
+                ){
 
-                const status =
-                    customer.status ===
-                    "Blocked"
-                    ? "Blocked"
-                    : "Active";
+                    const kycData =
+                        await kycResponse.json();
 
+                    if(
+                        kycData.kyc
+                    ){
 
-                const statusClass =
-                    status === "Blocked"
-                    ? "danger"
-                    : "online";
+                        kycStatus =
+                            kycData.kyc.status ||
+                            "Pending";
 
+                        if(
+                            kycStatus ===
+                            "Verified"
+                        ){
 
-                const actionClass =
-                    status === "Blocked"
-                    ? "unblock"
-                    : "block";
+                            kycClass =
+                                "verified";
 
+                        }else if(
+                            kycStatus ===
+                            "Rejected"
+                        ){
 
-                const actionText =
-                    status === "Blocked"
-                    ? "Unblock"
-                    : "Block";
+                            kycClass =
+                                "rejected";
 
+                        }else{
 
-                row.innerHTML = `
+                            kycClass =
+                                "pending";
 
-                    <td>
-                        #${Number(
-                            customer.id
-                        )}
-                    </td>
+                        }
 
-                    <td>
-                        ${escapeHtml(
-                            customer.name ||
-                            "-"
-                        )}
-                    </td>
+                    }
 
-                    <td>
-                        ${escapeHtml(
-                            customer.mobile ||
-                            "-"
-                        )}
-                    </td>
+                }
 
-                    <td>
-                        ₹${Number(
-                            customer.wallet ||
-                            0
-                        ).toFixed(2)}
-                    </td>
+            }catch(error){
 
-                    <td>
-
-                        <span
-                            class="status ${statusClass}">
-                            ${status}
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <button
-                            type="button"
-                            class="action-btn view"
-                            data-action="view"
-                            data-id="${Number(
-                                customer.id
-                            )}">
-                            View
-                        </button>
-
-                        <button
-                            type="button"
-                            class="action-btn ${actionClass}"
-                            data-action="toggle"
-                            data-id="${Number(
-                                customer.id
-                            )}"
-                            data-status="${status}">
-                            ${actionText}
-                        </button>
-
-                    </td>
-                `;
-
-
-                tbody.appendChild(
-                    row
+                console.log(
+                    "KYC status error",
+                    error
                 );
 
             }
-        );
 
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+            row.innerHTML = `
+
+                <td>
+                    #${Number(customer.id)}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        customer.name ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        customer.mobile ||
+                        "-"
+                    )}
+                </td>
+
+                <td>
+                    ₹${Number(
+                        customer.wallet ||
+                        0
+                    ).toFixed(2)}
+                </td>
+
+                <td>
+                    <span class="status ${statusClass}">
+                        ${status}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="status ${kycClass}">
+                        ${escapeHtml(
+                            kycStatus
+                        )}
+                    </span>
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-btn view"
+                        data-action="view"
+                        data-id="${Number(
+                            customer.id
+                        )}"
+                    >
+                        View
+                    </button>
+
+                    <button
+                        class="action-btn kyc-btn"
+                        data-action="kyc"
+                        data-id="${Number(
+                            customer.id
+                        )}"
+                    >
+                        KYC
+                    </button>
+
+                    <button
+                        class="action-btn ${actionClass}"
+                        data-action="toggle"
+                        data-id="${Number(
+                            customer.id
+                        )}"
+                        data-status="${status}"
+                    >
+                        ${actionText}
+                    </button>
+
+                </td>
+            `;
+
+            tbody.appendChild(row);
+
+        }
 
     }catch(error){
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="empty">
+                <td colspan="7" class="empty">
                     Unable to load customers.
                 </td>
             </tr>
         `;
 
-
-        showCustomerMessage(
+        showMessage(
+            "customerMessage",
             error.message ||
             "Customer API error.",
             "error"
@@ -1523,10 +1528,86 @@ async function loadCustomers(){
 }
 
 
+// ======================================================
+// CUSTOMER TABLE ACTIONS
+// ======================================================
+
+document
+    .getElementById(
+        "customersTableBody"
+    )
+    .addEventListener(
+        "click",
+        async event => {
+
+            const button =
+                event.target.closest(
+                    "button[data-action]"
+                );
+
+            if(!button){
+                return;
+            }
+
+            const id =
+                Number(
+                    button.dataset.id
+                );
+
+            const action =
+                button.dataset.action;
+
+            if(!id){
+                return;
+            }
+
+            if(
+                action ===
+                "view"
+            ){
+
+                await viewCustomer(id);
+
+            }
+
+            if(
+                action ===
+                "kyc"
+            ){
+
+                await openKyc(id);
+
+            }
+
+            if(
+                action ===
+                "toggle"
+            ){
+
+                await toggleCustomer(
+                    id,
+                    button.dataset.status
+                );
+
+            }
+
+        }
+    );
+
 
 // ======================================================
 // ADD CUSTOMER
 // ======================================================
+
+document
+    .getElementById(
+        "addCustomerButton"
+    )
+    .addEventListener(
+        "click",
+        addCustomer
+    );
+
 
 async function addCustomer(){
 
@@ -1535,64 +1616,37 @@ async function addCustomer(){
             "newCustomerName"
         );
 
-
     const mobileInput =
         document.getElementById(
             "newCustomerMobile"
         );
-
 
     const button =
         document.getElementById(
             "addCustomerButton"
         );
 
-
     const name =
         nameInput.value.trim();
-
 
     const mobile =
         mobileInput.value.trim();
 
-
     if(!name){
 
-        showCustomerMessage(
+        showMessage(
+            "customerMessage",
             "Customer name is required.",
             "error"
         );
 
-        nameInput.focus();
-
         return;
     }
-
-
-    if(
-        mobile &&
-        !/^\d{10}$/.test(mobile)
-    ){
-
-        showCustomerMessage(
-            "Mobile number must be 10 digits.",
-            "error"
-        );
-
-        mobileInput.focus();
-
-        return;
-    }
-
 
     button.disabled = true;
 
     button.textContent =
         "Adding...";
-
-
-    hideCustomerMessage();
-
 
     try{
 
@@ -1601,20 +1655,18 @@ async function addCustomer(){
                 "/api/admin/customers",
                 {
                     method:"POST",
-                    credentials:"same-origin",
-
+                    credentials:
+                        "same-origin",
                     headers:{
                         "Content-Type":
                             "application/json"
                     },
-
                     body:JSON.stringify({
-                        name:name,
-                        mobile:mobile
+                        name,
+                        mobile
                     })
                 }
             );
-
 
         if(
             response.status ===
@@ -1628,37 +1680,33 @@ async function addCustomer(){
             return;
         }
 
-
         const data =
             await response.json();
-
 
         if(!data.success){
 
             throw new Error(
                 data.message ||
-                "Unable to create customer."
+                "Unable to add customer."
             );
+
         }
 
-
         nameInput.value = "";
-
         mobileInput.value = "";
 
-
-        showCustomerMessage(
+        showMessage(
+            "customerMessage",
             "Customer added successfully.",
             "success"
         );
 
-
         await loadCustomers();
-
 
     }catch(error){
 
-        showCustomerMessage(
+        showMessage(
+            "customerMessage",
             error.message ||
             "Unable to add customer.",
             "error"
@@ -1670,9 +1718,9 @@ async function addCustomer(){
 
         button.textContent =
             "➕ Add Customer";
+
     }
 }
-
 
 
 // ======================================================
@@ -1681,6 +1729,23 @@ async function addCustomer(){
 
 async function viewCustomer(id){
 
+    currentCustomerId = id;
+
+    openSection(
+        "customerView"
+    );
+
+    const card =
+        document.getElementById(
+            "customerProfileCard"
+        );
+
+    card.innerHTML = `
+        <div class="empty">
+            Loading customer...
+        </div>
+    `;
+
     try{
 
         const response =
@@ -1688,11 +1753,11 @@ async function viewCustomer(id){
                 `/api/admin/customers/${id}`,
                 {
                     method:"GET",
-                    credentials:"same-origin",
+                    credentials:
+                        "same-origin",
                     cache:"no-store"
                 }
             );
-
 
         if(
             response.status ===
@@ -1706,93 +1771,128 @@ async function viewCustomer(id){
             return;
         }
 
-
         const data =
             await response.json();
 
-
         if(!data.success){
 
-            alert(
+            throw new Error(
                 data.message ||
                 "Customer not found."
             );
 
-            return;
         }
-
 
         const customer =
             data.customer;
 
+        card.innerHTML = `
 
-        alert(
-            "Customer Details\n\n" +
+            <h3>
+                👤 ${escapeHtml(
+                    customer.name
+                )}
+            </h3>
 
-            "ID: #" +
-            customer.id +
+            <div class="info-grid">
 
-            "\nName: " +
-            customer.name +
+                <div class="info-box">
+                    <small>Customer ID</small>
+                    <strong>
+                        #${Number(
+                            customer.id
+                        )}
+                    </strong>
+                </div>
 
-            "\nMobile: " +
-            (
-                customer.mobile ||
-                "-"
-            ) +
+                <div class="info-box">
+                    <small>Name</small>
+                    <strong>
+                        ${escapeHtml(
+                            customer.name
+                        )}
+                    </strong>
+                </div>
 
-            "\nWallet: ₹" +
-            Number(
-                customer.wallet ||
-                0
-            ).toFixed(2) +
+                <div class="info-box">
+                    <small>Mobile</small>
+                    <strong>
+                        ${escapeHtml(
+                            customer.mobile ||
+                            "-"
+                        )}
+                    </strong>
+                </div>
 
-            "\nStatus: " +
-            customer.status
-        );
+                <div class="info-box">
+                    <small>Wallet</small>
+                    <strong>
+                        ₹${Number(
+                            customer.wallet ||
+                            0
+                        ).toFixed(2)}
+                    </strong>
+                </div>
 
+                <div class="info-box">
+                    <small>Status</small>
+                    <strong>
+                        ${escapeHtml(
+                            customer.status
+                        )}
+                    </strong>
+                </div>
+
+                <div class="info-box">
+                    <small>Created</small>
+                    <strong>
+                        ${formatDate(
+                            customer.created_at
+                        )}
+                    </strong>
+                </div>
+
+            </div>
+
+        `;
 
     }catch(error){
 
-        alert(
-            "Unable to load customer details."
-        );
+        card.innerHTML = `
+            <div class="empty">
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>
+        `;
 
     }
 }
 
 
-
 // ======================================================
-// BLOCK / UNBLOCK
+// TOGGLE CUSTOMER
 // ======================================================
 
 async function toggleCustomer(
     id,
-    status
+    currentStatus
 ){
 
     const newStatus =
-        status === "Blocked"
+        currentStatus ===
+        "Blocked"
         ? "Active"
         : "Blocked";
 
+    const confirmed =
+        confirm(
+            `Are you sure you want to ${newStatus === "Blocked" ? "block" : "unblock"} this customer?`
+        );
 
-    const confirmMessage =
-        newStatus === "Blocked"
-        ? "Block this customer?"
-        : "Unblock this customer?";
-
-
-    if(
-        !window.confirm(
-            confirmMessage
-        )
-    ){
-
+    if(!confirmed){
         return;
     }
-
 
     try{
 
@@ -1801,19 +1901,17 @@ async function toggleCustomer(
                 `/api/admin/customers/${id}`,
                 {
                     method:"PATCH",
-                    credentials:"same-origin",
-
+                    credentials:
+                        "same-origin",
                     headers:{
                         "Content-Type":
                             "application/json"
                     },
-
                     body:JSON.stringify({
                         status:newStatus
                     })
                 }
             );
-
 
         if(
             response.status ===
@@ -1827,205 +1925,767 @@ async function toggleCustomer(
             return;
         }
 
-
         const data =
             await response.json();
 
-
         if(!data.success){
 
-            alert(
+            throw new Error(
                 data.message ||
                 "Unable to update customer."
             );
 
-            return;
         }
 
+        showMessage(
+            "customerMessage",
+            data.message ||
+            `Customer ${newStatus}.`,
+            "success"
+        );
 
         await loadCustomers();
 
-
     }catch(error){
 
-        alert(
-            "Unable to update customer."
+        showMessage(
+            "customerMessage",
+            error.message ||
+            "Unable to update customer.",
+            "error"
         );
 
     }
 }
 
 
-
 // ======================================================
-// CUSTOMER TABLE ACTIONS
+// OPEN KYC
 // ======================================================
 
-const customerTable =
+async function openKyc(id){
+
+    currentCustomerId = id;
+
+    openSection("kyc");
+
     document.getElementById(
-        "customersTableBody"
+        "kycCustomerCard"
+    ).innerHTML = `
+        <div class="empty">
+            Loading customer...
+        </div>
+    `;
+
+    document.getElementById(
+        "kycDetails"
+    ).innerHTML = `
+        <div class="empty">
+            Loading KYC...
+        </div>
+    `;
+
+    hideMessage("kycMessage");
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/admin/customers/${id}/kyc`,
+                {
+                    method:"GET",
+                    credentials:
+                        "same-origin",
+                    cache:"no-store"
+                }
+            );
+
+        if(
+            response.status ===
+            401
+        ){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if(!data.success){
+
+            throw new Error(
+                data.message ||
+                "Unable to load KYC."
+            );
+
+        }
+
+        const customer =
+            data.customer;
+
+        const kyc =
+            data.kyc;
+
+        document.getElementById(
+            "kycCustomerCard"
+        ).innerHTML = `
+
+            <h3>
+                👤 ${escapeHtml(
+                    customer.name
+                )}
+            </h3>
+
+            <div class="info-grid">
+
+                <div class="info-box">
+                    <small>Customer ID</small>
+                    <strong>
+                        #${Number(
+                            customer.id
+                        )}
+                    </strong>
+                </div>
+
+                <div class="info-box">
+                    <small>Mobile</small>
+                    <strong>
+                        ${escapeHtml(
+                            customer.mobile ||
+                            "-"
+                        )}
+                    </strong>
+                </div>
+
+                <div class="info-box">
+                    <small>Wallet</small>
+                    <strong>
+                        ₹${Number(
+                            customer.wallet ||
+                            0
+                        ).toFixed(2)}
+                    </strong>
+                </div>
+
+                <div class="info-box">
+                    <small>Customer Status</small>
+                    <strong>
+                        ${escapeHtml(
+                            customer.status
+                        )}
+                    </strong>
+                </div>
+
+            </div>
+        `;
+
+        renderKyc(kyc);
+
+    }catch(error){
+
+        document.getElementById(
+            "kycDetails"
+        ).innerHTML = `
+            <div class="empty">
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>
+        `;
+
+    }
+}
+
+
+// ======================================================
+// RENDER KYC
+// ======================================================
+
+function renderKyc(kyc){
+
+    const box =
+        document.getElementById(
+            "kycDetails"
+        );
+
+    if(!kyc){
+
+        box.innerHTML = `
+            <div class="warning">
+                KYC अभी submit नहीं हुई है।
+            </div>
+        `;
+
+        return;
+    }
+
+    let statusClass =
+        "pending";
+
+    if(
+        kyc.status ===
+        "Verified"
+    ){
+        statusClass =
+            "verified";
+    }
+
+    if(
+        kyc.status ===
+        "Rejected"
+    ){
+        statusClass =
+            "rejected";
+    }
+
+    box.innerHTML = `
+
+        <div class="info-grid">
+
+            <div class="info-box">
+                <small>Document Type</small>
+                <strong>
+                    ${escapeHtml(
+                        kyc.document_type ||
+                        "-"
+                    )}
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <small>Document Number</small>
+                <strong>
+                    ${escapeHtml(
+                        kyc.document_number ||
+                        "-"
+                    )}
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <small>Status</small>
+                <strong>
+                    <span class="status ${statusClass}">
+                        ${escapeHtml(
+                            kyc.status ||
+                            "Pending"
+                        )}
+                    </span>
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <small>Submitted</small>
+                <strong>
+                    ${formatDate(
+                        kyc.submitted_at
+                    )}
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <small>Verified</small>
+                <strong>
+                    ${formatDate(
+                        kyc.verified_at
+                    )}
+                </strong>
+            </div>
+
+            <div class="info-box">
+                <small>Document URL</small>
+                <strong>
+                    ${
+                        kyc.document_url
+                        ? `<a href="${escapeHtml(kyc.document_url)}" target="_blank" rel="noopener">Open Document</a>`
+                        : "-"
+                    }
+                </strong>
+            </div>
+
+        </div>
+
+        ${
+            kyc.rejection_reason
+            ? `
+                <div class="warning" style="margin-top:15px;">
+                    <strong>Rejection Reason:</strong><br>
+                    ${escapeHtml(
+                        kyc.rejection_reason
+                    )}
+                </div>
+            `
+            : ""
+        }
+
+        <div class="kyc-actions">
+
+            ${
+                kyc.status !==
+                "Verified"
+                ? `
+                    <button
+                        class="action-btn verify"
+                        id="verifyKycButton"
+                    >
+                        ✅ Verify KYC
+                    </button>
+                `
+                : ""
+            }
+
+            ${
+                kyc.status !==
+                "Rejected"
+                ? `
+                    <button
+                        class="action-btn reject"
+                        id="rejectKycButton"
+                    >
+                        ❌ Reject KYC
+                    </button>
+                `
+                : ""
+            }
+
+            ${
+                kyc.status !==
+                "Pending"
+                ? `
+                    <button
+                        class="action-btn pending-btn"
+                        id="pendingKycButton"
+                    >
+                        🟡 Set Pending
+                    </button>
+                `
+                : ""
+            }
+
+        </div>
+    `;
+
+    const verifyButton =
+        document.getElementById(
+            "verifyKycButton"
+        );
+
+    if(verifyButton){
+
+        verifyButton.addEventListener(
+            "click",
+            () => updateKycStatus(
+                "Verified"
+            )
+        );
+
+    }
+
+    const rejectButton =
+        document.getElementById(
+            "rejectKycButton"
+        );
+
+    if(rejectButton){
+
+        rejectButton.addEventListener(
+            "click",
+            async () => {
+
+                const reason =
+                    prompt(
+                        "KYC reject करने का reason लिखें:"
+                    );
+
+                if(
+                    reason ===
+                    null
+                ){
+                    return;
+                }
+
+                await updateKycStatus(
+                    "Rejected",
+                    reason
+                );
+
+            }
+        );
+
+    }
+
+    const pendingButton =
+        document.getElementById(
+            "pendingKycButton"
+        );
+
+    if(pendingButton){
+
+        pendingButton.addEventListener(
+            "click",
+            () => updateKycStatus(
+                "Pending"
+            )
+        );
+
+    }
+}
+
+
+// ======================================================
+// SAVE KYC
+// ======================================================
+
+document
+    .getElementById(
+        "saveKycButton"
+    )
+    .addEventListener(
+        "click",
+        saveKyc
     );
 
 
-if(customerTable){
+async function saveKyc(){
 
-    customerTable.addEventListener(
+    if(!currentCustomerId){
+
+        showMessage(
+            "kycMessage",
+            "Customer select नहीं है.",
+            "error"
+        );
+
+        return;
+    }
+
+    const documentType =
+        document.getElementById(
+            "kycDocumentType"
+        ).value;
+
+    const documentNumber =
+        document.getElementById(
+            "kycDocumentNumber"
+        ).value.trim();
+
+    const documentUrl =
+        document.getElementById(
+            "kycDocumentUrl"
+        ).value.trim();
+
+    const button =
+        document.getElementById(
+            "saveKycButton"
+        );
+
+    if(!documentType){
+
+        showMessage(
+            "kycMessage",
+            "Document type select करें.",
+            "error"
+        );
+
+        return;
+    }
+
+    if(!documentNumber){
+
+        showMessage(
+            "kycMessage",
+            "Document number डालें.",
+            "error"
+        );
+
+        return;
+    }
+
+    button.disabled = true;
+
+    button.textContent =
+        "Saving...";
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/admin/customers/${currentCustomerId}/kyc`,
+                {
+                    method:"POST",
+                    credentials:
+                        "same-origin",
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body:JSON.stringify({
+                        documentType,
+                        documentNumber,
+                        documentUrl
+                    })
+                }
+            );
+
+        if(
+            response.status ===
+            401
+        ){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if(!data.success){
+
+            throw new Error(
+                data.message ||
+                "Unable to save KYC."
+            );
+
+        }
+
+        showMessage(
+            "kycMessage",
+            "KYC submitted successfully.",
+            "success"
+        );
+
+        document.getElementById(
+            "kycDocumentNumber"
+        ).value = "";
+
+        document.getElementById(
+            "kycDocumentUrl"
+        ).value = "";
+
+        await openKyc(
+            currentCustomerId
+        );
+
+    }catch(error){
+
+        showMessage(
+            "kycMessage",
+            error.message ||
+            "Unable to save KYC.",
+            "error"
+        );
+
+    }finally{
+
+        button.disabled = false;
+
+        button.textContent =
+            "💾 Save KYC";
+
+    }
+}
+
+
+// ======================================================
+// UPDATE KYC STATUS
+// ======================================================
+
+async function updateKycStatus(
+    status,
+    rejectionReason=""
+){
+
+    if(!currentCustomerId){
+        return;
+    }
+
+    if(
+        status ===
+        "Verified"
+    ){
+
+        const confirmed =
+            confirm(
+                "क्या आप इस KYC को Verify करना चाहते हैं?"
+            );
+
+        if(!confirmed){
+            return;
+        }
+
+    }
+
+    try{
+
+        const response =
+            await fetch(
+                `/api/admin/customers/${currentCustomerId}/kyc`,
+                {
+                    method:"PATCH",
+                    credentials:
+                        "same-origin",
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body:JSON.stringify({
+                        status,
+                        rejectionReason
+                    })
+                }
+            );
+
+        if(
+            response.status ===
+            401
+        ){
+
+            window.location.replace(
+                "/admin-login.html"
+            );
+
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if(!data.success){
+
+            throw new Error(
+                data.message ||
+                "Unable to update KYC."
+            );
+
+        }
+
+        showMessage(
+            "kycMessage",
+            data.message ||
+            `KYC ${status}.`,
+            "success"
+        );
+
+        await openKyc(
+            currentCustomerId
+        );
+
+    }catch(error){
+
+        showMessage(
+            "kycMessage",
+            error.message ||
+            "Unable to update KYC.",
+            "error"
+        );
+
+    }
+}
+
+
+// ======================================================
+// BACK BUTTONS
+// ======================================================
+
+document
+    .getElementById(
+        "backToCustomers"
+    )
+    .addEventListener(
         "click",
-        event => {
+        async () => {
 
-            const button =
-                event.target.closest(
-                    "button"
-                );
+            openSection(
+                "customers"
+            );
 
-
-            if(!button){
-
-                return;
-            }
-
-
-            const id =
-                Number(
-                    button.dataset.id
-                );
-
-
-            if(
-                button.dataset.action ===
-                "view"
-            ){
-
-                viewCustomer(id);
-
-                return;
-            }
-
-
-            if(
-                button.dataset.action ===
-                "toggle"
-            ){
-
-                toggleCustomer(
-                    id,
-                    button.dataset.status
-                );
-
-            }
+            await loadCustomers();
 
         }
     );
 
-}
 
+document
+    .getElementById(
+        "backFromKyc"
+    )
+    .addEventListener(
+        "click",
+        async () => {
 
+            openSection(
+                "customers"
+            );
 
-// ======================================================
-// REFRESH
-// ======================================================
+            await loadCustomers();
 
-const refreshButton =
-    document.getElementById(
-        "refreshCustomers"
+        }
     );
 
 
-if(refreshButton){
+// ======================================================
+// REFRESH CUSTOMERS
+// ======================================================
 
-    refreshButton.addEventListener(
+document
+    .getElementById(
+        "refreshCustomers"
+    )
+    .addEventListener(
         "click",
         loadCustomers
     );
 
-}
-
-
 
 // ======================================================
-// ADD CUSTOMER BUTTON
+// FORMAT DATE
 // ======================================================
 
-const addCustomerButton =
-    document.getElementById(
-        "addCustomerButton"
-    );
+function formatDate(timestamp){
 
+    if(!timestamp){
+        return "-";
+    }
 
-if(addCustomerButton){
+    try{
 
-    addCustomerButton.addEventListener(
-        "click",
-        addCustomer
-    );
-
-}
-
-
-
-// ======================================================
-// HTML ESCAPE
-// ======================================================
-
-function escapeHtml(value){
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
+        return new Date(
+            Number(timestamp)
+        ).toLocaleString(
+            "en-IN"
         );
+
+    }catch{
+
+        return "-";
+
+    }
 }
-
-
-
-// ======================================================
-// LOGOUT BUTTON
-// ======================================================
-
-const logoutButton =
-    document.getElementById(
-        "logoutButton"
-    );
-
-
-if(logoutButton){
-
-    logoutButton.addEventListener(
-        "click",
-        logout
-    );
-
-}
-
 
 
 // ======================================================
 // START
 // ======================================================
 
-checkAdminSession();
+(async function(){
 
+    const authenticated =
+        await checkAdminSession();
+
+    if(!authenticated){
+        return;
+    }
+
+    await loadCustomers();
+
+})();
 </script>
 
 </body>
