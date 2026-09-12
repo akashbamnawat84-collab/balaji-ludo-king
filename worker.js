@@ -119,11 +119,14 @@ export default {
       );
     }
 
-    // =========================
-    // ADMIN CUSTOMERS API
-    // =========================
+    // ==================================================
+    // CUSTOMER + KYC API
+    // ==================================================
 
-    if (url.pathname === "/api/admin/customers") {
+    if (
+      url.pathname === "/api/admin/customers" ||
+      url.pathname.startsWith("/api/admin/customers/")
+    ) {
       const valid = await verifySession(request, env);
 
       if (!valid) {
@@ -136,7 +139,9 @@ export default {
         );
       }
 
-      const id = env.CUSTOMER_STORE.idFromName("customers");
+      const id =
+        env.CUSTOMER_STORE.idFromName("customers");
+
       const stub = env.CUSTOMER_STORE.get(id);
 
       return stub.fetch(request);
@@ -357,6 +362,10 @@ export class CustomerStore {
       return;
     }
 
+    // =========================
+    // CUSTOMERS TABLE
+    // =========================
+
     this.sql.exec(`
       CREATE TABLE IF NOT EXISTS customers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -368,6 +377,26 @@ export class CustomerStore {
       )
     `);
 
+    // =========================
+    // CUSTOMER KYC TABLE
+    // =========================
+
+    this.sql.exec(`
+      CREATE TABLE IF NOT EXISTS customer_kyc (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        customer_id INTEGER NOT NULL UNIQUE,
+        document_type TEXT DEFAULT '',
+        document_number TEXT DEFAULT '',
+        document_url TEXT DEFAULT '',
+        status TEXT DEFAULT 'Pending',
+        rejection_reason TEXT DEFAULT '',
+        submitted_at INTEGER,
+        verified_at INTEGER,
+        FOREIGN KEY (customer_id)
+          REFERENCES customers(id)
+      )
+    `);
+
     this.initialized = true;
   }
 
@@ -376,9 +405,9 @@ export class CustomerStore {
 
     const url = new URL(request.url);
 
-    // =========================
+    // ==================================================
     // GET CUSTOMERS
-    // =========================
+    // ==================================================
 
     if (
       request.method === "GET" &&
@@ -404,9 +433,9 @@ export class CustomerStore {
       });
     }
 
-    // =========================
+    // ==================================================
     // CREATE CUSTOMER
-    // =========================
+    // ==================================================
 
     if (
       request.method === "POST" &&
@@ -472,27 +501,19 @@ export class CustomerStore {
       }
     }
 
-    // =========================
+    // ==================================================
     // CUSTOMER DETAILS
-    // =========================
+    // ==================================================
 
     if (
       request.method === "GET" &&
-      url.pathname.startsWith("/api/admin/customers/")
+      /^\/api\/admin\/customers\/\d+$/.test(
+        url.pathname
+      )
     ) {
       const id = Number(
         url.pathname.split("/").pop()
       );
-
-      if (!Number.isInteger(id)) {
-        return json(
-          {
-            success: false,
-            message: "Invalid customer ID.",
-          },
-          400
-        );
-      }
 
       const customer = this.sql
         .exec(
@@ -527,27 +548,19 @@ export class CustomerStore {
       });
     }
 
-    // =========================
-    // BLOCK / UNBLOCK
-    // =========================
+    // ==================================================
+    // BLOCK / UNBLOCK CUSTOMER
+    // ==================================================
 
     if (
       request.method === "PATCH" &&
-      url.pathname.startsWith("/api/admin/customers/")
+      /^\/api\/admin\/customers\/\d+$/.test(
+        url.pathname
+      )
     ) {
       const id = Number(
         url.pathname.split("/").pop()
       );
-
-      if (!Number.isInteger(id)) {
-        return json(
-          {
-            success: false,
-            message: "Invalid customer ID.",
-          },
-          400
-        );
-      }
 
       try {
         const body = await request.json();
@@ -576,6 +589,316 @@ export class CustomerStore {
           {
             success: false,
             message: "Unable to update customer.",
+          },
+          400
+        );
+      }
+    }
+
+    // ==================================================
+    // GET CUSTOMER KYC
+    // ==================================================
+
+    if (
+      request.method === "GET" &&
+      /^\/api\/admin\/customers\/\d+\/kyc$/.test(
+        url.pathname
+      )
+    ) {
+      const parts = url.pathname.split("/");
+      const customerId = Number(parts[4]);
+
+      const customer = this.sql
+        .exec(
+          `
+          SELECT
+            id,
+            name,
+            mobile,
+            wallet,
+            status,
+            created_at
+          FROM customers
+          WHERE id = ?
+          `,
+          customerId
+        )
+        .toArray()[0];
+
+      if (!customer) {
+        return json(
+          {
+            success: false,
+            message: "Customer not found.",
+          },
+          404
+        );
+      }
+
+      const kyc = this.sql
+        .exec(
+          `
+          SELECT
+            id,
+            customer_id,
+            document_type,
+            document_number,
+            document_url,
+            status,
+            rejection_reason,
+            submitted_at,
+            verified_at
+          FROM customer_kyc
+          WHERE customer_id = ?
+          `,
+          customerId
+        )
+        .toArray()[0];
+
+      return json({
+        success: true,
+        customer,
+        kyc: kyc || null,
+      });
+    }
+
+    // ==================================================
+    // CREATE / UPDATE CUSTOMER KYC
+    // ==================================================
+
+    if (
+      request.method === "POST" &&
+      /^\/api\/admin\/customers\/\d+\/kyc$/.test(
+        url.pathname
+      )
+    ) {
+      const parts = url.pathname.split("/");
+      const customerId = Number(parts[4]);
+
+      try {
+        const body = await request.json();
+
+        const documentType =
+          String(body.documentType || "").trim();
+
+        const documentNumber =
+          String(body.documentNumber || "").trim();
+
+        const documentUrl =
+          String(body.documentUrl || "").trim();
+
+        if (!documentType) {
+          return json(
+            {
+              success: false,
+              message: "Document type is required.",
+            },
+            400
+          );
+        }
+
+        if (!documentNumber) {
+          return json(
+            {
+              success: false,
+              message: "Document number is required.",
+            },
+            400
+          );
+        }
+
+        const customer = this.sql
+          .exec(
+            `
+            SELECT id
+            FROM customers
+            WHERE id = ?
+            `,
+            customerId
+          )
+          .toArray()[0];
+
+        if (!customer) {
+          return json(
+            {
+              success: false,
+              message: "Customer not found.",
+            },
+            404
+          );
+        }
+
+        const now = Date.now();
+
+        const existing = this.sql
+          .exec(
+            `
+            SELECT id
+            FROM customer_kyc
+            WHERE customer_id = ?
+            `,
+            customerId
+          )
+          .toArray()[0];
+
+        if (existing) {
+          this.sql.exec(
+            `
+            UPDATE customer_kyc
+            SET
+              document_type = ?,
+              document_number = ?,
+              document_url = ?,
+              status = 'Pending',
+              rejection_reason = '',
+              submitted_at = ?,
+              verified_at = NULL
+            WHERE customer_id = ?
+            `,
+            documentType,
+            documentNumber,
+            documentUrl,
+            now,
+            customerId
+          );
+        } else {
+          this.sql.exec(
+            `
+            INSERT INTO customer_kyc
+            (
+              customer_id,
+              document_type,
+              document_number,
+              document_url,
+              status,
+              rejection_reason,
+              submitted_at,
+              verified_at
+            )
+            VALUES (?, ?, ?, ?, 'Pending', '', ?, NULL)
+            `,
+            customerId,
+            documentType,
+            documentNumber,
+            documentUrl,
+            now
+          );
+        }
+
+        const kyc = this.sql
+          .exec(
+            `
+            SELECT
+              id,
+              customer_id,
+              document_type,
+              document_number,
+              document_url,
+              status,
+              rejection_reason,
+              submitted_at,
+              verified_at
+            FROM customer_kyc
+            WHERE customer_id = ?
+            `,
+            customerId
+          )
+          .toArray()[0];
+
+        return json({
+          success: true,
+          message: "KYC submitted successfully.",
+          kyc,
+        });
+      } catch {
+        return json(
+          {
+            success: false,
+            message: "Unable to save KYC.",
+          },
+          400
+        );
+      }
+    }
+
+    // ==================================================
+    // VERIFY / REJECT KYC
+    // ==================================================
+
+    if (
+      request.method === "PATCH" &&
+      /^\/api\/admin\/customers\/\d+\/kyc$/.test(
+        url.pathname
+      )
+    ) {
+      const parts = url.pathname.split("/");
+      const customerId = Number(parts[4]);
+
+      try {
+        const body = await request.json();
+
+        const status =
+          body.status === "Verified"
+            ? "Verified"
+            : body.status === "Rejected"
+              ? "Rejected"
+              : "Pending";
+
+        const rejectionReason =
+          String(
+            body.rejectionReason || ""
+          ).trim();
+
+        const existing = this.sql
+          .exec(
+            `
+            SELECT id
+            FROM customer_kyc
+            WHERE customer_id = ?
+            `,
+            customerId
+          )
+          .toArray()[0];
+
+        if (!existing) {
+          return json(
+            {
+              success: false,
+              message: "KYC record not found.",
+            },
+            404
+          );
+        }
+
+        const verifiedAt =
+          status === "Verified"
+            ? Date.now()
+            : null;
+
+        this.sql.exec(
+          `
+          UPDATE customer_kyc
+          SET
+            status = ?,
+            rejection_reason = ?,
+            verified_at = ?
+          WHERE customer_id = ?
+          `,
+          status,
+          rejectionReason,
+          verifiedAt,
+          customerId
+        );
+
+        return json({
+          success: true,
+          message: `KYC ${status}.`,
+        });
+      } catch {
+        return json(
+          {
+            success: false,
+            message: "Unable to update KYC.",
           },
           400
         );
