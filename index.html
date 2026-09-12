@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balaji Ludo King</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="topbar">
+      <h1>🎲 Balaji Ludo King</h1>
+      <p>Play • Battle • Win</p>
+    </header>
+
+    <main class="container">
+
+      <section class="welcome-card">
+        <h2>Welcome to Balaji Ludo King</h2>
+        <p>Enter your name to continue</p>
+
+        <input
+          type="text"
+          id="playerName"
+          placeholder="Enter your name"
+          maxlength="20"
+        >
+
+        <button id="startBtn">Start Game</button>
+
+        <p id="message"></p>
+      </section>
+
+      <section class="game-card" id="gameCard">
+
+        <div class="player-info">
+          <div>
+            <span>Player</span>
+            <strong id="displayName">Guest</strong>
+          </div>
+
+          <div>
+            <span>Coins</span>
+            <strong id="coins">100</strong> 🪙
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="addCoinsBtn">+20 Coins</button>
+          <button id="createRoomBtn">Create Room</button>
+        </div>
+
+        <div class="room-info" id="roomInfo">
+          <p>No room created</p>
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer>
+      <p>© 2026 Balaji Ludo King</p>
+    </footer>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
+
