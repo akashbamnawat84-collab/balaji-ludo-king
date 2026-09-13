@@ -1,65 +1,200 @@
 // ==========================================
 // BALAJI LUDO KING
-// DASHBOARD + BATTLE + CLASSIC ROOM
-// DEMO MODE
+// 2 PLAYER CLASSIC LUDO
 // ==========================================
 
+const homeSection = document.getElementById("homeSection");
+const roomSection = document.getElementById("roomSection");
+const moneySection = document.getElementById("moneySection");
+const supportSection = document.getElementById("supportSection");
+const profileSection = document.getElementById("profileSection");
+const referSection = document.getElementById("referSection");
+
+const openRoomBtn = document.getElementById("openRoomBtn");
+
+const createRoomBtn = document.getElementById("createRoomBtn");
+const joinRoomBtn = document.getElementById("joinRoomBtn");
+
+const roomCodeInput = document.getElementById("roomCodeInput");
+
+const createdRoom = document.getElementById("createdRoom");
+const joinedRoom = document.getElementById("joinedRoom");
+const gameStartBox = document.getElementById("gameStartBox");
+
+const roomCodeDisplay = document.getElementById("roomCodeDisplay");
+const joinedRoomCode = document.getElementById("joinedRoomCode");
+
+const timer = document.getElementById("timer");
+const joinTimer = document.getElementById("joinTimer");
+
+const player1Status = document.getElementById("player1Status");
+const player2Status = document.getElementById("player2Status");
+
+const joinedPlayer1Status =
+  document.getElementById("joinedPlayer1Status");
+
+const joinedPlayer2Status =
+  document.getElementById("joinedPlayer2Status");
+
+const waitingMessage =
+  document.getElementById("waitingMessage");
+
+const joinMessage =
+  document.getElementById("joinMessage");
+
+const leaveRoomBtn =
+  document.getElementById("leaveRoomBtn");
+
+const joinedLeaveBtn =
+  document.getElementById("joinedLeaveBtn");
+
+const startGameBtn =
+  document.getElementById("startGameBtn");
+
+const createBattleBtn =
+  document.getElementById("createBattleBtn");
+
+const battleAmount =
+  document.getElementById("battleAmount");
+
+const walletBalanceElement =
+  document.getElementById("walletBalance");
+
+const moneyBalanceElement =
+  document.getElementById("moneyBalance");
+
+const balancePopup =
+  document.getElementById("balancePopup");
+
+const balanceOkBtn =
+  document.getElementById("balanceOkBtn");
+
 
 // ==========================================
-// DASHBOARD SECTIONS
+// GAME VARIABLES
 // ==========================================
 
-const sections = [
-  "homeSection",
-  "roomSection",
-  "moneySection",
-  "supportSection",
-  "profileSection",
-  "referSection"
-];
+let socket = null;
 
-const navButtons =
-  document.querySelectorAll(".nav-btn");
+let currentRoomCode = null;
+
+let playerName = "Player";
+
+let playerNumber = null;
+
+let timerInterval = null;
+
+let secondsLeft = 300;
+
+let gameStarted = false;
+
+let walletBalance = 0;
+
+let incomeBalance = 50;
 
 
 // ==========================================
-// NAVIGATION
+// SECTION NAVIGATION
 // ==========================================
 
-function showSection(sectionId) {
+function hideAllSections() {
 
-  sections.forEach((id) => {
+  const sections = [
+    homeSection,
+    roomSection,
+    moneySection,
+    supportSection,
+    profileSection,
+    referSection
+  ];
 
-    const section =
-      document.getElementById(id);
+  sections.forEach(section => {
 
     if (section) {
-      section.style.display =
-        id === sectionId ? "block" : "none";
+      section.style.display = "none";
     }
-
-  });
-
-
-  navButtons.forEach((button) => {
-
-    button.classList.toggle(
-      "active",
-      button.dataset.section === sectionId
-    );
 
   });
 
 }
 
 
-navButtons.forEach((button) => {
+function showSection(sectionId) {
 
-  button.addEventListener("click", () => {
+  hideAllSections();
 
-    showSection(button.dataset.section);
+  const section =
+    document.getElementById(sectionId);
+
+  if (section) {
+    section.style.display = "block";
+  }
+
+
+  document.querySelectorAll(".nav-btn")
+    .forEach(btn => {
+
+      btn.classList.remove("active");
+
+      if (btn.dataset.section === sectionId) {
+        btn.classList.add("active");
+      }
+
+    });
+
+}
+
+
+// ==========================================
+// BOTTOM NAVIGATION
+// ==========================================
+
+document.querySelectorAll(".nav-btn")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const section =
+        button.dataset.section;
+
+      showSection(section);
+
+    });
 
   });
+
+
+// ==========================================
+// OPEN ROOM FROM PLAY BUTTON
+// ==========================================
+
+function openRoom() {
+
+  showSection("roomSection");
+
+  resetRoomUI();
+
+}
+
+
+if (openRoomBtn) {
+
+  openRoomBtn.addEventListener(
+    "click",
+    openRoom
+  );
+
+}
+
+
+document.querySelectorAll(
+  '[data-open-room="true"]'
+).forEach(button => {
+
+  button.addEventListener(
+    "click",
+    openRoom
+  );
 
 });
 
@@ -68,41 +203,20 @@ navButtons.forEach((button) => {
 // WALLET
 // ==========================================
 
-let walletBalance = 0;
-
-let incomeBalance = 50;
-
-
-const walletBalanceEl =
-  document.getElementById("walletBalance");
-
-const incomeBalanceEl =
-  document.getElementById("incomeBalance");
-
-const moneyBalanceEl =
-  document.getElementById("moneyBalance");
-
-
 function updateWallet() {
 
-  if (walletBalanceEl) {
+  if (walletBalanceElement) {
 
-    walletBalanceEl.textContent =
+    walletBalanceElement.textContent =
       walletBalance.toFixed(2);
 
   }
 
-  if (moneyBalanceEl) {
 
-    moneyBalanceEl.textContent =
+  if (moneyBalanceElement) {
+
+    moneyBalanceElement.textContent =
       walletBalance.toFixed(2);
-
-  }
-
-  if (incomeBalanceEl) {
-
-    incomeBalanceEl.textContent =
-      incomeBalance.toFixed(2);
 
   }
 
@@ -113,106 +227,8 @@ updateWallet();
 
 
 // ==========================================
-// CREATE BATTLE
-// ==========================================
-
-const createBattleBtn =
-  document.getElementById("createBattleBtn");
-
-const battleAmountInput =
-  document.getElementById("battleAmount");
-
-
-if (createBattleBtn) {
-
-  createBattleBtn.addEventListener(
-    "click",
-    () => {
-
-      const amount =
-        Number(battleAmountInput.value);
-
-      if (!amount || amount < 50) {
-
-        alert(
-          "⚠️ Minimum play amount is ₹50."
-        );
-
-        return;
-
-      }
-
-
-      if (walletBalance < amount) {
-
-        showBalancePopup();
-
-        return;
-
-      }
-
-
-      alert(
-        "🎮 Demo Battle Created!\n\n" +
-        "Entry Fee: ₹" +
-        amount
-      );
-
-    }
-  );
-
-}
-
-
-// ==========================================
-// OPEN BATTLE PLAY BUTTONS
-// ==========================================
-
-const playBattleButtons =
-  document.querySelectorAll(".play-battle");
-
-
-playBattleButtons.forEach((button) => {
-
-  button.addEventListener(
-    "click",
-    () => {
-
-      const amount =
-        Number(button.dataset.amount || 0);
-
-
-      if (walletBalance < amount) {
-
-        showBalancePopup();
-
-        return;
-
-      }
-
-
-      alert(
-        "🎮 Joining Battle...\n\n" +
-        "Entry Fee: ₹" +
-        amount
-      );
-
-    }
-  );
-
-});
-
-
-// ==========================================
 // BALANCE POPUP
 // ==========================================
-
-const balancePopup =
-  document.getElementById("balancePopup");
-
-const balanceOkBtn =
-  document.getElementById("balanceOkBtn");
-
 
 function showBalancePopup() {
 
@@ -248,18 +264,14 @@ if (balanceOkBtn) {
 }
 
 
-// Close popup when clicking outside
-
 if (balancePopup) {
 
   balancePopup.addEventListener(
     "click",
-    (event) => {
+    event => {
 
       if (event.target === balancePopup) {
-
         hideBalancePopup();
-
       }
 
     }
@@ -269,107 +281,84 @@ if (balancePopup) {
 
 
 // ==========================================
-// ROOM SYSTEM
+// CREATE BATTLE
 // ==========================================
 
-const createRoomBtn =
-  document.getElementById("createRoomBtn");
+if (createBattleBtn) {
 
-const joinRoomBtn =
-  document.getElementById("joinRoomBtn");
+  createBattleBtn.addEventListener(
+    "click",
+    () => {
 
-const roomCodeInput =
-  document.getElementById("roomCodeInput");
+      const amount =
+        Number(battleAmount.value);
 
-const createdRoom =
-  document.getElementById("createdRoom");
+      if (!amount || amount < 50) {
 
-const joinedRoom =
-  document.getElementById("joinedRoom");
+        alert(
+          "Minimum play amount ₹50 है।"
+        );
 
-const roomCodeDisplay =
-  document.getElementById("roomCodeDisplay");
+        return;
 
-const joinedRoomCode =
-  document.getElementById("joinedRoomCode");
+      }
 
-const timer =
-  document.getElementById("timer");
 
-const joinTimer =
-  document.getElementById("joinTimer");
+      if (walletBalance < amount) {
 
-const player1Status =
-  document.getElementById("player1Status");
+        showBalancePopup();
 
-const player2Status =
-  document.getElementById("player2Status");
+        return;
 
-const joinedPlayer1Status =
-  document.getElementById(
-    "joinedPlayer1Status"
+      }
+
+
+      alert(
+        "Demo Mode: Battle system अभी तैयार किया जा रहा है।"
+      );
+
+    }
   );
 
-const joinedPlayer2Status =
-  document.getElementById(
-    "joinedPlayer2Status"
-  );
-
-const waitingMessage =
-  document.getElementById(
-    "waitingMessage"
-  );
-
-const joinMessage =
-  document.getElementById(
-    "joinMessage"
-  );
-
-const roomMessage =
-  document.getElementById(
-    "roomMessage"
-  );
-
-const leaveRoomBtn =
-  document.getElementById(
-    "leaveRoomBtn"
-  );
-
-const joinedLeaveBtn =
-  document.getElementById(
-    "joinedLeaveBtn"
-  );
-
-const gameStartBox =
-  document.getElementById(
-    "gameStartBox"
-  );
-
-const startGameBtn =
-  document.getElementById(
-    "startGameBtn"
-  );
+}
 
 
 // ==========================================
-// ROOM VARIABLES
+// OPEN BATTLE PLAY BUTTONS
 // ==========================================
 
-let roomCode = null;
+document.querySelectorAll(
+  ".play-battle"
+).forEach(button => {
 
-let playerNumber = null;
+  button.addEventListener(
+    "click",
+    () => {
 
-let socket = null;
+      const amount =
+        Number(button.dataset.amount);
 
-let countdownInterval = null;
+      if (walletBalance < amount) {
 
-let remainingSeconds = 300;
+        showBalancePopup();
 
-let roomActive = false;
+        return;
+
+      }
+
+
+      alert(
+        "Demo Mode: Battle join system अभी तैयार किया जा रहा है।"
+      );
+
+    }
+  );
+
+});
 
 
 // ==========================================
-// GENERATE 8 DIGIT ROOM CODE
+// ROOM CODE GENERATOR
 // ==========================================
 
 function generateRoomCode() {
@@ -383,37 +372,28 @@ function generateRoomCode() {
 
 
 // ==========================================
-// ROOM TIMER
+// TIMER
 // ==========================================
 
 function startTimer() {
 
-  stopTimer();
+  clearInterval(timerInterval);
 
-  remainingSeconds = 300;
+  secondsLeft = 300;
 
   updateTimer();
 
-  countdownInterval =
+  timerInterval =
     setInterval(() => {
 
-      if (!roomActive) {
-
-        stopTimer();
-
-        return;
-
-      }
-
-
-      remainingSeconds--;
+      secondsLeft--;
 
       updateTimer();
 
 
-      if (remainingSeconds <= 0) {
+      if (secondsLeft <= 0) {
 
-        stopTimer();
+        clearInterval(timerInterval);
 
         expireRoom();
 
@@ -424,61 +404,113 @@ function startTimer() {
 }
 
 
-// ==========================================
-// UPDATE TIMER
-// ==========================================
-
 function updateTimer() {
 
   const minutes =
-    Math.floor(
-      remainingSeconds / 60
-    );
+    Math.floor(secondsLeft / 60);
 
   const seconds =
-    remainingSeconds % 60;
+    secondsLeft % 60;
 
-  const formatted =
-    minutes +
-    ":" +
-    seconds
+  const text =
+    `${minutes}:${seconds
       .toString()
-      .padStart(2, "0");
+      .padStart(2, "0")}`;
 
 
   if (timer) {
-
-    timer.textContent =
-      formatted;
-
+    timer.textContent = text;
   }
 
 
   if (joinTimer) {
-
-    joinTimer.textContent =
-      formatted;
-
+    joinTimer.textContent = text;
   }
 
 }
 
 
 // ==========================================
-// STOP TIMER
+// ROOM EXPIRE
 // ==========================================
 
-function stopTimer() {
+function expireRoom() {
 
-  if (countdownInterval) {
+  clearInterval(timerInterval);
 
-    clearInterval(
-      countdownInterval
-    );
+  if (socket) {
 
-    countdownInterval = null;
+    try {
+      socket.close();
+    } catch (error) {}
+
+    socket = null;
 
   }
+
+
+  alert(
+    "⚠️ Room Expired!\n5 मिनट में दूसरा Player Join नहीं हुआ।"
+  );
+
+  resetRoomUI();
+
+  showSection("roomSection");
+
+}
+
+
+// ==========================================
+// RESET ROOM UI
+// ==========================================
+
+function resetRoomUI() {
+
+  clearInterval(timerInterval);
+
+  secondsLeft = 300;
+
+  updateTimer();
+
+
+  if (createdRoom) {
+    createdRoom.style.display = "none";
+  }
+
+
+  if (joinedRoom) {
+    joinedRoom.style.display = "none";
+  }
+
+
+  if (gameStartBox) {
+    gameStartBox.style.display = "none";
+  }
+
+
+  if (createRoomBtn) {
+    createRoomBtn.style.display = "block";
+  }
+
+
+  const joinSection =
+    document.getElementById("joinSection");
+
+  if (joinSection) {
+    joinSection.style.display = "block";
+  }
+
+
+  if (roomCodeInput) {
+    roomCodeInput.value = "";
+  }
+
+
+  currentRoomCode = null;
+
+  playerNumber = null;
+
+  gameStarted = false;
 
 }
 
@@ -491,53 +523,75 @@ if (createRoomBtn) {
 
   createRoomBtn.addEventListener(
     "click",
-    () => {
+    createRoom
+  );
 
-      roomCode =
-        generateRoomCode();
-
-      playerNumber = 1;
-
-      roomActive = true;
+}
 
 
-      roomCodeDisplay.textContent =
-        roomCode;
+function createRoom() {
+
+  if (currentRoomCode) {
+    return;
+  }
 
 
-      createdRoom.style.display =
-        "block";
+  currentRoomCode =
+    generateRoomCode();
+
+  playerNumber = 1;
 
 
-      gameStartBox.style.display =
-        "none";
+  roomCodeDisplay.textContent =
+    currentRoomCode;
 
 
-      player1Status.textContent =
-        "You";
+  if (createdRoom) {
+    createdRoom.style.display =
+      "block";
+  }
 
 
-      player2Status.textContent =
-        "Waiting...";
+  if (createRoomBtn) {
+    createRoomBtn.style.display =
+      "none";
+  }
 
 
-      waitingMessage.textContent =
-        "Waiting for Player 2...";
+  if (player1Status) {
+    player1Status.textContent =
+      "You";
+  }
 
 
-      if (roomMessage) {
-
-        roomMessage.textContent =
-          "Room created successfully!";
-
-      }
+  if (player2Status) {
+    player2Status.textContent =
+      "Waiting...";
+  }
 
 
-      startTimer();
+  if (waitingMessage) {
+    waitingMessage.textContent =
+      "Waiting for Player 2...";
+  }
 
-      connectToRoom();
 
-    }
+  const joinSection =
+    document.getElementById("joinSection");
+
+  if (joinSection) {
+    joinSection.style.display =
+      "none";
+  }
+
+
+  startTimer();
+
+
+  connectToRoom(
+    currentRoomCode,
+    playerName,
+    1
   );
 
 }
@@ -551,63 +605,95 @@ if (joinRoomBtn) {
 
   joinRoomBtn.addEventListener(
     "click",
-    () => {
+    joinRoom
+  );
 
-      const code =
-        roomCodeInput.value.trim();
-
-
-      if (!/^\d{8}$/.test(code)) {
-
-        alert(
-          "⚠️ कृपया 8-Digit Room Code डालें।"
-        );
-
-        return;
-
-      }
+}
 
 
-      roomCode = code;
+function joinRoom() {
 
-      playerNumber = 2;
-
-      roomActive = true;
-
-
-      joinedRoomCode.textContent =
-        roomCode;
+  const code =
+    roomCodeInput.value.trim();
 
 
-      joinedRoom.style.display =
-        "block";
+  if (!/^\d{8}$/.test(code)) {
+
+    alert(
+      "कृपया 8-Digit Room Code डालें।"
+    );
+
+    return;
+
+  }
 
 
-      createdRoom.style.display =
-        "none";
+  currentRoomCode = code;
+
+  playerNumber = 2;
 
 
-      gameStartBox.style.display =
-        "none";
+  joinedRoomCode.textContent =
+    code;
 
 
-      joinedPlayer1Status.textContent =
-        "Connecting...";
+  if (joinedRoom) {
+    joinedRoom.style.display =
+      "block";
+  }
 
 
-      joinedPlayer2Status.textContent =
-        "You";
+  const joinSection =
+    document.getElementById("joinSection");
+
+  if (joinSection) {
+    joinSection.style.display =
+      "none";
+  }
 
 
-      joinMessage.textContent =
-        "Joining room...";
+  if (createRoomBtn) {
+    createRoomBtn.style.display =
+      "none";
+  }
 
 
-      startTimer();
+  if (joinedMessageSafe()) {
 
-      connectToRoom();
+    joinedPlayer1Status.textContent =
+      "Connected";
 
-    }
+    joinedPlayer2Status.textContent =
+      "You";
+
+  }
+
+
+  if (joinMessage) {
+
+    joinMessage.textContent =
+      "Connecting to Player 1...";
+
+  }
+
+
+  startTimer();
+
+
+  connectToRoom(
+    currentRoomCode,
+    playerName,
+    2
+  );
+
+}
+
+
+function joinedMessageSafe() {
+
+  return (
+    joinedPlayer1Status &&
+    joinedPlayer2Status
   );
 
 }
@@ -617,10 +703,18 @@ if (joinRoomBtn) {
 // WEBSOCKET
 // ==========================================
 
-function connectToRoom() {
+function connectToRoom(
+  room,
+  name,
+  number
+) {
 
-  if (!roomCode) {
-    return;
+  if (socket) {
+
+    try {
+      socket.close();
+    } catch (error) {}
+
   }
 
 
@@ -630,20 +724,11 @@ function connectToRoom() {
       : "ws:";
 
 
-  const name =
-    playerNumber === 1
-      ? "Player 1"
-      : "Player 2";
-
-
   const wsUrl =
-    protocol +
-    "//" +
-    location.host +
-    "/ws?room=" +
-    encodeURIComponent(roomCode) +
-    "&name=" +
-    encodeURIComponent(name);
+    `${protocol}//${location.host}/ws` +
+    `?room=${encodeURIComponent(room)}` +
+    `&name=${encodeURIComponent(name)}` +
+    `&player=${number}`;
 
 
   try {
@@ -655,35 +740,56 @@ function connectToRoom() {
     socket.onopen = () => {
 
       console.log(
-        "Room WebSocket connected"
+        "Connected to room:",
+        room
       );
 
 
       if (playerNumber === 1) {
 
-        waitingMessage.textContent =
-          "Room created. Waiting for Player 2...";
+        if (waitingMessage) {
+
+          waitingMessage.textContent =
+            "Room ready. Waiting for Player 2...";
+
+        }
 
       } else {
 
-        joinMessage.textContent =
-          "Connected. Waiting for Player 1...";
+        if (joinMessage) {
+
+          joinMessage.textContent =
+            "Connected. Waiting for game start...";
+
+        }
 
       }
 
     };
 
 
-    socket.onmessage = (event) => {
+    socket.onmessage = event => {
 
-      handleServerMessage(
-        event.data
-      );
+      try {
+
+        const data =
+          JSON.parse(event.data);
+
+        handleServerMessage(data);
+
+      } catch (error) {
+
+        console.log(
+          "Server message:",
+          event.data
+        );
+
+      }
 
     };
 
 
-    socket.onerror = (error) => {
+    socket.onerror = error => {
 
       console.log(
         "WebSocket error:",
@@ -696,7 +802,7 @@ function connectToRoom() {
     socket.onclose = () => {
 
       console.log(
-        "WebSocket disconnected"
+        "Room connection closed"
       );
 
     };
@@ -704,7 +810,7 @@ function connectToRoom() {
   } catch (error) {
 
     console.log(
-      "Connection error:",
+      "WebSocket unavailable:",
       error
     );
 
@@ -714,76 +820,48 @@ function connectToRoom() {
 
 
 // ==========================================
-// SERVER MESSAGE
+// SERVER MESSAGES
 // ==========================================
 
 function handleServerMessage(data) {
 
-  console.log(
-    "Server:",
-    data
-  );
-
-
-  let message;
-
-
-  try {
-
-    message =
-      JSON.parse(data);
-
-  } catch (error) {
-
-    message = {
-      type: data
-    };
-
+  if (!data) {
+    return;
   }
 
 
-  if (
-    message.type ===
-      "player_joined" ||
-    message.type ===
-      "PLAYER_JOINED" ||
-    message.type ===
-      "join"
-  ) {
-
-    player2Joined();
-
-    return;
-
-  }
+  switch (data.type) {
 
 
-  if (
-    message.type ===
-      "game_start" ||
-    message.type ===
-      "GAME_START" ||
-    message.type ===
-      "start"
-  ) {
+    case "player_joined":
 
-    startGame();
+      player2Joined(
+        data.name || "Player 2"
+      );
 
-    return;
-
-  }
+      break;
 
 
-  if (
-    message.type ===
-      "room_expired" ||
-    message.type ===
-      "ROOM_EXPIRED"
-  ) {
+    case "game_start":
 
-    expireRoom();
+      showGameReady();
 
-    return;
+      break;
+
+
+    case "room_expired":
+
+      expireRoom();
+
+      break;
+
+
+    default:
+
+      console.log(
+        "Unknown server message:",
+        data
+      );
 
   }
 
@@ -794,45 +872,71 @@ function handleServerMessage(data) {
 // PLAYER 2 JOINED
 // ==========================================
 
-function player2Joined() {
+function player2Joined(name) {
 
-  if (player2Status) {
+  if (playerNumber === 1) {
 
-    player2Status.textContent =
-      "Connected";
+    if (player2Status) {
 
-  }
+      player2Status.textContent =
+        name + " Connected";
 
-
-  if (joinedPlayer1Status) {
-
-    joinedPlayer1Status.textContent =
-      "Connected";
-
-  }
+    }
 
 
-  if (joinedPlayer2Status) {
+    if (waitingMessage) {
 
-    joinedPlayer2Status.textContent =
-      "You";
+      waitingMessage.textContent =
+        "🎉 Player 2 joined!";
+
+    }
 
   }
 
 
-  if (waitingMessage) {
+  if (playerNumber === 2) {
 
-    waitingMessage.textContent =
-      "🎉 Player 2 Joined!";
+    if (joinedPlayer1Status) {
+
+      joinedPlayer1Status.textContent =
+        "Connected";
+
+    }
+
+
+    if (joinMessage) {
+
+      joinMessage.textContent =
+        "🎉 Player 1 is connected!";
+
+    }
 
   }
 
 
-  if (joinMessage) {
+  showGameReady();
 
-    joinMessage.textContent =
-      "🎉 Player 1 found. Game is ready!";
+}
 
+
+// ==========================================
+// GAME READY
+// ==========================================
+
+function showGameReady() {
+
+  clearInterval(timerInterval);
+
+
+  if (createdRoom) {
+    createdRoom.style.display =
+      "none";
+  }
+
+
+  if (joinedRoom) {
+    joinedRoom.style.display =
+      "none";
   }
 
 
@@ -847,464 +951,103 @@ function player2Joined() {
 
 
 // ==========================================
-// START GAME BUTTON
+// START GAME
 // ==========================================
 
 if (startGameBtn) {
 
   startGameBtn.addEventListener(
     "click",
-    () => {
-
-      sendMessage({
-        type: "game_start"
-      });
-
-      startGame();
-
-    }
+    startGame
   );
 
 }
 
-
-// ==========================================
-// GAME START
-// ==========================================
 
 function startGame() {
 
-  stopTimer();
-
-  roomActive = false;
-
-
-  // Dashboard दिखाएँ
-  showSection("homeSection");
-
-
-  // Room section hide
-  if (createdRoom) {
-
-    createdRoom.style.display =
-      "none";
-
+  if (gameStarted) {
+    return;
   }
 
 
-  if (joinedRoom) {
+  gameStarted = true;
 
-    joinedRoom.style.display =
-      "none";
-
-  }
+  clearInterval(timerInterval);
 
 
-  if (gameStartBox) {
-
-    gameStartBox.style.display =
-      "none";
-
-  }
-
-
-  alert(
-    "🎉 Game Started!\n\n" +
-    "दोनों Players Room में Connected हैं।"
-  );
-
-}
-
-
-// ==========================================
-// SEND WEBSOCKET MESSAGE
-// ==========================================
-
-function sendMessage(data) {
-
-  if (
-    socket &&
-    socket.readyState ===
-      WebSocket.OPEN
-  ) {
+  if (socket &&
+      socket.readyState === WebSocket.OPEN) {
 
     socket.send(
-      JSON.stringify(data)
+      JSON.stringify({
+        type: "start_game",
+        room: currentRoomCode
+      })
     );
 
   }
 
-}
 
-
-// ==========================================
-// EXPIRE ROOM
-// ==========================================
-
-function expireRoom() {
-
-  roomActive = false;
-
-  stopTimer();
-
-
-  if (socket) {
-
-    try {
-
-      socket.close();
-
-    } catch (error) {}
-
-    socket = null;
-
-  }
-
-
-  alert(
-    "⏰ Room Expired!\n\n" +
-    "5 मिनट में दूसरा Player Join नहीं हुआ।"
-  );
-
-
-  resetRoom();
+  openLudoGame();
 
 }
 
 
 // ==========================================
-// RESET ROOM
+// LUDO GAME SCREEN
 // ==========================================
 
-function resetRoom() {
+function openLudoGame() {
 
-  stopTimer();
+  hideAllSections();
 
 
-  roomCode = null;
-
-  playerNumber = null;
-
-  roomActive = false;
-
-
-  if (createdRoom) {
-
-    createdRoom.style.display =
-      "none";
-
-  }
-
-
-  if (joinedRoom) {
-
-    joinedRoom.style.display =
-      "none";
-
-  }
-
-
-  if (gameStartBox) {
-
-    gameStartBox.style.display =
-      "none";
-
-  }
-
-
-  if (roomCodeInput) {
-
-    roomCodeInput.value = "";
-
-  }
-
-
-  if (roomCodeDisplay) {
-
-    roomCodeDisplay.textContent =
-      "--------";
-
-  }
-
-
-  if (timer) {
-
-    timer.textContent =
-      "5:00";
-
-  }
-
-
-  if (joinTimer) {
-
-    joinTimer.textContent =
-      "5:00";
-
-  }
-
-
-  if (player1Status) {
-
-    player1Status.textContent =
-      "Waiting...";
-
-  }
-
-
-  if (player2Status) {
-
-    player2Status.textContent =
-      "Waiting...";
-
-  }
-
-
-  if (joinedPlayer1Status) {
-
-    joinedPlayer1Status.textContent =
-      "Waiting...";
-
-  }
-
-
-  if (joinedPlayer2Status) {
-
-    joinedPlayer2Status.textContent =
-      "You";
-
-  }
-
-
-  if (waitingMessage) {
-
-    waitingMessage.textContent =
-      "Waiting for Player 2...";
-
-  }
-
-
-  if (joinMessage) {
-
-    joinMessage.textContent =
-      "Connecting to room...";
-
-  }
-
-
-  if (roomMessage) {
-
-    roomMessage.textContent =
-      "Create a room or join an existing room.";
-
-  }
-
-
-  showSection("homeSection");
-
-}
-
-
-// ==========================================
-// LEAVE ROOM
-// ==========================================
-
-function leaveRoom() {
-
-  roomActive = false;
-
-  stopTimer();
-
-
-  if (socket) {
-
-    try {
-
-      socket.send(
-        JSON.stringify({
-          type: "leave_room"
-        })
-      );
-
-    } catch (error) {}
-
-
-    try {
-
-      socket.close();
-
-    } catch (error) {}
-
-
-    socket = null;
-
-  }
-
-
-  resetRoom();
-
-}
-
-
-// ==========================================
-// LEAVE BUTTONS
-// ==========================================
-
-if (leaveRoomBtn) {
-
-  leaveRoomBtn.addEventListener(
-    "click",
-    () => {
-
-      if (
-        confirm(
-          "क्या आप Room छोड़ना चाहते हैं?"
-        )
-      ) {
-
-        leaveRoom();
-
-      }
-
-    }
-  );
-
-}
-
-
-if (joinedLeaveBtn) {
-
-  joinedLeaveBtn.addEventListener(
-    "click",
-    () => {
-
-      if (
-        confirm(
-          "क्या आप Room छोड़ना चाहते हैं?"
-        )
-      ) {
-
-        leaveRoom();
-
-      }
-
-    }
-  );
-
-}
-
-
-// ==========================================
-// OPEN ROOM FROM PLAY
-// ==========================================
-
-function openRoom() {
-
-  showSection(
-    "roomSection"
-  );
-
-}
-
-
-// ==========================================
-// ADD PLAY NOW BUTTON BEHAVIOUR
-// ==========================================
-
-document
-  .querySelectorAll(
-    '[data-open-room="true"]'
-  )
-  .forEach((button) => {
-
-    button.addEventListener(
-      "click",
-      openRoom
+  let oldGame =
+    document.getElementById(
+      "ludoGameSection"
     );
 
-  });
+
+  if (oldGame) {
+    oldGame.remove();
+  }
 
 
-// ==========================================
-// DEMO ADD MONEY
-// ==========================================
+  const game =
+    document.createElement("section");
 
-const addMoneyBtn =
-  document.getElementById(
-    "addMoneyBtn"
-  );
+  game.id =
+    "ludoGameSection";
 
-
-if (addMoneyBtn) {
-
-  addMoneyBtn.addEventListener(
-    "click",
-    () => {
-
-      alert(
-        "💳 Demo Mode\n\n" +
-        "Real-money payment अभी disabled है."
-      );
-
-    }
-  );
-
-}
+  game.className =
+    "section ludo-game";
 
 
-// ==========================================
-// DEMO WITHDRAW
-// ==========================================
+  game.innerHTML = `
 
-const withdrawBtn =
-  document.getElementById(
-    "withdrawBtn"
-  );
+    <div class="card">
 
+      <h2>🎲 Balaji Ludo King</h2>
 
-if (withdrawBtn) {
-
-  withdrawBtn.addEventListener(
-    "click",
-    () => {
-
-      alert(
-        "💸 Demo Mode\n\n" +
-        "Real-money withdrawal अभी disabled है."
-      );
-
-    }
-  );
-
-}
+      <p class="game-status">
+        Classic 2 Player Game
+      </p>
 
 
-// ==========================================
-// PROFILE
-// ==========================================
+      <div class="game-players">
 
-const profileName =
-  document.getElementById(
-    "profileName"
-  );
+        <div class="game-player player-one">
+          🔴 Player 1
+          <span>Ready</span>
+        </div>
 
+        <div class="game-player player-two">
+          🟢 Player 2
+          <span>Ready</span>
+        </div>
 
-if (profileName) {
-
-  profileName.textContent =
-    "Player";
-
-}
+      </div>
 
 
-// ==========================================
-// INITIAL PAGE
-// ==========================================
-
-showSection("homeSection");
-
-updateWallet();
-
-
-console.log(
-  "🎲 Balaji Ludo King Dashboard loaded"
-);
+      <!-- LUDO BOARD -->
