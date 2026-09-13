@@ -78,6 +78,27 @@ export default {
 
 
 // ==========================================
+// OLD CUSTOMER STORE
+// Kept exported because existing Cloudflare
+// Durable Objects still depend on this class.
+// ==========================================
+
+export class CustomerStore {
+
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+  }
+
+  async fetch(request) {
+    return new Response(
+      "CustomerStore is no longer used."
+    );
+  }
+}
+
+
+// ==========================================
 // LUDO ROOM DURABLE OBJECT
 // ==========================================
 
@@ -318,7 +339,6 @@ export class LudoRoom {
 
   handleMessage(player, data) {
 
-
     // PING
     if (data.type === "ping") {
 
@@ -330,7 +350,6 @@ export class LudoRoom {
       );
 
       return;
-
     }
 
 
@@ -378,6 +397,12 @@ export class LudoRoom {
         this.game.positions;
 
 
+      const nextPlayer =
+        player.number === 1
+          ? 2
+          : 1;
+
+
       this.broadcast({
 
         type: "move",
@@ -390,21 +415,16 @@ export class LudoRoom {
         positions,
 
         currentPlayer:
-          player.number === 1
-            ? 2
-            : 1
+          nextPlayer
 
       });
 
 
       this.game.currentPlayer =
-        player.number === 1
-          ? 2
-          : 1;
+        nextPlayer;
 
 
       return;
-
     }
 
 
@@ -445,7 +465,6 @@ export class LudoRoom {
 
 
       return;
-
     }
 
   }
