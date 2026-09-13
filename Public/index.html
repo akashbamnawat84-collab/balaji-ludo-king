@@ -1,111 +1,267 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BAJIGERLUDO - Official Gaming</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balaji Ludo King</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 15px 0;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .header h1 {
+            color: #f59e0b;
+            font-size: 24px;
+        }
+        .wallet-card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #334155;
+        }
+        .wallet-card div p {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .wallet-card div h2 {
+            font-size: 20px;
+            color: #22c55e;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #334155;
+        }
+        .create-battle input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #f59e0b;
+            color: #000;
+        }
+        .btn-primary:hover {
+            background: #d97706;
+        }
+        .btn-play {
+            background: #22c55e;
+            color: #fff;
+            width: auto;
+            padding: 6px 15px;
+        }
+        .battle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #0f172a;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #334155;
+        }
+        .battle-info p {
+            font-size: 13px;
+        }
+        .battle-info span {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        .running-item {
+            text-align: center;
+            padding: 10px;
+            background: #0f172a;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #334155;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Top Navbar -->
-  <header class="navbar">
-    <div class="logo-section">
-      <span class="brand-title">BAJIGERLUDO</span>
-      <span class="brand-sub">Official Gaming</span>
+    <div class="header">
+        <h1>🎲 Balaji Ludo King</h1>
+        <p style="font-size: 12px; color: #cbd5e1;">Play Online Ludo Game</p>
     </div>
-    <div class="wallet-badge">
-      <span>₹</span>
-      <span id="user-balance">54.00</span>
+
+    <!-- Wallet Section -->
+    <div class="wallet-card">
+        <div>
+            <p>💰 Wallet Balance</p>
+            <h2 id="walletBalance">₹0.00</h2>
+        </div>
+        <div>
+            <p>Income</p>
+            <h3 style="color: #38bdf8;">₹50.00</h3>
+        </div>
     </div>
-  </header>
 
-  <!-- Banner -->
-  <div class="notice-banner">
-    🚀 Withdrawal 2 मिनट में होता है (Super Fast Withdrawal) ⏩
-  </div>
-
-  <main class="container">
-    <!-- Create Battle Card -->
-    <section class="card create-card">
-      <h2>Create a Battle!</h2>
-      <div class="input-group">
-        <input type="number" id="battle-amount" placeholder="Enter Amount (e.g. 100)" min="10">
-        <button id="btn-create" onclick="createBattle()">Set</button>
-      </div>
-    </section>
+    <!-- Create Battle Section -->
+    <div class="card create-battle">
+        <div class="section-title">⚔️ Create a Battle</div>
+        <p style="font-size: 12px; color: #94a3b8;">Choose Entry Fee (Min play: ₹50)</p>
+        <input type="number" id="entryFee" placeholder="Enter Amount (e.g. 100)" value="100" min="50">
+        <button class="btn btn-primary" onclick="createBattle()">⚔️ Create Battle</button>
+    </div>
 
     <!-- Open Battles Section -->
-    <section class="section">
-      <h3 class="section-title">Open Battles</h3>
-      <div id="open-battles-list" class="battle-list">
-        <!-- Dynamic content will go here -->
-        <div class="battle-card">
-          <div class="battle-info">
-            <span class="player-name">Challenge from <b>Jai bhona</b></span>
-            <div class="battle-stats">
-              <div class="stat"><small>ENTRY FEE</small> <span>₹50</span></div>
-              <div class="stat"><small>PRIZE</small> <span class="prize-text">₹95</span></div>
-            </div>
-          </div>
-          <button class="btn-play">Play</button>
-        </div>
-      </div>
-    </section>
+    <div class="section-title">🔥 Open Battles</div>
+    <div id="openBattlesList">
+        <p style="font-size: 12px; color: #94a3b8; text-align: center;">Loading battles...</p>
+    </div>
 
     <!-- Running Battles Section -->
-    <section class="section">
-      <h3 class="section-title">Running Battles</h3>
-      <div id="running-battles-list" class="battle-list">
-        <!-- Dynamic content will go here -->
-        <div class="battle-card running">
-          <div class="battle-vs">
-            <span>Radhe</span> <span class="vs-badge">VS</span> <span>uVBty</span>
-          </div>
-          <div class="battle-stats">
-            <div class="stat"><small>ENTRY FEE</small> <span>₹100</span></div>
-            <div class="stat"><small>PRIZE</small> <span class="prize-text">₹190</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+    <div class="section-title">🎮 Running Battles</div>
+    <div id="runningBattlesList">
+        <p style="font-size: 12px; color: #94a3b8; text-align: center;">Loading running matches...</p>
+    </div>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <a href="#" class="nav-item active">🎮 Play</a>
-    <a href="#" class="nav-item">👛 Wallet</a>
-    <a href="#" class="nav-item">🎁 Refer</a>
-    <a href="#" class="nav-item">🎧 Support</a>
-    <a href="#" class="nav-item">👤 Profile</a>
-  </nav>
+    <script>
+        // अपना User ID यहाँ सेट करें या LocalStorage से लें
+        const CURRENT_USER_ID = localStorage.getItem("userId") || "user_" + Math.floor(Math.random() * 1000);
+        localStorage.setItem("userId", CURRENT_USER_ID);
 
-  <script>
-    // API Call - Create Battle
-    async function createBattle() {
-      const amount = document.getElementById('battle-amount').value;
-      if (!amount || amount < 10) {
-        alert("कम से कम ₹10 की राशि दर्ज करें।");
-        return;
-      }
+        // 1. लोड होने पर बैटल फ़ेच करें
+        async function fetchBattles() {
+            try {
+                const res = await fetch("/api/battles");
+                const data = await res.json();
 
-      try {
-        const res = await fetch('/api/battles/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: 'USER_ID_HERE', entryFee: Number(amount) })
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert("बैटल बन गया!");
-          location.reload();
-        } else {
-          alert(data.error);
+                // Open Battles Render
+                const openContainer = document.getElementById("openBattlesList");
+                if (data.openBattles && data.openBattles.length > 0) {
+                    openContainer.innerHTML = data.openBattles.map(b => `
+                        <div class="battle-item">
+                            <div class="battle-info">
+                                <p><b>Challenge From:</b> ${b.creator_id}</p>
+                                <p>Entry Fee: <span>💵 ₹${b.entry_fee}</span></p>
+                                <p style="font-size: 11px; color: #22c55e;">Winning Prize: ₹${b.prize_amount}</p>
+                            </div>
+                            <button class="btn btn-play" onclick="joinBattle(${b.id})">Play</button>
+                        </div>
+                    `).join("");
+                } else {
+                    openContainer.innerHTML = `<p style="font-size: 12px; color: #94a3b8; text-align: center;">No open battles right now.</p>`;
+                }
+
+                // Running Battles Render
+                const runningContainer = document.getElementById("runningBattlesList");
+                if (data.runningBattles && data.runningBattles.length > 0) {
+                    runningContainer.innerHTML = data.runningBattles.map(b => `
+                        <div class="running-item">
+                            <p style="font-size: 13px;">Game Play between <b>${b.creator_id}</b> & <b>${b.joiner_id || 'Player'}</b></p>
+                            <p style="font-size: 12px; color: #f59e0b; margin-top: 5px;">
+                                Entry Fee 💵 ₹${b.entry_fee} VS Winning Prize 💵 ₹${b.prize_amount}
+                            </p>
+                        </div>
+                    `).join("");
+                } else {
+                    runningContainer.innerHTML = `<p style="font-size: 12px; color: #94a3b8; text-align: center;">No running battles.</p>`;
+                }
+
+            } catch (err) {
+                console.error("Error fetching battles:", err);
+            }
         }
-      } catch (err) {
-        alert("कनेक्शन एरर!");
-      }
-    }
-  </script>
+
+        // 2. नया बैटल बनाएं
+        async function createBattle() {
+            const entryFee = document.getElementById("entryFee").value;
+            if (!entryFee || entryFee < 50) {
+                alert("Minimum battle amount is ₹50.");
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/battles/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId: CURRENT_USER_ID, entryFee: parseFloat(entryFee) })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert("Battle Created Successfully!");
+                    fetchBattles();
+                } else {
+                    alert(data.error || "Failed to create battle.");
+                }
+            } catch (err) {
+                alert("Server error. Try again.");
+            }
+        }
+
+        // 3. बैटल जॉइन करें
+        async function joinBattle(battleId) {
+            try {
+                const res = await fetch("/api/battles/join", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId: CURRENT_USER_ID, battleId: battleId })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert("Battle Joined Successfully!");
+                    fetchBattles();
+                } else {
+                    alert(data.error || "Failed to join battle.");
+                }
+            } catch (err) {
+                alert("Server error. Try again.");
+            }
+        }
+
+        // पेज लोड होने पर और हर 5 सेकंड में डाटा रिफ्रेश करें
+        fetchBattles();
+        setInterval(fetchBattles, 5000);
+    </script>
 </body>
 </html>
