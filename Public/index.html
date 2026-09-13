@@ -11,826 +11,891 @@
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- HEADER -->
-    <div class="topbar">
-      <h1>🎲 Balaji Ludo King</h1>
-      <p>Play Online Ludo Game</p>
+  <!-- HEADER -->
+  <div class="topbar">
+    <h1>🎲 Balaji Ludo King</h1>
+    <p>Play Online Ludo Game</p>
+  </div>
+
+
+  <!-- ================= HOME ================= -->
+
+  <section id="homeSection">
+
+    <!-- WALLET -->
+    <div class="card wallet-card">
+
+      <h2>💰 Wallet Balance</h2>
+
+      <div class="balance">
+        ₹<span id="walletBalance">0.00</span>
+      </div>
+
+      <div class="income">
+        Income: ₹<span id="incomeBalance">50</span>
+      </div>
+
     </div>
 
 
-    <!-- =========================
-         HOME DASHBOARD
-    ========================== -->
+    <!-- PLAY LUDO -->
+    <div class="card play-card">
 
-    <section id="homeSection">
+      <h2>🎮 Play Ludo</h2>
 
-      <!-- WALLET -->
-      <div class="card wallet-card">
+      <p>
+        Create a room or join another player's room.
+      </p>
 
-        <h2>💰 Wallet Balance</h2>
+      <button
+        id="openRoomBtn"
+        data-open-room="true">
+        🎮 Create / Join Room
+      </button>
 
-        <div class="balance">
-          ₹<span id="walletBalance">0.00</span>
-        </div>
-
-        <div class="income">
-          Income: ₹<span id="incomeBalance">50</span>
-        </div>
-
-      </div>
+    </div>
 
 
-      <!-- CREATE BATTLE -->
-      <div class="card">
+    <!-- CREATE BATTLE -->
+    <div class="card">
 
-        <h2>⚔️ Create a Battle</h2>
+      <h2>⚔️ Create a Battle</h2>
 
-        <p>Choose Entry Fee</p>
+      <p>Choose Entry Fee</p>
 
-        <div class="entry-box">
+      <div class="entry-box">
 
-          <input
-            id="battleAmount"
-            type="number"
-            min="50"
-            value="100"
-            placeholder="Enter Amount"
-          >
+        <input
+          id="battleAmount"
+          type="number"
+          min="50"
+          value="100"
+          placeholder="Enter Amount">
 
-          <span>₹</span>
-
-        </div>
-
-        <p>Min play: ₹50</p>
-
-        <button id="createBattleBtn">
-          ⚔️ Create Battle
-        </button>
+        <span>₹</span>
 
       </div>
 
+      <p>Min play: ₹50</p>
 
-      <!-- OPEN BATTLES -->
-      <div class="card">
+      <button id="createBattleBtn">
+        ⚔️ Create Battle
+      </button>
 
-        <h2>🔥 Open Battles</h2>
+    </div>
 
-        <div id="openBattles">
 
-          <!-- BATTLE 1 -->
-          <div class="battle-card">
+    <!-- OPEN BATTLES -->
+    <div class="card">
 
-            <div class="battle-title">
-              Challenge From
-              <strong>Manish_3</strong>
+      <h2>🔥 Open Battles</h2>
+
+      <div id="openBattles">
+
+
+        <!-- BATTLE 1 -->
+        <div class="battle-card">
+
+          <div class="battle-title">
+            Challenge From
+            <strong>Manish_3</strong>
+          </div>
+
+          <div class="battle-row">
+
+            <div>
+              <small>Entry Fee</small>
+              <strong>💵 ₹300</strong>
             </div>
 
-            <div class="battle-row">
-
-              <div>
-                <small>Entry Fee</small>
-                <strong>💵 ₹300</strong>
-              </div>
-
-              <button
-                class="play-battle"
-                data-amount="300">
-                Play
-              </button>
-
-            </div>
-
-            <div class="winning">
-              Winning Prize: ₹285
-            </div>
+            <button
+              class="play-battle"
+              data-amount="300">
+              Play
+            </button>
 
           </div>
 
+          <div class="winning">
+            Winning Prize: ₹285
+          </div>
 
-          <!-- BATTLE 2 -->
-          <div class="battle-card">
+        </div>
 
-            <div class="battle-title">
-              Challenge From
-              <strong>Dinesh_6</strong>
+
+        <!-- BATTLE 2 -->
+        <div class="battle-card">
+
+          <div class="battle-title">
+            Challenge From
+            <strong>Dinesh_6</strong>
+          </div>
+
+          <div class="battle-row">
+
+            <div>
+              <small>Entry Fee</small>
+              <strong>💵 ₹1000</strong>
             </div>
 
-            <div class="battle-row">
-
-              <div>
-                <small>Entry Fee</small>
-                <strong>💵 ₹1000</strong>
-              </div>
-
-              <button
-                class="play-battle"
-                data-amount="1000">
-                Play
-              </button>
-
-            </div>
-
-            <div class="winning">
-              Winning Prize: ₹950
-            </div>
+            <button
+              class="play-battle"
+              data-amount="1000">
+              Play
+            </button>
 
           </div>
 
+          <div class="winning">
+            Winning Prize: ₹950
+          </div>
 
-          <!-- BATTLE 3 -->
-          <div class="battle-card">
+        </div>
 
-            <div class="battle-title">
-              Challenge From
-              <strong>Arjun</strong>
+
+        <!-- BATTLE 3 -->
+        <div class="battle-card">
+
+          <div class="battle-title">
+            Challenge From
+            <strong>Arjun</strong>
+          </div>
+
+          <div class="battle-row">
+
+            <div>
+              <small>Entry Fee</small>
+              <strong>💵 ₹1500</strong>
             </div>
 
-            <div class="battle-row">
-
-              <div>
-                <small>Entry Fee</small>
-                <strong>💵 ₹1500</strong>
-              </div>
-
-              <button
-                class="play-battle"
-                data-amount="1500">
-                Play
-              </button>
-
-            </div>
-
-            <div class="winning">
-              Winning Prize: ₹1425
-            </div>
+            <button
+              class="play-battle"
+              data-amount="1500">
+              Play
+            </button>
 
           </div>
 
+          <div class="winning">
+            Winning Prize: ₹1425
+          </div>
 
-          <!-- BATTLE 4 -->
-          <div class="battle-card">
+        </div>
 
-            <div class="battle-title">
-              Challenge From
-              <strong>Sachin</strong>
+
+        <!-- BATTLE 4 -->
+        <div class="battle-card">
+
+          <div class="battle-title">
+            Challenge From
+            <strong>Sachin</strong>
+          </div>
+
+          <div class="battle-row">
+
+            <div>
+              <small>Entry Fee</small>
+              <strong>💵 ₹800</strong>
             </div>
 
-            <div class="battle-row">
-
-              <div>
-                <small>Entry Fee</small>
-                <strong>💵 ₹800</strong>
-              </div>
-
-              <button
-                class="play-battle"
-                data-amount="800">
-                Play
-              </button>
-
-            </div>
-
-            <div class="winning">
-              Winning Prize: ₹760
-            </div>
+            <button
+              class="play-battle"
+              data-amount="800">
+              Play
+            </button>
 
           </div>
 
+          <div class="winning">
+            Winning Prize: ₹760
+          </div>
 
-          <!-- BATTLE 5 -->
-          <div class="battle-card">
+        </div>
 
-            <div class="battle-title">
-              Challenge From
-              <strong>Mohit</strong>
+
+        <!-- BATTLE 5 -->
+        <div class="battle-card">
+
+          <div class="battle-title">
+            Challenge From
+            <strong>Mohit</strong>
+          </div>
+
+          <div class="battle-row">
+
+            <div>
+              <small>Entry Fee</small>
+              <strong>💵 ₹800</strong>
             </div>
 
-            <div class="battle-row">
+            <button
+              class="play-battle"
+              data-amount="800">
+              Play
+            </button>
 
-              <div>
-                <small>Entry Fee</small>
-                <strong>💵 ₹800</strong>
-              </div>
+          </div>
 
-              <button
-                class="play-battle"
-                data-amount="800">
-                Play
-              </button>
-
-            </div>
-
-            <div class="winning">
-              Winning Prize: ₹760
-            </div>
-
+          <div class="winning">
+            Winning Prize: ₹760
           </div>
 
         </div>
 
       </div>
 
+    </div>
 
-      <!-- MY BATTLES -->
-      <div class="card">
 
-        <h2>🎮 My Battles</h2>
+    <!-- MY BATTLES -->
+    <div class="card">
 
-        <h3>Running Battles</h3>
+      <h2>🎮 My Battles</h2>
 
-        <div class="my-battles">
+      <h3>Running Battles</h3>
 
+      <div class="my-battles">
 
-          <div class="running-battle">
 
-            <p>
-              Game Play between
-              <strong>Sunil</strong>
-              &amp;
-              <strong>Harsh</strong>
-            </p>
-
-            <div class="battle-details">
-
-              <span>
-                Entry Fee<br>
-                💵 ₹200
-              </span>
-
-              <b>VS</b>
-
-              <span>
-                Winning Prize<br>
-                💵 ₹190
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="running-battle">
-
-            <p>
-              Game Play between
-              <strong>Vivek_4</strong>
-              &amp;
-              <strong>Nitin</strong>
-            </p>
-
-            <div class="battle-details">
-
-              <span>
-                Entry Fee<br>
-                💵 ₹500
-              </span>
-
-              <b>VS</b>
-
-              <span>
-                Winning Prize<br>
-                💵 ₹475
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="running-battle">
-
-            <p>
-              Game Play between
-              <strong>Nitin</strong>
-              &amp;
-              <strong>Dinesh_6</strong>
-            </p>
-
-            <div class="battle-details">
-
-              <span>
-                Entry Fee<br>
-                💵 ₹150
-              </span>
-
-              <b>VS</b>
-
-              <span>
-                Winning Prize<br>
-                💵 ₹142
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="running-battle">
-
-            <p>
-              Game Play between
-              <strong>Ajay_11</strong>
-              &amp;
-              <strong>Pawan22</strong>
-            </p>
-
-            <div class="battle-details">
-
-              <span>
-                Entry Fee<br>
-                💵 ₹1500
-              </span>
-
-              <b>VS</b>
-
-              <span>
-                Winning Prize<br>
-                💵 ₹1425
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="running-battle">
-
-            <p>
-              Game Play between
-              <strong>Umesh</strong>
-              &amp;
-              <strong>Suraj</strong>
-            </p>
-
-            <div class="battle-details">
-
-              <span>
-                Entry Fee<br>
-                💵 ₹300
-              </span>
-
-              <b>VS</b>
-
-              <span>
-                Winning Prize<br>
-                💵 ₹285
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="running-battle">
-
-            <p>
-              Game Play between
-              <strong>Kapil_10</strong>
-              &amp;
-              <strong>Pawan22</strong>
-            </p>
-
-            <div class="battle-details">
-
-              <span>
-                Entry Fee<br>
-                💵 ₹50
-              </span>
-
-              <b>VS</b>
-
-              <span>
-                Winning Prize<br>
-                💵 ₹47
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         ROOM SECTION
-    ========================== -->
-
-    <section id="roomSection" style="display:none;">
-
-      <div class="card">
-
-        <h2>🎮 Classic Room</h2>
-
-        <p id="roomMessage">
-          Create a room or join an existing room.
-        </p>
-
-
-        <button id="createRoomBtn">
-          🔗 Create Room
-        </button>
-
-
-        <!-- CREATED ROOM -->
-
-        <div id="createdRoom" style="display:none;">
-
-          <h3>Your Room Code</h3>
-
-          <div id="roomCodeDisplay" class="room-code">
-            --------
-          </div>
+        <div class="running-battle">
 
           <p>
-            यह Room Code दूसरे Player को भेजें।
+            Game Play between
+            <strong>Sunil</strong>
+            &amp;
+            <strong>Harsh</strong>
           </p>
 
+          <div class="battle-details">
 
-          <div class="timer-box">
+            <span>
+              Entry Fee<br>
+              💵 ₹200
+            </span>
 
-            <div>⏱️ Room Expires In</div>
+            <b>VS</b>
 
-            <strong id="timer">
-              5:00
-            </strong>
-
-          </div>
-
-
-          <div class="players">
-
-            <div class="player">
-              <span>Player 1</span>
-              <strong id="player1Status">
-                You
-              </strong>
-            </div>
-
-            <div class="player">
-              <span>Player 2</span>
-              <strong id="player2Status">
-                Waiting...
-              </strong>
-            </div>
+            <span>
+              Winning Prize<br>
+              💵 ₹190
+            </span>
 
           </div>
-
-
-          <p id="waitingMessage">
-            Waiting for Player 2...
-          </p>
-
-
-          <button
-            id="leaveRoomBtn"
-            class="leave-btn">
-            ❌ Leave Room
-          </button>
 
         </div>
 
 
-        <!-- JOIN -->
-
-        <div id="joinSection">
-
-          <div class="or">
-            OR
-          </div>
-
-          <h3>
-            🎮 Join Classic Room
-          </h3>
+        <div class="running-battle">
 
           <p>
-            बाहर से मिला हुआ 8-Digit Room Code डालें।
+            Game Play between
+            <strong>Vivek_4</strong>
+            &amp;
+            <strong>Nitin</strong>
           </p>
 
-          <input
-            id="roomCodeInput"
-            type="text"
-            inputmode="numeric"
-            maxlength="8"
-            placeholder="Enter 8-Digit Room Code"
-          >
+          <div class="battle-details">
 
-          <button id="joinRoomBtn">
-            🔗 Join Room
-          </button>
+            <span>
+              Entry Fee<br>
+              💵 ₹500
+            </span>
+
+            <b>VS</b>
+
+            <span>
+              Winning Prize<br>
+              💵 ₹475
+            </span>
+
+          </div>
 
         </div>
 
 
-        <!-- JOINED ROOM -->
+        <div class="running-battle">
 
-        <div id="joinedRoom" style="display:none;">
-
-          <div class="room-code">
-
-            <span id="joinedRoomCode"></span>
-
-          </div>
-
-
-          <div class="timer-box">
-
-            <div>⏱️ Room Expires In</div>
-
-            <strong id="joinTimer">
-              5:00
-            </strong>
-
-          </div>
-
-
-          <div class="players">
-
-            <div class="player">
-
-              <span>Player 1</span>
-
-              <strong id="joinedPlayer1Status">
-                Waiting...
-              </strong>
-
-            </div>
-
-
-            <div class="player">
-
-              <span>Player 2</span>
-
-              <strong id="joinedPlayer2Status">
-                You
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <p id="joinMessage">
-            Connecting to room...
+          <p>
+            Game Play between
+            <strong>Nitin</strong>
+            &amp;
+            <strong>Dinesh_6</strong>
           </p>
 
+          <div class="battle-details">
 
-          <button
-            id="joinedLeaveBtn"
-            class="leave-btn">
-            ❌ Leave Room
-          </button>
+            <span>
+              Entry Fee<br>
+              💵 ₹150
+            </span>
+
+            <b>VS</b>
+
+            <span>
+              Winning Prize<br>
+              💵 ₹142
+            </span>
+
+          </div>
 
         </div>
 
 
-        <!-- GAME READY -->
+        <div class="running-battle">
+
+          <p>
+            Game Play between
+            <strong>Ajay_11</strong>
+            &amp;
+            <strong>Pawan22</strong>
+          </p>
+
+          <div class="battle-details">
+
+            <span>
+              Entry Fee<br>
+              💵 ₹1500
+            </span>
+
+            <b>VS</b>
+
+            <span>
+              Winning Prize<br>
+              💵 ₹1425
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="running-battle">
+
+          <p>
+            Game Play between
+            <strong>Umesh</strong>
+            &amp;
+            <strong>Suraj</strong>
+          </p>
+
+          <div class="battle-details">
+
+            <span>
+              Entry Fee<br>
+              💵 ₹300
+            </span>
+
+            <b>VS</b>
+
+            <span>
+              Winning Prize<br>
+              💵 ₹285
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="running-battle">
+
+          <p>
+            Game Play between
+            <strong>Kapil_10</strong>
+            &amp;
+            <strong>Pawan22</strong>
+          </p>
+
+          <div class="battle-details">
+
+            <span>
+              Entry Fee<br>
+              💵 ₹50
+            </span>
+
+            <b>VS</b>
+
+            <span>
+              Winning Prize<br>
+              💵 ₹47
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= ROOM ================= -->
+
+  <section id="roomSection" style="display:none;">
+
+    <div class="card">
+
+      <h2>🎮 Classic Room</h2>
+
+      <p id="roomMessage">
+        Create a room or join an existing room.
+      </p>
+
+
+      <!-- CREATE ROOM -->
+
+      <button id="createRoomBtn">
+        🔗 Create Room
+      </button>
+
+
+      <!-- CREATED ROOM -->
+
+      <div
+        id="createdRoom"
+        style="display:none;">
+
+        <h3>Your Room Code</h3>
 
         <div
-          id="gameStartBox"
-          style="display:none;">
-
-          <h2>
-            🎉 Game Ready!
-          </h2>
-
-          <p>
-            Both players have joined.
-          </p>
-
-          <button id="startGameBtn">
-            🎲 Start Game
-          </button>
-
+          id="roomCodeDisplay"
+          class="room-code">
+          --------
         </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         MONEY
-    ========================== -->
-
-    <section
-      id="moneySection"
-      style="display:none;">
-
-      <div class="card">
-
-        <h2>💰 My Wallet</h2>
-
-        <div class="balance">
-          ₹<span id="moneyBalance">0.00</span>
-        </div>
-
-        <button id="addMoneyBtn">
-          💳 Add Money
-        </button>
-
-        <button id="withdrawBtn">
-          💸 Withdraw
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         SUPPORT
-    ========================== -->
-
-    <section
-      id="supportSection"
-      style="display:none;">
-
-      <div class="card">
-
-        <h2>🎧 Support</h2>
 
         <p>
-          Need help? Contact Balaji Ludo King Support.
+          यह Room Code दूसरे Player को भेजें।
         </p>
 
-        <button>
-          💬 Contact Support
-        </button>
 
-      </div>
+        <div class="timer-box">
 
-    </section>
+          <div>⏱️ Room Expires In</div>
 
-
-    <!-- =========================
-         PROFILE
-    ========================== -->
-
-    <section
-      id="profileSection"
-      style="display:none;">
-
-      <div class="card">
-
-        <h2>👤 My Profile</h2>
-
-        <p>
-          Player Name:
-          <strong id="profileName">
-            Player
+          <strong id="timer">
+            5:00
           </strong>
-        </p>
 
-        <p>
-          Player ID:
-          <strong id="profileId">
-            BLK001
-          </strong>
-        </p>
-
-        <button>
-          ✏️ Edit Profile
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         REFER
-    ========================== -->
-
-    <section
-      id="referSection"
-      style="display:none;">
-
-      <div class="card">
-
-        <h2>🎁 Refer &amp; Earn</h2>
-
-        <p>
-          Invite your friends to Balaji Ludo King.
-        </p>
-
-        <div class="ref-code">
-          BLK-FRIEND
         </div>
 
-        <button>
-          🔗 Share Referral
+
+        <div class="players">
+
+          <div class="player">
+
+            <span>Player 1</span>
+
+            <strong id="player1Status">
+              You
+            </strong>
+
+          </div>
+
+
+          <div class="player">
+
+            <span>Player 2</span>
+
+            <strong id="player2Status">
+              Waiting...
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <p id="waitingMessage">
+          Waiting for Player 2...
+        </p>
+
+
+        <button
+          id="leaveRoomBtn"
+          class="leave-btn">
+          ❌ Leave Room
         </button>
 
       </div>
 
-    </section>
 
+      <!-- JOIN ROOM -->
 
-    <!-- =========================
-         INSUFFICIENT BALANCE POPUP
-    ========================== -->
+      <div id="joinSection">
 
-    <div
-      id="balancePopup"
-      class="popup-overlay"
-      style="display:none;">
-
-      <div class="popup">
-
-        <div class="popup-icon">
-          ⚠️
+        <div class="or">
+          OR
         </div>
 
         <h3>
-          Insufficient Balance
+          🎮 Join Classic Room
         </h3>
 
         <p>
-          You don't have sufficient
-          balance in your wallet
+          बाहर से मिला हुआ 8-Digit Room Code डालें।
         </p>
 
-        <button id="balanceOkBtn">
-          OK
+
+        <input
+          id="roomCodeInput"
+          type="text"
+          inputmode="numeric"
+          maxlength="8"
+          placeholder="Enter 8-Digit Room Code">
+
+
+        <button id="joinRoomBtn">
+          🔗 Join Room
+        </button>
+
+      </div>
+
+
+      <!-- JOINED ROOM -->
+
+      <div
+        id="joinedRoom"
+        style="display:none;">
+
+        <h3>
+          🎮 Room Joined
+        </h3>
+
+
+        <div class="room-code">
+
+          <span id="joinedRoomCode">
+            --------
+          </span>
+
+        </div>
+
+
+        <div class="timer-box">
+
+          <div>⏱️ Room Expires In</div>
+
+          <strong id="joinTimer">
+            5:00
+          </strong>
+
+        </div>
+
+
+        <div class="players">
+
+          <div class="player">
+
+            <span>Player 1</span>
+
+            <strong id="joinedPlayer1Status">
+              Waiting...
+            </strong>
+
+          </div>
+
+
+          <div class="player">
+
+            <span>Player 2</span>
+
+            <strong id="joinedPlayer2Status">
+              You
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <p id="joinMessage">
+          Connecting to room...
+        </p>
+
+
+        <button
+          id="joinedLeaveBtn"
+          class="leave-btn">
+          ❌ Leave Room
+        </button>
+
+      </div>
+
+
+      <!-- GAME READY -->
+
+      <div
+        id="gameStartBox"
+        style="display:none;">
+
+        <h2>
+          🎉 Game Ready!
+        </h2>
+
+        <p>
+          Both players have joined.
+        </p>
+
+
+        <div class="players">
+
+          <div class="player">
+
+            <span>Player 1</span>
+
+            <strong>
+              Ready
+            </strong>
+
+          </div>
+
+
+          <div class="player">
+
+            <span>Player 2</span>
+
+            <strong>
+              Ready
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <button id="startGameBtn">
+          🎲 Start Game
         </button>
 
       </div>
 
     </div>
 
-
-    <!-- MESSAGE -->
-
-    <p id="message"></p>
+  </section>
 
 
-    <!-- FOOTER -->
+  <!-- ================= MONEY ================= -->
 
-    <footer>
+  <section
+    id="moneySection"
+    style="display:none;">
 
-      ⚠️ Demo Mode — No real money is used.
+    <div class="card">
 
-      <br>
+      <h2>💰 My Wallet</h2>
 
-      © 2026 Balaji Ludo King
+      <div class="balance">
+        ₹<span id="moneyBalance">0.00</span>
+      </div>
 
-    </footer>
-
-
-    <!-- =========================
-         BOTTOM NAVIGATION
-    ========================== -->
-
-    <nav class="bottom-nav">
-
-      <button
-        class="nav-btn active"
-        data-section="homeSection">
-        🏠
-        <span>Play</span>
+      <button id="addMoneyBtn">
+        💳 Add Money
       </button>
 
-      <button
-        class="nav-btn"
-        data-section="moneySection">
-        💰
-        <span>Money</span>
+      <button id="withdrawBtn">
+        💸 Withdraw
       </button>
 
-      <button
-        class="nav-btn"
-        data-section="supportSection">
-        🎧
-        <span>Support</span>
+    </div>
+
+  </section>
+
+
+  <!-- ================= SUPPORT ================= -->
+
+  <section
+    id="supportSection"
+    style="display:none;">
+
+    <div class="card">
+
+      <h2>🎧 Support</h2>
+
+      <p>
+        Need help? Contact Balaji Ludo King Support.
+      </p>
+
+      <button>
+        💬 Contact Support
       </button>
 
-      <button
-        class="nav-btn"
-        data-section="profileSection">
-        👤
-        <span>Profile</span>
+    </div>
+
+  </section>
+
+
+  <!-- ================= PROFILE ================= -->
+
+  <section
+    id="profileSection"
+    style="display:none;">
+
+    <div class="card">
+
+      <h2>👤 My Profile</h2>
+
+      <p>
+        Player Name:
+        <strong id="profileName">
+          Player
+        </strong>
+      </p>
+
+      <p>
+        Player ID:
+        <strong id="profileId">
+          BLK001
+        </strong>
+      </p>
+
+      <button>
+        ✏️ Edit Profile
       </button>
 
-      <button
-        class="nav-btn"
-        data-section="referSection">
-        🎁
-        <span>Refer</span>
+    </div>
+
+  </section>
+
+
+  <!-- ================= REFER ================= -->
+
+  <section
+    id="referSection"
+    style="display:none;">
+
+    <div class="card">
+
+      <h2>🎁 Refer &amp; Earn</h2>
+
+      <p>
+        Invite your friends to Balaji Ludo King.
+      </p>
+
+      <div class="ref-code">
+        BLK-FRIEND
+      </div>
+
+      <button>
+        🔗 Share Referral
       </button>
 
-    </nav>
+    </div>
 
+  </section>
+
+
+  <!-- ================= POPUP ================= -->
+
+  <div
+    id="balancePopup"
+    class="popup-overlay"
+    style="display:none;">
+
+    <div class="popup">
+
+      <div class="popup-icon">
+        ⚠️
+      </div>
+
+      <h3>
+        Insufficient Balance
+      </h3>
+
+      <p>
+        You don't have sufficient
+        balance in your wallet.
+      </p>
+
+      <button id="balanceOkBtn">
+        OK
+      </button>
+
+    </div>
 
   </div>
 
 
-  <script src="script.js"></script>
+  <!-- MESSAGE -->
+
+  <p id="message"></p>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    ⚠️ Demo Mode — No real money is used.
+
+    <br>
+
+    © 2026 Balaji Ludo King
+
+  </footer>
+
+
+  <!-- ================= BOTTOM NAV ================= -->
+
+  <nav class="bottom-nav">
+
+    <button
+      class="nav-btn active"
+      data-section="homeSection">
+
+      🏠
+      <span>Play</span>
+
+    </button>
+
+
+    <button
+      class="nav-btn"
+      data-section="moneySection">
+
+      💰
+      <span>Money</span>
+
+    </button>
+
+
+    <button
+      class="nav-btn"
+      data-section="supportSection">
+
+      🎧
+      <span>Support</span>
+
+    </button>
+
+
+    <button
+      class="nav-btn"
+      data-section="profileSection">
+
+      👤
+      <span>Profile</span>
+
+    </button>
+
+
+    <button
+      class="nav-btn"
+      data-section="referSection">
+
+      🎁
+      <span>Refer</span>
+
+    </button>
+
+  </nav>
+
+</div>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
