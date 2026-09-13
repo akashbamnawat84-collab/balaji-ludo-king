@@ -1,4 +1,5 @@
 const MAX_PLAYERS = 2;
+const ROOM_TIMEOUT = 5 * 60 * 1000;
 
 export default {
   async fetch(request, env) {
@@ -79,8 +80,6 @@ export default {
 
 // ==========================================
 // OLD CUSTOMER STORE
-// Kept exported because existing Cloudflare
-// Durable Objects still depend on this class.
 // ==========================================
 
 export class CustomerStore {
@@ -110,6 +109,10 @@ export class LudoRoom {
 
     this.sessions = new Map();
     this.players = [];
+
+    this.roomCode = "";
+    this.roomCreatedAt = null;
+    this.roomExpired = false;
 
     this.game = {
       currentPlayer: 1,
@@ -141,6 +144,51 @@ export class LudoRoom {
       (url.searchParams.get("name") || "Player")
         .trim()
         .slice(0, 20);
+
+
+    // =========================
+    // ROOM EXPIRED
+    // =========================
+
+    if (this.roomExpired) {
+      return new Response(
+        "Room has expired. Please use a new room code.",
+        { status: 410 }
+      );
+    }
+
+
+    // =========================
+    // START 5 MINUTE TIMER
+    // =========================
+
+    if (!this.roomCreatedAt) {
+
+      this.roomCode = roomCode;
+
+      this.roomCreatedAt = Date.now();
+
+      this.startRoomTimer();
+
+    }
+
+
+    // =========================
+    // CHECK TIMER
+    // =========================
+
+    if (
+      Date.now() - this.roomCreatedAt >= ROOM_TIMEOUT &&
+      this.players.length < 2
+    ) {
+
+      await this.expireRoom();
+
+      return new Response(
+        "Room expired. 5 minutes are over.",
+        { status: 410 }
+      );
+    }
 
 
     // =========================
@@ -201,7 +249,10 @@ export class LudoRoom {
 
       name: player.name,
 
-      roomCode
+      roomCode,
+
+      expiresAt:
+        this.roomCreatedAt + ROOM_TIMEOUT
 
     });
 
@@ -212,7 +263,10 @@ export class LudoRoom {
 
       roomCode,
 
-      players: this.players
+      players: this.players,
+
+      expiresAt:
+        this.roomCreatedAt + ROOM_TIMEOUT
 
     });
 
@@ -334,12 +388,83 @@ export class LudoRoom {
 
 
   // ==========================================
+  // 5 MINUTE ROOM TIMER
+  // ==========================================
+
+  startRoomTimer() {
+
+    setTimeout(
+      async () => {
+
+        if (
+          this.players.length < 2 &&
+          !this.roomExpired
+        ) {
+
+          await this.expireRoom();
+
+        }
+
+      },
+      ROOM_TIMEOUT
+    );
+
+  }
+
+
+  // ==========================================
+  // EXPIRE ROOM
+  // ==========================================
+
+  async expireRoom() {
+
+    if (this.roomExpired) {
+      return;
+    }
+
+    this.roomExpired = true;
+
+
+    this.broadcast({
+
+      type: "room_expired",
+
+      message:
+        "Room expired. 5 minutes are over."
+
+    });
+
+
+    for (
+      const socket
+      of this.sessions.values()
+    ) {
+
+      try {
+        socket.close(
+          1000,
+          "Room expired"
+        );
+      } catch {}
+    }
+
+
+    this.sessions.clear();
+    this.players = [];
+
+  }
+
+
+  // ==========================================
   // GAME MESSAGES
   // ==========================================
 
   handleMessage(player, data) {
 
+    // =========================
     // PING
+    // =========================
+
     if (data.type === "ping") {
 
       this.send(
@@ -348,6 +473,37 @@ export class LudoRoom {
           type: "pong"
         }
       );
+
+      return;
+    }
+
+
+    // =========================
+    // LEAVE ROOM
+    // =========================
+
+    if (data.type === "leave") {
+
+      const socket =
+        this.sessions.get(player.id);
+
+      this.send(socket, {
+
+        type: "left_room",
+
+        message:
+          "You left the room."
+
+      });
+
+      try {
+        socket.close(
+          1000,
+          "Player left room"
+        );
+      } catch {}
+
+      this.removePlayer(player.id);
 
       return;
     }
@@ -558,4 +714,4 @@ export class LudoRoom {
 
   }
 
-}
+  }
