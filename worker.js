@@ -1,7 +1,7 @@
 // ======================================================
 // BALAJI LUDO KING
 // CLOUDFLARE WORKER
-// DEMO WALLET + GAME
+// 2 PLAYER ONLINE ROOM
 // ======================================================
 
 export default {
@@ -10,18 +10,38 @@ export default {
 
     try {
       // ==================================================
-      // WEBSOCKET / FUTURE ONLINE GAME
+      // ONLINE GAME WEBSOCKET
       // ==================================================
 
       if (url.pathname === "/ws") {
-        return new Response(
-          "Online game connection is not enabled yet.",
-          {
-            status: 200,
-            headers: {
-              "Content-Type": "text/plain; charset=UTF-8"
-            }
-          }
+        if (request.headers.get("Upgrade") !== "websocket") {
+          return new Response("WebSocket connection required.", {
+            status: 426
+          });
+        }
+
+        const room = (url.searchParams.get("room") || "")
+          .replace(/[^0-9]/g, "")
+          .slice(0, 6);
+
+        const name = (url.searchParams.get("name") || "Player")
+          .trim()
+          .slice(0, 20);
+
+        if (room.length !== 6) {
+          return new Response("Invalid room code.", {
+            status: 400
+          });
+        }
+
+        const id = env.LUDO_ROOM.idFromName(room);
+        const stub = env.LUDO_ROOM.get(id);
+
+        return stub.fetch(
+          new Request(
+            `${url.origin}/room?room=${room}&name=${encodeURIComponent(name)}`,
+            request
+          )
         );
       }
 
@@ -40,7 +60,7 @@ export default {
         }
 
         return new Response(
-          "Balaji Ludo King - Assets binding not configured.",
+          "Balaji Ludo King - Assets not available.",
           {
             status: 500,
             headers: {
@@ -51,7 +71,7 @@ export default {
       }
 
       // ==================================================
-      // ADMIN PAGE
+      // ADMIN
       // ==================================================
 
       if (url.pathname === "/admin") {
@@ -64,15 +84,9 @@ export default {
           );
         }
 
-        return new Response(
-          "Admin page is not available.",
-          {
-            status: 404,
-            headers: {
-              "Content-Type": "text/plain; charset=UTF-8"
-            }
-          }
-        );
+        return new Response("Admin page not found.", {
+          status: 404
+        });
       }
 
       // ==================================================
@@ -89,15 +103,9 @@ export default {
           );
         }
 
-        return new Response(
-          "Admin login page is not available.",
-          {
-            status: 404,
-            headers: {
-              "Content-Type": "text/plain; charset=UTF-8"
-            }
-          }
-        );
+        return new Response("Admin login page not found.", {
+          status: 404
+        });
       }
 
       // ==================================================
@@ -108,14 +116,10 @@ export default {
         return env.ASSETS.fetch(request);
       }
 
-      // ==================================================
-      // ASSETS ERROR
-      // ==================================================
-
       return new Response(
-        "Balaji Ludo King is running, but Cloudflare Assets binding is missing.",
+        "Balaji Ludo King is running.",
         {
-          status: 500,
+          status: 200,
           headers: {
             "Content-Type": "text/plain; charset=UTF-8"
           }
@@ -123,23 +127,14 @@ export default {
       );
 
     } catch (error) {
-
-      // ==================================================
-      // ERROR HANDLER
-      // ==================================================
-
       return new Response(
-        JSON.stringify(
-          {
-            success: false,
-            message: "Balaji Ludo King server error",
-            error: String(
-              error?.message || error
-            )
-          },
-          null,
-          2
-        ),
+        JSON.stringify({
+          success: false,
+          message: "Server error",
+          error: String(
+            error?.message || error
+          )
+        }),
         {
           status: 500,
           headers: {
@@ -151,3 +146,403 @@ export default {
     }
   }
 };
+
+
+// ======================================================
+// DURABLE OBJECT
+// ======================================================
+
+export class LudoRoom {
+
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+
+    this.sessions = new Map();
+
+    this.game = {
+      roomCode: "",
+      players: [],
+      positions: {
+        1: 0,
+        2: 0
+      },
+      currentPlayer: 1,
+      started: false,
+      winner: null,
+      lastDice: null
+    };
+  }
+
+  // ====================================================
+  // DURABLE OBJECT FETCH
+  // ====================================================
+
+  async fetch(request) {
+
+    const url = new URL(request.url);
+
+    if (
+      request.headers.get("Upgrade") !== "websocket"
+    ) {
+      return new Response(
+        "Ludo Room is running.",
+        {
+          status: 200,
+          headers: {
+            "Content-Type":
+              "text/plain; charset=UTF-8"
+          }
+        }
+      );
+    }
+
+    const roomCode =
+      url.searchParams.get("room") || "";
+
+    const name =
+      url.searchParams.get("name") || "Player";
+
+    if (!roomCode) {
+      return new Response(
+        "Room code required.",
+        {
+          status: 400
+        }
+      );
+    }
+
+    // ==================================================
+    // LIMIT TO 2 PLAYERS
+    // ==================================================
+
+    if (this.sessions.size >= 2) {
+      return new Response(
+        "Room is full. Only 2 players are allowed.",
+        {
+          status: 403
+        }
+      );
+    }
+
+    const pair = new WebSocketPair();
+
+    const client = pair[0];
+    const server = pair[1];
+
+    server.accept();
+
+    const playerNumber =
+      this.sessions.size === 0 ? 1 : 2;
+
+    const player = {
+      id: crypto.randomUUID(),
+      number: playerNumber,
+      name: name.slice(0, 20)
+    };
+
+    this.sessions.set(
+      player.id,
+      server
+    );
+
+    this.game.roomCode = roomCode;
+
+    this.game.players.push({
+      id: player.id,
+      number: player.number,
+      name: player.name
+    });
+
+    // ==================================================
+    // SEND PLAYER INFO
+    // ==================================================
+
+    this.sendTo(
+      server,
+      {
+        type: "connected",
+        player: player.number,
+        name: player.name,
+        roomCode: roomCode
+      }
+    );
+
+    // ==================================================
+    // SEND CURRENT ROOM STATE
+    // ==================================================
+
+    this.broadcast({
+      type: "room",
+      roomCode: roomCode,
+      players: this.game.players
+    });
+
+    // ==================================================
+    // START GAME WHEN 2 PLAYERS JOIN
+    // ==================================================
+
+    if (this.game.players.length === 2) {
+
+      this.game.started = true;
+      this.game.currentPlayer = 1;
+
+      this.broadcast({
+        type: "game_start",
+        players: this.game.players,
+        currentPlayer: 1,
+        positions: this.game.positions
+      });
+    }
+
+    // ==================================================
+    // WEBSOCKET MESSAGE
+    // ==================================================
+
+    server.addEventListener(
+      "message",
+      async event => {
+
+        try {
+
+          const data =
+            JSON.parse(event.data);
+
+          await this.handleMessage(
+            player,
+            data
+          );
+
+        } catch (error) {
+
+          this.sendTo(
+            server,
+            {
+              type: "error",
+              message:
+                "Invalid game message."
+            }
+          );
+        }
+      }
+    );
+
+    // ==================================================
+    // DISCONNECT
+    // ==================================================
+
+    server.addEventListener(
+      "close",
+      () => {
+
+        this.sessions.delete(
+          player.id
+        );
+
+        this.game.players =
+          this.game.players.filter(
+            p => p.id !== player.id
+          );
+
+        this.game.started = false;
+
+        this.broadcast({
+          type: "player_left",
+          players: this.game.players
+        });
+      }
+    );
+
+    return new Response(
+      null,
+      {
+        status: 101,
+        webSocket: client
+      }
+    );
+  }
+
+  // ====================================================
+  // HANDLE GAME MESSAGE
+  // ====================================================
+
+  async handleMessage(player, data) {
+
+    if (data.type === "ping") {
+
+      const socket =
+        this.sessions.get(player.id);
+
+      if (socket) {
+        this.sendTo(
+          socket,
+          {
+            type: "pong"
+          }
+        );
+      }
+
+      return;
+    }
+
+    // ==================================================
+    // DICE ROLL
+    // ==================================================
+
+    if (data.type === "roll") {
+
+      if (!this.game.started) {
+        return;
+      }
+
+      if (this.game.winner) {
+        return;
+      }
+
+      if (
+        player.number !==
+        this.game.currentPlayer
+      ) {
+
+        const socket =
+          this.sessions.get(player.id);
+
+        if (socket) {
+          this.sendTo(
+            socket,
+            {
+              type: "error",
+              message:
+                "Wait for your turn."
+            }
+          );
+        }
+
+        return;
+      }
+
+      const dice =
+        Math.floor(Math.random() * 6) + 1;
+
+      this.game.lastDice = dice;
+
+      let position =
+        this.game.positions[player.number];
+
+      position += dice;
+
+      if (position > 20) {
+        position = 20;
+      }
+
+      this.game.positions[player.number] =
+        position;
+
+      // =================================================
+      // WIN
+      // =================================================
+
+      if (position >= 20) {
+
+        this.game.winner =
+          player.number;
+
+        this.broadcast({
+          type: "game_over",
+          winner: player.number,
+          winnerName: player.name,
+          dice: dice,
+          positions: this.game.positions
+        });
+
+        return;
+      }
+
+      // =================================================
+      // NEXT PLAYER
+      // =================================================
+
+      this.game.currentPlayer =
+        player.number === 1 ? 2 : 1;
+
+      this.broadcast({
+        type: "move",
+        player: player.number,
+        dice: dice,
+        positions: this.game.positions,
+        currentPlayer:
+          this.game.currentPlayer
+      });
+
+      return;
+    }
+
+    // ==================================================
+    // RESET GAME
+    // ==================================================
+
+    if (data.type === "reset") {
+
+      this.game.positions = {
+        1: 0,
+        2: 0
+      };
+
+      this.game.currentPlayer = 1;
+      this.game.winner = null;
+      this.game.lastDice = null;
+
+      if (this.game.players.length === 2) {
+        this.game.started = true;
+      }
+
+      this.broadcast({
+        type: "reset",
+        positions: this.game.positions,
+        currentPlayer: 1
+      });
+
+      return;
+    }
+  }
+
+  // ====================================================
+  // SEND TO ONE PLAYER
+  // ====================================================
+
+  sendTo(socket, data) {
+
+    try {
+
+      socket.send(
+        JSON.stringify(data)
+      );
+
+    } catch (error) {
+      // Ignore disconnected socket
+    }
+  }
+
+  // ====================================================
+  // BROADCAST TO ALL PLAYERS
+  // ====================================================
+
+  broadcast(data) {
+
+    const message =
+      JSON.stringify(data);
+
+    for (
+      const socket of this.sessions.values()
+    ) {
+
+      try {
+
+        socket.send(message);
+
+      } catch (error) {
+        // Ignore disconnected socket
+      }
+    }
+  }
+}
