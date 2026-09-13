@@ -116,11 +116,37 @@
         }
         .running-item {
             text-align: center;
-            padding: 10px;
+            padding: 12px;
             background: #0f172a;
             border-radius: 8px;
             margin-bottom: 10px;
             border: 1px solid #334155;
+        }
+        .support-card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        .support-btn {
+            display: inline-block;
+            width: 48%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .btn-telegram {
+            background: #0088cc;
+            color: #fff;
+        }
+        .btn-whatsapp {
+            background: #25d366;
+            color: #fff;
         }
     </style>
 </head>
@@ -163,18 +189,51 @@
         <p style="font-size: 12px; color: #94a3b8; text-align: center;">Loading running matches...</p>
     </div>
 
+    <!-- Support Section -->
+    <div class="support-card">
+        <p style="font-size: 14px; font-weight: bold;">🎧 24/7 Support Center</p>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Having an issue? Our team is active & ready to assist</p>
+        <div style="display: flex; justify-content: space-between;">
+            <a href="https://t.me/" target="_blank" class="support-btn btn-telegram">Telegram Support</a>
+            <a href="https://wa.me/" target="_blank" class="support-btn btn-whatsapp">WhatsApp Chat</a>
+        </div>
+    </div>
+
+    <!-- ROOM CODE & RESULT SUBMISSION MODAL -->
+    <div id="battleModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:#1e293b; padding:20px; border-radius:12px; width:90%; max-width:400px; border:1px solid #334155; text-align:center;">
+            <h3 style="color:#f59e0b; margin-bottom:10px;">🎮 Ludo Room Code</h3>
+            
+            <div id="roomCodeSection" style="margin-bottom:15px;">
+                <p style="font-size:12px; color:#cbd5e1; margin-bottom:5px;">Ludo King Room Code:</p>
+                <input type="text" id="roomCodeInput" placeholder="Enter 8-Digit Code" maxlength="8" style="width:100%; padding:10px; border-radius:6px; border:1px solid #475569; background:#0f172a; color:#fff; text-align:center; font-size:18px; letter-spacing:2px;">
+                <button class="btn btn-primary" style="margin-top:8px;" onclick="submitRoomCode()">Set Room Code</button>
+            </div>
+
+            <hr style="border-color:#334155; margin:15px 0;">
+
+            <div id="resultSection">
+                <h4 style="color:#22c55e; margin-bottom:5px;">🏆 Upload Win Screenshot</h4>
+                <input type="file" id="screenshotInput" accept="image/*" style="width:100%; margin:10px 0; color:#cbd5e1;">
+                <button class="btn btn-play" style="width:100%;" onclick="submitResult()">Upload Result</button>
+            </div>
+
+            <button onclick="closeModal()" style="margin-top:15px; background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:13px;">❌ Close Window</button>
+        </div>
+    </div>
+
     <script>
-        // अपना User ID यहाँ सेट करें या LocalStorage से लें
         const CURRENT_USER_ID = localStorage.getItem("userId") || "user_" + Math.floor(Math.random() * 1000);
         localStorage.setItem("userId", CURRENT_USER_ID);
 
-        // 1. लोड होने पर बैटल फ़ेच करें
+        let ACTIVE_BATTLE_ID = null;
+
         async function fetchBattles() {
             try {
                 const res = await fetch("/api/battles");
                 const data = await res.json();
 
-                // Open Battles Render
+                // Open Battles
                 const openContainer = document.getElementById("openBattlesList");
                 if (data.openBattles && data.openBattles.length > 0) {
                     openContainer.innerHTML = data.openBattles.map(b => `
@@ -191,15 +250,17 @@
                     openContainer.innerHTML = `<p style="font-size: 12px; color: #94a3b8; text-align: center;">No open battles right now.</p>`;
                 }
 
-                // Running Battles Render
+                // Running Battles
                 const runningContainer = document.getElementById("runningBattlesList");
                 if (data.runningBattles && data.runningBattles.length > 0) {
                     runningContainer.innerHTML = data.runningBattles.map(b => `
                         <div class="running-item">
                             <p style="font-size: 13px;">Game Play between <b>${b.creator_id}</b> & <b>${b.joiner_id || 'Player'}</b></p>
-                            <p style="font-size: 12px; color: #f59e0b; margin-top: 5px;">
+                            <p style="font-size: 12px; color: #f59e0b; margin: 5px 0;">
                                 Entry Fee 💵 ₹${b.entry_fee} VS Winning Prize 💵 ₹${b.prize_amount}
                             </p>
+                            <p style="font-size: 12px; color: #38bdf8;">Room Code: ${b.room_code || 'Not Set'}</p>
+                            <button class="btn btn-primary" style="margin-top: 8px; padding: 6px; font-size: 12px;" onclick="openBattleModal(${b.id}, '${b.room_code || ''}')">Manage Room / Submit Result</button>
                         </div>
                     `).join("");
                 } else {
@@ -211,7 +272,6 @@
             }
         }
 
-        // 2. नया बैटल बनाएं
         async function createBattle() {
             const entryFee = document.getElementById("entryFee").value;
             if (!entryFee || entryFee < 50) {
@@ -238,7 +298,6 @@
             }
         }
 
-        // 3. बैटल जॉइन करें
         async function joinBattle(battleId) {
             try {
                 const res = await fetch("/api/battles/join", {
@@ -259,7 +318,65 @@
             }
         }
 
-        // पेज लोड होने पर और हर 5 सेकंड में डाटा रिफ्रेश करें
+        function openBattleModal(battleId, currentRoomCode) {
+            ACTIVE_BATTLE_ID = battleId;
+            document.getElementById("battleModal").style.display = "flex";
+            if(currentRoomCode) {
+                document.getElementById("roomCodeInput").value = currentRoomCode;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("battleModal").style.display = "none";
+        }
+
+        async function submitRoomCode() {
+            const roomCode = document.getElementById("roomCodeInput").value;
+            if(!/^\d{8}$/.test(roomCode)) {
+                alert("कृपया 8-अंकों का सही Ludo King रूम कोड डालें।");
+                return;
+            }
+
+            const res = await fetch("/api/battles/set-room-code", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: CURRENT_USER_ID, battleId: ACTIVE_BATTLE_ID, roomCode: roomCode })
+            });
+            const data = await res.json();
+            if(data.success) {
+                alert("Room Code सेट हो गया है!");
+                fetchBattles();
+            } else {
+                alert(data.error);
+            }
+        }
+
+        async function submitResult() {
+            const fileInput = document.getElementById("screenshotInput");
+            if(!fileInput.files[0]) {
+                alert("कृपया जीतने का स्क्रीनशॉट सेलेक्ट करें।");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("userId", CURRENT_USER_ID);
+            formData.append("battleId", ACTIVE_BATTLE_ID);
+            formData.append("screenshot", fileInput.files[0]);
+
+            const res = await fetch("/api/battles/submit-result", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            if(data.success) {
+                alert("स्क्रीनशॉट सबमिट हो गया है! एडमिन वेरिफिकेशन के बाद पैसे ट्रांसफर कर दिए जाएँगे।");
+                closeModal();
+                fetchBattles();
+            } else {
+                alert(data.error);
+            }
+        }
+
         fetchBattles();
         setInterval(fetchBattles, 5000);
     </script>
