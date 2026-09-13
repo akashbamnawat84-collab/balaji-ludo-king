@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balaji Ludo King</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <h1>🎮 Balaji Ludo King</h1>
+  <p>Classic Mode • 2 Player</p>
+</header>
+
+<main class="container">
+
+  <section id="welcomeCard" class="card">
+    <h2>Welcome 👋</h2>
+    <p>Enter your name to continue</p>
+
+    <input
+      id="playerName"
+      type="text"
+      maxlength="20"
+      placeholder="Enter your name"
+    >
+
+    <button id="startBtn">Continue</button>
+
+    <div id="message" class="message"></div>
+  </section>
+
+  <section id="roomCard" class="card hidden">
+
+    <h2>🎮 Join Classic Room</h2>
+
+    <p class="info">
+      बाहर से मिला हुआ 8-Digit Room Code डालें।
+    </p>
+
+    <input
+      id="roomCode"
+      type="tel"
+      inputmode="numeric"
+      maxlength="8"
+      placeholder="Enter 8-Digit Room Code"
+      autocomplete="off"
+    >
+
+    <button id="joinRoomBtn">
+      🔗 Join Room
+    </button>
+
+    <div id="roomMessage" class="message">
+      8-Digit Room Code डालें।
+    </div>
+
+    <div class="room-status">
+
+      <div class="player-box">
+        <span>Player 1</span>
+        <strong id="player1">Waiting...</strong>
+      </div>
+
+      <div class="player-box">
+        <span>Player 2</span>
+        <strong id="player2">Waiting...</strong>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section id="ludoCard" class="card hidden">
+
+    <div class="game-header">
+
+      <div>
+        <strong>Room:</strong>
+        <span id="displayRoomCode">--------</span>
+      </div>
+
+      <div id="gameMessage">
+        Waiting...
+      </div>
+
+    </div>
+
+    <div class="game-players">
+
+      <div class="game-player red-player">
+        🔴 <span id="gamePlayer1">Player 1</span>
+      </div>
+
+      <div class="game-player green-player">
+        🟢 <span id="gamePlayer2">Player 2</span>
+      </div>
+
+    </div>
+
+    <div class="ludo-board">
+
+      <div class="home red-home">
+        <span>🔴</span>
+        <span>🔴</span>
+        <span>🔴</span>
+        <span>🔴</span>
+      </div>
+
+      <div class="home green-home">
+        <span>🟢</span>
+        <span>🟢</span>
+        <span>🟢</span>
+        <span>🟢</span>
+      </div>
+
+      <div class="track" id="track"></div>
+
+      <div class="center-home">
+        🏆
+      </div>
+
+    </div>
+
+    <div class="dice-area">
+
+      <div id="dice" class="dice">🎲</div>
+
+      <button id="diceBtn">
+        🎲 Roll Dice
+      </button>
+
+      <div>
+        Dice:
+        <strong id="diceNumber">-</strong>
+      </div>
+
+    </div>
+
+    <button id="resetGameBtn" class="secondary-btn">
+      🔄 Reset Game
+    </button>
+
+  </section>
+
+  <div class="demo-notice">
+    ⚠️ Demo Mode — No real money is used.
+  </div>
+
+</main>
+
+<footer>
+  © 2026 Balaji Ludo King
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
