@@ -1,39 +1,9 @@
-/*
-========================================
- BALAJI LUDO KING
- 2 PLAYER DEMO GAME + DEMO WALLET
-========================================
-*/
-
-/* =====================================
-   COMMON ELEMENTS
-===================================== */
-
-const balanceElement = document.getElementById("balance");
-
-const depositBtn = document.getElementById("depositBtn");
-const withdrawBtn = document.getElementById("withdrawBtn");
-
-const depositSection = document.getElementById("depositSection");
-const withdrawSection = document.getElementById("withdrawSection");
-
-const depositAmount = document.getElementById("depositAmount");
-const withdrawAmount = document.getElementById("withdrawAmount");
-
-const demoUpi = document.getElementById("demoUpi");
-
-const submitDeposit = document.getElementById("submitDeposit");
-const submitWithdraw = document.getElementById("submitWithdraw");
-
-const depositMessage = document.getElementById("depositMessage");
-const withdrawMessage = document.getElementById("withdrawMessage");
-
-const transactionsElement = document.getElementById("transactions");
-
-
-/* =====================================
-   LUDO ELEMENTS
-===================================== */
+// ======================================================
+// BALAJI LUDO KING
+// ONLINE 2 PLAYER GAME
+// CLOUDFLARE WEBSOCKET
+// DEMO WALLET
+// ======================================================
 
 const welcomeCard = document.getElementById("welcomeCard");
 const roomCard = document.getElementById("roomCard");
@@ -45,15 +15,17 @@ const message = document.getElementById("message");
 
 const createRoomBtn = document.getElementById("createRoomBtn");
 const joinRoomBtn = document.getElementById("joinRoomBtn");
-
 const roomCodeInput = document.getElementById("roomCode");
 
 const player1Element = document.getElementById("player1");
 const player2Element = document.getElementById("player2");
 
+const displayRoomCode = document.getElementById("displayRoomCode");
+const gamePlayer1 = document.getElementById("gamePlayer1");
+const gamePlayer2 = document.getElementById("gamePlayer2");
+
 const diceBtn = document.getElementById("diceBtn");
 const diceElement = document.getElementById("dice");
-
 const gameMessage = document.getElementById("gameMessage");
 
 const player1Piece = document.getElementById("player1Piece");
@@ -61,30 +33,85 @@ const player2Piece = document.getElementById("player2Piece");
 
 const resetGameBtn = document.getElementById("resetGameBtn");
 
+// ======================================================
+// WALLET
+// ======================================================
 
-/* =====================================
-   DEMO WALLET
-===================================== */
+const balanceElement = document.getElementById("balance");
 
-let balance = Number(
-  localStorage.getItem("balajiDemoBalance")
-) || 0;
+const depositBtn = document.getElementById("depositBtn");
+const withdrawBtn = document.getElementById("withdrawBtn");
 
-let transactions = [];
+const depositSection = document.getElementById("depositSection");
+const withdrawSection = document.getElementById("withdrawSection");
 
-try {
-  transactions =
-    JSON.parse(
-      localStorage.getItem("balajiDemoTransactions")
-    ) || [];
-} catch (error) {
-  transactions = [];
-}
+const depositAmountInput =
+  document.getElementById("depositAmount");
 
+const withdrawAmountInput =
+  document.getElementById("withdrawAmount");
 
-/* =====================================
-   UPDATE BALANCE
-===================================== */
+const demoUpiInput =
+  document.getElementById("demoUpi");
+
+const submitDeposit =
+  document.getElementById("submitDeposit");
+
+const submitWithdraw =
+  document.getElementById("submitWithdraw");
+
+const depositMessage =
+  document.getElementById("depositMessage");
+
+const withdrawMessage =
+  document.getElementById("withdrawMessage");
+
+const transactionsElement =
+  document.getElementById("transactions");
+
+// ======================================================
+// GAME VARIABLES
+// ======================================================
+
+let playerName = "";
+let roomCode = "";
+let playerNumber = 0;
+
+let socket = null;
+
+let gameStarted = false;
+let currentPlayer = 1;
+
+const WIN_POSITION = 20;
+
+// ======================================================
+// DICE FACES
+// ======================================================
+
+const diceFaces = {
+  1: "⚀",
+  2: "⚁",
+  3: "⚂",
+  4: "⚃",
+  5: "⚄",
+  6: "⚅"
+};
+
+// ======================================================
+// WALLET STORAGE
+// ======================================================
+
+let balance =
+  Number(localStorage.getItem("balajiDemoBalance")) || 0;
+
+let transactions =
+  JSON.parse(
+    localStorage.getItem("balajiDemoTransactions") || "[]"
+  );
+
+// ======================================================
+// UPDATE BALANCE
+// ======================================================
 
 function updateBalance() {
 
@@ -95,14 +122,13 @@ function updateBalance() {
 
   localStorage.setItem(
     "balajiDemoBalance",
-    balance.toString()
+    String(balance)
   );
 }
 
-
-/* =====================================
-   SAVE TRANSACTIONS
-===================================== */
+// ======================================================
+// SAVE TRANSACTIONS
+// ======================================================
 
 function saveTransactions() {
 
@@ -112,12 +138,11 @@ function saveTransactions() {
   );
 }
 
+// ======================================================
+// SHOW TRANSACTIONS
+// ======================================================
 
-/* =====================================
-   SHOW TRANSACTIONS
-===================================== */
-
-function showTransactions() {
+function renderTransactions() {
 
   if (!transactionsElement) return;
 
@@ -129,95 +154,69 @@ function showTransactions() {
     return;
   }
 
-  transactionsElement.innerHTML = "";
+  transactionsElement.innerHTML =
+    transactions.map(tx => {
 
-  transactions
-    .slice()
-    .reverse()
-    .forEach(transaction => {
+      const amountClass =
+        tx.type === "deposit"
+          ? "deposit-text"
+          : "withdraw-text";
 
-      const div =
-        document.createElement("div");
+      const sign =
+        tx.type === "deposit"
+          ? "+"
+          : "-";
 
-      div.className = "transaction";
+      return `
+        <div class="transaction">
+          <div>
+            <div class="transaction-title">
+              ${tx.title}
+            </div>
 
+            <div class="transaction-date">
+              ${tx.date}
+            </div>
 
-      const left =
-        document.createElement("div");
+            <div class="status">
+              ${tx.status}
+            </div>
+          </div>
 
-
-      const title =
-        document.createElement("div");
-
-      title.className =
-        "transaction-title";
-
-      title.textContent =
-        transaction.type === "deposit"
-          ? "💰 Demo Deposit"
-          : "🏦 Demo Withdrawal";
-
-
-      const date =
-        document.createElement("div");
-
-      date.className =
-        "transaction-date";
-
-      date.textContent =
-        transaction.date;
-
-
-      const status =
-        document.createElement("div");
-
-      status.className =
-        "status";
-
-      status.textContent =
-        "Status: " +
-        transaction.status;
-
-
-      left.appendChild(title);
-      left.appendChild(date);
-      left.appendChild(status);
-
-
-      const amount =
-        document.createElement("div");
-
-      amount.className =
-        "transaction-amount " +
-        (
-          transaction.type === "deposit"
-            ? "deposit-text"
-            : "withdraw-text"
-        );
-
-
-      amount.textContent =
-        (
-          transaction.type === "deposit"
-            ? "+"
-            : "-"
-        ) +
-        " ₹" +
-        Number(transaction.amount).toFixed(2);
-
-
-      div.appendChild(left);
-      div.appendChild(amount);
-
-      transactionsElement.appendChild(div);
-
-    });
+          <div class="transaction-amount ${amountClass}">
+            ${sign} ₹${Number(tx.amount).toFixed(2)}
+          </div>
+        </div>
+      `;
+    }).join("");
 }
 
+// ======================================================
+// ADD TRANSACTION
+// ======================================================
 
-/* =====================================
-   DEPOSIT BUTTON
-===================================== */
+function addTransaction(
+  type,
+  amount,
+  title,
+  status
+) {
+
+  transactions.unshift({
+    type,
+    amount,
+    title,
+    status,
+    date: new Date().toLocaleString()
+  });
+
+  saveTransactions();
+  renderTransactions();
+}
+
+// ======================================================
+// WALLET BUTTONS
+// ======================================================
 
 if (depositBtn) {
 
@@ -225,31 +224,16 @@ if (depositBtn) {
     "click",
     () => {
 
-      if (depositSection) {
-        depositSection.classList.remove("hidden");
-      }
-
       if (withdrawSection) {
         withdrawSection.classList.add("hidden");
       }
 
-      if (depositMessage) {
-        depositMessage.textContent = "";
+      if (depositSection) {
+        depositSection.classList.toggle("hidden");
       }
-
-      if (depositAmount) {
-        depositAmount.focus();
-      }
-
     }
   );
-
 }
-
-
-/* =====================================
-   WITHDRAW BUTTON
-===================================== */
 
 if (withdrawBtn) {
 
@@ -257,31 +241,20 @@ if (withdrawBtn) {
     "click",
     () => {
 
-      if (withdrawSection) {
-        withdrawSection.classList.remove("hidden");
-      }
-
       if (depositSection) {
         depositSection.classList.add("hidden");
       }
 
-      if (withdrawMessage) {
-        withdrawMessage.textContent = "";
+      if (withdrawSection) {
+        withdrawSection.classList.toggle("hidden");
       }
-
-      if (withdrawAmount) {
-        withdrawAmount.focus();
-      }
-
     }
   );
-
 }
 
-
-/* =====================================
-   DEMO DEPOSIT
-===================================== */
+// ======================================================
+// DEMO DEPOSIT
+// ======================================================
 
 if (submitDeposit) {
 
@@ -290,12 +263,7 @@ if (submitDeposit) {
     () => {
 
       const amount =
-        Number(
-          depositAmount
-            ? depositAmount.value
-            : 0
-        );
-
+        Number(depositAmountInput?.value || 0);
 
       if (!amount || amount <= 0) {
 
@@ -307,61 +275,42 @@ if (submitDeposit) {
         return;
       }
 
-
       if (amount > 100000) {
 
         if (depositMessage) {
           depositMessage.textContent =
-            "Demo limit: ₹100000";
+            "Maximum demo deposit ₹1,00,000 है।";
         }
 
         return;
       }
 
-
       balance += amount;
-
-
-      transactions.push({
-
-        type: "deposit",
-
-        amount: amount,
-
-        status: "APPROVED - DEMO",
-
-        date:
-          new Date().toLocaleString("en-IN")
-
-      });
-
-
-      saveTransactions();
 
       updateBalance();
 
-      showTransactions();
+      addTransaction(
+        "deposit",
+        amount,
+        "Demo Deposit",
+        "SUCCESS - DEMO"
+      );
 
-
-      if (depositAmount) {
-        depositAmount.value = "";
+      if (depositAmountInput) {
+        depositAmountInput.value = "";
       }
-
 
       if (depositMessage) {
         depositMessage.textContent =
-          "✅ Demo balance successfully added.";
+          `₹${amount.toFixed(2)} demo balance में add हो गया।`;
       }
-
     }
   );
-
 }
 
-
-/* =====================================
-   DEMO WITHDRAWAL
-===================================== */
+// ======================================================
+// DEMO WITHDRAW
+// ======================================================
 
 if (submitWithdraw) {
 
@@ -370,18 +319,10 @@ if (submitWithdraw) {
     () => {
 
       const amount =
-        Number(
-          withdrawAmount
-            ? withdrawAmount.value
-            : 0
-        );
-
+        Number(withdrawAmountInput?.value || 0);
 
       const upi =
-        demoUpi
-          ? demoUpi.value.trim()
-          : "";
-
+        (demoUpiInput?.value || "").trim();
 
       if (!amount || amount <= 0) {
 
@@ -393,139 +334,56 @@ if (submitWithdraw) {
         return;
       }
 
-
-      if (!upi) {
+      if (amount > balance) {
 
         if (withdrawMessage) {
           withdrawMessage.textContent =
-            "कृपया Demo UPI ID डालें।";
+            "Demo balance पर्याप्त नहीं है।";
         }
 
         return;
       }
-
 
       if (!upi.includes("@")) {
 
         if (withdrawMessage) {
           withdrawMessage.textContent =
-            "Demo UPI ID का format सही नहीं है।";
+            "कृपया demo UPI ID डालें।";
         }
 
         return;
       }
-
-
-      if (amount > balance) {
-
-        if (withdrawMessage) {
-          withdrawMessage.textContent =
-            "❌ Insufficient demo balance.";
-        }
-
-        return;
-      }
-
 
       balance -= amount;
 
-
-      transactions.push({
-
-        type: "withdraw",
-
-        amount: amount,
-
-        upi: upi,
-
-        status: "PENDING - DEMO",
-
-        date:
-          new Date().toLocaleString("en-IN")
-
-      });
-
-
-      saveTransactions();
-
       updateBalance();
 
-      showTransactions();
+      addTransaction(
+        "withdraw",
+        amount,
+        "Demo Withdrawal",
+        "PENDING - DEMO"
+      );
 
-
-      if (withdrawAmount) {
-        withdrawAmount.value = "";
+      if (withdrawAmountInput) {
+        withdrawAmountInput.value = "";
       }
 
-      if (demoUpi) {
-        demoUpi.value = "";
+      if (demoUpiInput) {
+        demoUpiInput.value = "";
       }
-
 
       if (withdrawMessage) {
         withdrawMessage.textContent =
-          "✅ Demo withdrawal request created.";
+          `₹${amount.toFixed(2)} demo withdrawal request बन गई।`;
       }
-
     }
   );
-
 }
 
-
-/* =====================================
-   LUDO GAME DATA
-===================================== */
-
-let currentPlayerName = "";
-
-let roomCode = "";
-
-let isHost = false;
-
-let player1Name = "";
-
-let player2Name = "";
-
-let currentTurn = 1;
-
-let player1Position = 0;
-
-let player2Position = 0;
-
-const WIN_POSITION = 20;
-
-
-/* =====================================
-   RANDOM ROOM CODE
-===================================== */
-
-function generateRoomCode() {
-
-  const letters =
-    "ABCDEFGHJKLMNPQRSTUVWXYZ";
-
-  let code = "";
-
-  for (let i = 0; i < 6; i++) {
-
-    code +=
-      letters[
-        Math.floor(
-          Math.random() *
-          letters.length
-        )
-      ];
-
-  }
-
-  return code;
-}
-
-
-/* =====================================
-   START PLAYER
-===================================== */
+// ======================================================
+// START GAME
+// ======================================================
 
 if (startBtn) {
 
@@ -534,10 +392,7 @@ if (startBtn) {
     () => {
 
       const name =
-        playerNameInput
-          ? playerNameInput.value.trim()
-          : "";
-
+        (playerNameInput?.value || "").trim();
 
       if (!name) {
 
@@ -549,14 +404,12 @@ if (startBtn) {
         return;
       }
 
-
-      currentPlayerName = name;
+      playerName = name;
 
       localStorage.setItem(
         "balajiPlayerName",
-        currentPlayerName
+        playerName
       );
-
 
       if (welcomeCard) {
         welcomeCard.classList.add("hidden");
@@ -566,23 +419,34 @@ if (startBtn) {
         roomCard.classList.remove("hidden");
       }
 
-
       if (message) {
-        message.textContent =
-          "Welcome " +
-          currentPlayerName +
-          " 👋";
+        message.textContent = "";
       }
 
+      updateRoomMessage(
+        "Create Room या Join Room करें।"
+      );
     }
   );
-
 }
 
+// ======================================================
+// GENERATE 6 DIGIT ROOM CODE
+// ======================================================
 
-/* =====================================
-   CREATE ROOM
-===================================== */
+function generateRoomCode() {
+
+  return String(
+    Math.floor(
+      100000 +
+      Math.random() * 900000
+    )
+  );
+}
+
+// ======================================================
+// CREATE ROOM
+// ======================================================
 
 if (createRoomBtn) {
 
@@ -590,68 +454,37 @@ if (createRoomBtn) {
     "click",
     () => {
 
-      if (!currentPlayerName) {
+      if (!playerName) {
 
-        const savedName =
-          localStorage.getItem(
-            "balajiPlayerName"
-          );
-
-        if (savedName) {
-          currentPlayerName = savedName;
-        }
-
-      }
-
-
-      if (!currentPlayerName) {
-
-        if (message) {
-          message.textContent =
-            "पहले अपना नाम डालें।";
-        }
+        updateRoomMessage(
+          "पहले अपना नाम डालें।"
+        );
 
         return;
       }
 
-
       roomCode =
         generateRoomCode();
-
-      isHost = true;
-
-      player1Name =
-        currentPlayerName;
-
-      player2Name = "";
-
 
       if (roomCodeInput) {
         roomCodeInput.value =
           roomCode;
       }
 
+      player1Element.textContent =
+        playerName;
 
-      updatePlayers();
+      player2Element.textContent =
+        "Waiting...";
 
-
-      if (gameMessage) {
-        gameMessage.textContent =
-          "Room created. Player 2 के join करने का इंतजार है.";
-      }
-
-
-      showLudoCard();
-
+      connectToRoom();
     }
   );
-
 }
 
-
-/* =====================================
-   JOIN ROOM
-===================================== */
+// ======================================================
+// JOIN ROOM
+// ======================================================
 
 if (joinRoomBtn) {
 
@@ -659,62 +492,420 @@ if (joinRoomBtn) {
     "click",
     () => {
 
-      const enteredCode =
-        roomCodeInput
-          ? roomCodeInput.value
-              .trim()
-              .toUpperCase()
-          : "";
+      if (!playerName) {
 
-
-      if (!enteredCode) {
-
-        if (message) {
-          message.textContent =
-            "कृपया Room Code डालें।";
-        }
+        updateRoomMessage(
+          "पहले अपना नाम डालें।"
+        );
 
         return;
       }
 
+      const code =
+        (roomCodeInput?.value || "")
+          .trim();
 
-      roomCode =
-        enteredCode;
+      if (!/^\d{6}$/.test(code)) {
 
-      isHost = false;
+        updateRoomMessage(
+          "6 digit Room Code डालें।"
+        );
 
-      player2Name =
-        currentPlayerName || "Player 2";
-
-
-      if (!player1Name) {
-        player1Name =
-          "Player 1";
+        return;
       }
 
+      roomCode = code;
 
-      updatePlayers();
+      connectToRoom();
+    }
+  );
+}
 
+// ======================================================
+// UPDATE ROOM MESSAGE
+// ======================================================
 
-      if (gameMessage) {
-        gameMessage.textContent =
-          "आप Room में join हो गए।";
-      }
+function updateRoomMessage(text) {
 
+  const roomMessage =
+    document.getElementById("roomMessage");
 
-      showLudoCard();
+  if (roomMessage) {
+    roomMessage.textContent = text;
+  }
+}
 
+// ======================================================
+// CONNECT WEBSOCKET
+// ======================================================
+
+function connectToRoom() {
+
+  if (socket) {
+
+    try {
+      socket.close();
+    } catch (error) {
+      // Ignore
+    }
+  }
+
+  const protocol =
+    location.protocol === "https:"
+      ? "wss:"
+      : "ws:";
+
+  const wsUrl =
+    `${protocol}//${location.host}/ws?room=${encodeURIComponent(roomCode)}&name=${encodeURIComponent(playerName)}`;
+
+  updateRoomMessage(
+    "Room से connect हो रहा है..."
+  );
+
+  try {
+
+    socket =
+      new WebSocket(wsUrl);
+
+  } catch (error) {
+
+    updateRoomMessage(
+      "WebSocket connection नहीं बन पाया।"
+    );
+
+    return;
+  }
+
+  socket.addEventListener(
+    "open",
+    () => {
+
+      updateRoomMessage(
+        "Room से connected ✅"
+      );
     }
   );
 
+  socket.addEventListener(
+    "message",
+    event => {
+
+      try {
+
+        const data =
+          JSON.parse(event.data);
+
+        handleServerMessage(data);
+
+      } catch (error) {
+
+        console.error(
+          "Invalid server message:",
+          error
+        );
+      }
+    }
+  );
+
+  socket.addEventListener(
+    "close",
+    () => {
+
+      if (gameStarted) {
+
+        updateGameMessage(
+          "Connection बंद हो गया।"
+        );
+
+      } else {
+
+        updateRoomMessage(
+          "Room connection बंद हो गया।"
+        );
+      }
+    }
+  );
+
+  socket.addEventListener(
+    "error",
+    () => {
+
+      updateRoomMessage(
+        "Room connection में समस्या हुई।"
+      );
+    }
+  );
 }
 
+// ======================================================
+// SERVER MESSAGE HANDLER
+// ======================================================
 
-/* =====================================
-   SHOW LUDO CARD
-===================================== */
+function handleServerMessage(data) {
 
-function showLudoCard() {
+  // ----------------------------------------------------
+  // CONNECTED
+  // ----------------------------------------------------
+
+  if (data.type === "connected") {
+
+    playerNumber =
+      Number(data.player) || 0;
+
+    roomCode =
+      data.roomCode || roomCode;
+
+    if (displayRoomCode) {
+      displayRoomCode.textContent =
+        roomCode;
+    }
+
+    if (playerNumber === 1) {
+
+      player1Element.textContent =
+        playerName;
+
+      updateRoomMessage(
+        `Room ${roomCode} बनाया गया। Player 2 का इंतजार है...`
+      );
+
+    } else if (playerNumber === 2) {
+
+      player2Element.textContent =
+        playerName;
+
+      updateRoomMessage(
+        `Room ${roomCode} में join हो गए।`
+      );
+    }
+
+    return;
+  }
+
+  // ----------------------------------------------------
+  // ROOM STATE
+  // ----------------------------------------------------
+
+  if (data.type === "room") {
+
+    updatePlayers(
+      data.players || []
+    );
+
+    return;
+  }
+
+  // ----------------------------------------------------
+  // GAME START
+  // ----------------------------------------------------
+
+  if (data.type === "game_start") {
+
+    gameStarted = true;
+
+    currentPlayer =
+      Number(data.currentPlayer) || 1;
+
+    updatePlayers(
+      data.players || []
+    );
+
+    showGameCard();
+
+    updatePositions(
+      data.positions || {
+        1: 0,
+        2: 0
+      }
+    );
+
+    updateTurnMessage();
+
+    return;
+  }
+
+  // ----------------------------------------------------
+  // MOVE
+  // ----------------------------------------------------
+
+  if (data.type === "move") {
+
+    currentPlayer =
+      Number(data.currentPlayer) || 1;
+
+    if (data.dice) {
+      showDice(data.dice);
+    }
+
+    updatePositions(
+      data.positions || {
+        1: 0,
+        2: 0
+      }
+    );
+
+    updateTurnMessage();
+
+    return;
+  }
+
+  // ----------------------------------------------------
+  // GAME OVER
+  // ----------------------------------------------------
+
+  if (data.type === "game_over") {
+
+    gameStarted = true;
+
+    if (data.dice) {
+      showDice(data.dice);
+    }
+
+    updatePositions(
+      data.positions || {
+        1: 0,
+        2: 0
+      }
+    );
+
+    const winner =
+      Number(data.winner);
+
+    const winnerName =
+      data.winnerName || "Player";
+
+    if (winner === playerNumber) {
+
+      updateGameMessage(
+        `🏆 आप जीत गए! ${winnerName} Winner है।`
+      );
+
+    } else {
+
+      updateGameMessage(
+        `😔 आप हार गए। ${winnerName} Winner है।`
+      );
+    }
+
+    if (diceBtn) {
+      diceBtn.disabled = true;
+    }
+
+    return;
+  }
+
+  // ----------------------------------------------------
+  // RESET
+  // ----------------------------------------------------
+
+  if (data.type === "reset") {
+
+    currentPlayer = 1;
+
+    if (diceBtn) {
+      diceBtn.disabled = false;
+    }
+
+    showDice(null);
+
+    updatePositions(
+      data.positions || {
+        1: 0,
+        2: 0
+      }
+    );
+
+    updateTurnMessage();
+
+    return;
+  }
+
+  // ----------------------------------------------------
+  // PLAYER LEFT
+  // ----------------------------------------------------
+
+  if (data.type === "player_left") {
+
+    gameStarted = false;
+
+    updatePlayers(
+      data.players || []
+    );
+
+    updateGameMessage(
+      "Player 2 ने room छोड़ दिया।"
+    );
+
+    if (diceBtn) {
+      diceBtn.disabled = true;
+    }
+
+    return;
+  }
+
+  // ----------------------------------------------------
+  // ERROR
+  // ----------------------------------------------------
+
+  if (data.type === "error") {
+
+    if (gameStarted) {
+
+      updateGameMessage(
+        data.message || "Game error."
+      );
+
+    } else {
+
+      updateRoomMessage(
+        data.message || "Room error."
+      );
+    }
+  }
+}
+
+// ======================================================
+// UPDATE PLAYERS
+// ======================================================
+
+function updatePlayers(players) {
+
+  let p1 = "Waiting...";
+  let p2 = "Waiting...";
+
+  players.forEach(player => {
+
+    if (Number(player.number) === 1) {
+      p1 = player.name;
+    }
+
+    if (Number(player.number) === 2) {
+      p2 = player.name;
+    }
+  });
+
+  if (player1Element) {
+    player1Element.textContent = p1;
+  }
+
+  if (player2Element) {
+    player2Element.textContent = p2;
+  }
+
+  if (gamePlayer1) {
+    gamePlayer1.textContent = p1;
+  }
+
+  if (gamePlayer2) {
+    gamePlayer2.textContent = p2;
+  }
+}
+
+// ======================================================
+// SHOW GAME CARD
+// ======================================================
+
+function showGameCard() {
 
   if (roomCard) {
     roomCard.classList.add("hidden");
@@ -724,55 +915,15 @@ function showLudoCard() {
     ludoCard.classList.remove("hidden");
   }
 
-  updatePlayers();
-
-  updateGameUI();
-
-}
-
-
-/* =====================================
-   UPDATE PLAYERS
-===================================== */
-
-function updatePlayers() {
-
-  if (player1Element) {
-
-    player1Element.textContent =
-      player1Name ||
-      "Waiting...";
-
+  if (displayRoomCode) {
+    displayRoomCode.textContent =
+      roomCode;
   }
-
-
-  if (player2Element) {
-
-    player2Element.textContent =
-      player2Name ||
-      "Waiting...";
-
-  }
-
 }
 
-
-/* =====================================
-   DICE ROLL
-===================================== */
-
-function rollDice() {
-
-  return Math.floor(
-    Math.random() * 6
-  ) + 1;
-
-}
-
-
-/* =====================================
-   DICE BUTTON
-===================================== */
+// ======================================================
+// DICE BUTTON
+// ======================================================
 
 if (diceBtn) {
 
@@ -780,355 +931,201 @@ if (diceBtn) {
     "click",
     () => {
 
-      if (!player1Name) {
+      if (!socket) {
 
-        if (gameMessage) {
-          gameMessage.textContent =
-            "Player 1 का इंतजार है.";
-        }
-
-        return;
-      }
-
-
-      if (!player2Name) {
-
-        if (gameMessage) {
-          gameMessage.textContent =
-            "Waiting for Player 2...";
-        }
+        updateGameMessage(
+          "Room connection नहीं है।"
+        );
 
         return;
       }
 
+      if (
+        socket.readyState !==
+        WebSocket.OPEN
+      ) {
 
-      const dice =
-        rollDice();
+        updateGameMessage(
+          "Room connection उपलब्ध नहीं है।"
+        );
 
-
-      if (diceElement) {
-
-        diceElement.textContent =
-          dice;
-
+        return;
       }
 
+      if (!gameStarted) {
 
-      moveCurrentPlayer(dice);
+        updateGameMessage(
+          "Game अभी शुरू नहीं हुआ।"
+        );
 
+        return;
+      }
+
+      if (currentPlayer !== playerNumber) {
+
+        updateGameMessage(
+          "⏳ अभी दूसरे player की turn है।"
+        );
+
+        return;
+      }
+
+      socket.send(
+        JSON.stringify({
+          type: "roll"
+        })
+      );
     }
   );
-
 }
 
-
-/* =====================================
-   MOVE PLAYER
-===================================== */
-
-function moveCurrentPlayer(dice) {
-
-  if (currentTurn === 1) {
-
-    player1Position += dice;
-
-    if (
-      player1Position >
-      WIN_POSITION
-    ) {
-
-      player1Position =
-        WIN_POSITION;
-
-    }
-
-
-    if (gameMessage) {
-
-      gameMessage.textContent =
-        player1Name +
-        " ने " +
-        dice +
-        " चलाया।";
-
-    }
-
-
-    updatePiece(
-      player1Piece,
-      player1Position
-    );
-
-
-    if (
-      player1Position >=
-      WIN_POSITION
-    ) {
-
-      endGame(
-        player1Name
-      );
-
-      return;
-    }
-
-
-    currentTurn = 2;
-
-  } else {
-
-    player2Position += dice;
-
-    if (
-      player2Position >
-      WIN_POSITION
-    ) {
-
-      player2Position =
-        WIN_POSITION;
-
-    }
-
-
-    if (gameMessage) {
-
-      gameMessage.textContent =
-        player2Name +
-        " ने " +
-        dice +
-        " चलाया।";
-
-    }
-
-
-    updatePiece(
-      player2Piece,
-      player2Position
-    );
-
-
-    if (
-      player2Position >=
-      WIN_POSITION
-    ) {
-
-      endGame(
-        player2Name
-      );
-
-      return;
-    }
-
-
-    currentTurn = 1;
-
-  }
-
-
-  updateGameUI();
-
-}
-
-
-/* =====================================
-   UPDATE PIECE
-===================================== */
-
-function updatePiece(
-  piece,
-  position
-) {
-
-  if (!piece) return;
-
-
-  /*
-    Board को 20 steps का demo track
-    माना गया है।
-
-    अगर HTML में .piece मौजूद है,
-    तो CSS position बदलकर basic
-    movement दिखाई जाएगी।
-  */
-
-  const percentage =
-    Math.min(
-      position /
-        WIN_POSITION *
-        80,
-      80
-    );
-
-
-  piece.style.left =
-    percentage + "%";
-
-}
-
-
-/* =====================================
-   GAME UI
-===================================== */
-
-function updateGameUI() {
-
-  if (gameMessage) {
-
-    if (
-      currentTurn === 1
-    ) {
-
-      gameMessage.textContent =
-        player1Name
-          ? "🎲 " +
-            player1Name +
-            " की turn है।"
-          : "Waiting...";
-
-    } else {
-
-      gameMessage.textContent =
-        player2Name
-          ? "🎲 " +
-            player2Name +
-            " की turn है।"
-          : "Waiting...";
-
-    }
-
-  }
-
-
-  if (player1Piece) {
-
-    updatePiece(
-      player1Piece,
-      player1Position
-    );
-
-  }
-
-
-  if (player2Piece) {
-
-    updatePiece(
-      player2Piece,
-      player2Position
-    );
-
-  }
-
-}
-
-
-/* =====================================
-   WIN / LOSE
-===================================== */
-
-function endGame(winner) {
-
-  if (diceBtn) {
-    diceBtn.disabled = true;
-  }
-
-
-  if (gameMessage) {
-
-    gameMessage.textContent =
-      "🏆 " +
-      winner +
-      " जीत गया! 🎉";
-
-  }
-
-}
-
-
-/* =====================================
-   RESET GAME
-===================================== */
-
-function resetGame() {
-
-  player1Position = 0;
-
-  player2Position = 0;
-
-  currentTurn = 1;
-
-
-  if (diceElement) {
-    diceElement.textContent =
-      "🎲";
-  }
-
-
-  if (diceBtn) {
-    diceBtn.disabled = false;
-  }
-
-
-  updateGameUI();
-
-}
-
+// ======================================================
+// RESET GAME
+// ======================================================
 
 if (resetGameBtn) {
 
   resetGameBtn.addEventListener(
     "click",
-    resetGame
-  );
+    () => {
 
+      if (!socket) return;
+
+      if (
+        socket.readyState !==
+        WebSocket.OPEN
+      ) return;
+
+      socket.send(
+        JSON.stringify({
+          type: "reset"
+        })
+      );
+    }
+  );
 }
 
+// ======================================================
+// SHOW DICE
+// ======================================================
 
-/* =====================================
-   LOAD SAVED PLAYER
-===================================== */
+function showDice(value) {
 
-const savedPlayerName =
+  if (!diceElement) return;
+
+  if (!value) {
+
+    diceElement.textContent =
+      "🎲";
+
+    return;
+  }
+
+  const number =
+    Number(value);
+
+  diceElement.textContent =
+    diceFaces[number] || "🎲";
+}
+
+// ======================================================
+// UPDATE POSITIONS
+// ======================================================
+
+function updatePositions(positions) {
+
+  const p1 =
+    Number(positions?.[1]) || 0;
+
+  const p2 =
+    Number(positions?.[2]) || 0;
+
+  const max =
+    WIN_POSITION;
+
+  const p1Percent =
+    8 + ((p1 / max) * 82);
+
+  const p2Percent =
+    8 + ((p2 / max) * 82);
+
+  if (player1Piece) {
+    player1Piece.style.left =
+      `${Math.min(p1Percent, 90)}%`;
+  }
+
+  if (player2Piece) {
+    player2Piece.style.left =
+      `${Math.min(p2Percent, 90)}%`;
+  }
+}
+
+// ======================================================
+// TURN MESSAGE
+// ======================================================
+
+function updateTurnMessage() {
+
+  if (!gameStarted) return;
+
+  if (currentPlayer === playerNumber) {
+
+    updateGameMessage(
+      "🎲 आपकी turn है — Dice Roll करें!"
+    );
+
+    if (diceBtn) {
+      diceBtn.disabled = false;
+    }
+
+  } else {
+
+    updateGameMessage(
+      "⏳ दूसरे player की turn है..."
+    );
+
+    if (diceBtn) {
+      diceBtn.disabled = true;
+    }
+  }
+}
+
+// ======================================================
+// GAME MESSAGE
+// ======================================================
+
+function updateGameMessage(text) {
+
+  if (gameMessage) {
+    gameMessage.textContent =
+      text;
+  }
+}
+
+// ======================================================
+// LOAD SAVED NAME
+// ======================================================
+
+const savedName =
   localStorage.getItem(
     "balajiPlayerName"
   );
 
-if (
-  savedPlayerName &&
-  playerNameInput
-) {
+if (savedName && playerNameInput) {
 
   playerNameInput.value =
-    savedPlayerName;
-
+    savedName;
 }
 
-
-/* =====================================
-   INITIALIZE
-===================================== */
+// ======================================================
+// INITIALIZE WALLET
+// ======================================================
 
 updateBalance();
+renderTransactions();
 
-showTransactions();
+// ======================================================
+// INITIAL DICE
+// ======================================================
 
-updatePlayers();
-
-updateGameUI();
-
-
-/*
-========================================
- IMPORTANT DEMO NOTICE
-
- यह Wallet केवल Demo/Test है।
-
- इसमें:
- - Real UPI payment नहीं
- - Real deposit नहीं
- - Real withdrawal नहीं
- - Bank transfer नहीं
-
- Balance और transactions केवल
- browser localStorage में save होते हैं।
-========================================
-*/
+showDice(null);
