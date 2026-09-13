@@ -1,6 +1,6 @@
 name = "balaji-ludo-king"
 main = "worker.js"
-compatibility_date = "2026-01-01"
+compatibility_date = "2026-09-12"
 
 [vars]
 ADMIN_SECRET = "BalajiLudoAdmin@123"
@@ -9,7 +9,3 @@ ADMIN_SECRET = "BalajiLudoAdmin@123"
 binding = "DB"
 database_name = "ludo_db"
 database_id = "57e9edf2-94f9-4ea9-9298-ce5920bc2fcf"
-
-[[migrations]]
-tag = "v4-final-clean"
-deleted_classes = ["CustomerStore", "LudoRoom"]
