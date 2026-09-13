@@ -6,129 +6,337 @@
 
 body {
   font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #222;
   min-height: 100vh;
-  padding: 15px;
-  background: linear-gradient(135deg, #111827, #1e3a8a);
+}
+
+.topbar {
+  text-align: center;
+  padding: 20px 10px;
+  background: #111827;
   color: white;
+}
+
+.topbar h1 {
+  font-size: 26px;
+}
+
+.topbar p {
+  margin-top: 5px;
+  opacity: 0.85;
 }
 
 .container {
   width: 100%;
-  max-width: 520px;
+  max-width: 650px;
   margin: auto;
+  padding: 15px;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: white;
   border-radius: 18px;
   padding: 20px;
-  margin-bottom: 18px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-.header {
-  text-align: center;
-}
-
-.header h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
-}
-
-.header p {
-  opacity: 0.75;
-}
-
-.wallet-card {
-  text-align: center;
-}
-
-.wallet-label {
-  opacity: 0.75;
-  margin-bottom: 8px;
-}
-
-.wallet-card h2 {
-  font-size: 38px;
-  margin-bottom: 20px;
-}
-
-.wallet-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-button {
-  border: none;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.deposit-btn {
-  background: #22c55e;
-  color: white;
-}
-
-.withdraw-btn {
-  background: #f59e0b;
-  color: white;
-}
-
-button:active {
-  transform: scale(0.98);
-}
-
-label {
-  display: block;
-  margin-top: 14px;
-  margin-bottom: 5px;
-  font-size: 14px;
-  opacity: 0.85;
-}
-
-input {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  outline: none;
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.info {
-  background: rgba(0, 0, 0, 0.20);
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 14px;
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-.message {
-  text-align: center;
-  margin-top: 12px;
-  line-height: 1.5;
+  margin-bottom: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
 }
 
 .hidden {
   display: none !important;
 }
 
+h2 {
+  margin-bottom: 10px;
+}
+
+h3 {
+  margin-bottom: 12px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2563eb;
+}
+
+button {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 8px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.or {
+  text-align: center;
+  margin: 12px;
+  color: #777;
+  font-weight: bold;
+}
+
+.message {
+  min-height: 24px;
+  margin-top: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.room-status {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.player-box {
+  padding: 15px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  text-align: center;
+}
+
+.player-box span {
+  display: block;
+  color: #666;
+  font-size: 14px;
+}
+
+.player-box strong {
+  display: block;
+  margin-top: 6px;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+#gameMessage {
+  margin-top: 8px;
+  font-weight: bold;
+  min-height: 22px;
+}
+
+.game-players {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.game-player {
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  background: #f3f4f6;
+}
+
+
+/* ===================================
+   LUDO BOARD
+=================================== */
+
+.ludo-board {
+  position: relative;
+  width: min(94vw, 500px);
+  aspect-ratio: 1 / 1;
+  margin: auto;
+  border: 5px solid #111827;
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+}
+
+
+/* HOME AREAS */
+
+.home {
+  position: absolute;
+  width: 32%;
+  height: 32%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  place-items: center;
+  padding: 15px;
+  font-size: 28px;
+  border: 3px solid #111827;
+  z-index: 2;
+}
+
+.red-home {
+  top: 0;
+  left: 0;
+  background: #fee2e2;
+}
+
+.green-home {
+  top: 0;
+  right: 0;
+  background: #dcfce7;
+}
+
+
+/* TRACK */
+
+.track {
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  top: 16%;
+  bottom: 16%;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      #fff 0,
+      #fff 19px,
+      #d1d5db 20px
+    );
+  border: 2px solid #555;
+  z-index: 1;
+}
+
+
+/* TRACK CELLS */
+
+.track-cell {
+  position: absolute;
+  width: 8%;
+  height: 8%;
+  border: 1px solid #aaa;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+
+/* PIECES */
+
+.piece {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 21px;
+  font-weight: bold;
+  z-index: 10;
+  border: 3px solid white;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  transition: all 0.35s ease;
+}
+
+.red-piece {
+  background: #dc2626;
+}
+
+.green-piece {
+  background: #16a34a;
+}
+
+
+/* CENTER */
+
+.center-home {
+  position: absolute;
+  left: 38%;
+  top: 38%;
+  width: 24%;
+  height: 24%;
+  background: #facc15;
+  border: 4px solid #111827;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  z-index: 5;
+}
+
+
+/* DICE */
+
+.dice-area {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.dice {
+  font-size: 65px;
+  min-height: 75px;
+}
+
+#diceNumber {
+  font-size: 20px;
+}
+
+.secondary-btn {
+  background: #6b7280;
+  margin-top: 15px;
+}
+
+
+/* WALLET */
+
+.wallet-card {
+  margin-top: 20px;
+}
+
+.balance {
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  padding: 15px;
+  background: #f3f4f6;
+  border-radius: 12px;
+}
+
+.wallet-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.wallet-section {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.transactions {
+  margin-top: 20px;
+}
+
 .transaction {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 13px;
-  margin-top: 10px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.20);
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .transaction-title {
@@ -137,59 +345,51 @@ input {
 
 .transaction-date {
   font-size: 12px;
-  opacity: 0.65;
-  margin-top: 4px;
-}
-
-.transaction-amount {
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.deposit-text {
-  color: #86efac;
-}
-
-.withdraw-text {
-  color: #fcd34d;
+  color: #777;
+  margin-top: 3px;
 }
 
 .status {
   font-size: 12px;
-  margin-top: 4px;
-  opacity: 0.8;
+  margin-top: 3px;
+}
+
+.deposit-text {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.withdraw-text {
+  color: #dc2626;
+  font-weight: bold;
 }
 
 .empty {
+  color: #777;
+}
+
+.demo-notice {
   text-align: center;
-  opacity: 0.6;
-  padding: 15px;
-}
-
-.notice {
-  border-left: 4px solid #f59e0b;
-}
-
-.notice h3 {
-  margin-bottom: 8px;
-}
-
-.notice p {
-  line-height: 1.5;
-  font-size: 14px;
-  opacity: 0.8;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 13px;
 }
 
 footer {
   text-align: center;
-  opacity: 0.6;
-  padding: 15px;
-  font-size: 13px;
+  padding: 20px;
+  color: #777;
 }
 
-@media (max-width: 420px) {
 
-  body {
+/* MOBILE */
+
+@media (max-width: 500px) {
+
+  .container {
     padding: 10px;
   }
 
@@ -197,11 +397,23 @@ footer {
     padding: 15px;
   }
 
-  .wallet-buttons {
-    grid-template-columns: 1fr;
+  .topbar h1 {
+    font-size: 22px;
   }
 
-  .wallet-card h2 {
-    font-size: 32px;
+  .piece {
+    width: 30px;
+    height: 30px;
+    font-size: 17px;
   }
+
+  .home {
+    font-size: 20px;
+    padding: 8px;
+  }
+
+  .center-home {
+    font-size: 28px;
+  }
+
 }
