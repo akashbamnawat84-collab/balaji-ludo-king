@@ -1,57 +1,123 @@
+/* ==========================================
+   BALAJI LUDO KING
+   MOBILE FIRST STYLES
+   ========================================== */
+
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6fb;
+  color: #202124;
   min-height: 100vh;
+  padding-bottom: 75px;
 }
 
+button,
+input {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+/* ==========================================
+   TOP BAR
+   ========================================== */
+
 .topbar {
-  background: #111827;
+  width: 100%;
+  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
   color: white;
+  padding: 16px 15px;
   text-align: center;
-  padding: 20px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
 }
 
 .topbar h1 {
-  font-size: 25px;
-  margin-bottom: 6px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
 }
 
 .topbar p {
-  font-size: 14px;
-  opacity: 0.85;
+  margin-top: 5px;
+  font-size: 13px;
+  opacity: 0.9;
 }
+
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
 
 .container {
   width: 100%;
-  max-width: 520px;
+  max-width: 600px;
   margin: auto;
-  padding: 20px 15px;
+  padding: 14px;
 }
+
+/* ==========================================
+   SECTIONS
+   ========================================== */
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+/* ==========================================
+   COMMON CARD
+   ========================================== */
 
 .card {
   background: white;
   border-radius: 16px;
-  padding: 22px;
-  margin-bottom: 18px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-}
-
-.hidden {
-  display: none !important;
+  padding: 17px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
 }
 
 .card h2 {
-  text-align: center;
+  font-size: 19px;
+  margin-bottom: 7px;
+}
+
+.card h3 {
+  font-size: 17px;
   margin-bottom: 10px;
 }
 
 .card p {
-  text-align: center;
- 
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   WALLET
+   ========================================== */
+
+.wallet-card {
+  background: linear-gradient(135deg, #4a148c, #7b1fa2);
+  color: white;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 7px 
