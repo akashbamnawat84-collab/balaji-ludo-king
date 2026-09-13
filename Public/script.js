@@ -1,113 +1,363 @@
-const welcomeCard = document.getElementById("welcomeCard");
-const roomCard = document.getElementById("roomCard");
-const ludoCard = document.getElementById("ludoCard");
+// ==========================================
+// BALAJI LUDO KING
+// CLASSIC 2 PLAYER ROOM SYSTEM
+// ==========================================
 
-const playerNameInput = document.getElementById("playerName");
-const startBtn = document.getElementById("startBtn");
-const message = document.getElementById("message");
-
-const roomCodeInput = document.getElementById("roomCode");
+const createRoomBtn = document.getElementById("createRoomBtn");
 const joinRoomBtn = document.getElementById("joinRoomBtn");
-const roomMessage = document.getElementById("roomMessage");
 
-const player1El = document.getElementById("player1");
-const player2El = document.getElementById("player2");
+const roomCodeInput = document.getElementById("roomCodeInput");
 
-const displayRoomCode = document.getElementById("displayRoomCode");
-const gameMessage = document.getElementById("gameMessage");
+const createdRoom = document.getElementById("createdRoom");
+const joinedRoom = document.getElementById("joinedRoom");
 
-const gamePlayer1 = document.getElementById("gamePlayer1");
-const gamePlayer2 = document.getElementById("gamePlayer2");
+const roomCodeDisplay = document.getElementById("roomCodeDisplay");
+const joinedRoomCode = document.getElementById("joinedRoomCode");
 
-const dice = document.getElementById("dice");
-const diceBtn = document.getElementById("diceBtn");
-const diceNumber = document.getElementById("diceNumber");
-const resetGameBtn = document.getElementById("resetGameBtn");
+const timer = document.getElementById("timer");
+const joinTimer = document.getElementById("joinTimer");
 
-let playerName = "";
-let roomCode = "";
+const player1Status =
+  document.getElementById("player1Status");
+
+const player2Status =
+  document.getElementById("player2Status");
+
+const joinedPlayer1Status =
+  document.getElementById("joinedPlayer1Status");
+
+const joinedPlayer2Status =
+  document.getElementById("joinedPlayer2Status");
+
+const waitingMessage =
+  document.getElementById("waitingMessage");
+
+const joinMessage =
+  document.getElementById("joinMessage");
+
+const roomMessage =
+  document.getElementById("roomMessage");
+
+const leaveRoomBtn =
+  document.getElementById("leaveRoomBtn");
+
+const joinedLeaveBtn =
+  document.getElementById("joinedLeaveBtn");
+
+const gameLeaveBtn =
+  document.getElementById("gameLeaveBtn");
+
+const gameStartBox =
+  document.getElementById("gameStartBox");
+
+const startGameBtn =
+  document.getElementById("startGameBtn");
+
+const roomCard =
+  document.getElementById("roomCard");
+
+const ludoCard =
+  document.getElementById("ludoCard");
+
+const gameStatus =
+  document.getElementById("gameStatus");
+
+const dice =
+  document.getElementById("dice");
+
+const rollDiceBtn =
+  document.getElementById("rollDiceBtn");
+
+
+// ==========================================
+// VARIABLES
+// ==========================================
+
+let roomCode = null;
+let playerName = null;
+let playerNumber = null;
+
 let socket = null;
-let playerNumber = 0;
-let gameStarted = false;
+
+let countdownInterval = null;
+
+let remainingSeconds = 300;
+
+let roomActive = false;
 
 
-// -----------------------------
-// CONTINUE
-// -----------------------------
+// ==========================================
+// 8 DIGIT ROOM CODE
+// ==========================================
 
-startBtn.addEventListener("click", () => {
-  const name = playerNameInput.value.trim();
+function generateRoomCode() {
 
-  if (!name) {
-    message.textContent = "Please enter your name.";
-    return;
-  }
+  return Math.floor(
+    10000000 + Math.random() * 90000000
+  ).toString();
 
-  playerName = name;
-
-  localStorage.setItem("balajiPlayerName", playerName);
-
-  welcomeCard.classList.add("hidden");
-  roomCard.classList.remove("hidden");
-
-  roomMessage.textContent = "8-Digit Room Code डालें।";
-});
-
-
-// -----------------------------
-// RESTORE NAME
-// -----------------------------
-
-const savedName = localStorage.getItem("balajiPlayerName");
-
-if (savedName) {
-  playerNameInput.value = savedName;
 }
 
 
-// -----------------------------
+// ==========================================
+// SHOW MESSAGE
+// ==========================================
+
+function showMessage(text) {
+
+  if (roomMessage) {
+    roomMessage.textContent = text;
+  }
+
+}
+
+
+// ==========================================
+// TIMER
+// ==========================================
+
+function startTimer() {
+
+  stopTimer();
+
+  remainingSeconds = 300;
+
+  updateTimer();
+
+  countdownInterval = setInterval(() => {
+
+    if (!roomActive) {
+      stopTimer();
+      return;
+    }
+
+    remainingSeconds--;
+
+    updateTimer();
+
+    if (remainingSeconds <= 0) {
+
+      stopTimer();
+
+      expireRoom();
+
+    }
+
+  }, 1000);
+
+}
+
+
+// ==========================================
+// UPDATE TIMER
+// ==========================================
+
+function updateTimer() {
+
+  const minutes =
+    Math.floor(remainingSeconds / 60);
+
+  const seconds =
+    remainingSeconds % 60;
+
+  const formatted =
+    minutes +
+    ":" +
+    seconds.toString().padStart(2, "0");
+
+  if (timer) {
+    timer.textContent = formatted;
+  }
+
+  if (joinTimer) {
+    joinTimer.textContent = formatted;
+  }
+
+}
+
+
+// ==========================================
+// STOP TIMER
+// ==========================================
+
+function stopTimer() {
+
+  if (countdownInterval) {
+
+    clearInterval(countdownInterval);
+
+    countdownInterval = null;
+
+  }
+
+}
+
+
+// ==========================================
+// EXPIRE ROOM
+// ==========================================
+
+function expireRoom() {
+
+  roomActive = false;
+
+  if (socket) {
+
+    try {
+      socket.close();
+    } catch (error) {}
+
+    socket = null;
+
+  }
+
+  alert(
+    "⏰ Room Expired!\n\n" +
+    "5 मिनट में दूसरा Player Join नहीं हुआ।"
+  );
+
+  resetRoom();
+
+}
+
+
+// ==========================================
+// RESET ROOM
+// ==========================================
+
+function resetRoom() {
+
+  stopTimer();
+
+  roomCode = null;
+  playerNumber = null;
+
+  roomActive = false;
+
+  createdRoom.style.display = "none";
+  joinedRoom.style.display = "none";
+  gameStartBox.style.display = "none";
+
+  if (roomCodeInput) {
+    roomCodeInput.value = "";
+  }
+
+  roomCodeDisplay.textContent = "--------";
+
+  timer.textContent = "5:00";
+  joinTimer.textContent = "5:00";
+
+  player1Status.textContent = "Waiting...";
+  player2Status.textContent = "Waiting...";
+
+  joinedPlayer1Status.textContent = "Waiting...";
+  joinedPlayer2Status.textContent = "You";
+
+  waitingMessage.textContent =
+    "Waiting for Player 2...";
+
+  joinMessage.textContent =
+    "Connecting to room...";
+
+  roomMessage.textContent =
+    "Create a room or join an existing room.";
+
+}
+
+
+// ==========================================
+// CREATE ROOM
+// ==========================================
+
+createRoomBtn.addEventListener("click", () => {
+
+  roomCode = generateRoomCode();
+
+  playerNumber = 1;
+
+  roomActive = true;
+
+  roomCodeDisplay.textContent = roomCode;
+
+  createdRoom.style.display = "block";
+
+  gameStartBox.style.display = "none";
+
+  player1Status.textContent = "You";
+
+  player2Status.textContent = "Waiting...";
+
+  waitingMessage.textContent =
+    "Waiting for Player 2...";
+
+  showMessage(
+    "Room created successfully!"
+  );
+
+  startTimer();
+
+  connectToRoom();
+
+});
+
+
+// ==========================================
 // JOIN ROOM
-// -----------------------------
+// ==========================================
 
 joinRoomBtn.addEventListener("click", () => {
 
-  const code = roomCodeInput.value.trim();
+  const code =
+    roomCodeInput.value.trim();
 
   if (!/^\d{8}$/.test(code)) {
-    roomMessage.textContent =
-      "कृपया सही 8-Digit Room Code डालें।";
-    return;
-  }
 
-  if (!playerName) {
-    playerName = playerNameInput.value.trim();
-  }
+    alert(
+      "⚠️ कृपया 8-Digit Room Code डालें।"
+    );
 
-  if (!playerName) {
-    roomMessage.textContent =
-      "पहले अपना नाम डालें।";
     return;
+
   }
 
   roomCode = code;
 
-  roomMessage.textContent =
-    "Room से connect हो रहा है...";
+  playerNumber = 2;
+
+  roomActive = true;
+
+  joinedRoomCode.textContent = roomCode;
+
+  joinedRoom.style.display = "block";
+
+  createdRoom.style.display = "none";
+
+  gameStartBox.style.display = "none";
+
+  joinedPlayer1Status.textContent =
+    "Connected";
+
+  joinedPlayer2Status.textContent =
+    "You";
+
+  joinMessage.textContent =
+    "Joining room...";
+
+  startTimer();
 
   connectToRoom();
+
 });
 
 
-// -----------------------------
-// WEBSOCKET
-// -----------------------------
+// ==========================================
+// WEBSOCKET CONNECTION
+// ==========================================
 
 function connectToRoom() {
 
-  if (socket) {
-    try {
-      socket.close();
-    } catch (e) {}
+  if (!roomCode) {
+    return;
   }
 
   const protocol =
@@ -115,333 +365,374 @@ function connectToRoom() {
       ? "wss:"
       : "ws:";
 
+  const name =
+    playerNumber === 1
+      ? "Player 1"
+      : "Player 2";
+
   const wsUrl =
-    `${protocol}//${location.host}/ws?room=${encodeURIComponent(roomCode)}&name=${encodeURIComponent(playerName)}`;
+    protocol +
+    "//" +
+    location.host +
+    "/ws?room=" +
+    encodeURIComponent(roomCode) +
+    "&name=" +
+    encodeURIComponent(name);
 
-  socket = new WebSocket(wsUrl);
+  try {
 
+    socket = new WebSocket(wsUrl);
 
-  socket.onopen = () => {
+    socket.onopen = () => {
 
-    roomMessage.textContent =
-      "Room connected. Waiting for Player 2...";
+      console.log(
+        "WebSocket connected"
+      );
 
-  };
+      if (playerNumber === 1) {
 
+        waitingMessage.textContent =
+          "Room created. Waiting for Player 2...";
 
-  socket.onmessage = (event) => {
+      } else {
 
-    let data;
+        joinMessage.textContent =
+          "Connected. Waiting for game start...";
 
-    try {
-      data = JSON.parse(event.data);
-    } catch (e) {
-      return;
-    }
+      }
 
-    handleServerMessage(data);
-  };
-
-
-  socket.onerror = () => {
-
-    roomMessage.textContent =
-      "Room connection error.";
-
-  };
+    };
 
 
-  socket.onclose = () => {
+    socket.onmessage = (event) => {
 
-    if (!gameStarted) {
+      handleServerMessage(event.data);
 
-      roomMessage.textContent =
-        "Connection closed. Please try again.";
+    };
 
-    } else {
 
-      gameMessage.textContent =
-        "Connection closed.";
+    socket.onerror = (error) => {
 
-    }
-  };
+      console.log(
+        "WebSocket error:",
+        error
+      );
+
+    };
+
+
+    socket.onclose = () => {
+
+      console.log(
+        "WebSocket disconnected"
+      );
+
+    };
+
+  } catch (error) {
+
+    console.log(
+      "Connection error:",
+      error
+    );
+
+  }
+
 }
 
 
-// -----------------------------
-// SERVER MESSAGES
-// -----------------------------
+// ==========================================
+// SERVER MESSAGE
+// ==========================================
 
 function handleServerMessage(data) {
 
-  switch (data.type) {
+  console.log(
+    "Server:",
+    data
+  );
 
-    case "connected":
+  let message = null;
 
-      playerNumber =
-        Number(data.playerNumber || data.player || 0);
+  try {
 
-      roomMessage.textContent =
-        "Room connected.";
+    message = JSON.parse(data);
 
-      updatePlayerNumber();
+  } catch (error) {
 
-      break;
-
-
-    case "room":
-
-      updateRoomPlayers(data);
-
-      break;
-
-
-    case "game_start":
-
-      gameStarted = true;
-
-      roomCard.classList.add("hidden");
-      ludoCard.classList.remove("hidden");
-
-      displayRoomCode.textContent = roomCode;
-
-      if (data.players) {
-        updateGamePlayers(data.players);
-      }
-
-      gameMessage.textContent =
-        "Game started!";
-
-      break;
-
-
-    case "move":
-
-      if (data.positions) {
-        // Positions will be used by the board movement system.
-      }
-
-      if (data.dice !== undefined) {
-        showDice(data.dice);
-      }
-
-      break;
-
-
-    case "dice":
-
-      if (data.value !== undefined) {
-        showDice(data.value);
-      }
-
-      break;
-
-
-    case "reset":
-
-      resetDice();
-
-      gameMessage.textContent =
-        "Game reset.";
-
-      break;
-
-
-    case "player_left":
-
-      gameMessage.textContent =
-        "Player 2 left the room.";
-
-      break;
-
-
-    case "error":
-
-      roomMessage.textContent =
-        data.message || "Room error.";
-
-      break;
-
-
-    default:
-
-      console.log("Server message:", data);
-  }
-}
-
-
-// -----------------------------
-// PLAYER NUMBER
-// -----------------------------
-
-function updatePlayerNumber() {
-
-  if (playerNumber === 1) {
-
-    roomMessage.textContent =
-      "You are Player 1. Waiting for Player 2...";
+    // Plain text message
+    message = {
+      type: data
+    };
 
   }
 
-  if (playerNumber === 2) {
 
-    roomMessage.textContent =
-      "You are Player 2. Waiting for game...";
+  // PLAYER 2 JOINED
+  if (
+    message.type === "player_joined" ||
+    message.type === "PLAYER_JOINED" ||
+    message.type === "join"
+  ) {
 
-  }
-}
-
-
-// -----------------------------
-// ROOM PLAYERS
-// -----------------------------
-
-function updateRoomPlayers(data) {
-
-  const players = data.players || [];
-
-  player1El.textContent =
-    players[0]?.name || "Waiting...";
-
-  player2El.textContent =
-    players[1]?.name || "Waiting...";
-
-  if (players.length >= 2) {
-
-    roomMessage.textContent =
-      "Both players joined. Starting game...";
-
-  }
-}
-
-
-// -----------------------------
-// GAME PLAYERS
-// -----------------------------
-
-function updateGamePlayers(players) {
-
-  gamePlayer1.textContent =
-    players[0]?.name || "Player 1";
-
-  gamePlayer2.textContent =
-    players[1]?.name || "Player 2";
-}
-
-
-// -----------------------------
-// DICE
-// -----------------------------
-
-diceBtn.addEventListener("click", () => {
-
-  if (!socket ||
-      socket.readyState !== WebSocket.OPEN) {
-
-    gameMessage.textContent =
-      "Room connection is not active.";
+    player2Joined();
 
     return;
+
   }
 
-  diceBtn.disabled = true;
 
-  socket.send(JSON.stringify({
-    type: "roll"
-  }));
+  // GAME START
+  if (
+    message.type === "game_start" ||
+    message.type === "GAME_START" ||
+    message.type === "start"
+  ) {
 
-  setTimeout(() => {
-    diceBtn.disabled = false;
-  }, 800);
-});
+    startGame();
 
-
-function showDice(value) {
-
-  const number = Number(value);
-
-  if (number < 1 || number > 6) {
     return;
+
   }
 
-  diceNumber.textContent = number;
 
-  const faces = [
-    "",
-    "⚀",
-    "⚁",
-    "⚂",
-    "⚃",
-    "⚄",
-    "⚅"
-  ];
+  // ROOM EXPIRED
+  if (
+    message.type === "room_expired" ||
+    message.type === "ROOM_EXPIRED"
+  ) {
 
-  dice.textContent = faces[number];
+    expireRoom();
 
-  gameMessage.textContent =
-    `Dice rolled: ${number}`;
+    return;
+
+  }
+
 }
 
 
-function resetDice() {
+// ==========================================
+// PLAYER 2 JOINED
+// ==========================================
+
+function player2Joined() {
+
+  player2Status.textContent =
+    "Connected";
+
+  joinedPlayer1Status.textContent =
+    "Connected";
+
+  joinedPlayer2Status.textContent =
+    "You";
+
+  waitingMessage.textContent =
+    "🎉 Player 2 Joined!";
+
+  joinMessage.textContent =
+    "🎉 Player 1 found. Game is ready!";
+
+  gameStartBox.style.display =
+    "block";
+
+}
+
+
+// ==========================================
+// START GAME
+// ==========================================
+
+startGameBtn.addEventListener(
+  "click",
+  () => {
+
+    startGame();
+
+    sendMessage({
+      type: "game_start"
+    });
+
+  }
+);
+
+
+// ==========================================
+// GAME START FUNCTION
+// ==========================================
+
+function startGame() {
+
+  stopTimer();
+
+  roomActive = false;
+
+  roomCard.style.display = "none";
+
+  ludoCard.style.display = "block";
+
+  gameStatus.textContent =
+    "🎉 Game Started!";
 
   dice.textContent = "🎲";
-  diceNumber.textContent = "-";
+
 }
 
 
-// -----------------------------
-// RESET GAME
-// -----------------------------
+// ==========================================
+// SEND MESSAGE
+// ==========================================
 
-resetGameBtn.addEventListener("click", () => {
+function sendMessage(data) {
 
-  if (!socket ||
-      socket.readyState !== WebSocket.OPEN) {
+  if (
+    socket &&
+    socket.readyState === WebSocket.OPEN
+  ) {
 
-    gameMessage.textContent =
-      "Room connection is not active.";
+    socket.send(
+      JSON.stringify(data)
+    );
 
-    return;
   }
 
-  socket.send(JSON.stringify({
-    type: "reset"
-  }));
-});
+}
 
 
-// -----------------------------
-// ONLY 8 DIGITS
-// -----------------------------
+// ==========================================
+// LEAVE ROOM
+// ==========================================
 
-roomCodeInput.addEventListener("input", () => {
+function leaveRoom() {
 
-  roomCodeInput.value =
-    roomCodeInput.value
-      .replace(/\D/g, "")
-      .slice(0, 8);
-});
+  roomActive = false;
 
+  stopTimer();
 
-// -----------------------------
-// ENTER KEY
-// -----------------------------
+  if (socket) {
 
-roomCodeInput.addEventListener("keydown", (event) => {
+    try {
 
-  if (event.key === "Enter") {
-    joinRoomBtn.click();
+      socket.send(
+        JSON.stringify({
+          type: "leave_room"
+        })
+      );
+
+    } catch (error) {}
+
+    try {
+
+      socket.close();
+
+    } catch (error) {}
+
+    socket = null;
+
   }
 
-});
+  resetRoom();
+
+}
 
 
-// -----------------------------
+// ==========================================
+// LEAVE BUTTONS
+// ==========================================
+
+leaveRoomBtn.addEventListener(
+  "click",
+  () => {
+
+    const confirmLeave =
+      confirm(
+        "क्या आप Room छोड़ना चाहते हैं?"
+      );
+
+    if (confirmLeave) {
+      leaveRoom();
+    }
+
+  }
+);
+
+
+joinedLeaveBtn.addEventListener(
+  "click",
+  () => {
+
+    const confirmLeave =
+      confirm(
+        "क्या आप Room छोड़ना चाहते हैं?"
+      );
+
+    if (confirmLeave) {
+      leaveRoom();
+    }
+
+  }
+);
+
+
+gameLeaveBtn.addEventListener(
+  "click",
+  () => {
+
+    const confirmLeave =
+      confirm(
+        "क्या आप Game छोड़ना चाहते हैं?"
+      );
+
+    if (confirmLeave) {
+
+      leaveRoom();
+
+      roomCard.style.display =
+        "block";
+
+      ludoCard.style.display =
+        "none";
+
+    }
+
+  }
+);
+
+
+// ==========================================
+// DEMO DICE
+// ==========================================
+
+rollDiceBtn.addEventListener(
+  "click",
+  () => {
+
+    const number =
+      Math.floor(
+        Math.random() * 6
+      ) + 1;
+
+    const faces = [
+      "⚀",
+      "⚁",
+      "⚂",
+      "⚃",
+      "⚄",
+      "⚅"
+    ];
+
+    dice.textContent =
+      faces[number - 1];
+
+  }
+);
+
+
+// ==========================================
 // INITIAL STATE
-// -----------------------------
+// ==========================================
 
-roomCard.classList.add("hidden");
-ludoCard.classList.add("hidden");
+resetRoom();
 
-console.log("Balaji Ludo King loaded.");
+console.log(
+  "🎲 Balaji Ludo King Classic loaded"
+);
