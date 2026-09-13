@@ -16,9 +16,7 @@
 
 <main class="container">
 
-  <!-- PLAYER NAME -->
   <section id="welcomeCard" class="card">
-
     <h2>Welcome 👋</h2>
     <p>Enter your name to continue</p>
 
@@ -29,31 +27,27 @@
       placeholder="Enter your name"
     >
 
-    <button id="startBtn">
-      Continue
-    </button>
+    <button id="startBtn">Continue</button>
 
     <div id="message" class="message"></div>
-
   </section>
 
 
-  <!-- CLASSIC ROOM CODE -->
   <section id="roomCard" class="card hidden">
 
-    <h2>🎮 Classic Room</h2>
+    <h2>🎮 Join Classic Room</h2>
 
     <p class="info">
-      Ludo King Classic Mode से Room Code लें
-      और यहाँ डालें।
+      बाहर से मिला हुआ 8-Digit Room Code डालें।
     </p>
 
     <input
       id="roomCode"
       type="tel"
       inputmode="numeric"
-      maxlength="6"
-      placeholder="Enter Classic Room Code"
+      maxlength="8"
+      placeholder="Enter 8-Digit Room Code"
+      autocomplete="off"
     >
 
     <button id="joinRoomBtn">
@@ -61,7 +55,7 @@
     </button>
 
     <div id="roomMessage" class="message">
-      Room Code डालकर Join करें।
+      8-Digit Room Code डालें।
     </div>
 
     <div class="room-status">
@@ -81,22 +75,18 @@
   </section>
 
 
-  <!-- GAME -->
   <section id="ludoCard" class="card hidden">
 
     <div class="game-header">
-
       <div>
         <strong>Room:</strong>
-        <span id="displayRoomCode">------</span>
+        <span id="displayRoomCode">--------</span>
       </div>
 
       <div id="gameMessage">
         Waiting...
       </div>
-
     </div>
-
 
     <div class="game-players">
 
@@ -110,8 +100,6 @@
 
     </div>
 
-
-    <!-- LUDO BOARD -->
     <div class="ludo-board">
 
       <div class="home red-home">
@@ -136,13 +124,9 @@
 
     </div>
 
-
-    <!-- DICE -->
     <div class="dice-area">
 
-      <div id="dice" class="dice">
-        🎲
-      </div>
+      <div id="dice" class="dice">🎲</div>
 
       <button id="diceBtn">
         🎲 Roll Dice
@@ -155,20 +139,17 @@
 
     </div>
 
-
     <button id="resetGameBtn" class="secondary-btn">
       🔄 Reset Game
     </button>
 
   </section>
 
-
   <div class="demo-notice">
     ⚠️ Demo Mode — No real money is used.
   </div>
 
 </main>
-
 
 <footer>
   © 2026 Balaji Ludo King
