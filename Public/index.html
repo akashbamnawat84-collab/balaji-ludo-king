@@ -3,159 +3,209 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Balaji Ludo King</title>
-  <link rel="stylesheet" href="style.css">
+
+  <title>Balaji Ludo King - Classic</title>
+
+  <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
 
-<header class="topbar">
-  <h1>🎮 Balaji Ludo King</h1>
-  <p>Classic Mode • 2 Player</p>
-</header>
+  <div class="container">
 
-<main class="container">
-
-  <section id="welcomeCard" class="card">
-    <h2>Welcome 👋</h2>
-    <p>Enter your name to continue</p>
-
-    <input
-      id="playerName"
-      type="text"
-      maxlength="20"
-      placeholder="Enter your name"
-    >
-
-    <button id="startBtn">Continue</button>
-
-    <div id="message" class="message"></div>
-  </section>
-
-  <section id="roomCard" class="card hidden">
-
-    <h2>🎮 Join Classic Room</h2>
-
-    <p class="info">
-      बाहर से मिला हुआ 8-Digit Room Code डालें।
-    </p>
-
-    <input
-      id="roomCode"
-      type="tel"
-      inputmode="numeric"
-      maxlength="8"
-      placeholder="Enter 8-Digit Room Code"
-      autocomplete="off"
-    >
-
-    <button id="joinRoomBtn">
-      🔗 Join Room
-    </button>
-
-    <div id="roomMessage" class="message">
-      8-Digit Room Code डालें।
+    <div class="topbar">
+      <h1>🎲 Balaji Ludo King</h1>
+      <p>Classic Mode • 2 Player</p>
     </div>
 
-    <div class="room-status">
+    <!-- ROOM SCREEN -->
+    <div id="roomCard" class="card">
 
-      <div class="player-box">
-        <span>Player 1</span>
-        <strong id="player1">Waiting...</strong>
-      </div>
+      <h2>🎮 Classic Room</h2>
 
-      <div class="player-box">
-        <span>Player 2</span>
-        <strong id="player2">Waiting...</strong>
-      </div>
+      <p id="roomMessage">
+        Create a room or join an existing room.
+      </p>
 
-    </div>
-
-  </section>
-
-  <section id="ludoCard" class="card hidden">
-
-    <div class="game-header">
-
-      <div>
-        <strong>Room:</strong>
-        <span id="displayRoomCode">--------</span>
-      </div>
-
-      <div id="gameMessage">
-        Waiting...
-      </div>
-
-    </div>
-
-    <div class="game-players">
-
-      <div class="game-player red-player">
-        🔴 <span id="gamePlayer1">Player 1</span>
-      </div>
-
-      <div class="game-player green-player">
-        🟢 <span id="gamePlayer2">Player 2</span>
-      </div>
-
-    </div>
-
-    <div class="ludo-board">
-
-      <div class="home red-home">
-        <span>🔴</span>
-        <span>🔴</span>
-        <span>🔴</span>
-        <span>🔴</span>
-      </div>
-
-      <div class="home green-home">
-        <span>🟢</span>
-        <span>🟢</span>
-        <span>🟢</span>
-        <span>🟢</span>
-      </div>
-
-      <div class="track" id="track"></div>
-
-      <div class="center-home">
-        🏆
-      </div>
-
-    </div>
-
-    <div class="dice-area">
-
-      <div id="dice" class="dice">🎲</div>
-
-      <button id="diceBtn">
-        🎲 Roll Dice
+      <!-- CREATE ROOM -->
+      <button id="createRoomBtn">
+        🔗 Create Room
       </button>
 
-      <div>
-        Dice:
-        <strong id="diceNumber">-</strong>
+      <div id="createdRoom" style="display:none;">
+
+        <h3>Your Room Code</h3>
+
+        <div id="roomCodeDisplay" class="room-code">
+          --------
+        </div>
+
+        <p>यह Room Code दूसरे Player को भेजें।</p>
+
+        <!-- TIMER -->
+        <div class="timer-box">
+          <div>⏱️ Room Expires In</div>
+          <strong id="timer">5:00</strong>
+        </div>
+
+        <div class="players">
+
+          <div class="player">
+            <span>Player 1</span>
+            <strong id="player1Status">Waiting...</strong>
+          </div>
+
+          <div class="player">
+            <span>Player 2</span>
+            <strong id="player2Status">Waiting...</strong>
+          </div>
+
+        </div>
+
+        <p id="waitingMessage">
+          Waiting for Player 2...
+        </p>
+
+        <button id="leaveRoomBtn" class="leave-btn">
+          ❌ Leave Room
+        </button>
+
+      </div>
+
+
+      <!-- JOIN ROOM -->
+      <div id="joinSection">
+
+        <div class="or">
+          OR
+        </div>
+
+        <h3>🎮 Join Classic Room</h3>
+
+        <p>बाहर से मिला हुआ 8-Digit Room Code डालें।</p>
+
+        <input
+          id="roomCodeInput"
+          type="text"
+          inputmode="numeric"
+          maxlength="8"
+          placeholder="Enter 8-Digit Room Code"
+        >
+
+        <button id="joinRoomBtn">
+          🔗 Join Room
+        </button>
+
+      </div>
+
+
+      <!-- JOINED ROOM -->
+      <div id="joinedRoom" style="display:none;">
+
+        <div class="room-code">
+          <span id="joinedRoomCode"></span>
+        </div>
+
+        <div class="timer-box">
+          <div>⏱️ Room Expires In</div>
+          <strong id="joinTimer">5:00</strong>
+        </div>
+
+        <div class="players">
+
+          <div class="player">
+            <span>Player 1</span>
+            <strong id="joinedPlayer1Status">
+              Waiting...
+            </strong>
+          </div>
+
+          <div class="player">
+            <span>Player 2</span>
+            <strong id="joinedPlayer2Status">
+              You
+            </strong>
+          </div>
+
+        </div>
+
+        <p id="joinMessage">
+          Connecting to room...
+        </p>
+
+        <button id="joinedLeaveBtn" class="leave-btn">
+          ❌ Leave Room
+        </button>
+
+      </div>
+
+      <!-- GAME START -->
+      <div id="gameStartBox" style="display:none;">
+
+        <h2>🎉 Game Ready!</h2>
+
+        <p>Both players have joined.</p>
+
+        <button id="startGameBtn">
+          🎲 Start Game
+        </button>
+
       </div>
 
     </div>
 
-    <button id="resetGameBtn" class="secondary-btn">
-      🔄 Reset Game
-    </button>
+    <!-- GAME SCREEN -->
+    <div id="ludoCard" class="card" style="display:none;">
 
-  </section>
+      <h2>🎲 Balaji Ludo King</h2>
 
-  <div class="demo-notice">
-    ⚠️ Demo Mode — No real money is used.
+      <p id="gameStatus">
+        Game Started
+      </p>
+
+      <div class="game-info">
+
+        <div>
+          <strong>Player 1</strong>
+          <span id="gamePlayer1">Ready</span>
+        </div>
+
+        <div>
+          <strong>Player 2</strong>
+          <span id="gamePlayer2">Ready</span>
+        </div>
+
+      </div>
+
+      <div class="dice-area">
+
+        <div id="dice">
+          🎲
+        </div>
+
+        <button id="rollDiceBtn">
+          🎲 Roll Dice
+        </button>
+
+      </div>
+
+      <button id="gameLeaveBtn" class="leave-btn">
+        ❌ Leave Game
+      </button>
+
+    </div>
+
+    <p id="message"></p>
+
+    <footer>
+      ⚠️ Demo Mode — No real money is used.
+      <br>
+      © 2026 Balaji Ludo King
+    </footer>
+
   </div>
 
-</main>
-
-<footer>
-  © 2026 Balaji Ludo King
-</footer>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
