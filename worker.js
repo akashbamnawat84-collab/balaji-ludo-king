@@ -1,161 +1,120 @@
 const MAX_PLAYERS = 2;
 
 export default {
-
   async fetch(request, env) {
-
     const url = new URL(request.url);
 
     try {
-
-      // WEBSOCKET
+      // =========================
+      // WEBSOCKET ROOM
+      // =========================
       if (url.pathname === "/ws") {
-
-        if (
-          request.headers.get("Upgrade") !==
-          "websocket"
-        ) {
-
+        if (request.headers.get("Upgrade") !== "websocket") {
           return new Response(
             "WebSocket connection required.",
             { status: 426 }
           );
-
         }
 
+        const roomCode = (url.searchParams.get("room") || "")
+          .replace(/\D/g, "")
+          .slice(0, 8);
 
-        // ONLY 8 DIGIT CODE
-        const roomCode =
-          (url.searchParams.get("room") || "")
-            .replace(/\D/g, "")
-            .slice(0, 8);
-
-
-        const name =
-          (url.searchParams.get("name") || "Player")
-            .trim()
-            .slice(0, 20);
-
+        const name = (url.searchParams.get("name") || "Player")
+          .trim()
+          .slice(0, 20);
 
         if (!/^\d{8}$/.test(roomCode)) {
-
           return new Response(
             "Invalid 8-digit Room Code.",
             { status: 400 }
           );
-
         }
 
-
         if (!env.LUDO_ROOM) {
-
           return new Response(
             "LUDO_ROOM binding missing.",
             { status: 500 }
           );
-
         }
 
-
-        const id =
-          env.LUDO_ROOM.idFromName(roomCode);
-
-        const stub =
-          env.LUDO_ROOM.get(id);
-
+        const id = env.LUDO_ROOM.idFromName(roomCode);
+        const stub = env.LUDO_ROOM.get(id);
 
         return stub.fetch(
-
           new Request(
-            `${url.origin}/room` +
-            `?room=${roomCode}` +
-            `&name=${encodeURIComponent(name)}`,
+            `${url.origin}/room?room=${roomCode}&name=${encodeURIComponent(name)}`,
             request
           )
-
         );
-
       }
 
-
-      // STATIC FILES
+      // =========================
+      // STATIC WEBSITE
+      // =========================
       if (env.ASSETS) {
-
         return env.ASSETS.fetch(request);
-
       }
-
 
       return new Response(
         "Balaji Ludo King is running."
       );
 
-
     } catch (error) {
-
       return new Response(
-
         JSON.stringify({
-          error:
-            String(
-              error?.message || error
-            )
+          error: String(error?.message || error)
         }),
-
         {
           status: 500,
-
           headers: {
-            "Content-Type":
-              "application/json"
+            "Content-Type": "application/json"
           }
-
         }
-
       );
-
     }
-
   }
-
 };
 
+
+// ==========================================
+// LUDO ROOM DURABLE OBJECT
+// ==========================================
 
 export class LudoRoom {
 
   constructor(state, env) {
-
     this.state = state;
     this.env = env;
 
     this.sessions = new Map();
-
     this.players = [];
 
+    this.game = {
+      currentPlayer: 1,
+      dice: null,
+      positions: {
+        1: [-1, -1, -1, -1],
+        2: [-1, -1, -1, -1]
+      }
+    };
   }
 
 
   async fetch(request) {
 
-    const url =
-      new URL(request.url);
-
+    const url = new URL(request.url);
 
     if (
-      request.headers.get("Upgrade") !==
-      "websocket"
+      request.headers.get("Upgrade") !== "websocket"
     ) {
-
       return new Response(
         "Ludo Room is running."
       );
-
     }
-
 
     const roomCode =
       url.searchParams.get("room") || "";
-
 
     const name =
       (url.searchParams.get("name") || "Player")
@@ -163,21 +122,19 @@ export class LudoRoom {
         .slice(0, 20);
 
 
+    // =========================
     // MAX 2 PLAYERS
-    if (
-      this.players.length >= MAX_PLAYERS
-    ) {
+    // =========================
 
+    if (this.players.length >= MAX_PLAYERS) {
       return new Response(
         "Room is full. Only 2 players are allowed.",
         { status: 403 }
       );
-
     }
 
 
-    const pair =
-      new WebSocketPair();
+    const pair = new WebSocketPair();
 
     const client = pair[0];
     const server = pair[1];
@@ -208,9 +165,12 @@ export class LudoRoom {
       server
     );
 
-
     this.players.push(player);
 
+
+    // =========================
+    // PLAYER CONNECTED
+    // =========================
 
     this.send(server, {
 
@@ -236,18 +196,17 @@ export class LudoRoom {
     });
 
 
+    // =========================
     // PLAYER 2 JOINED
+    // =========================
+
     if (this.players.length === 2) {
 
-      this.broadcast({
-
-        type: "game_start",
-
-        roomCode,
-
-        players: this.players,
+      this.game = {
 
         currentPlayer: 1,
+
+        dice: null,
 
         positions: {
 
@@ -257,10 +216,31 @@ export class LudoRoom {
 
         }
 
+      };
+
+
+      this.broadcast({
+
+        type: "game_start",
+
+        roomCode,
+
+        players: this.players,
+
+        currentPlayer:
+          this.game.currentPlayer,
+
+        positions:
+          this.game.positions
+
       });
 
     }
 
+
+    // =========================
+    // MESSAGES
+    // =========================
 
     server.addEventListener(
       "message",
@@ -292,6 +272,10 @@ export class LudoRoom {
       }
     );
 
+
+    // =========================
+    // PLAYER LEFT
+    // =========================
 
     server.addEventListener(
       "close",
@@ -328,16 +312,21 @@ export class LudoRoom {
   }
 
 
+  // ==========================================
+  // GAME MESSAGES
+  // ==========================================
+
   handleMessage(player, data) {
 
+
+    // PING
     if (data.type === "ping") {
 
       this.send(
-
         this.sessions.get(player.id),
-
-        { type: "pong" }
-
+        {
+          type: "pong"
+        }
       );
 
       return;
@@ -345,27 +334,60 @@ export class LudoRoom {
     }
 
 
-    // DICE
+    // =========================
+    // ROLL DICE
+    // =========================
+
     if (data.type === "roll") {
+
+      if (
+        this.players.length !== 2
+      ) {
+        return;
+      }
+
+
+      if (
+        this.game.currentPlayer !==
+        player.number
+      ) {
+
+        this.send(
+          this.sessions.get(player.id),
+          {
+            type: "error",
+            message:
+              "Not your turn."
+          }
+        );
+
+        return;
+      }
+
+
+      const dice =
+        Math.floor(
+          Math.random() * 6
+        ) + 1;
+
+
+      this.game.dice = dice;
+
+
+      const positions =
+        this.game.positions;
+
 
       this.broadcast({
 
         type: "move",
 
-        player: player.number,
+        player:
+          player.number,
 
-        dice:
-          Math.floor(
-            Math.random() * 6
-          ) + 1,
+        dice,
 
-        positions: {
-
-          1: [-1, -1, -1, -1],
-
-          2: [-1, -1, -1, -1]
-
-        },
+        positions,
 
         currentPlayer:
           player.number === 1
@@ -374,17 +396,29 @@ export class LudoRoom {
 
       });
 
+
+      this.game.currentPlayer =
+        player.number === 1
+          ? 2
+          : 1;
+
+
       return;
 
     }
 
 
-    // RESET
+    // =========================
+    // RESET GAME
+    // =========================
+
     if (data.type === "reset") {
 
-      this.broadcast({
+      this.game = {
 
-        type: "reset",
+        currentPlayer: 1,
+
+        dice: null,
 
         positions: {
 
@@ -392,16 +426,34 @@ export class LudoRoom {
 
           2: [-1, -1, -1, -1]
 
-        },
+        }
 
-        currentPlayer: 1
+      };
+
+
+      this.broadcast({
+
+        type: "reset",
+
+        positions:
+          this.game.positions,
+
+        currentPlayer:
+          this.game.currentPlayer
 
       });
+
+
+      return;
 
     }
 
   }
 
+
+  // ==========================================
+  // REMOVE PLAYER
+  // ==========================================
 
   removePlayer(playerId) {
 
@@ -428,7 +480,8 @@ export class LudoRoom {
 
       type: "player_left",
 
-      players: this.players,
+      players:
+        this.players,
 
       message:
         "Opponent disconnected."
@@ -437,6 +490,10 @@ export class LudoRoom {
 
   }
 
+
+  // ==========================================
+  // SEND
+  // ==========================================
 
   send(socket, data) {
 
@@ -452,6 +509,10 @@ export class LudoRoom {
 
   }
 
+
+  // ==========================================
+  // BROADCAST
+  // ==========================================
 
   broadcast(data) {
 
