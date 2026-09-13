@@ -1,427 +1,256 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Balaji Ludo King - 2 Player Demo</title>
+  <title>Balaji Ludo King</title>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container">
-
-  <!-- HEADER -->
-  <header class="card header">
+  <header class="topbar">
     <h1>🎮 Balaji Ludo King</h1>
-    <p>2 Player Battle • Demo Mode</p>
+    <p>2 Player Battle</p>
   </header>
 
+  <main class="container">
 
-  <!-- ================================
-       WELCOME
-  ================================= -->
+    <!-- WELCOME -->
+    <section id="welcomeCard" class="card">
 
-  <section
-    id="welcomeCard"
-    class="card"
-  >
+      <h2>Welcome 👋</h2>
+      <p>Enter your name to continue</p>
 
-    <h2>Welcome 👋</h2>
+      <input
+        id="playerName"
+        type="text"
+        maxlength="20"
+        placeholder="Enter your name"
+      >
 
-    <p>
-      Enter your name to continue
-    </p>
+      <button id="startBtn">Continue</button>
 
-    <input
-      type="text"
-      id="playerName"
-      placeholder="Enter your name"
-      maxlength="20"
-      autocomplete="name"
-    >
+      <div id="message" class="message"></div>
 
-    <button
-      id="startBtn"
-      type="button"
-    >
-      Continue
-    </button>
-
-    <p
-      id="message"
-      class="message"
-    ></p>
-
-  </section>
+    </section>
 
 
-  <!-- ================================
-       ROOM
-  ================================= -->
+    <!-- ROOM -->
+    <section id="roomCard" class="card hidden">
 
-  <section
-    id="roomCard"
-    class="card hidden"
-  >
+      <h2>🎮 2 Player Room</h2>
 
-    <h2>🎮 2 Player Room</h2>
+      <button id="createRoomBtn">
+        Create Room
+      </button>
 
-    <button
-      id="createRoomBtn"
-      type="button"
-    >
-      Create Room
-    </button>
+      <div class="or">OR</div>
 
-    <p class="or">
-      OR
-    </p>
+      <input
+        id="roomCode"
+        type="tel"
+        maxlength="6"
+        inputmode="numeric"
+        placeholder="Enter Room Code"
+      >
 
-    <input
-      type="text"
-      id="roomCode"
-      placeholder="Enter Room Code"
-      maxlength="6"
-      autocomplete="off"
-    >
+      <button id="joinRoomBtn">
+        Join Room
+      </button>
 
-    <button
-      id="joinRoomBtn"
-      type="button"
-    >
-      Join Room
-    </button>
-
-    <div class="players">
-
-      <div class="player-box">
-        <strong>🔴 Player 1</strong>
-
-        <span id="player1">
-          Waiting...
-        </span>
+      <div id="roomMessage" class="message">
+        Create Room या Join Room करें।
       </div>
 
-      <div class="player-box">
-        <strong>🟢 Player 2</strong>
+      <div class="room-status">
 
-        <span id="player2">
-          Waiting...
-        </span>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ================================
-       LUDO GAME
-  ================================= -->
-
-  <section
-    id="ludoCard"
-    class="card hidden"
-  >
-
-    <h2>🎲 Ludo Battle</h2>
-
-    <p
-      id="gameMessage"
-      class="message"
-    >
-      Waiting...
-    </p>
-
-
-    <!-- ROOM CODE -->
-    <div class="room-display">
-
-      <span>
-        Room Code
-      </span>
-
-      <strong id="displayRoomCode">
-        —
-      </strong>
-
-    </div>
-
-
-    <!-- PLAYERS -->
-    <div class="game-players">
-
-      <div>
-        🔴
-        <strong id="gamePlayer1">
-          Player 1
-        </strong>
-      </div>
-
-      <div>
-        🟢
-        <strong id="gamePlayer2">
-          Player 2
-        </strong>
-      </div>
-
-    </div>
-
-
-    <!-- SIMPLE DEMO BOARD -->
-    <div class="ludo-board">
-
-      <div class="track">
-
-        <div
-          id="player1Piece"
-          class="piece player1-piece"
-        >
-          🔴
+        <div class="player-box">
+          <span>Player 1</span>
+          <strong id="player1">Waiting...</strong>
         </div>
 
-        <div
-          id="player2Piece"
-          class="piece player2-piece"
-        >
-          🟢
+        <div class="player-box">
+          <span>Player 2</span>
+          <strong id="player2">Waiting...</strong>
         </div>
 
       </div>
 
-      <div class="finish">
-        🏆 FINISH
+    </section>
+
+
+    <!-- LUDO GAME -->
+    <section id="ludoCard" class="card hidden">
+
+      <div class="game-header">
+
+        <div>
+          <strong>Room:</strong>
+          <span id="displayRoomCode">------</span>
+        </div>
+
+        <div id="gameMessage">
+          Waiting...
+        </div>
+
       </div>
 
-    </div>
 
+      <div class="game-players">
 
-    <!-- DICE -->
-    <div class="dice-area">
+        <div class="game-player red-player">
+          🔴 <span id="gamePlayer1">Player 1</span>
+        </div>
 
-      <div
-        id="dice"
-        class="dice"
-      >
-        🎲
+        <div class="game-player green-player">
+          🟢 <span id="gamePlayer2">Player 2</span>
+        </div>
+
       </div>
 
-      <button
-        id="diceBtn"
-        type="button"
-      >
-        🎲 Roll Dice
+
+      <!-- LUDO BOARD -->
+      <div class="ludo-board">
+
+        <div class="home red-home">
+          <span>🔴</span>
+          <span>🔴</span>
+          <span>🔴</span>
+          <span>🔴</span>
+        </div>
+
+        <div class="home green-home">
+          <span>🟢</span>
+          <span>🟢</span>
+          <span>🟢</span>
+          <span>🟢</span>
+        </div>
+
+        <div class="track" id="track"></div>
+
+        <div class="center-home">
+          🏆
+        </div>
+
+      </div>
+
+
+      <!-- DICE -->
+      <div class="dice-area">
+
+        <div id="dice" class="dice">
+          🎲
+        </div>
+
+        <button id="diceBtn">
+          🎲 Roll Dice
+        </button>
+
+        <div>
+          Dice: <strong id="diceNumber">-</strong>
+        </div>
+
+      </div>
+
+
+      <button id="resetGameBtn" class="secondary-btn">
+        🔄 Reset Game
       </button>
 
-      <button
-        id="resetGameBtn"
-        type="button"
-      >
-        🔄 New Game
-      </button>
+    </section>
 
+
+    <!-- DEMO WALLET -->
+    <section class="card wallet-card">
+
+      <h2>💰 Demo Wallet</h2>
+
+      <div class="balance">
+        ₹<span id="balance">0.00</span>
+      </div>
+
+      <div class="wallet-buttons">
+
+        <button id="depositBtn">
+          ➕ Demo Deposit
+        </button>
+
+        <button id="withdrawBtn">
+          ➖ Demo Withdraw
+        </button>
+
+      </div>
+
+
+      <div id="depositSection" class="wallet-section hidden">
+
+        <input
+          id="depositAmount"
+          type="number"
+          placeholder="Deposit Amount"
+        >
+
+        <button id="submitDeposit">
+          Add Demo Balance
+        </button>
+
+        <div id="depositMessage"></div>
+
+      </div>
+
+
+      <div id="withdrawSection" class="wallet-section hidden">
+
+        <input
+          id="withdrawAmount"
+          type="number"
+          placeholder="Withdrawal Amount"
+        >
+
+        <input
+          id="demoUpi"
+          type="text"
+          placeholder="Demo UPI ID"
+        >
+
+        <button id="submitWithdraw">
+          Request Demo Withdrawal
+        </button>
+
+        <div id="withdrawMessage"></div>
+
+      </div>
+
+
+      <div class="transactions">
+
+        <h3>Transactions</h3>
+
+        <div id="transactions">
+          <p class="empty">No transactions yet</p>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <div class="demo-notice">
+      ⚠️ Demo Mode — No real money is used.
     </div>
 
-  </section>
+  </main>
 
 
-  <!-- ================================
-       DEMO WALLET
-  ================================= -->
-
-  <section class="card wallet-card">
-
-    <p class="wallet-label">
-      Available Demo Balance
-    </p>
-
-    <h2>
-      ₹ <span id="balance">0.00</span>
-    </h2>
-
-    <div class="wallet-buttons">
-
-      <button
-        id="depositBtn"
-        class="deposit-btn"
-        type="button"
-      >
-        💰 Deposit
-      </button>
-
-      <button
-        id="withdrawBtn"
-        class="withdraw-btn"
-        type="button"
-      >
-        🏦 Withdraw
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- ================================
-       DEMO DEPOSIT
-  ================================= -->
-
-  <section
-    id="depositSection"
-    class="card hidden"
-  >
-
-    <h2>💰 Demo Deposit</h2>
-
-    <p class="info">
-      यह केवल testing/demo wallet है।
-      कोई वास्तविक payment नहीं होगी।
-    </p>
-
-    <label for="depositAmount">
-      Deposit Amount
-    </label>
-
-    <input
-      type="number"
-      id="depositAmount"
-      placeholder="Enter amount"
-      min="1"
-      max="100000"
-      step="1"
-      inputmode="numeric"
-    >
-
-    <button
-      id="submitDeposit"
-      class="deposit-btn"
-      type="button"
-    >
-      Add Demo Balance
-    </button>
-
-    <p
-      id="depositMessage"
-      class="message"
-    ></p>
-
-  </section>
-
-
-  <!-- ================================
-       DEMO WITHDRAW
-  ================================= -->
-
-  <section
-    id="withdrawSection"
-    class="card hidden"
-  >
-
-    <h2>🏦 Demo Withdrawal</h2>
-
-    <p class="info">
-      यह केवल testing/demo withdrawal request है।
-      कोई वास्तविक पैसा transfer नहीं होगा।
-    </p>
-
-    <label for="withdrawAmount">
-      Withdrawal Amount
-    </label>
-
-    <input
-      type="number"
-      id="withdrawAmount"
-      placeholder="Enter amount"
-      min="1"
-      step="1"
-      inputmode="numeric"
-    >
-
-    <label for="demoUpi">
-      Demo UPI ID
-    </label>
-
-    <input
-      type="text"
-      id="demoUpi"
-      placeholder="example@upi"
-      autocomplete="off"
-    >
-
-    <button
-      id="submitWithdraw"
-      class="withdraw-btn"
-      type="button"
-    >
-      Submit Demo Request
-    </button>
-
-    <p
-      id="withdrawMessage"
-      class="message"
-    ></p>
-
-  </section>
-
-
-  <!-- ================================
-       TRANSACTIONS
-  ================================= -->
-
-  <section class="card">
-
-    <h2>📋 Transaction History</h2>
-
-    <div id="transactions">
-
-      <p class="empty">
-        No transactions yet
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- ================================
-       NOTICE
-  ================================= -->
-
-  <section class="card notice">
-
-    <h3>⚠️ Demo Mode</h3>
-
-    <p>
-      यह पूरा system testing/demo के लिए है।
-    </p>
-
-    <p>
-      कोई वास्तविक UPI payment,
-      bank transfer या real-money withdrawal
-      नहीं होगा।
-    </p>
-
-  </section>
-
-
-  <!-- FOOTER -->
   <footer>
     © 2026 Balaji Ludo King
   </footer>
 
-</div>
 
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
