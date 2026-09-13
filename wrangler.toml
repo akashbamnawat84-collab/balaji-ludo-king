@@ -7,13 +7,9 @@ directory = "./Public"
 binding = "ASSETS"
 
 [[durable_objects.bindings]]
-name = "CUSTOMER_STORE"
-class_name = "CustomerStore"
-
-[[durable_objects.bindings]]
 name = "LUDO_ROOM"
 class_name = "LudoRoom"
 
 [[migrations]]
 tag = "v1"
-new_sqlite_classes = ["CustomerStore", "LudoRoom"]
+new_sqlite_classes = ["LudoRoom"]
