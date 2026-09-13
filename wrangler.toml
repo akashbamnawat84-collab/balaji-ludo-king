@@ -11,5 +11,4 @@ name = "LUDO_ROOM"
 class_name = "LudoRoom"
 
 [[migrations]]
-tag = "v1"
-new_sqlite_classes = ["LudoRoom"]
+tag = "v4"
