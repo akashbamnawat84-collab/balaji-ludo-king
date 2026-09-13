@@ -1,3 +1,5 @@
+import HTML_CONTENT from './index.html';
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -14,6 +16,13 @@ export default {
     const path = url.pathname;
 
     try {
+      // 0. Serve Frontend UI
+      if (path === "/" || path === "/index.html") {
+        return new Response(HTML_CONTENT, {
+          headers: { "Content-Type": "text/html; charset=utf-8" },
+        });
+      }
+
       // 1. User Login / Register
       if (path === "/api/users/login" && request.method === "POST") {
         const { phone } = await request.json();
@@ -35,7 +44,7 @@ export default {
       // 3. Create Battle
       if (path === "/api/battles/create" && request.method === "POST") {
         const { userId, entryFee } = await request.json();
-        const prize = entryFee * 1.8; // 10% Platform fee
+        const prize = entryFee * 1.8;
         await env.DB.prepare(
           "INSERT INTO battles (creator_id, entry_fee, prize_amount, status, created_at) VALUES (?, ?, ?, 'OPEN', ?)"
         ).bind(userId, entryFee, prize, Date.now()).run();
@@ -56,7 +65,7 @@ export default {
         return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
       }
 
-      // 6. Submit Result (Saved in D1 Base64 Text - No R2 Needed)
+      // 6. Submit Result
       if (path === "/api/battles/submit-result" && request.method === "POST") {
         const { userId, battleId, screenshotBase64 } = await request.json();
         await env.DB.prepare(
@@ -81,7 +90,7 @@ export default {
         return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
       }
 
-      return env.ASSETS.fetch(request);
+      return new Response("Not Found", { status: 404 });
     } catch (err) {
       return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
     }
