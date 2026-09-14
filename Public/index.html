@@ -70,6 +70,11 @@
       background: #22c55e;
       color: white;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
     }
 
     .orange {
@@ -85,7 +90,7 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
 
     .room-code {
@@ -111,6 +116,7 @@
       text-align: center;
       color: #fbbf24;
       margin-top: 12px;
+      font-weight: bold;
     }
 
     .upload-box {
@@ -121,8 +127,6 @@
     }
 
     .bottom-nav {
-      position: sticky;
-      bottom: 0;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 5px;
@@ -144,16 +148,4 @@
       margin: 10px 0;
       color: #fbbf24;
       font-weight: bold;
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="topbar">
-    <div class="logo">👑 Balaji Ludo King</div>
-    <div class="wallet">₹<span id="wallet">0</span></div>
-  </div>
-
-  <!-- LOGIN -->
-  <
+   
