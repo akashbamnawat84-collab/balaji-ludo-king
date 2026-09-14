@@ -182,4 +182,135 @@ export default {
         // =================================
 
         const existing =
-         
+         await getRoom(
+            env,
+            roomCode
+          );
+
+
+        if (existing) {
+
+          // Backend-side expiry protection
+
+          if (
+            existing.status === "WAITING" &&
+            isExpired(existing.created_at)
+          ) {
+
+            await deleteRoom(
+              env,
+              roomCode
+            );
+
+          } else {
+
+            return json(
+              {
+                error:
+                  "यह Room Code पहले से मौजूद है। दूसरा code डालें।"
+              },
+              409
+            );
+          }
+        }
+
+
+        // =================================
+        // CREATE
+        // =================================
+
+        const createdAt =
+          Date.now();
+
+
+        await env.DB.prepare(
+          `INSERT INTO rooms
+          (
+            room_code,
+            player1_id,
+            player1_name,
+            status,
+            created_at
+          )
+          VALUES (?, ?, ?, 'WAITING', ?)`
+        )
+          .bind(
+            roomCode,
+            playerId,
+            playerName,
+            createdAt
+          )
+          .run();
+
+
+        return json({
+          success: true,
+
+          room: {
+            room_code: roomCode,
+            player1_id: playerId,
+            player1_name: playerName,
+            player2_id: null,
+            player2_name: null,
+            status: "WAITING",
+            created_at: createdAt
+          }
+        });
+      }
+
+
+      // =====================================
+      // JOIN ROOM
+      // =====================================
+
+      if (
+        path === "/api/rooms/join" &&
+        request.method === "POST"
+      ) {
+
+        const body = await request.json();
+
+        const playerId = clean(
+          body.player_id ||
+          body.playerId
+        );
+
+        const playerName = clean(
+          body.player_name ||
+          body.playerName
+        );
+
+        const roomCode = clean(
+          body.room_code ||
+          body.roomCode
+        );
+
+
+        if (!playerId) {
+          return json(
+            {
+              error:
+                "Player login required"
+            },
+            400
+          );
+        }
+
+
+        if (!playerName) {
+          return json(
+            {
+              error:
+                "Player name required"
+            },
+            400
+          );
+        }
+
+
+        if (!validRoomCode(roomCode)) {
+          return json(
+            {
+              error:
+                "8-digit Room Code required"
+            },
