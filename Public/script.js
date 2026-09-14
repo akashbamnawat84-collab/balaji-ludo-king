@@ -820,4 +820,660 @@ async function expireRoom() {
   if (gameStartBox)
     gameStartBox.style.display = "none";
 
+  if (createRoomCard)
+    createRoomCard.style.display = "block";
+
+  if (joinSection)
+    joinSection.style.display = "block";
+
+  setMessage(
+    createMessage,
+    "⏰ Room 5 मिनट में expire हो गया।",
+    "warning"
+  );
+
+  setMessage(
+    joinMessage,
+    "⏰ Room 5 मिनट में expire हो गया।",
+    "warning"
+  );
+
+  roomExpiryInProgress = false;
+}
+
+// ===============================
+// ROOM STATUS
+// ===============================
+
+async function checkRoomStatus() {
+  if (!currentRoomCode)
+    return;
+
+  try {
+    const response =
+      await fetch(
+        `${API}/rooms/${encodeURIComponent(
+          currentRoomCode
+        )}`,
+        {
+          cache: "no-store"
+        }
+      );
+
+    if (!response.ok) {
+
+      if (response.status === 404) {
+        stopRoomPolling();
+        stopRoomTimer();
+        clearRoomData();
+
+        showSection(roomSection);
+
+        if (createRoomCard)
+          createRoomCard.style.display =
+            "block";
+
+        if (joinSection)
+          joinSection.style.display =
+            "block";
+
+        if (createdRoom)
+          createdRoom.style.display =
+            "none";
+
+        if (joinedRoom)
+          joinedRoom.style.display =
+            "none";
+
+        setMessage(
+          createMessage,
+          "⚠️ Room नहीं मिला या expire हो गया।",
+          "error"
+        );
+
+        return;
+      }
+
+      throw new Error(
+        "Room status failed"
+      );
+    }
+
+    const room =
+      await response.json();
+
+    if (
+      room.status === "WAITING" &&
+      !room.player2_id
+    ) {
+      if (room.created_at) {
+        startRoomTimer(
+          room.created_at
+        );
+      }
+    } else {
+      stopRoomTimer();
+    }
+
+    updateRoomStatus(room);
+
+  } catch (error) {
+    console.log(
+      "Room status error:",
+      error
+    );
+  }
+}
+
+// ===============================
+// UPDATE STATUS
+// ===============================
+
+function updateRoomStatus(room) {
+  if (!room) return;
+
+  if (playerNumber === 1) {
+
+    if (player1Status)
+      player1Status.textContent =
+        "Player 1 • Ready";
+
+    if (player2Status)
+      player2Status.textContent =
+        room.player2_id
+          ? "Player 2 • Ready"
+          : "Player 2 • Waiting...";
+
+    if (waitingMessage)
+      waitingMessage.textContent =
+        room.player2_id
+          ? "Both players are ready!"
+          : "Waiting for Player 2...";
+  }
+
+  if (playerNumber === 2) {
+
+    if (joinedPlayer1Status)
+      joinedPlayer1Status.textContent =
+        room.player1_id
+          ? "Player 1 • Ready"
+          : "Player 1 • Waiting...";
+
+    if (joinedPlayer2Status)
+      joinedPlayer2Status.textContent =
+        "Player 2 • Ready";
+
+    if (joinWaitingMessage)
+      joinWaitingMessage.textContent =
+        "Both players are ready!";
+  }
+
   if (
+    room.player2_id ||
+    room.status === "READY"
+  ) {
+    showReadyBox(room);
+  }
+
+  if (
+    room.status === "RESULT_SUBMITTED"
+  ) {
+    stopRoomPolling();
+    stopRoomTimer();
+  }
+}
+
+// ===============================
+// READY BOX
+// ===============================
+
+function showReadyBox(room) {
+  stopRoomTimer();
+  stopRoomPolling();
+
+  if (createdRoom)
+    createdRoom.style.display = "none";
+
+  if (joinedRoom)
+    joinedRoom.style.display = "none";
+
+  if (gameStartBox)
+    gameStartBox.style.display = "block";
+
+  if (resultRoomCode)
+    resultRoomCode.textContent =
+      currentRoomCode;
+}
+
+// ===============================
+// COPY ROOM
+// ===============================
+
+if (copyRoomBtn) {
+  copyRoomBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!currentRoomCode)
+        return;
+
+      try {
+        await navigator.clipboard.writeText(
+          currentRoomCode
+        );
+
+        copyRoomBtn.textContent =
+          "✅ Copied";
+
+        setTimeout(() => {
+          copyRoomBtn.textContent =
+            "Copy Room Code";
+        }, 1500);
+
+      } catch (error) {
+        alert(
+          `Room Code: ${currentRoomCode}`
+        );
+      }
+    }
+  );
+}
+
+// ===============================
+// OPEN LUDO KING
+// ===============================
+
+if (openLudoKingBtn) {
+  openLudoKingBtn.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+        "ludoking://";
+
+      setTimeout(() => {
+        window.open(
+          "https://www.ludoking.com/",
+          "_blank"
+        );
+      }, 1200);
+    }
+  );
+}
+
+// ===============================
+// PLAYED GAME
+// ===============================
+
+if (playedGameBtn) {
+  playedGameBtn.addEventListener(
+    "click",
+    () => {
+
+      showSection(
+        resultSection
+      );
+
+      if (resultRoomCode)
+        resultRoomCode.textContent =
+          currentRoomCode;
+    }
+  );
+}
+
+// ===============================
+// FILE TO BASE64
+// ===============================
+
+function fileToBase64(file) {
+  return new Promise(
+    (resolve, reject) => {
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () =>
+        resolve(reader.result);
+
+      reader.onerror = () =>
+        reject(
+          new Error(
+            "File read failed"
+          )
+        );
+
+      reader.readAsDataURL(file);
+    }
+  );
+}
+
+// ===============================
+// SCREENSHOT AUTO UPLOAD
+// ===============================
+
+if (resultScreenshot) {
+  resultScreenshot.addEventListener(
+    "change",
+    async () => {
+
+      const file =
+        resultScreenshot.files?.[0];
+
+      if (!file)
+        return;
+
+      if (
+        !file.type.startsWith("image/")
+      ) {
+        setMessage(
+          resultMessage,
+          "❌ केवल image screenshot चुनें।",
+          "error"
+        );
+
+        resultScreenshot.value = "";
+        return;
+      }
+
+      if (
+        file.size >
+        5 * 1024 * 1024
+      ) {
+        setMessage(
+          resultMessage,
+          "❌ Screenshot 5 MB से छोटा होना चाहिए।",
+          "error"
+        );
+
+        resultScreenshot.value = "";
+        return;
+      }
+
+      if (fileName)
+        fileName.textContent =
+          file.name;
+
+      setMessage(
+        resultMessage,
+        "📤 Screenshot upload हो रहा है..."
+      );
+
+      await submitResult(file);
+    }
+  );
+}
+
+// ===============================
+// MANUAL RETRY
+// ===============================
+
+if (submitResultBtn) {
+  submitResultBtn.addEventListener(
+    "click",
+    async () => {
+
+      const file =
+        resultScreenshot?.files?.[0];
+
+      if (!file) {
+        setMessage(
+          resultMessage,
+          "⚠️ पहले screenshot चुनें।",
+          "warning"
+        );
+        return;
+      }
+
+      await submitResult(file);
+    }
+  );
+}
+
+// ===============================
+// SUBMIT RESULT
+// ===============================
+
+async function submitResult(file) {
+
+  if (!playerId) {
+    setMessage(
+      resultMessage,
+      "❌ Player login नहीं है।",
+      "error"
+    );
+    return;
+  }
+
+  if (!currentRoomCode) {
+    setMessage(
+      resultMessage,
+      "❌ कोई active room नहीं है।",
+      "error"
+    );
+    return;
+  }
+
+  if (!file) {
+    setMessage(
+      resultMessage,
+      "⚠️ Screenshot चुनें।",
+      "warning"
+    );
+    return;
+  }
+
+  if (
+    !file.type.startsWith("image/")
+  ) {
+    setMessage(
+      resultMessage,
+      "❌ केवल image screenshot allowed है।",
+      "error"
+    );
+    return;
+  }
+
+  if (
+    file.size >
+    5 * 1024 * 1024
+  ) {
+    setMessage(
+      resultMessage,
+      "❌ Screenshot 5 MB से बड़ा है।",
+      "error"
+    );
+    return;
+  }
+
+  if (submitResultBtn) {
+    submitResultBtn.disabled = true;
+    submitResultBtn.textContent =
+      "Uploading...";
+  }
+
+  try {
+
+    const base64 =
+      await fileToBase64(file);
+
+    const response =
+      await fetch(
+        `${API}/rooms/result`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            room_code:
+              currentRoomCode,
+            player_id:
+              playerId,
+            screenshot:
+              base64
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Upload failed"
+      );
+    }
+
+    setMessage(
+      resultMessage,
+      "✅ Screenshot successfully uploaded!",
+      "success"
+    );
+
+    if (submitResultBtn) {
+      submitResultBtn.textContent =
+        "✅ Uploaded";
+    }
+
+    stopRoomPolling();
+    stopRoomTimer();
+
+  } catch (error) {
+
+    setMessage(
+      resultMessage,
+      `❌ ${error.message}`,
+      "error"
+    );
+
+    if (submitResultBtn) {
+      submitResultBtn.disabled = false;
+      submitResultBtn.textContent =
+        "Upload Result";
+    }
+  }
+}
+
+// ===============================
+// LEAVE ROOM
+// ===============================
+
+if (leaveRoomBtn) {
+  leaveRoomBtn.addEventListener(
+    "click",
+    leaveRoom
+  );
+}
+
+if (joinedLeaveBtn) {
+  joinedLeaveBtn.addEventListener(
+    "click",
+    leaveRoom
+  );
+}
+
+async function leaveRoom() {
+
+  if (!currentRoomCode) {
+    resetRoomScreen();
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "क्या आप Room छोड़ना चाहते हैं?"
+    );
+
+  if (!confirmed)
+    return;
+
+  try {
+
+    await fetch(
+      `${API}/rooms/cancel`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          room_code:
+            currentRoomCode,
+          player_id:
+            playerId
+        })
+      }
+    );
+
+  } catch (error) {
+    console.log(
+      "Leave room error:",
+      error
+    );
+  }
+
+  resetRoomScreen();
+
+  showSection(roomSection);
+
+  setMessage(
+    createMessage,
+    "🚪 Room छोड़ दिया गया।",
+    "success"
+  );
+}
+
+// ===============================
+// RESTORE ROOM
+// ===============================
+
+function restoreCurrentRoom() {
+
+  if (!currentRoomCode) {
+    resetRoomScreen();
+    return;
+  }
+
+  if (playerNumber === 1) {
+
+    if (createRoomCard)
+      createRoomCard.style.display =
+        "none";
+
+    if (joinSection)
+      joinSection.style.display =
+        "none";
+
+    if (createdRoom)
+      createdRoom.style.display =
+        "block";
+
+    if (roomCodeDisplay)
+      roomCodeDisplay.textContent =
+        currentRoomCode;
+  }
+
+  if (playerNumber === 2) {
+
+    if (createRoomCard)
+      createRoomCard.style.display =
+        "none";
+
+    if (joinSection)
+      joinSection.style.display =
+        "none";
+
+    if (joinedRoom)
+      joinedRoom.style.display =
+        "block";
+
+    if (joinedRoomCode)
+      joinedRoomCode.textContent =
+        currentRoomCode;
+  }
+
+  startRoomPolling();
+}
+
+// ===============================
+// HOME
+// ===============================
+
+function goHome() {
+  showSection(homeSection);
+}
+
+document
+  .querySelectorAll(".goHomeBtn")
+  .forEach((button) => {
+    button.addEventListener(
+      "click",
+      goHome
+    );
+  });
+
+// ===============================
+// START
+// ===============================
+
+updateProfile();
+
+if (
+  currentRoomCode &&
+  (
+    playerNumber === 1 ||
+    playerNumber === 2
+  )
+) {
+  showSection(roomSection);
+  restoreCurrentRoom();
+} else {
+  showSection(homeSection);
+}
+
+console.log(
+  "✅ Balaji Ludo King script loaded"
+);
