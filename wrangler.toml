@@ -9,7 +9,3 @@ ADMIN_SECRET = "CHANGE_THIS_LATER"
 binding = "DB"
 database_name = "ludo_db"
 database_id = "57e9edf2-94f9-4ea9-9298-ce5920bc2fcf"
-
-[[migrations]]
-tag = "v4-final-clean"
-deleted_classes = ["CustomerStore", "LudoRoom"]
