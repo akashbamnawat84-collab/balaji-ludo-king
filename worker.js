@@ -4,6 +4,18 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
+// ===============================
+// ROOM SETTINGS
+// ===============================
+
+const ROOM_WAIT_SECONDS = 5 * 60;
+const ROOM_WAIT_MS = ROOM_WAIT_SECONDS * 1000;
+
+
+// ===============================
+// JSON RESPONSE
+// ===============================
+
 function json(data, status = 200) {
   return new Response(
     JSON.stringify(data),
@@ -17,8 +29,76 @@ function json(data, status = 200) {
   );
 }
 
+
+// ===============================
+// ROOM CODE VALIDATION
+// ===============================
+
+function validRoomCode(code) {
+  return /^\d{8}$/.test(
+    String(code || "").trim()
+  );
+}
+
+
+// ===============================
+// CHECK ROOM EXPIRY
+// ===============================
+
+function isRoomExpired(room) {
+  if (!room || !room.created_at) {
+    return false;
+  }
+
+  const createdAt = Number(room.created_at);
+
+  if (!Number.isFinite(createdAt)) {
+    return false;
+  }
+
+  return (
+    Date.now() - createdAt >= ROOM_WAIT_MS
+  );
+}
+
+
+// ===============================
+// DELETE EXPIRED ROOM
+// ===============================
+
+async function deleteExpiredRoom(env, roomCode) {
+  try {
+    await env.DB.prepare(
+      "DELETE FROM rooms WHERE room_code = ?"
+    )
+      .bind(roomCode)
+      .run();
+
+    return true;
+
+  } catch (error) {
+
+    console.log(
+      "Delete expired room error:",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+// ===============================
+// WORKER
+// ===============================
+
 export default {
+
   async fetch(request, env) {
+
+    // ===============================
+    // CORS
+    // ===============================
 
     if (request.method === "OPTIONS") {
       return new Response(null, {
@@ -26,26 +106,41 @@ export default {
       });
     }
 
+
     const url = new URL(request.url);
     const path = url.pathname;
 
+
     try {
 
-      // Login
+      // ===============================
+      // LOGIN
+      // ===============================
+
       if (
         path === "/api/login" &&
         request.method === "POST"
       ) {
 
-        const body = await request.json();
-        const name = String(body.name || "").trim();
+        const body =
+          await request.json();
+
+        const name =
+          String(
+            body.name || ""
+          ).trim();
+
 
         if (!name) {
           return json(
-            { error: "Name required" },
+            {
+              error:
+                "Name required"
+            },
             400
           );
         }
+
 
         const id =
           "USR" +
@@ -54,54 +149,139 @@ export default {
             .slice(0, 10)
             .toUpperCase();
 
+
         return json({
           id,
           name,
+          wallet: 0,
           wallet_balance: 0
         });
       }
 
-      // Create Room
+
+      // ===============================
+      // CREATE ROOM
+      // ===============================
+
       if (
         path === "/api/rooms/create" &&
         request.method === "POST"
       ) {
 
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        const playerId = String(body.playerId || "");
-        const playerName = String(body.playerName || "");
-        const roomCode = String(body.roomCode || "");
 
-        if (
-          !playerId ||
-          !playerName ||
-          !/^\d{8}$/.test(roomCode)
-        ) {
+        // IMPORTANT:
+        // script.js sends snake_case fields
+
+        const playerId =
+          String(
+            body.player_id || ""
+          ).trim();
+
+
+        const playerName =
+          String(
+            body.player_name || ""
+          ).trim();
+
+
+        const roomCode =
+          String(
+            body.room_code || ""
+          ).trim();
+
+
+        // Validate player
+
+        if (!playerId) {
+
           return json(
             {
               error:
-                "Valid player and 8-digit room code required"
+                "Valid player required"
             },
             400
           );
         }
 
-        const existing = await env.DB.prepare(
-          "SELECT * FROM rooms WHERE room_code = ?"
-        )
-          .bind(roomCode)
-          .first();
 
-        if (existing) {
+        // Validate player name
+
+        if (!playerName) {
+
           return json(
             {
               error:
-                "यह Room Code पहले से मौजूद है। दूसरा code डालें।"
+                "Player name required"
             },
-            409
+            400
           );
         }
+
+
+        // Validate exactly 8 digits
+
+        if (!validRoomCode(roomCode)) {
+
+          return json(
+            {
+              error:
+                "Valid 8-digit room code required"
+            },
+            400
+          );
+        }
+
+
+        // ===============================
+        // CHECK EXISTING ROOM
+        // ===============================
+
+        const existing =
+          await env.DB.prepare(
+            "SELECT * FROM rooms WHERE room_code = ?"
+          )
+            .bind(roomCode)
+            .first();
+
+
+        if (existing) {
+
+          // If existing room is expired,
+          // delete it and allow same code again.
+
+          if (
+            existing.status === "WAITING" &&
+            isRoomExpired(existing)
+          ) {
+
+            await deleteExpiredRoom(
+              env,
+              roomCode
+            );
+
+          } else {
+
+            return json(
+              {
+                error:
+                  "यह Room Code पहले से मौजूद है। दूसरा code डालें।"
+              },
+              409
+            );
+          }
+        }
+
+
+        // ===============================
+        // CREATE NEW ROOM
+        // ===============================
+
+        const createdAt =
+          Date.now();
+
 
         await env.DB.prepare(
           `INSERT INTO rooms
@@ -118,78 +298,185 @@ export default {
             roomCode,
             playerId,
             playerName,
-            Date.now()
+            createdAt
           )
           .run();
 
+
         return json({
           success: true,
-          roomCode
+
+          room: {
+            room_code: roomCode,
+            player1_id: playerId,
+            player1_name: playerName,
+            player2_id: null,
+            player2_name: null,
+            status: "WAITING",
+            created_at: createdAt
+          },
+
+          room_code: roomCode
         });
       }
 
-      // Join Room
-      if (
+
+      // ===============================
+      // JOIN ROOM
+      // ===============================
+  if (
         path === "/api/rooms/join" &&
         request.method === "POST"
       ) {
 
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        const playerId = String(body.playerId || "");
-        const playerName = String(body.playerName || "");
-        const roomCode = String(body.roomCode || "");
 
-        if (
-          !playerId ||
-          !playerName ||
-          !/^\d{8}$/.test(roomCode)
-        ) {
+        const playerId =
+          String(
+            body.player_id || ""
+          ).trim();
+
+
+        const playerName =
+          String(
+            body.player_name || ""
+          ).trim();
+
+
+        const roomCode =
+          String(
+            body.room_code || ""
+          ).trim();
+
+
+        if (!playerId) {
+
           return json(
             {
               error:
-                "Valid player and 8-digit room code required"
+                "Valid player required"
             },
             400
           );
         }
 
-        const room = await env.DB.prepare(
-          "SELECT * FROM rooms WHERE room_code = ?"
-        )
-          .bind(roomCode)
-          .first();
 
-        if (!room) {
+        if (!playerName) {
+
           return json(
             {
-              error: "Room Code नहीं मिला।"
+              error:
+                "Player name required"
+            },
+            400
+          );
+        }
+
+
+        if (!validRoomCode(roomCode)) {
+
+          return json(
+            {
+              error:
+                "Valid 8-digit room code required"
+            },
+            400
+          );
+        }
+
+
+        // ===============================
+        // FIND ROOM
+        // ===============================
+
+        const room =
+          await env.DB.prepare(
+            "SELECT * FROM rooms WHERE room_code = ?"
+          )
+            .bind(roomCode)
+            .first();
+
+
+        if (!room) {
+
+          return json(
+            {
+              error:
+                "Room Code नहीं मिला।"
             },
             404
           );
         }
 
-        if (room.player1_id === playerId) {
+
+        // ===============================
+        // BACKEND 5-MINUTE EXPIRY
+        // ===============================
+
+        if (
+          room.status === "WAITING" &&
+          isRoomExpired(room)
+        ) {
+
+          await deleteExpiredRoom(
+            env,
+            roomCode
+          );
+
+
+          return json(
+            {
+              error:
+                "⏰ यह Room 5 मिनट बाद expire हो गया।"
+            },
+            410
+          );
+        }
+
+
+        // ===============================
+        // SAME PLAYER
+        // ===============================
+
+        if (
+          room.player1_id === playerId
+        ) {
+
           return json({
             success: true,
-            roomCode
+            room
           });
         }
 
+
+        // ===============================
+        // ROOM FULL
+        // ===============================
+
         if (room.player2_id) {
+
           return json(
             {
-              error: "यह Room पहले से full है।"
+              error:
+                "यह Room पहले से full है।"
             },
             409
           );
         }
 
+
+        // ===============================
+        // JOIN AS PLAYER 2
+        // ===============================
+
         await env.DB.prepare(
           `UPDATE rooms
-           SET player2_id = ?,
-               player2_name = ?,
-               status = 'READY'
+           SET
+             player2_id = ?,
+             player2_name = ?,
+             status = 'READY'
            WHERE room_code = ?`
         )
           .bind(
@@ -199,88 +486,190 @@ export default {
           )
           .run();
 
+
+        const updatedRoom =
+          await env.DB.prepare(
+            "SELECT * FROM rooms WHERE room_code = ?"
+          )
+            .bind(roomCode)
+            .first();
+
+
         return json({
           success: true,
-          roomCode
+          room: updatedRoom,
+          room_code: roomCode
         });
       }
 
-      // Get Room
+
+      // ===============================
+      // GET ROOM STATUS
+      // ===============================
+
       if (
         path.startsWith("/api/rooms/") &&
         request.method === "GET"
       ) {
 
         const roomCode =
-          path.replace("/api/rooms/", "");
+          path
+            .replace(
+              "/api/rooms/",
+              ""
+            )
+            .trim();
 
-        if (!/^\d{8}$/.test(roomCode)) {
+
+        if (!validRoomCode(roomCode)) {
+
           return json(
-            { error: "Invalid room code" },
+            {
+              error:
+                "Invalid room code"
+            },
             400
           );
         }
 
-        const room = await env.DB.prepare(
-          `SELECT
-            room_code,
-            player1_id,
-            player1_name,
-            player2_id,
-            player2_name,
-            status,
-            result_screenshot,
-            result_player_id,
-            created_at
-           FROM rooms
-           WHERE room_code = ?`
-        )
-          .bind(roomCode)
-          .first();
+
+        const room =
+          await env.DB.prepare(
+            `SELECT
+              room_code,
+              player1_id,
+              player1_name,
+              player2_id,
+              player2_name,
+              status,
+              result_screenshot,
+              result_player_id,
+              created_at
+             FROM rooms
+             WHERE room_code = ?`
+          )
+            .bind(roomCode)
+            .first();
+
 
         if (!room) {
+
           return json(
-            { error: "Room not found" },
+            {
+              error:
+                "Room not found"
+            },
             404
           );
         }
 
+
+        // ===============================
+        // BACKEND EXPIRY CHECK
+        // ===============================
+
+        if (
+          room.status === "WAITING" &&
+          isRoomExpired(room)
+        ) {
+
+          await deleteExpiredRoom(
+            env,
+            roomCode
+          );
+
+
+          return json(
+            {
+              error:
+                "⏰ Room 5 मिनट में expire हो गया।"
+            },
+            404
+          );
+        }
+
+
         return json(room);
       }
 
-      // Cancel Room
+
+      // ===============================
+      // CANCEL / LEAVE ROOM
+      // ===============================
+
       if (
         path === "/api/rooms/cancel" &&
         request.method === "POST"
       ) {
 
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        const playerId = String(body.playerId || "");
-        const roomCode = String(body.roomCode || "");
 
-        const room = await env.DB.prepare(
-          "SELECT * FROM rooms WHERE room_code = ?"
-        )
-          .bind(roomCode)
-          .first();
+        const playerId =
+          String(
+            body.player_id || ""
+          ).trim();
 
-        if (!room) {
+
+        const roomCode =
+          String(
+            body.room_code || ""
+          ).trim();
+
+
+        if (
+          !playerId ||
+          !validRoomCode(roomCode)
+        ) {
+
           return json(
-            { error: "Room not found" },
-            404
+            {
+              error:
+                "Valid player and room code required"
+            },
+            400
           );
         }
 
+
+        const room =
+          await env.DB.prepare(
+            "SELECT * FROM rooms WHERE room_code = ?"
+          )
+            .bind(roomCode)
+            .first();
+
+
+        if (!room) {
+
+          return json(
+            {
+              success: true,
+              message:
+                "Room already removed"
+            }
+          );
+        }
+
+
+        // ===============================
+        // CHECK PLAYER
+        // ===============================
         if (
           room.player1_id !== playerId &&
           room.player2_id !== playerId
         ) {
+
           return json(
-            { error: "Not your room" },
+            {
+              error:
+                "Not your room"
+            },
             403
           );
         }
+
 
         await env.DB.prepare(
           "DELETE FROM rooms WHERE room_code = ?"
@@ -288,28 +677,52 @@ export default {
           .bind(roomCode)
           .run();
 
+
         return json({
-          success: true
+          success: true,
+          message:
+            "Room cancelled"
         });
       }
 
-      // Submit Result Screenshot
+
+      // ===============================
+      // SUBMIT RESULT
+      // ===============================
+
       if (
         path === "/api/rooms/result" &&
         request.method === "POST"
       ) {
 
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        const playerId = String(body.playerId || "");
-        const roomCode = String(body.roomCode || "");
-        const screenshot = String(body.screenshot || "");
+
+        const playerId =
+          String(
+            body.player_id || ""
+          ).trim();
+
+
+        const roomCode =
+          String(
+            body.room_code || ""
+          ).trim();
+
+
+        const screenshot =
+          String(
+            body.screenshot || ""
+          );
+
 
         if (
           !playerId ||
-          !roomCode ||
+          !validRoomCode(roomCode) ||
           !screenshot
         ) {
+
           return json(
             {
               error:
@@ -319,7 +732,12 @@ export default {
           );
         }
 
-        if (screenshot.length > 7 * 1024 * 1024) {
+
+        if (
+          screenshot.length >
+          7 * 1024 * 1024
+        ) {
+
           return json(
             {
               error:
@@ -329,23 +747,36 @@ export default {
           );
         }
 
-        const room = await env.DB.prepare(
-          "SELECT * FROM rooms WHERE room_code = ?"
-        )
-          .bind(roomCode)
-          .first();
+
+        const room =
+          await env.DB.prepare(
+            "SELECT * FROM rooms WHERE room_code = ?"
+          )
+            .bind(roomCode)
+            .first();
+
 
         if (!room) {
+
           return json(
-            { error: "Room not found" },
+            {
+              error:
+                "Room not found"
+            },
             404
           );
         }
+
+
+        // ===============================
+        // PLAYER CHECK
+        // ===============================
 
         if (
           room.player1_id !== playerId &&
           room.player2_id !== playerId
         ) {
+
           return json(
             {
               error:
@@ -355,11 +786,13 @@ export default {
           );
         }
 
+
         await env.DB.prepare(
           `UPDATE rooms
-           SET result_screenshot = ?,
-               result_player_id = ?,
-               status = 'RESULT_SUBMITTED'
+           SET
+             result_screenshot = ?,
+             result_player_id = ?,
+             status = 'RESULT_SUBMITTED'
            WHERE room_code = ?`
         )
           .bind(
@@ -369,12 +802,18 @@ export default {
           )
           .run();
 
+
         return json({
           success: true,
           message:
             "Screenshot submitted successfully"
         });
       }
+
+
+      // ===============================
+      // NOT FOUND
+      // ===============================
 
       return new Response(
         "Not Found",
@@ -384,12 +823,20 @@ export default {
         }
       );
 
+
     } catch (error) {
+
+      console.log(
+        "Worker error:",
+        error
+      );
+
 
       return json(
         {
           error:
-            error && error.message
+            error &&
+            error.message
               ? error.message
               : "Server Error"
         },
