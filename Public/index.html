@@ -1,160 +1,157 @@
-<!-- ================= PROFILE SECTION ================= -->
+<!-- ================= LOGIN SECTION ================= -->
 
-<section id="profileSection" class="profile-page">
+<section id="welcomeCard" class="welcome-card">
 
-  <div class="profile-top">
-    <button class="back-btn" onclick="goHome()">←</button>
-    <h2>Profile</h2>
-  </div>
+  <h1>🎮 Balaji Ludo King</h1>
 
-  <!-- PROFILE HEADER -->
-  <div class="profile-header">
+  <h2>Welcome 👋</h2>
 
-    <div class="profile-avatar">
-      👤
-    </div>
+  <p>Enter your name to continue</p>
 
-    <div class="profile-info">
-      <h2 id="profileName">Player</h2>
-      <p id="profileId">Player ID: --</p>
-    </div>
+  <input
+    type="text"
+    id="playerName"
+    placeholder="Enter your name"
+    autocomplete="name"
+  >
 
-    <button class="edit-profile-btn" onclick="editProfile()">
-      ✏️
-    </button>
+  <input
+    type="tel"
+    id="playerMobile"
+    placeholder="10-digit Mobile Number"
+    maxlength="10"
+    inputmode="numeric"
+    autocomplete="tel"
+  >
 
-    <div class="verified-badge">
-      ✓ VERIFIED
-    </div>
+  <button id="startBtn">
+    Continue
+  </button>
 
-  </div>
-
-
-  <!-- WALLET / BONUS -->
-  <div class="balance-row">
-
-    <div class="balance-card wallet-card">
-      <div class="balance-icon">💳</div>
-      <div>
-        <span>Wallet Balance</span>
-        <strong id="profileWallet">₹0.00</strong>
-      </div>
-    </div>
-
-    <div class="balance-card bonus-card">
-      <div class="balance-icon">🎁</div>
-      <div>
-        <span>Bonus</span>
-        <strong id="profileBonus">₹0.00</strong>
-      </div>
-    </div>
-
-  </div>
-
-
-  <!-- STATISTICS -->
-  <div class="stats-grid">
-
-    <div class="stat-card battle">
-      <div class="stat-icon">⚔️</div>
-      <span>BATTLE PLAYED</span>
-      <strong id="battlePlayed">0</strong>
-    </div>
-
-    <div class="stat-card coin">
-      <div class="stat-icon">🪙</div>
-      <span>COIN WON</span>
-      <strong id="coinWon">₹0</strong>
-    </div>
-
-    <div class="stat-card referral">
-      <div class="stat-icon">👥</div>
-      <span>REFERRAL</span>
-      <strong id="referralEarned">₹0</strong>
-    </div>
-
-    <div class="stat-card withdrawal">
-      <div class="stat-icon">💸</div>
-      <span>WITHDRAWAL</span>
-      <strong id="withdrawalAmount">₹0</strong>
-    </div>
-
-  </div>
-
-
-  <!-- ACCOUNT SETTINGS -->
-  <div class="settings-card">
-
-    <h2>ACCOUNT SETTINGS</h2>
-
-    <div class="setting-item">
-      <div class="setting-icon">📞</div>
-      <div>
-        <span>Phone Number</span>
-        <strong id="profilePhone">Not Added</strong>
-      </div>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-icon">✉️</div>
-      <div>
-        <span>Email ID</span>
-        <strong id="profileEmail">Not Added</strong>
-      </div>
-
-      <button onclick="editEmail()">✏️</button>
-    </div>
-
-    <div class="setting-item">
-      <div class="setting-icon">🪪</div>
-      <div>
-        <span>KYC Status</span>
-        <strong class="kyc-verified">
-          ✓ Verified User
-        </strong>
-      </div>
-
-      <span class="arrow">›</span>
-    </div>
-
-  </div>
-
-
-  <!-- CUSTOMER ID -->
-  <div class="customer-id-card">
-    <span>Customer ID</span>
-    <strong id="customerId">---</strong>
-  </div>
+  <p id="message"></p>
 
 </section>
+<!-- ================= LOGIN SECTION ================= -->
 
+<section id="welcomeCard" class="welcome-card">
 
-<!-- ================= BOTTOM NAVIGATION ================= -->
+  <h1>🎮 Balaji Ludo King</h1>
 
-<nav class="bottom-nav">
+  <h2>Welcome 👋</h2>
 
-  <button onclick="openWallet()">
-    <span>💳</span>
-    <small>Wallet</small>
+  <p>Enter your name to continue</p>
+
+  <input
+    type="text"
+    id="playerName"
+    placeholder="Enter your name"
+    autocomplete="name"
+  >
+
+  <input
+    type="tel"
+    id="playerMobile"
+    placeholder="10-digit Mobile Number"
+    maxlength="10"
+    inputmode="numeric"
+    autocomplete="tel"
+  >
+
+  <button id="startBtn">
+    Continue
   </button>
 
-  <button onclick="openRefer()">
-    <span>🎁</span>
-    <small>Refer</small>
-  </button>
+  <p id="message"></p>
 
-  <button class="home-nav" onclick="goHome()">
-    <span>⌂</span>
-  </button>
+</section>
+async function loginCustomer() {
 
-  <button onclick="openSupport()">
-    <span>🎧</span>
-    <small>Support</small>
-  </button>
+  const name = clean(
+    playerNameInput?.value
+  );
 
-  <button class="active">
-    <span>♙</span>
-    <small>Profile</small>
-  </button>
+  const mobileInput =
+    document.getElementById("playerMobile");
 
-</nav>
+  const mobile = clean(
+    mobileInput?.value
+  );
+
+  if (!name) {
+    showMessage(
+      "अपना नाम डालें।",
+      "error"
+    );
+    return;
+  }
+
+  if (!/^\d{10}$/.test(mobile)) {
+    showMessage(
+      "Valid 10-digit mobile number डालें।",
+      "error"
+    );
+    return;
+  }
+
+  showMessage("Login हो रहा है...");
+
+  try {
+
+    const response = await fetch(
+      API + "/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          name: name,
+          mobile: mobile
+        })
+      }
+    );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Login failed"
+      );
+    }
+
+    if (!data.customer) {
+      throw new Error(
+        "Customer data नहीं मिला।"
+      );
+    }
+
+    saveCustomer(
+      data.customer
+    );
+
+    showMessage(
+      data.existing
+        ? "Welcome back 👋"
+        : "Account created successfully ✅",
+      "success"
+    );
+
+    setTimeout(() => {
+      openRoomSection();
+    }, 500);
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "❌ " +
+        (error.message ||
+          "Login failed"),
+      "error"
+    );
+  }
+}
