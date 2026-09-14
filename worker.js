@@ -1162,3 +1162,34 @@ export default {
         .run();
 
         return
+json({
+  success:true,
+  message:"Screenshot submitted successfully"
+});
+}
+
+return new Response(
+  "Not Found",
+  {
+    status:404,
+    headers:corsHeaders
+  }
+);
+
+}catch(error){
+
+return json(
+  {
+    error:
+      error && error.message
+        ? error.message
+        : "Server Error"
+  },
+  500
+);
+
+}
+
+}
+
+};
