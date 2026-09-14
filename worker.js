@@ -7,16 +7,13 @@ const corsHeaders = {
 const ROOM_WAIT_MS = 5 * 60 * 1000;
 
 function json(data, status = 200) {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/json"
-      }
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json"
     }
-  );
+  });
 }
 
 function clean(value) {
@@ -25,6 +22,10 @@ function clean(value) {
 
 function validRoomCode(code) {
   return /^\d{8}$/.test(clean(code));
+}
+
+function validMobile(mobile) {
+  return /^\d{10}$/.test(clean(mobile));
 }
 
 function isExpired(createdAt) {
@@ -64,6 +65,35 @@ async function getRoom(env, roomCode) {
     .first();
 }
 
+function customerResponse(customer) {
+  return {
+    id: customer.id,
+    customer_id: customer.id,
+    mobile: customer.mobile,
+    name: customer.name,
+
+    wallet_balance: Number(customer.wallet_balance || 0),
+    bonus_balance: Number(customer.bonus_balance || 0),
+
+    battle_played: Number(customer.battle_played || 0),
+    coin_won: Number(customer.coin_won || 0),
+
+    referral_code: customer.referral_code || "",
+    referral_count: Number(customer.referral_count || 0),
+    referral_earned: Number(customer.referral_earned || 0),
+
+    withdrawal_amount: Number(customer.withdrawal_amount || 0),
+
+    phone: customer.mobile,
+    email: customer.email || "",
+
+    kyc_status: customer.kyc_status || "Pending",
+    account_status: customer.account_status || "ACTIVE",
+
+    created_at: customer.created_at
+  };
+}
+
 export default {
   async fetch(request, env) {
 
@@ -79,7 +109,8 @@ export default {
     try {
 
       // =====================================
-      // LOGIN
+      // CUSTOMER LOGIN / REGISTER
+      // 1 MOBILE = 1 CUSTOMER ID
       // =====================================
 
       if (
@@ -90,28 +121,238 @@ export default {
         const body = await request.json();
 
         const name = clean(body.name);
+        const mobile = clean(body.mobile);
 
         if (!name) {
           return json(
+            { error: "Name required" },
+            400
+          );
+        }
+
+        if (!validMobile(mobile)) {
+          return json(
             {
-              error: "Name required"
+              error:
+                "Valid 10-digit mobile number required"
             },
             400
           );
         }
 
-        const id =
-          "USR" +
+        // Find existing customer
+        const existing =
+          await env.DB.prepare(
+            `SELECT *
+             FROM customers
+             WHERE mobile = ?`
+          )
+            .bind(mobile)
+            .first();
+
+        // Existing mobile = same account
+        if (existing) {
+
+          return json({
+            success: true,
+            existing: true,
+            customer: customerResponse(
+              existing
+            )
+          });
+        }
+
+        // New customer
+        const customerId =
+          "CUS" +
           crypto.randomUUID()
             .replace(/-/g, "")
             .slice(0, 10)
             .toUpperCase();
 
+        const referralCode =
+          mobile.slice(-6);
+
+        const createdAt =
+          Date.now();
+
+        await env.DB.prepare(
+          `INSERT INTO customers
+          (
+            id,
+            mobile,
+            name,
+            wallet_balance,
+            bonus_balance,
+            battle_played,
+            coin_won,
+            referral_code,
+            referral_count,
+            referral_earned,
+            withdrawal_amount,
+            email,
+            kyc_status,
+            account_status,
+            created_at
+          )
+          VALUES
+          (?, ?, ?, 0, 0, 0, 0, ?, 0, 0, 0, '', 'Pending', 'ACTIVE', ?)`
+        )
+          .bind(
+            customerId,
+            mobile,
+            name,
+            referralCode,
+            createdAt
+          )
+          .run();
+
+        const customer =
+          await env.DB.prepare(
+            `SELECT *
+             FROM customers
+             WHERE id = ?`
+          )
+            .bind(customerId)
+            .first();
+
         return json({
-          id,
-          name,
-          wallet: 0,
-          wallet_balance: 0
+          success: true,
+          existing: false,
+          customer:
+            customerResponse(customer)
+        });
+      }
+
+
+      // =====================================
+      // GET CUSTOMER PROFILE
+      // =====================================
+
+      if (
+        path.startsWith("/api/customer/") &&
+        request.method === "GET"
+      ) {
+
+        const customerId =
+          clean(
+            path.replace(
+              "/api/customer/",
+              ""
+            )
+          );
+
+        if (!customerId) {
+          return json(
+            { error: "Customer ID required" },
+            400
+          );
+        }
+
+        const customer =
+          await env.DB.prepare(
+            `SELECT *
+             FROM customers
+             WHERE id = ?`
+          )
+            .bind(customerId)
+            .first();
+
+        if (!customer) {
+          return json(
+            {
+              error:
+                "Customer not found"
+            },
+            404
+          );
+        }
+
+        return json({
+          success: true,
+          customer:
+            customerResponse(customer)
+        });
+      }
+
+
+      // =====================================
+      // UPDATE CUSTOMER NAME / EMAIL
+      // =====================================
+
+      if (
+        path === "/api/customer/update" &&
+        request.method === "POST"
+      ) {
+
+        const body =
+          await request.json();
+
+        const customerId =
+          clean(body.customer_id);
+
+        const name =
+          clean(body.name);
+
+        const email =
+          clean(body.email);
+
+        if (!customerId) {
+          return json(
+            {
+              error:
+                "Customer ID required"
+            },
+            400
+          );
+        }
+
+        const customer =
+          await env.DB.prepare(
+            `SELECT *
+             FROM customers
+             WHERE id = ?`
+          )
+            .bind(customerId)
+            .first();
+
+        if (!customer) {
+          return json(
+            {
+              error:
+                "Customer not found"
+            },
+            404
+          );
+        }
+
+        await env.DB.prepare(
+          `UPDATE customers
+           SET
+             name = ?,
+             email = ?
+           WHERE id = ?`
+        )
+          .bind(
+            name || customer.name,
+            email,
+            customerId
+          )
+          .run();
+
+        const updated =
+          await env.DB.prepare(
+            `SELECT *
+             FROM customers
+             WHERE id = ?`
+          )
+            .bind(customerId)
+            .first();
+
+        return json({
+          success: true,
+          customer:
+            customerResponse(updated)
         });
       }
 
@@ -125,46 +366,46 @@ export default {
         request.method === "POST"
       ) {
 
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        // Accept frontend snake_case
-        // and old camelCase too
+        const playerId =
+          clean(
+            body.player_id ||
+            body.playerId
+          );
 
-        const playerId = clean(
-          body.player_id ||
-          body.playerId
-        );
+        const playerName =
+          clean(
+            body.player_name ||
+            body.playerName
+          );
 
-        const playerName = clean(
-          body.player_name ||
-          body.playerName
-        );
-
-        const roomCode = clean(
-          body.room_code ||
-          body.roomCode
-        );
-
+        const roomCode =
+          clean(
+            body.room_code ||
+            body.roomCode
+          );
 
         if (!playerId) {
           return json(
             {
-              error: "Player login required"
+              error:
+                "Player login required"
             },
             400
           );
         }
-
 
         if (!playerName) {
           return json(
             {
-              error: "Player name required"
+              error:
+                "Player name required"
             },
             400
           );
         }
-
 
         if (!validRoomCode(roomCode)) {
           return json(
@@ -176,21 +417,13 @@ export default {
           );
         }
 
-
-        // =================================
-        // CHECK EXISTING ROOM
-        // =================================
-
         const existing =
-         await getRoom(
+          await getRoom(
             env,
             roomCode
           );
 
-
         if (existing) {
-
-          // Backend-side expiry protection
 
           if (
             existing.status === "WAITING" &&
@@ -214,14 +447,8 @@ export default {
           }
         }
 
-
-        // =================================
-        // CREATE
-        // =================================
-
         const createdAt =
           Date.now();
-
 
         await env.DB.prepare(
           `INSERT INTO rooms
@@ -232,7 +459,8 @@ export default {
             status,
             created_at
           )
-          VALUES (?, ?, ?, 'WAITING', ?)`
+          VALUES
+          (?, ?, ?, 'WAITING', ?)`
         )
           .bind(
             roomCode,
@@ -242,10 +470,8 @@ export default {
           )
           .run();
 
-
         return json({
           success: true,
-
           room: {
             room_code: roomCode,
             player1_id: playerId,
@@ -268,23 +494,26 @@ export default {
         request.method === "POST"
       ) {
 
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        const playerId = clean(
-          body.player_id ||
-          body.playerId
-        );
+        const playerId =
+          clean(
+            body.player_id ||
+            body.playerId
+          );
 
-        const playerName = clean(
-          body.player_name ||
-          body.playerName
-        );
+        const playerName =
+          clean(
+            body.player_name ||
+            body.playerName
+          );
 
-        const roomCode = clean(
-          body.room_code ||
-          body.roomCode
-        );
-
+        const roomCode =
+          clean(
+            body.room_code ||
+            body.roomCode
+          );
 
         if (!playerId) {
           return json(
@@ -296,7 +525,6 @@ export default {
           );
         }
 
-
         if (!playerName) {
           return json(
             {
@@ -307,10 +535,405 @@ export default {
           );
         }
 
-
         if (!validRoomCode(roomCode)) {
           return json(
             {
               error:
                 "8-digit Room Code required"
             },
+            400
+          );
+        }
+
+        const room =
+          await getRoom(
+            env,
+            roomCode
+          );
+
+        if (!room) {
+          return json(
+            {
+              error:
+                "Room Code नहीं मिला।"
+            },
+            404
+          );
+        }
+
+        // 5 minute expiry
+        if (
+          room.status === "WAITING" &&
+          isExpired(room.created_at)
+        ) {
+
+          await deleteRoom(
+            env,
+            roomCode
+          );
+
+          return json(
+            {
+              error:
+                "⏰ यह Room 5 मिनट बाद expire हो गया।"
+            },
+            410
+          );
+        }
+
+        // Player 1 opening own room
+        if (
+          room.player1_id === playerId
+        ) {
+
+          return json({
+            success: true,
+            room
+          });
+        }
+
+        // Already full
+        if (room.player2_id) {
+
+          return json(
+            {
+              error:
+                "यह Room पहले से full है।"
+            },
+            409
+          );
+        }
+
+        await env.DB.prepare(
+          `UPDATE rooms
+           SET
+             player2_id = ?,
+             player2_name = ?,
+             status = 'READY'
+           WHERE room_code = ?`
+        )
+          .bind(
+            playerId,
+            playerName,
+            roomCode
+          )
+          .run();
+
+        const updatedRoom =
+          await getRoom(
+            env,
+            roomCode
+          );
+
+        return json({
+          success: true,
+          room: updatedRoom
+        });
+      }
+
+
+      // =====================================
+      // GET ROOM
+      // =====================================
+
+      if (
+        path.startsWith("/api/rooms/") &&
+        request.method === "GET"
+      ) {
+
+        const roomCode =
+          path
+            .replace(
+              "/api/rooms/",
+              ""
+            )
+            .trim();
+
+        if (!validRoomCode(roomCode)) {
+          return json(
+            {
+              error:
+                "Invalid room code"
+            },
+            400
+          );
+        }
+
+        const room =
+          await getRoom(
+            env,
+            roomCode
+          );
+
+        if (!room) {
+          return json(
+            {
+              error:
+                "Room not found"
+            },
+            404
+          );
+        }
+
+        if (
+          room.status === "WAITING" &&
+          isExpired(room.created_at)
+        ) {
+
+          await deleteRoom(
+            env,
+            roomCode
+          );
+
+          return json(
+            {
+              error:
+                "Room expired"
+            },
+            410
+          );
+        }
+
+        return json(room);
+      }
+
+
+      // =====================================
+      // CANCEL ROOM
+      // =====================================
+
+      if (
+        path === "/api/rooms/cancel" &&
+        request.method === "POST"
+      ) {
+
+        const body =
+          await request.json();
+
+        const playerId =
+          clean(
+            body.player_id ||
+            body.playerId
+          );
+
+        const roomCode =
+          clean(
+            body.room_code ||
+            body.roomCode
+          );
+
+        if (
+          !playerId ||
+          !validRoomCode(roomCode)
+        ) {
+
+          return json(
+            {
+              error:
+                "Player and valid Room Code required"
+            },
+            400
+          );
+        }
+
+        const room =
+          await getRoom(
+            env,
+            roomCode
+          );
+
+        if (!room) {
+          return json(
+            {
+              error:
+                "Room not found"
+            },
+            404
+          );
+        }
+
+        if (
+          room.player1_id !== playerId &&
+          room.player2_id !== playerId
+        ) {
+
+          return json(
+            {
+              error:
+                "Not your room"
+            },
+            403
+          );
+        }
+
+        await deleteRoom(
+          env,
+          roomCode
+        );
+
+        return json({
+          success: true
+        });
+      }
+
+
+      // =====================================
+      // SUBMIT MATCH RESULT
+      // =====================================
+
+      if (
+        path === "/api/rooms/result" &&
+        request.method === "POST"
+      ) {
+
+        const body =
+          await request.json();
+
+        const playerId =
+          clean(
+            body.player_id ||
+            body.playerId
+          );
+
+        const roomCode =
+          clean(
+            body.room_code ||
+            body.roomCode
+          );
+
+        const screenshot =
+          String(
+            body.screenshot || ""
+          );
+
+        if (
+          !playerId ||
+          !validRoomCode(roomCode) ||
+          !screenshot
+        ) {
+
+          return json(
+            {
+              error:
+                "Player, room and screenshot required"
+            },
+            400
+          );
+        }
+
+        if (
+          screenshot.length >
+          7 * 1024 * 1024
+        ) {
+
+          return json(
+            {
+              error:
+                "Screenshot बहुत बड़ा है।"
+            },
+            400
+          );
+        }
+
+        const room =
+          await getRoom(
+            env,
+            roomCode
+          );
+
+        if (!room) {
+          return json(
+            {
+              error:
+                "Room not found"
+            },
+            404
+          );
+        }
+
+        if (
+          room.status === "WAITING" &&
+          isExpired(room.created_at)
+        ) {
+
+          await deleteRoom(
+            env,
+            roomCode
+          );
+
+          return json(
+            {
+              error:
+                "Room expired"
+            },
+            410
+          );
+        }
+
+        if (
+          room.player1_id !== playerId &&
+          room.player2_id !== playerId
+        ) {
+
+          return json(
+            {
+              error:
+                "Player is not part of this room"
+            },
+            403
+          );
+        }
+
+        await env.DB.prepare(
+          `UPDATE rooms
+           SET
+             result_screenshot = ?,
+             result_player_id = ?,
+             status = 'RESULT_SUBMITTED'
+           WHERE room_code = ?`
+        )
+          .bind(
+            screenshot,
+            playerId,
+            roomCode
+          )
+          .run();
+
+        return json({
+          success: true,
+          message:
+            "Screenshot submitted successfully"
+        });
+      }
+
+
+      // =====================================
+      // NOT FOUND
+      // =====================================
+
+      return new Response(
+        "Not Found",
+        {
+          status: 404,
+          headers: corsHeaders
+        }
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Worker Error:",
+        error
+      );
+
+      return json(
+        {
+          error:
+            error?.message ||
+            "Server Error"
+        },
+        500
+      );
+    }
+  }
+};
