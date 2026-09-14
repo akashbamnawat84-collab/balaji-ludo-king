@@ -17,3 +17,7 @@ state = "deleted"
 [exports.LudoRoom]
 type = "durable-object"
 state = "deleted"
+
+[assets]
+directory = "./Public"
+binding = "ASSETS"
