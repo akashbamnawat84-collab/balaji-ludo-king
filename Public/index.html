@@ -1,139 +1,159 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balaji Ludo King</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: white; margin: 0; padding: 15px; }
-        .card { background: #1e293b; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #334155; }
-        input, button { width: 100%; padding: 10px; margin-top: 8px; border-radius: 5px; border: none; box-sizing: border-box; }
-        button { background: #22c55e; color: white; font-weight: bold; cursor: pointer; }
-        button:hover { background: #16a34a; }
-        .battle-box { background: #334155; padding: 10px; border-radius: 8px; margin-top: 10px; }
-        .badge { background: #eab308; color: black; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balaji Ludo King</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fbbf24;
+    }
+
+    .wallet {
+      font-weight: bold;
+      color: #22c55e;
+    }
+
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 15px;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    input,
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    input {
+      background: #f8fafc;
+      color: #111827;
+    }
+
+    button {
+      background: #22c55e;
+      color: white;
+      font-weight: bold;
+    }
+
+    .orange {
+      background: #f59e0b;
+    }
+
+    .red {
+      background: #ef4444;
+    }
+
+    .blue {
+      background: #3b82f6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .room-code {
+      font-size: 30px;
+      font-weight: bold;
+      letter-spacing: 5px;
+      text-align: center;
+      color: #fbbf24;
+      background: #0f172a;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+
+    .player {
+      background: #334155;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .status {
+      text-align: center;
+      color: #fbbf24;
+      margin-top: 12px;
+    }
+
+    .upload-box {
+      border: 1px dashed #64748b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      background: #1e293b;
+      padding: 8px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .bottom-nav button {
+      background: transparent;
+      font-size: 12px;
+      padding: 8px 2px;
+      margin: 0;
+    }
+
+    .message {
+      text-align: center;
+      margin: 10px 0;
+      color: #fbbf24;
+      font-weight: bold;
+    }
+  </style>
 </head>
+
 <body>
 
-    <h2 style="text-align: center; color: #f59e0b;">👑 Balaji Ludo King</h2>
+  <div class="topbar">
+    <div class="logo">👑 Balaji Ludo King</div>
+    <div class="wallet">₹<span id="wallet">0</span></div>
+  </div>
 
-    <!-- User Section -->
-    <div class="card" id="loginCard">
-        <h3>लॉगिन करें</h3>
-        <input type="number" id="phoneInput" placeholder="मोबाइल नंबर डालें">
-        <button onclick="login()">Login</button>
-    </div>
-
-    <div id="app" style="display: none;">
-        <div class="card">
-            <p><strong>User ID:</strong> <span id="userIdDisplay"></span></p>
-            <p><strong>Wallet:</strong> ₹<span id="walletDisplay">0</span></p>
-        </div>
-
-        <div class="card">
-            <h3>नया बैटल बनाएं</h3>
-            <input type="number" id="entryFee" placeholder="एंट्री फ़ीस दर्ज करें (₹)">
-            <button onclick="createBattle()">Create Challenge</button>
-        </div>
-
-        <h3>लाइव बैटल्स</h3>
-        <div id="battlesList"></div>
-    </div>
-
-    <script>
-        let CURRENT_USER = null;
-
-        async function login() {
-            const phone = document.getElementById("phoneInput").value;
-            if(!phone) return alert("नंबर डालें!");
-            
-            const res = await fetch("/api/users/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone })
-            });
-            CURRENT_USER = await res.json();
-            
-            document.getElementById("userIdDisplay").innerText = CURRENT_USER.id;
-            document.getElementById("walletDisplay").innerText = CURRENT_USER.wallet_balance;
-            document.getElementById("loginCard").style.display = "none";
-            document.getElementById("app").style.display = "block";
-            fetchBattles();
-        }
-
-        async function fetchBattles() {
-            const res = await fetch("/api/battles");
-            const battles = await res.json();
-            const container = document.getElementById("battlesList");
-            container.innerHTML = "";
-
-            battles.forEach(b => {
-                let actionBtn = "";
-                if(b.status === 'OPEN' && b.creator_id !== CURRENT_USER.id) {
-                    actionBtn = `<button onclick="joinBattle(${b.id})">Join (₹${b.entry_fee})</button>`;
-                } else if(b.status === 'WAITING_ROOM' && b.creator_id === CURRENT_USER.id) {
-                    actionBtn = `<input type="text" id="rc_${b.id}" placeholder="लूडो रूम कोड दर्ज करें"><button onclick="setRoomCode(${b.id})">Save Room Code</button>`;
-                } else if(b.status === 'RUNNING') {
-                    actionBtn = `<p>रूम कोड: <strong>${b.room_code}</strong></p><input type="file" id="file_${b.id}"><button onclick="submitResult(${b.id})">Upload Winner Screenshot</button>`;
-                } else {
-                    actionBtn = `<span class="badge">${b.status}</span>`;
-                }
-
-                container.innerHTML += `
-                    <div class="battle-box">
-                        <p><strong>Battle #${b.id}</strong> | Prize: ₹${b.prize_amount}</p>
-                        ${actionBtn}
-                    </div>
-                `;
-            });
-        }
-
-        async function createBattle() {
-            const fee = document.getElementById("entryFee").value;
-            await fetch("/api/battles/create", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: CURRENT_USER.id, entryFee: parseFloat(fee) })
-            });
-            fetchBattles();
-        }
-
-        async function joinBattle(battleId) {
-            await fetch("/api/battles/join", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: CURRENT_USER.id, battleId })
-            });
-            fetchBattles();
-        }
-
-        async function setRoomCode(battleId) {
-            const roomCode = document.getElementById(`rc_${battleId}`).value;
-            await fetch("/api/battles/room-code", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ battleId, roomCode })
-            });
-            fetchBattles();
-        }
-
-        async function submitResult(battleId) {
-            const file = document.getElementById(`file_${battleId}`).files[0];
-            if(!file) return alert("स्क्रीनशॉट चुनें!");
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async function() {
-                await fetch("/api/battles/submit-result", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId: CURRENT_USER.id, battleId, screenshotBase64: reader.result })
-                });
-                alert("रिजल्ट सबमिट हो गया है!");
-                fetchBattles();
-            };
-        }
-    </script>
-</body>
-</html>
+  <!-- LOGIN -->
+  <
