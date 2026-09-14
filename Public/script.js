@@ -16,7 +16,8 @@ const openRoomBtn = document.getElementById("openRoomBtn");
 
 const createRoomCard = document.getElementById("createRoomCard");
 const createRoomBtn = document.getElementById("createRoomBtn");
-const createRoomCodeInput = document.getElementById("createRoomCodeInput");
+const createRoomCodeInput =
+  document.getElementById("createRoomCodeInput");
 const createMessage = document.getElementById("createMessage");
 
 const joinSection = document.getElementById("joinSection");
@@ -28,27 +29,28 @@ const createdRoom = document.getElementById("createdRoom");
 const joinedRoom = document.getElementById("joinedRoom");
 const gameStartBox = document.getElementById("gameStartBox");
 
-const roomCodeDisplay = document.getElementById("roomCodeDisplay");
-const joinedRoomCode = document.getElementById("joinedRoomCode");
+const roomCodeDisplay =
+  document.getElementById("roomCodeDisplay");
+const joinedRoomCode =
+  document.getElementById("joinedRoomCode");
 
-const player1Status = document.getElementById("player1Status");
-const player2Status = document.getElementById("player2Status");
+const player1Status =
+  document.getElementById("player1Status");
+const player2Status =
+  document.getElementById("player2Status");
 
 const joinedPlayer1Status =
   document.getElementById("joinedPlayer1Status");
-
 const joinedPlayer2Status =
   document.getElementById("joinedPlayer2Status");
 
 const waitingMessage =
   document.getElementById("waitingMessage");
-
 const joinWaitingMessage =
   document.getElementById("joinWaitingMessage");
 
 const leaveRoomBtn =
   document.getElementById("leaveRoomBtn");
-
 const joinedLeaveBtn =
   document.getElementById("joinedLeaveBtn");
 
@@ -75,6 +77,12 @@ const submitResultBtn =
 
 const resultMessage =
   document.getElementById("resultMessage");
+
+const createTimer =
+  document.getElementById("createTimer");
+
+const joinTimer =
+  document.getElementById("joinTimer");
 
 const walletBalance =
   document.getElementById("walletBalance");
@@ -127,8 +135,10 @@ let playerNumber =
 
 let wallet = 0;
 
+let roomPollTimer = null;
 let roomTimer = null;
-let roomTimeLeft = 380;
+
+const ROOM_WAIT_SECONDS = 5 * 60;
 
 
 // ================================
@@ -194,9 +204,7 @@ document
 
     button.addEventListener("click", () => {
 
-      showSection(
-        button.dataset.section
-      );
+      showSection(button.dataset.section);
 
     });
 
@@ -231,8 +239,10 @@ async function loginUser() {
 
   if (!name) {
 
-    loginMessage.textContent =
-      "कृपया अपना नाम डालें।";
+    if (loginMessage) {
+      loginMessage.textContent =
+        "कृपया अपना नाम डालें।";
+    }
 
     return;
   }
@@ -247,11 +257,9 @@ async function loginUser() {
     const response =
       await fetch(`${API}/login`, {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
           name
         })
@@ -261,21 +269,16 @@ async function loginUser() {
       await response.json();
 
     if (!response.ok) {
-
       throw new Error(
         data.error || "Login failed"
       );
-
     }
 
     playerId = data.id;
-
     playerName = data.name;
 
     wallet =
-      Number(
-        data.wallet_balance || 0
-      );
+      Number(data.wallet_balance || 0);
 
     localStorage.setItem(
       "balaji_player_id",
@@ -290,14 +293,12 @@ async function loginUser() {
     loginModal.style.display = "none";
 
     updateProfile();
-
     updateWallet();
 
   } catch (error) {
 
     loginMessage.textContent =
-      error.message ||
-      "Login failed.";
+      error.message || "Login failed.";
 
   } finally {
 
@@ -325,9 +326,7 @@ if (playerNameInput) {
     event => {
 
       if (event.key === "Enter") {
-
         loginUser();
-
       }
 
     }
@@ -343,24 +342,18 @@ if (playerNameInput) {
 function updateProfile() {
 
   if (profileName) {
-
     profileName.textContent =
       playerName || "Player";
-
   }
 
   if (profileId) {
-
     profileId.textContent =
       playerId || "---";
-
   }
 
   if (profileWallet) {
-
     profileWallet.textContent =
       Number(wallet).toFixed(2);
-
   }
 
 }
@@ -369,24 +362,18 @@ function updateProfile() {
 function updateWallet() {
 
   if (walletBalance) {
-
     walletBalance.textContent =
       Number(wallet).toFixed(2);
-
   }
 
   if (moneyBalance) {
-
     moneyBalance.textContent =
       Number(wallet).toFixed(2);
-
   }
 
   if (profileWallet) {
-
     profileWallet.textContent =
       Number(wallet).toFixed(2);
-
   }
 
 }
@@ -403,14 +390,10 @@ if (openRoomBtn) {
     () => {
 
       if (!checkLogin()) {
-
         return;
-
       }
 
-      showSection(
-        "roomSection"
-      );
+      showSection("roomSection");
 
       resetRoomScreen();
 
@@ -421,67 +404,53 @@ if (openRoomBtn) {
 
 
 // ================================
-// RESET ROOM SCREEN
+// RESET ROOM
 // ================================
 
 function resetRoomScreen() {
 
   stopRoomPolling();
+  stopRoomTimer();
 
   if (createRoomCard) {
-
-    createRoomCard.classList.remove(
-      "hidden"
-    );
-
+    createRoomCard.classList.remove("hidden");
   }
 
   if (joinSection) {
-
-    joinSection.classList.remove(
-      "hidden"
-    );
-
+    joinSection.classList.remove("hidden");
   }
 
   if (createdRoom) {
-
-    createdRoom.classList.add(
-      "hidden"
-    );
-
+    createdRoom.classList.add("hidden");
   }
 
   if (joinedRoom) {
-
-    joinedRoom.classList.add(
-      "hidden"
-    );
-
+    joinedRoom.classList.add("hidden");
   }
 
   if (gameStartBox) {
-
-    gameStartBox.classList.add(
-      "hidden"
-    );
-
+    gameStartBox.classList.add("hidden");
   }
 
   if (createRoomCodeInput) {
-
     createRoomCodeInput.value = "";
-
   }
 
   if (roomCodeInput) {
-
     roomCodeInput.value = "";
+  }
 
+  if (createTimer) {
+    createTimer.textContent =
+      "Room waiting...";
+  }
+
+  if (joinTimer) {
+    joinTimer.textContent =
+      "Waiting...";
   }
 
   currentRoomCode = "";
-
   playerNumber = 0;
 
   localStorage.removeItem(
@@ -496,13 +465,11 @@ function resetRoomScreen() {
 
 
 // ================================
-// VALIDATE ROOM CODE
+// ROOM CODE
 // ================================
 
 function validRoomCode(code) {
-
   return /^\d{8}$/.test(code);
-
 }
 
 
@@ -523,9 +490,7 @@ if (createRoomBtn) {
 async function createRoom() {
 
   if (!checkLogin()) {
-
     return;
-
   }
 
   const code =
@@ -537,7 +502,6 @@ async function createRoom() {
       "कृपया पूरा 8-digit Room Code डालें।";
 
     return;
-
   }
 
   createRoomBtn.disabled = true;
@@ -548,37 +512,29 @@ async function createRoom() {
   try {
 
     const response =
-      await fetch(
-        `${API}/rooms/create`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            playerId,
-            playerName,
-            roomCode: code
-          })
-        }
-      );
+      await fetch(`${API}/rooms/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          playerId,
+          playerName,
+          roomCode: code
+        })
+      });
 
     const data =
       await response.json();
 
     if (!response.ok) {
-
       throw new Error(
         data.error ||
         "Room create नहीं हुआ।"
       );
-
     }
 
     currentRoomCode = code;
-
     playerNumber = 1;
 
     localStorage.setItem(
@@ -651,9 +607,7 @@ if (joinRoomBtn) {
 async function joinRoom() {
 
   if (!checkLogin()) {
-
     return;
-
   }
 
   const code =
@@ -665,7 +619,6 @@ async function joinRoom() {
       "कृपया 8-digit Room Code डालें।";
 
     return;
-
   }
 
   joinRoomBtn.disabled = true;
@@ -676,37 +629,29 @@ async function joinRoom() {
   try {
 
     const response =
-      await fetch(
-        `${API}/rooms/join`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            playerId,
-            playerName,
-            roomCode: code
-          })
-        }
-      );
+      await fetch(`${API}/rooms/join`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          playerId,
+          playerName,
+          roomCode: code
+        })
+      });
 
     const data =
       await response.json();
 
     if (!response.ok) {
-
       throw new Error(
         data.error ||
         "Room join नहीं हुआ।"
       );
-
     }
 
     currentRoomCode = code;
-
     playerNumber = 2;
 
     localStorage.setItem(
@@ -763,7 +708,7 @@ async function joinRoom() {
 
 
 // ================================
-// ROOM STATUS POLLING
+// ROOM POLLING
 // ================================
 
 function startRoomPolling() {
@@ -785,9 +730,7 @@ function stopRoomPolling() {
 
   if (roomPollTimer) {
 
-    clearInterval(
-      roomPollTimer
-    );
+    clearInterval(roomPollTimer);
 
     roomPollTimer = null;
 
@@ -796,30 +739,199 @@ function stopRoomPolling() {
 }
 
 
+// ================================
+// 5 MINUTE ROOM TIMER
+// ================================
+
+function stopRoomTimer() {
+
+  if (roomTimer) {
+
+    clearInterval(roomTimer);
+
+    roomTimer = null;
+
+  }
+
+}
+
+
+function startRoomTimer(createdAt) {
+
+  stopRoomTimer();
+
+  updateRoomTimer(createdAt);
+
+  roomTimer =
+    setInterval(() => {
+
+      updateRoomTimer(createdAt);
+
+    }, 1000);
+
+}
+
+
+function updateRoomTimer(createdAt) {
+
+  const elapsed =
+    Math.floor(
+      (Date.now() -
+        Number(createdAt)) /
+      1000
+    );
+
+  const remaining =
+    ROOM_WAIT_SECONDS -
+    elapsed;
+
+  if (remaining <= 0) {
+
+    if (createTimer) {
+      createTimer.textContent =
+        "⏰ 5 मिनट पूरे हो गए।";
+    }
+
+    if (joinTimer) {
+      joinTimer.textContent =
+        "⏰ 5 मिनट पूरे हो गए।";
+    }
+
+    stopRoomTimer();
+
+    expireRoom();
+
+    return;
+  }
+
+  const minutes =
+    Math.floor(
+      remaining / 60
+    );
+
+  const seconds =
+    remaining % 60;
+
+  const text =
+    `⏳ Room Time Left: ${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+  if (createTimer) {
+    createTimer.textContent =
+      text;
+  }
+
+  if (joinTimer) {
+    joinTimer.textContent =
+      text;
+  }
+
+}
+
+
+// ================================
+// EXPIRE ROOM
+// ================================
+
+async function expireRoom() {
+
+  stopRoomTimer();
+  stopRoomPolling();
+
+  if (!currentRoomCode || !playerId) {
+
+    resetRoomScreen();
+    showSection("roomSection");
+
+    return;
+  }
+
+  try {
+
+    await fetch(
+      `${API}/rooms/cancel`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          playerId,
+          roomCode: currentRoomCode
+        })
+      }
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Room expiry error:",
+      error
+    );
+
+  }
+
+  resetRoomScreen();
+
+  showSection(
+    "roomSection"
+  );
+
+  if (createMessage) {
+
+    createMessage.textContent =
+      "⏰ 5 मिनट पूरे हो गए। Room बंद हो गया।";
+
+  }
+
+  if (joinMessage) {
+
+    joinMessage.textContent =
+      "⏰ 5 मिनट पूरे हो गए। Room बंद हो गया।";
+
+  }
+
+}
+
+
+// ================================
+// CHECK ROOM STATUS
+// ================================
+
 async function checkRoomStatus() {
 
   if (!currentRoomCode) {
-
     return;
-
   }
 
   try {
 
     const response =
       await fetch(
-        `${API}/rooms/${currentRoomCode}`,
-        {
-          method: "GET"
-        }
+        `${API}/rooms/${currentRoomCode}`
       );
 
     const room =
       await response.json();
 
     if (!response.ok) {
-
       return;
+    }
+
+    // 5 minute timer
+    if (
+      room.status === "WAITING" &&
+      !room.player2_id
+    ) {
+
+      startRoomTimer(
+        room.created_at
+      );
+
+    } else {
+
+      stopRoomTimer();
 
     }
 
@@ -844,12 +956,12 @@ async function checkRoomStatus() {
 function updateRoomStatus(room) {
 
   if (!room) {
-
     return;
-
   }
 
   if (room.player2_id) {
+
+    stopRoomTimer();
 
     if (playerNumber === 1) {
 
@@ -886,6 +998,7 @@ function updateRoomStatus(room) {
   ) {
 
     stopRoomPolling();
+    stopRoomTimer();
 
   }
 
@@ -898,37 +1011,24 @@ function updateRoomStatus(room) {
 
 function showReadyBox() {
 
+  stopRoomTimer();
   stopRoomPolling();
 
   if (createdRoom) {
-
-    createdRoom.classList.add(
-      "hidden"
-    );
-
+    createdRoom.classList.add("hidden");
   }
 
   if (joinedRoom) {
-
-    joinedRoom.classList.add(
-      "hidden"
-    );
-
+    joinedRoom.classList.add("hidden");
   }
 
   if (gameStartBox) {
-
-    gameStartBox.classList.remove(
-      "hidden"
-    );
-
+    gameStartBox.classList.remove("hidden");
   }
 
   if (resultRoomCode) {
-
     resultRoomCode.textContent =
       currentRoomCode;
-
   }
 
 }
@@ -945,9 +1045,7 @@ if (copyRoomBtn) {
     async () => {
 
       if (!currentRoomCode) {
-
         return;
-
       }
 
       try {
@@ -982,7 +1080,7 @@ if (copyRoomBtn) {
 
 
 // ================================
-// OPEN LUDO KING APP
+// OPEN LUDO KING
 // ================================
 
 if (openLudoKingBtn) {
@@ -991,11 +1089,8 @@ if (openLudoKingBtn) {
     "click",
     () => {
 
-      const appUrl =
-        "ludoking://";
-
       window.location.href =
-        appUrl;
+        "ludoking://";
 
       setTimeout(() => {
 
@@ -1020,7 +1115,7 @@ if (openLudoKingBtn) {
 
 
 // ================================
-// RESULT SCREEN
+// PLAYED GAME
 // ================================
 
 if (playedGameBtn) {
@@ -1057,402 +1152,9 @@ if (playedGameBtn) {
 
 
 // ================================
-// FILE SELECT
-// ================================
-
-if (resultScreenshot) {
-
-  resultScreenshot.addEventListener(
-    "change",
-    () => {
-
-      const file =
-        resultScreenshot.files[0];
-
-      if (!file) {
-
-        fileName.textContent =
-          "कोई file selected नहीं है।";
-
-        return;
-
-      }
-
-      if (
-        !file.type.startsWith("image/")
-      ) {
-
-        fileName.textContent =
-          "कृपया image file चुनें।";
-
-        resultScreenshot.value =
-          "";
-
-        return;
-
-      }
-
-      fileName.textContent =
-        file.name;
-
-    }
-  );
-
-}
-
-
-// ================================
-// IMAGE TO BASE64
+// FILE TO BASE64
 // ================================
 
 function fileToBase64(file) {
 
-  return new Promise(
-    (resolve, reject) => {
-
-      const reader =
-        new FileReader();
-
-      reader.onload = () => {
-
-        resolve(
-          reader.result
-        );
-
-      };
-
-      reader.onerror = () => {
-
-        reject(
-          new Error(
-            "File read failed"
-          )
-        );
-
-      };
-
-      reader.readAsDataURL(file);
-
-    }
-  );
-
-}
-
-
-// ================================
-// SUBMIT RESULT
-// ================================
-
-if (submitResultBtn) {
-
-  submitResultBtn.addEventListener(
-    "click",
-    submitResult
-  );
-
-}
-
-
-async function submitResult() {
-
-  if (!checkLogin()) {
-
-    return;
-
-  }
-
-  if (!currentRoomCode) {
-
-    resultMessage.textContent =
-      "Room Code नहीं मिला।";
-
-    return;
-
-  }
-
-  const file =
-    resultScreenshot.files[0];
-
-  if (!file) {
-
-    resultMessage.textContent =
-      "पहले result screenshot चुनें।";
-
-    return;
-
-  }
-
-  if (
-    !file.type.startsWith("image/")
-  ) {
-
-    resultMessage.textContent =
-      "कृपया केवल image upload करें।";
-
-    return;
-
-  }
-
-  if (
-    file.size > 5 * 1024 * 1024
-  ) {
-
-    resultMessage.textContent =
-      "Screenshot 5MB से छोटा होना चाहिए।";
-
-    return;
-
-  }
-
-  submitResultBtn.disabled = true;
-
-  resultMessage.textContent =
-    "Screenshot upload हो रहा है...";
-
-  try {
-
-    const screenshot =
-      await fileToBase64(file);
-
-    const response =
-      await fetch(
-        `${API}/rooms/result`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            playerId,
-
-            roomCode:
-              currentRoomCode,
-
-            screenshot
-          })
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "Result submit नहीं हुआ।"
-      );
-
-    }
-
-    resultMessage.textContent =
-      "✅ Result screenshot successfully submit हो गया।";
-
-    resultMessage.classList.add(
-      "success"
-    );
-
-    submitResultBtn.textContent =
-      "✅ Submitted";
-
-    stopRoomPolling();
-
-  } catch (error) {
-
-    resultMessage.textContent =
-      error.message ||
-      "Result submit failed.";
-
-    resultMessage.classList.remove(
-      "success"
-    );
-
-  } finally {
-
-    submitResultBtn.disabled =
-      false;
-
-  }
-
-}
-
-
-// ================================
-// LEAVE ROOM
-// ================================
-
-if (leaveRoomBtn) {
-
-  leaveRoomBtn.addEventListener(
-    "click",
-    leaveRoom
-  );
-
-}
-
-
-if (joinedLeaveBtn) {
-
-  joinedLeaveBtn.addEventListener(
-    "click",
-    leaveRoom
-  );
-
-}
-
-
-async function leaveRoom() {
-
-  if (!currentRoomCode) {
-
-    resetRoomScreen();
-
-    showSection(
-      "roomSection"
-    );
-
-    return;
-
-  }
-
-  const confirmed =
-    confirm(
-      "क्या आप Room से बाहर निकलना चाहते हैं?"
-    );
-
-  if (!confirmed) {
-
-    return;
-
-  }
-
-  try {
-
-    await fetch(
-      `${API}/rooms/cancel`,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          playerId,
-
-          roomCode:
-            currentRoomCode
-        })
-      }
-    );
-
-  } catch (error) {
-
-    console.log(
-      "Leave room error:",
-      error
-    );
-
-  }
-
-  resetRoomScreen();
-
-  showSection(
-    "roomSection"
-  );
-
-}
-
-
-// ================================
-// SUPPORT
-// ================================
-
-if (supportBtn) {
-
-  supportBtn.addEventListener(
-    "click",
-    () => {
-
-      alert(
-        "Support contact details जल्द उपलब्ध होंगे।"
-      );
-
-    }
-  );
-
-}
-
-
-// ================================
-// INPUT: ONLY DIGITS
-// ================================
-
-function numericOnly(input) {
-
-  if (!input) {
-
-    return;
-
-  }
-
-  input.addEventListener(
-    "input",
-    () => {
-
-      input.value =
-        input.value
-          .replace(/\D/g, "")
-          .slice(0, 8);
-
-    }
-  );
-
-}
-
-
-numericOnly(
-  createRoomCodeInput
-);
-
-numericOnly(
-  roomCodeInput
-);
-
-
-// ================================
-// INITIAL STATE
-// ================================
-
-updateProfile();
-
-updateWallet();
-
-if (
-  playerId &&
-  playerName &&
-  currentRoomCode &&
-  (
-    playerNumber === 1 ||
-    playerNumber === 2
-  )
-) {
-
-  checkRoomStatus();
-
-  startRoomPolling();
-
-}
-
-if (!playerId || !playerName) {
-
-  if (loginModal) {
-
-    loginModal.style.display =
-      "flex";
-
-  }
-
-}
+  return new Promise
