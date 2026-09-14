@@ -127,7 +127,8 @@ let playerNumber =
 
 let wallet = 0;
 
-let roomPollTimer = null;
+let roomTimer = null;
+let roomTimeLeft = 380;
 
 
 // ================================
