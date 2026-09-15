@@ -1,25 +1,16 @@
-/* =========================================
-   BALAJI LUDO KING
-   REFER & EARN MODULE
-
-   IMPORTANT:
-   This file only controls the Refer page.
-   Login and Customer Support are NOT touched.
-========================================= */
-
-
 /* =========================
-   ELEMENTS
+   BALAJI LUDO KING
+   REFER & EARN
 ========================= */
 
-const totalReferralEl =
+const referralCode =
+  document.getElementById("referralCode");
+
+const totalReferral =
   document.getElementById("totalReferral");
 
-const totalEarnedEl =
+const totalEarned =
   document.getElementById("totalEarned");
-
-const referralCodeEl =
-  document.getElementById("referralCode");
 
 const copyCodeBtn =
   document.getElementById("copyCodeBtn");
@@ -33,45 +24,68 @@ const telegramBtn =
 const copyLinkBtn =
   document.getElementById("copyLinkBtn");
 
-const copyMessage =
-  document.getElementById("copyMessage");
+const walletBtn =
+  document.getElementById("walletBtn");
 
-const historyList =
-  document.getElementById("historyList");
-
-
-/* =========================
-   DEFAULT USER DATA
-
-   अभी demo values हैं.
-   बाद में backend से आएँगे.
-========================= */
-
-const demoUser = {
-  referralCode: "000000",
-  totalReferral: 0,
-  totalEarned: 0,
-  history: []
-};
+const profileBtn =
+  document.getElementById("profileBtn");
 
 
 /* =========================
-   GET REFERRAL CODE
+   DEMO REFERRAL DATA
 ========================= */
 
-function getReferralCode() {
+let savedCode =
+  localStorage.getItem("balajiReferralCode");
 
-  const params =
-    new URLSearchParams(window.location.search);
+if (!savedCode) {
 
-  const code =
-    params.get("ref");
+  savedCode =
+    Math.floor(
+      100000 +
+      Math.random() * 900000
+    ).toString();
 
-  if (code && /^[0-9]{6}$/.test(code)) {
-    return code;
-  }
+  localStorage.setItem(
+    "balajiReferralCode",
+    savedCode
+  );
+}
 
-  return demoUser.referralCode;
+
+if (referralCode) {
+
+  referralCode.textContent =
+    savedCode;
+
+}
+
+
+/* =========================
+   DEMO STATS
+========================= */
+
+const savedReferral =
+  localStorage.getItem("balajiTotalReferral") || "0";
+
+const savedEarned =
+  localStorage.getItem("balajiTotalEarned") || "0";
+
+
+if (totalReferral) {
+
+  totalReferral.textContent =
+    savedReferral;
+
+}
+
+
+if (totalEarned) {
+
+  totalEarned.textContent =
+    "₹" +
+    Number(savedEarned).toFixed(2);
+
 }
 
 
@@ -81,80 +95,93 @@ function getReferralCode() {
 
 function getReferralLink() {
 
-  const code =
-    referralCodeEl.textContent.trim();
-
   const baseUrl =
-    window.location.origin;
-
-  return `${baseUrl}/login?ref=${encodeURIComponent(code)}`;
-}
-
-
-/* =========================
-   SHARE MESSAGE
-========================= */
-
-function getShareMessage() {
-
-  const code =
-    referralCodeEl.textContent.trim();
-
-  const link =
-    getReferralLink();
+    window.location.origin +
+    window.location.pathname
+      .replace(/\/refer\/.*$/, "");
 
   return (
-    `🎮 Balaji Ludo King\n\n` +
-    `Play Ludo and enjoy the game!\n\n` +
-    `Join using my referral code: ${code}\n\n` +
-    `Join here:\n${link}`
+    baseUrl +
+    "/?ref=" +
+    savedCode
   );
+
 }
 
 
 /* =========================
-   COPY TEXT
+   COPY CODE
 ========================= */
 
-async function copyText(text) {
+if (copyCodeBtn) {
 
-  try {
+  copyCodeBtn.addEventListener(
+    "click",
+    async function () {
 
-    await navigator.clipboard.writeText(text);
+      try {
 
-    showCopyMessage("Copied successfully!");
+        await navigator.clipboard.writeText(
+          savedCode
+        );
 
-  } catch (error) {
+        copyCodeBtn.textContent =
+          "✅ Code Copied";
 
-    const textarea =
-      document.createElement("textarea");
+        setTimeout(function () {
 
-    textarea.value = text;
+          copyCodeBtn.textContent =
+            "📋 Copy Code";
 
-    document.body.appendChild(textarea);
+        }, 1500);
 
-    textarea.select();
+      } catch (error) {
 
-    document.execCommand("copy");
+        alert(
+          "Referral Code: " +
+          savedCode
+        );
 
-    textarea.remove();
+      }
 
-    showCopyMessage("Copied successfully!");
-  }
+    }
+  );
+
 }
 
 
 /* =========================
-   COPY MESSAGE
+   COPY LINK
 ========================= */
 
-function showCopyMessage(message) {
+if (copyLinkBtn) {
 
-  copyMessage.textContent = message;
+  copyLinkBtn.addEventListener(
+    "click",
+    async function () {
 
-  setTimeout(() => {
-    copyMessage.textContent = "";
-  }, 2000);
+      const link =
+        getReferralLink();
+
+      try {
+
+        await navigator.clipboard.writeText(
+          link
+        );
+
+        alert(
+          "Referral link copied!"
+        );
+
+      } catch (error) {
+
+        alert(link);
+
+      }
+
+    }
+  );
+
 }
 
 
@@ -162,156 +189,99 @@ function showCopyMessage(message) {
    WHATSAPP
 ========================= */
 
-whatsappBtn.addEventListener("click", () => {
+if (whatsappBtn) {
 
-  const message =
-    encodeURIComponent(getShareMessage());
+  whatsappBtn.addEventListener(
+    "click",
+    function () {
 
-  const url =
-    `https://wa.me/?text=${message}`;
+      const link =
+        getReferralLink();
 
-  window.open(url, "_blank");
-});
+      const message =
+        "Join Balaji Ludo King using my referral code " +
+        savedCode +
+        "\n\n" +
+        link;
+
+      window.open(
+        "https://wa.me/?text=" +
+        encodeURIComponent(message),
+        "_blank"
+      );
+
+    }
+  );
+
+}
 
 
 /* =========================
    TELEGRAM
 ========================= */
 
-telegramBtn.addEventListener("click", () => {
+if (telegramBtn) {
 
-  const message =
-    encodeURIComponent(getShareMessage());
+  telegramBtn.addEventListener(
+    "click",
+    function () {
 
-  const link =
-    encodeURIComponent(getReferralLink());
+      const link =
+        getReferralLink();
 
-  const url =
-    `https://t.me/share/url?url=${link}&text=${message}`;
+      const message =
+        "Join Balaji Ludo King using my referral code " +
+        savedCode;
 
-  window.open(url, "_blank");
-});
+      window.open(
+        "https://t.me/share/url?url=" +
+        encodeURIComponent(link) +
+        "&text=" +
+        encodeURIComponent(message),
+        "_blank"
+      );
 
-
-/* =========================
-   COPY CODE
-========================= */
-
-copyCodeBtn.addEventListener("click", () => {
-
-  const code =
-    referralCodeEl.textContent.trim();
-
-  copyText(code);
-});
-
-
-/* =========================
-   COPY LINK
-========================= */
-
-copyLinkBtn.addEventListener("click", () => {
-
-  copyText(getReferralLink());
-});
-
-
-/* =========================
-   RENDER HISTORY
-========================= */
-
-function renderHistory(history) {
-
-  if (!history || history.length === 0) {
-
-    historyList.innerHTML = `
-      <div class="empty-history">
-        No referral activity yet.
-      </div>
-    `;
-
-    return;
-  }
-
-  historyList.innerHTML = "";
-
-  history.forEach(item => {
-
-    const row =
-      document.createElement("div");
-
-    row.className = "history-row";
-
-    row.innerHTML = `
-      <div>
-        <div class="history-user">
-          ${escapeHtml(item.user)}
-        </div>
-
-        <div class="history-date">
-          ${escapeHtml(item.date)}
-        </div>
-      </div>
-
-      <div class="history-amount">
-        +₹${Number(item.amount || 0).toFixed(2)}
-      </div>
-    `;
-
-    historyList.appendChild(row);
-  });
-}
-
-
-/* =========================
-   SECURITY HELPER
-========================= */
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-
-/* =========================
-   LOAD USER
-========================= */
-
-function loadReferPage() {
-
-  const code =
-    getReferralCode();
-
-  referralCodeEl.textContent =
-    code;
-
-  /*
-    अभी demo data.
-
-    जब backend तैयार होगा,
-    यहाँ current logged-in user's
-    real referral data आएगा.
-  */
-
-  totalReferralEl.textContent =
-    demoUser.totalReferral;
-
-  totalEarnedEl.textContent =
-    `₹${Number(demoUser.totalEarned).toFixed(2)}`;
-
-  renderHistory(
-    demoUser.history
+    }
   );
+
 }
 
 
 /* =========================
-   START
+   WALLET
 ========================= */
 
-loadReferPage();
+if (walletBtn) {
+
+  walletBtn.addEventListener(
+    "click",
+    function (event) {
+
+      event.preventDefault();
+
+      alert("Wallet section");
+
+    }
+  );
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+if (profileBtn) {
+
+  profileBtn.addEventListener(
+    "click",
+    function (event) {
+
+      event.preventDefault();
+
+      alert("Profile section");
+
+    }
+  );
+
+}
