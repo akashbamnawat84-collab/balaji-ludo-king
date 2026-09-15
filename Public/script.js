@@ -1,88 +1,144 @@
 const API = "/api";
 
-// ===============================
-// ELEMENTS
-// ===============================
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
-const welcomeCard = document.getElementById("welcomeCard");
-const otpCard = document.getElementById("otpCard");
-const roomCard = document.getElementById("roomCard");
-const ludoCard = document.getElementById("ludoCard");
-const profileSection = document.getElementById("profileSection");
+const welcomeCard =
+  document.getElementById("welcomeCard");
 
-const playerMobile = document.getElementById("playerMobile");
-const startBtn = document.getElementById("startBtn");
-const message = document.getElementById("message");
+const otpCard =
+  document.getElementById("otpCard");
 
-const otpInput = document.getElementById("otpInput");
-const verifyOtpBtn = document.getElementById("verifyOtpBtn");
-const backLoginBtn = document.getElementById("backLoginBtn");
-const otpMessage = document.getElementById("otpMessage");
+const roomCard =
+  document.getElementById("roomCard");
 
-const createRoomCode = document.getElementById("createRoomCode");
-const joinRoomCode = document.getElementById("joinRoomCode");
-const createRoomBtn = document.getElementById("createRoomBtn");
-const joinRoomBtn = document.getElementById("joinRoomBtn");
-const roomMessage = document.getElementById("roomMessage");
+const ludoCard =
+  document.getElementById("ludoCard");
 
-const waitingTimer = document.getElementById("waitingTimer");
-const player1Status = document.getElementById("player1Status");
-const player2Status = document.getElementById("player2Status");
+const profileSection =
+  document.getElementById("profileSection");
+
+const playerMobile =
+  document.getElementById("playerMobile");
+
+const startBtn =
+  document.getElementById("startBtn");
+
+const message =
+  document.getElementById("message");
+
+const otpInput =
+  document.getElementById("otpInput");
+
+const verifyOtpBtn =
+  document.getElementById("verifyOtpBtn");
+
+const backLoginBtn =
+  document.getElementById("backLoginBtn");
+
+const otpMessage =
+  document.getElementById("otpMessage");
+
+const createRoomCode =
+  document.getElementById("createRoomCode");
+
+const joinRoomCode =
+  document.getElementById("joinRoomCode");
+
+const createRoomBtn =
+  document.getElementById("createRoomBtn");
+
+const joinRoomBtn =
+  document.getElementById("joinRoomBtn");
+
+const roomMessage =
+  document.getElementById("roomMessage");
+
+const waitingTimer =
+  document.getElementById("waitingTimer");
+
+const player1Status =
+  document.getElementById("player1Status");
+
+const player2Status =
+  document.getElementById("player2Status");
 
 const matchPlayer1Name =
-  document.getElementById("matchPlayer1Name");
+  document.getElementById(
+    "matchPlayer1Name"
+  );
 
 const matchPlayer2Name =
-  document.getElementById("matchPlayer2Name");
+  document.getElementById(
+    "matchPlayer2Name"
+  );
 
 const matchRoomCode =
-  document.getElementById("matchRoomCode");
+  document.getElementById(
+    "matchRoomCode"
+  );
 
 const copyRoomBtn =
-  document.getElementById("copyRoomBtn");
+  document.getElementById(
+    "copyRoomBtn"
+  );
 
 const resultArea =
-  document.getElementById("resultArea");
+  document.getElementById(
+    "resultArea"
+  );
 
 const resultScreenshot =
-  document.getElementById("resultScreenshot");
+  document.getElementById(
+    "resultScreenshot"
+  );
 
 const gameMessage =
-  document.getElementById("gameMessage");
+  document.getElementById(
+    "gameMessage"
+  );
 
-// ===============================
-// STATE
-// ===============================
+/* =========================================================
+   STATE
+========================================================= */
 
 let currentPlayer = null;
 let currentRoom = null;
 let pendingMobile = "";
+
 let roomPollTimer = null;
 let roomTimer = null;
+let autoRoomTimer = null;
 
-// ===============================
-// START
-// ===============================
+/* =========================================================
+   START
+========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  showOnly(welcomeCard);
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-  if (playerMobile) {
-    playerMobile.value = "";
+    showOnly(welcomeCard);
+
+    if (playerMobile) {
+      playerMobile.value = "";
+    }
+
+    if (otpInput) {
+      otpInput.value = "";
+    }
+
+    clearMessages();
   }
+);
 
-  if (otpInput) {
-    otpInput.value = "";
-  }
-
-  clearMessages();
-});
-
-// ===============================
-// SCREEN CONTROL
-// ===============================
+/* =========================================================
+   SCREEN CONTROL
+========================================================= */
 
 function showOnly(section) {
+
   const sections = [
     welcomeCard,
     otpCard,
@@ -92,23 +148,43 @@ function showOnly(section) {
   ];
 
   sections.forEach((item) => {
+
     if (item) {
       item.style.display =
-        item === section ? "block" : "none";
+        item === section
+          ? "block"
+          : "none";
     }
+
   });
 }
 
 function clearMessages() {
-  if (message) message.textContent = "";
-  if (otpMessage) otpMessage.textContent = "";
-  if (roomMessage) roomMessage.textContent = "";
-  if (gameMessage) gameMessage.textContent = "";
+
+  if (message) {
+    message.textContent = "";
+  }
+
+  if (otpMessage) {
+    otpMessage.textContent = "";
+  }
+
+  if (roomMessage) {
+    roomMessage.textContent = "";
+  }
+
+  if (gameMessage) {
+    gameMessage.textContent = "";
+  }
 }
 
 function goHome() {
+
   stopRoomPolling();
+  stopAutoRoomSearch();
+
   currentRoom = null;
+
   showOnly(roomCard);
 
   if (roomMessage) {
@@ -117,20 +193,24 @@ function goHome() {
   }
 }
 
-// ===============================
-// LOGIN
-// ===============================
+/* =========================================================
+   LOGIN
+========================================================= */
 
 async function sendOTP() {
-  const mobile = String(
-    playerMobile?.value || ""
-  ).replace(/\D/g, "");
+
+  const mobile =
+    String(
+      playerMobile?.value || ""
+    ).replace(/\D/g, "");
 
   if (mobile.length !== 10) {
+
     if (message) {
       message.textContent =
         "Please enter a valid 10-digit mobile number.";
     }
+
     return;
   }
 
@@ -138,7 +218,8 @@ async function sendOTP() {
 
   if (startBtn) {
     startBtn.disabled = true;
-    startBtn.textContent = "Sending...";
+    startBtn.textContent =
+      "Sending...";
   }
 
   if (message) {
@@ -146,24 +227,32 @@ async function sendOTP() {
   }
 
   try {
-    const response = await fetch(
-      `${API}/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          mobile
-        })
-      }
-    );
 
-    const data = await response.json();
+    const response =
+      await fetch(
+        `${API}/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            mobile
+          })
+        }
+      );
 
-    if (!response.ok || !data.success) {
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
       throw new Error(
-        data.error || "Unable to send OTP."
+        data.error ||
+        "Unable to send OTP."
       );
     }
 
@@ -175,6 +264,7 @@ async function sendOTP() {
     }
 
     if (otpInput) {
+
       otpInput.value = "";
 
       setTimeout(() => {
@@ -183,39 +273,48 @@ async function sendOTP() {
     }
 
   } catch (error) {
+
     if (message) {
       message.textContent =
-        error.message || "Unable to send OTP.";
+        error.message ||
+        "Unable to send OTP.";
     }
 
   } finally {
+
     if (startBtn) {
       startBtn.disabled = false;
-      startBtn.textContent = "Send OTP";
+      startBtn.textContent =
+        "Send OTP";
     }
   }
 }
 
-// ===============================
-// VERIFY OTP
-// ===============================
+/* =========================================================
+   VERIFY OTP
+========================================================= */
 
 async function verifyOTP() {
-  const otp = String(
-    otpInput?.value || ""
-  ).replace(/\D/g, "");
+
+  const otp =
+    String(
+      otpInput?.value || ""
+    ).replace(/\D/g, "");
 
   if (otp.length !== 6) {
+
     if (otpMessage) {
       otpMessage.textContent =
         "Please enter the 6-digit OTP.";
     }
+
     return;
   }
 
   if (verifyOtpBtn) {
     verifyOtpBtn.disabled = true;
-    verifyOtpBtn.textContent = "Verifying...";
+    verifyOtpBtn.textContent =
+      "Verifying...";
   }
 
   if (otpMessage) {
@@ -223,25 +322,33 @@ async function verifyOTP() {
   }
 
   try {
-    const response = await fetch(
-      `${API}/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          mobile: pendingMobile,
-          otp
-        })
-      }
-    );
 
-    const data = await response.json();
+    const response =
+      await fetch(
+        `${API}/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            mobile: pendingMobile,
+            otp
+          })
+        }
+      );
 
-    if (!response.ok || !data.success) {
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
       throw new Error(
-        data.error || "Invalid OTP."
+        data.error ||
+        "Invalid OTP."
       );
     }
 
@@ -257,7 +364,14 @@ async function verifyOTP() {
         "Create or join a 2 player room";
     }
 
+    /*
+      Player 2 के लिए waiting room
+      automatically check होगा.
+    */
+    startWaitingRoomAutoJoin();
+
   } catch (error) {
+
     if (otpMessage) {
       otpMessage.textContent =
         error.message ||
@@ -265,6 +379,7 @@ async function verifyOTP() {
     }
 
   } finally {
+
     if (verifyOtpBtn) {
       verifyOtpBtn.disabled = false;
       verifyOtpBtn.textContent =
@@ -273,12 +388,15 @@ async function verifyOTP() {
   }
 }
 
-// ===============================
-// BACK TO LOGIN
-// ===============================
+/* =========================================================
+   BACK TO LOGIN
+========================================================= */
 
 function backToLogin() {
+
   pendingMobile = "";
+
+  stopAutoRoomSearch();
 
   if (otpInput) {
     otpInput.value = "";
@@ -291,24 +409,29 @@ function backToLogin() {
   showOnly(welcomeCard);
 }
 
-// ===============================
-// CREATE ROOM
-// ===============================
+/* =========================================================
+   CREATE ROOM
+========================================================= */
 
 async function createRoom() {
-  const code = String(
-    createRoomCode?.value || ""
-  ).replace(/\D/g, "");
+
+  const code =
+    String(
+      createRoomCode?.value || ""
+    ).replace(/\D/g, "");
 
   if (code.length !== 8) {
+
     if (roomMessage) {
       roomMessage.textContent =
         "8-Digit Room Code डालें।";
     }
+
     return;
   }
 
   if (!currentPlayer) {
+
     if (roomMessage) {
       roomMessage.textContent =
         "Please login first.";
@@ -318,46 +441,64 @@ async function createRoom() {
     return;
   }
 
+  stopAutoRoomSearch();
+
   if (createRoomBtn) {
     createRoomBtn.disabled = true;
-    createRoomBtn.textContent = "Creating...";
+    createRoomBtn.textContent =
+      "Creating...";
   }
 
   try {
-    const response = await fetch(
-      `${API}/rooms/create`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          room_code: code,
-          player_id: getPlayerId(),
-          player_name: getPlayerName()
-        })
-      }
-    );
 
-    const data = await response.json();
+    const response =
+      await fetch(
+        `${API}/rooms/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            room_code: code,
+            player_id:
+              getPlayerId(),
+            player_name:
+              getPlayerName()
+          })
+        }
+      );
 
-    if (!response.ok || !data.success) {
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
       throw new Error(
-        data.error || "Room creation failed."
+        data.error ||
+        "Room creation failed."
       );
     }
 
-    currentRoom = data.room || {
-      room_code: code,
-      player1_id: getPlayerId(),
-      player1_name: getPlayerName(),
-      status: "WAITING"
-    };
+    currentRoom =
+      data.room || {
+        room_code: code,
+        player1_id:
+          getPlayerId(),
+        player1_name:
+          getPlayerName(),
+        status: "WAITING"
+      };
 
     showRoomWaiting();
+
     startRoomPolling(code);
 
   } catch (error) {
+
     if (roomMessage) {
       roomMessage.textContent =
         error.message ||
@@ -365,31 +506,224 @@ async function createRoom() {
     }
 
   } finally {
+
     if (createRoomBtn) {
       createRoomBtn.disabled = false;
-      createRoomBtn.textContent = "Create Room";
+      createRoomBtn.textContent =
+        "Create Room";
     }
   }
 }
 
-// ===============================
-// JOIN ROOM
-// ===============================
+/* =========================================================
+   PLAYER 2 AUTO ROOM
+========================================================= */
+
+function startWaitingRoomAutoJoin() {
+
+  if (!currentPlayer) {
+    return;
+  }
+
+  stopAutoRoomSearch();
+
+  checkWaitingRoom();
+
+  autoRoomTimer =
+    setInterval(() => {
+      checkWaitingRoom();
+    }, 2000);
+}
+
+function stopAutoRoomSearch() {
+
+  if (autoRoomTimer) {
+    clearInterval(
+      autoRoomTimer
+    );
+
+    autoRoomTimer = null;
+  }
+}
+
+async function checkWaitingRoom() {
+
+  if (!currentPlayer) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/rooms/waiting`,
+        {
+          method: "GET",
+          cache: "no-store"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
+      return;
+    }
+
+    if (!data.room) {
+
+      if (roomMessage) {
+        roomMessage.textContent =
+          "Player 1 के Room Code का इंतजार...";
+      }
+
+      return;
+    }
+
+    const room =
+      data.room;
+
+    /*
+      अपना बनाया हुआ room
+      खुद join नहीं करना.
+    */
+    if (
+      room.player1_id ===
+      getPlayerId()
+    ) {
+      return;
+    }
+
+    if (
+      room.status !== "WAITING" ||
+      room.player2_id
+    ) {
+      return;
+    }
+
+    stopAutoRoomSearch();
+
+    currentRoom = room;
+
+    /*
+      Room Code automatically
+      Player 2 के input में दिखेगा.
+    */
+    if (joinRoomCode) {
+      joinRoomCode.value =
+        room.room_code || "";
+    }
+
+    if (roomMessage) {
+      roomMessage.textContent =
+        `Room Code Ready: ${room.room_code}`;
+    }
+
+    /*
+      Automatically join.
+    */
+    await autoJoinRoom(
+      room.room_code
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Auto room search error:",
+      error
+    );
+  }
+}
+
+async function autoJoinRoom(code) {
+
+  if (
+    !code ||
+    !currentPlayer
+  ) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `${API}/rooms/join`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            room_code: code,
+            player_id:
+              getPlayerId(),
+            player_name:
+              getPlayerName()
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
+      throw new Error(
+        data.error ||
+        "Unable to join room."
+      );
+    }
+
+    currentRoom =
+      data.room || null;
+
+    if (currentRoom) {
+      handleRoomState(
+        currentRoom
+      );
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Auto join room:",
+      error.message
+    );
+
+    startWaitingRoomAutoJoin();
+  }
+}
+
+/* =========================================================
+   JOIN ROOM
+========================================================= */
 
 async function joinRoom() {
-  const code = String(
-    joinRoomCode?.value || ""
-  ).replace(/\D/g, "");
+
+  const code =
+    String(
+      joinRoomCode?.value || ""
+    ).replace(/\D/g, "");
 
   if (code.length !== 8) {
+
     if (roomMessage) {
       roomMessage.textContent =
         "8-Digit Room Code डालें।";
     }
+
     return;
   }
 
   if (!currentPlayer) {
+
     if (roomMessage) {
       roomMessage.textContent =
         "Please login first.";
@@ -399,44 +733,61 @@ async function joinRoom() {
     return;
   }
 
+  stopAutoRoomSearch();
+
   if (joinRoomBtn) {
     joinRoomBtn.disabled = true;
-    joinRoomBtn.textContent = "Joining...";
+    joinRoomBtn.textContent =
+      "Joining...";
   }
 
   try {
-    const response = await fetch(
-      `${API}/rooms/join`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          room_code: code,
-          player_id: getPlayerId(),
-          player_name: getPlayerName()
-        })
-      }
-    );
 
-    const data = await response.json();
+    const response =
+      await fetch(
+        `${API}/rooms/join`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            room_code: code,
+            player_id:
+              getPlayerId(),
+            player_name:
+              getPlayerName()
+          })
+        }
+      );
 
-    if (!response.ok || !data.success) {
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
       throw new Error(
-        data.error || "Unable to join room."
+        data.error ||
+        "Unable to join room."
       );
     }
 
-    currentRoom = data.room || null;
+    currentRoom =
+      data.room || null;
 
     if (currentRoom) {
-      handleRoomState(currentRoom);
+      handleRoomState(
+        currentRoom
+      );
     } else {
       startRoomPolling(code);
     }
 
   } catch (error) {
+
     if (roomMessage) {
       roomMessage.textContent =
         error.message ||
@@ -444,18 +795,21 @@ async function joinRoom() {
     }
 
   } finally {
+
     if (joinRoomBtn) {
       joinRoomBtn.disabled = false;
-      joinRoomBtn.textContent = "Join Room";
+      joinRoomBtn.textContent =
+        "Join Room";
     }
   }
 }
 
-// ===============================
-// ROOM WAITING
-// ===============================
+/* =========================================================
+   ROOM WAITING
+========================================================= */
 
 function showRoomWaiting() {
+
   showOnly(roomCard);
 
   if (roomMessage) {
@@ -474,45 +828,61 @@ function showRoomWaiting() {
   }
 }
 
-// ===============================
-// POLLING
-// ===============================
+/* =========================================================
+   POLLING
+========================================================= */
 
 function startRoomPolling(code) {
+
   stopRoomPolling();
 
   fetchRoom(code);
 
-  roomPollTimer = setInterval(() => {
-    fetchRoom(code);
-  }, 2000);
+  roomPollTimer =
+    setInterval(() => {
+      fetchRoom(code);
+    }, 2000);
 }
 
 function stopRoomPolling() {
+
   if (roomPollTimer) {
-    clearInterval(roomPollTimer);
+    clearInterval(
+      roomPollTimer
+    );
+
     roomPollTimer = null;
   }
 
   if (roomTimer) {
-    clearInterval(roomTimer);
+    clearInterval(
+      roomTimer
+    );
+
     roomTimer = null;
   }
 }
 
 async function fetchRoom(code) {
+
   try {
-    const response = await fetch(
-      `${API}/rooms/${encodeURIComponent(code)}`,
-      {
-        method: "GET",
-        cache: "no-store"
-      }
-    );
 
-    const data = await response.json();
+    const response =
+      await fetch(
+        `${API}/rooms/${encodeURIComponent(code)}`,
+        {
+          method: "GET",
+          cache: "no-store"
+        }
+      );
 
-    if (!response.ok || !data.success) {
+    const data =
+      await response.json();
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
       return;
     }
 
@@ -520,11 +890,15 @@ async function fetchRoom(code) {
       return;
     }
 
-    currentRoom = data.room;
+    currentRoom =
+      data.room;
 
-    handleRoomState(currentRoom);
+    handleRoomState(
+      currentRoom
+    );
 
   } catch (error) {
+
     console.log(
       "Room polling error:",
       error
@@ -532,14 +906,18 @@ async function fetchRoom(code) {
   }
 }
 
-// ===============================
-// ROOM STATE
-// ===============================
+/* =========================================================
+   ROOM STATE
+========================================================= */
 
 function handleRoomState(room) {
-  if (!room) return;
+
+  if (!room) {
+    return;
+  }
 
   if (player1Status) {
+
     player1Status.textContent =
       room.player1_id
         ? "Player 1 • Ready"
@@ -547,6 +925,7 @@ function handleRoomState(room) {
   }
 
   if (player2Status) {
+
     player2Status.textContent =
       room.player2_id
         ? "Player 2 • Ready"
@@ -554,6 +933,7 @@ function handleRoomState(room) {
   }
 
   if (roomMessage) {
+
     if (
       room.player1_id &&
       room.player2_id
@@ -572,17 +952,22 @@ function handleRoomState(room) {
     room.player1_id &&
     room.player2_id
   ) {
+
     stopRoomPolling();
+
     openMatchScreen(room);
   }
 }
 
-// ===============================
-// ROOM TIMER
-// ===============================
+/* =========================================================
+   ROOM TIMER
+========================================================= */
 
 function startRoomCountdown(room) {
-  if (!waitingTimer) return;
+
+  if (!waitingTimer) {
+    return;
+  }
 
   let createdAt =
     room.created_at ||
@@ -598,24 +983,33 @@ function startRoomCountdown(room) {
   }
 
   if (roomTimer) {
-    clearInterval(roomTimer);
+    clearInterval(
+      roomTimer
+    );
   }
 
   const updateTimer = () => {
+
     const elapsed =
-      Date.now() - startTime;
+      Date.now() -
+      startTime;
 
     const remaining =
       Math.max(
         0,
-        5 * 60 * 1000 - elapsed
+        5 * 60 * 1000 -
+        elapsed
       );
 
     const seconds =
-      Math.ceil(remaining / 1000);
+      Math.ceil(
+        remaining / 1000
+      );
 
     const minutes =
-      Math.floor(seconds / 60);
+      Math.floor(
+        seconds / 60
+      );
 
     const secs =
       seconds % 60;
@@ -626,7 +1020,10 @@ function startRoomCountdown(room) {
       ).padStart(2, "0")}`;
 
     if (remaining <= 0) {
-      clearInterval(roomTimer);
+
+      clearInterval(
+        roomTimer
+      );
 
       waitingTimer.textContent =
         "Room expired.";
@@ -637,18 +1034,21 @@ function startRoomCountdown(room) {
 
   updateTimer();
 
-  roomTimer = setInterval(
-    updateTimer,
-    1000
-  );
+  roomTimer =
+    setInterval(
+      updateTimer,
+      1000
+    );
 }
 
-// ===============================
-// MATCH SCREEN
-// ===============================
+/* =========================================================
+   MATCH SCREEN
+========================================================= */
 
 function openMatchScreen(room) {
+
   stopRoomPolling();
+  stopAutoRoomSearch();
 
   showOnly(ludoCard);
 
@@ -681,18 +1081,24 @@ function openMatchScreen(room) {
   }
 }
 
-// ===============================
-// COPY ROOM CODE
-// ===============================
+/* =========================================================
+   COPY ROOM CODE
+========================================================= */
 
 async function copyRoomCode() {
-  const code =
-    matchRoomCode?.textContent || "";
 
-  if (!code) return;
+  const code =
+    matchRoomCode?.textContent ||
+    "";
+
+  if (!code) {
+    return;
+  }
 
   try {
-    await navigator.clipboard.writeText(code);
+
+    await navigator.clipboard
+      .writeText(code);
 
     if (gameMessage) {
       gameMessage.textContent =
@@ -700,6 +1106,7 @@ async function copyRoomCode() {
     }
 
     if (copyRoomBtn) {
+
       const oldText =
         copyRoomBtn.textContent;
 
@@ -707,12 +1114,15 @@ async function copyRoomCode() {
         "Copied ✓";
 
       setTimeout(() => {
+
         copyRoomBtn.textContent =
           oldText;
+
       }, 1500);
     }
 
   } catch (error) {
+
     if (gameMessage) {
       gameMessage.textContent =
         `Room Code: ${code}`;
@@ -720,12 +1130,15 @@ async function copyRoomCode() {
   }
 }
 
-// ===============================
-// I WON
-// ===============================
+/* =========================================================
+   I WON
+========================================================= */
 
 function submitWin() {
-  if (!resultArea) return;
+
+  if (!resultArea) {
+    return;
+  }
 
   resultArea.style.display =
     "block";
@@ -741,54 +1154,67 @@ function submitWin() {
   });
 }
 
-// ===============================
-// UPLOAD RESULT
-// ===============================
+/* =========================================================
+   UPLOAD RESULT
+========================================================= */
 
 async function uploadResult() {
+
   const file =
     resultScreenshot?.files?.[0];
 
   if (!file) {
+
     if (gameMessage) {
       gameMessage.textContent =
         "पहले winning screenshot select करें।";
     }
+
     return;
   }
 
   if (!currentRoom) {
+
     if (gameMessage) {
       gameMessage.textContent =
         "Room information not found.";
     }
+
     return;
   }
 
   try {
+
     const base64 =
       await fileToBase64(file);
 
-    const response = await fetch(
-      `${API}/rooms/result`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          player_id: getPlayerId(),
-          room_code:
-            currentRoom.room_code,
-          screenshot: base64
-        })
-      }
-    );
+    const response =
+      await fetch(
+        `${API}/rooms/result`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            player_id:
+              getPlayerId(),
+            room_code:
+              currentRoom.room_code,
+            screenshot:
+              base64
+          })
+        }
+      );
 
     const data =
       await response.json();
 
-    if (!response.ok || !data.success) {
+    if (
+      !response.ok ||
+      !data.success
+    ) {
       throw new Error(
         data.error ||
         "Result submission failed."
@@ -806,6 +1232,7 @@ async function uploadResult() {
     }
 
   } catch (error) {
+
     if (gameMessage) {
       gameMessage.textContent =
         error.message ||
@@ -815,26 +1242,32 @@ async function uploadResult() {
 }
 
 function fileToBase64(file) {
+
   return new Promise(
     (resolve, reject) => {
+
       const reader =
         new FileReader();
 
       reader.onload = () =>
-        resolve(reader.result);
+        resolve(
+          reader.result
+        );
 
-      reader.onerror = reject;
+      reader.onerror =
+        reject;
 
       reader.readAsDataURL(file);
     }
   );
 }
 
-// ===============================
-// I LOST
-// ===============================
+/* =========================================================
+   I LOST
+========================================================= */
 
 function submitLost() {
+
   if (gameMessage) {
     gameMessage.textContent =
       "You selected I Lost.";
@@ -846,77 +1279,242 @@ function submitLost() {
   }
 }
 
-// ===============================
-// CANCEL ROOM
-// ===============================
+/* =========================================================
+   CANCEL ROOM
+========================================================= */
 
-async function cancelRoom() {
+function cancelRoom() {
+
   if (!currentRoom) {
     goHome();
+    return;
+  }
+
+  showCancelReasonBox();
+}
+
+function showCancelReasonBox() {
+
+  const oldBox =
+    document.getElementById(
+      "cancelReasonBox"
+    );
+
+  if (oldBox) {
+    oldBox.remove();
+  }
+
+  const box =
+    document.createElement(
+      "div"
+    );
+
+  box.id =
+    "cancelReasonBox";
+
+  box.innerHTML = `
+    <div style="
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.65);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:99999;
+      padding:20px;
+    ">
+
+      <div style="
+        width:100%;
+        max-width:360px;
+        background:#fff;
+        border-radius:16px;
+        padding:22px;
+        text-align:center;
+        box-sizing:border-box;
+      ">
+
+        <h3 style="
+          margin:0 0 8px;
+        ">
+          Why are you cancelling?
+        </h3>
+
+        <p style="
+          margin:0 0 18px;
+          color:#666;
+        ">
+          Select one reason
+        </p>
+
+        <button
+          type="button"
+          onclick="submitCancelReason('No Room Code')"
+          style="
+            width:100%;
+            margin:6px 0;
+            padding:12px;
+          "
+        >
+          No Room Code
+        </button>
+
+        <button
+          type="button"
+          onclick="submitCancelReason('Not Game Start')"
+          style="
+            width:100%;
+            margin:6px 0;
+            padding:12px;
+          "
+        >
+          Not Game Start
+        </button>
+
+        <button
+          type="button"
+          onclick="submitCancelReason('Not Player Join')"
+          style="
+            width:100%;
+            margin:6px 0;
+            padding:12px;
+          "
+        >
+          Not Player Join
+        </button>
+
+        <button
+          type="button"
+          onclick="submitCancelReason('Opposite Error')"
+          style="
+            width:100%;
+            margin:6px 0;
+            padding:12px;
+          "
+        >
+          Opposite Error
+        </button>
+
+        <button
+          type="button"
+          onclick="closeCancelReasonBox()"
+          style="
+            width:100%;
+            margin-top:12px;
+            padding:11px;
+          "
+        >
+          Back
+        </button>
+
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(box);
+}
+
+function closeCancelReasonBox() {
+
+  const box =
+    document.getElementById(
+      "cancelReasonBox"
+    );
+
+  if (box) {
+    box.remove();
+  }
+}
+
+async function submitCancelReason(reason) {
+
+  if (!currentRoom) {
+
+    closeCancelReasonBox();
+
+    goHome();
+
     return;
   }
 
   const code =
     currentRoom.room_code;
 
+  const playerId =
+    getPlayerId();
+
   try {
-    const response = await fetch(
-      `${API}/rooms/cancel`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          room_code: code,
-          player_id: getPlayerId()
-        })
-      }
-    );
+
+    const response =
+      await fetch(
+        `${API}/rooms/cancel`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            room_code: code,
+            player_id: playerId,
+            reason: reason
+          })
+        }
+      );
 
     const data =
       await response.json();
 
-    if (!response.ok || !data.success) {
+    if (
+      !response.ok ||
+      !data.success
+    ) {
       throw new Error(
         data.error ||
         "Unable to cancel room."
       );
     }
 
+    closeCancelReasonBox();
+
+    currentRoom = null;
+
+    stopRoomPolling();
+    stopAutoRoomSearch();
+
+    if (createRoomCode) {
+      createRoomCode.value = "";
+    }
+
+    if (joinRoomCode) {
+      joinRoomCode.value = "";
+    }
+
+    showOnly(roomCard);
+
+    if (roomMessage) {
+      roomMessage.textContent =
+        `Room cancelled: ${reason}`;
+    }
+
   } catch (error) {
-    console.log(
-      "Cancel room:",
-      error.message
-    );
-  }
 
-  currentRoom = null;
-
-  stopRoomPolling();
-
-  if (createRoomCode) {
-    createRoomCode.value = "";
-  }
-
-  if (joinRoomCode) {
-    joinRoomCode.value = "";
-  }
-
-  showOnly(roomCard);
-
-  if (roomMessage) {
-    roomMessage.textContent =
-      "Room cancelled.";
+    if (gameMessage) {
+      gameMessage.textContent =
+        error.message ||
+        "Unable to cancel room.";
+    }
   }
 }
 
-// ===============================
-// PLAYER HELPERS
-// ===============================
+/* =========================================================
+   PLAYER HELPERS
+========================================================= */
 
 function getPlayerId() {
+
   if (currentPlayer) {
+
     return (
       currentPlayer.player_id ||
       currentPlayer.playerId ||
@@ -931,7 +1529,9 @@ function getPlayerId() {
 }
 
 function getPlayerName() {
+
   if (currentPlayer) {
+
     return (
       currentPlayer.name ||
       currentPlayer.player_name ||
@@ -943,14 +1543,17 @@ function getPlayerName() {
   return "Player";
 }
 
-// ===============================
-// PROFILE
-// ===============================
+/* =========================================================
+   PROFILE
+========================================================= */
 
 function openProfile() {
+
   showOnly(profileSection);
 
-  if (!currentPlayer) return;
+  if (!currentPlayer) {
+    return;
+  }
 
   const name =
     currentPlayer.name ||
@@ -1005,64 +1608,81 @@ function openProfile() {
       "profilePhone"
     );
 
-  if (profileName)
+  if (profileName) {
     profileName.textContent =
       name;
+  }
 
-  if (profileId)
+  if (profileId) {
     profileId.textContent =
       `Player ID: ${id}`;
+  }
 
-  if (customerIdEl)
+  if (customerIdEl) {
     customerIdEl.textContent =
       customerId;
+  }
 
-  if (profileWallet)
+  if (profileWallet) {
     profileWallet.textContent =
-      `₹${Number(wallet).toFixed(2)}`;
+      `₹${Number(
+        wallet
+      ).toFixed(2)}`;
+  }
 
-  if (profileBonus)
+  if (profileBonus) {
     profileBonus.textContent =
-      `₹${Number(bonus).toFixed(2)}`;
+      `₹${Number(
+        bonus
+      ).toFixed(2)}`;
+  }
 
-  if (profilePhone)
+  if (profilePhone) {
     profilePhone.textContent =
       currentPlayer.mobile ||
       pendingMobile ||
       "Not Added";
+  }
 }
 
-// ===============================
-// WALLET
-// ===============================
+/* =========================================================
+   WALLET
+========================================================= */
 
 function openWallet() {
+
   if (!currentPlayer) {
     showOnly(welcomeCard);
     return;
   }
 
-  alert("Wallet section coming soon.");
+  alert(
+    "Wallet section coming soon."
+  );
 }
 
-// ===============================
-// REFER
-// ===============================
+/* =========================================================
+   REFER
+========================================================= */
 
 function openRefer() {
+
   if (!currentPlayer) {
     showOnly(welcomeCard);
     return;
   }
 
-  alert("Refer section coming soon.");
+  alert(
+    "Refer section coming soon."
+  );
 }
 
-// ===============================
-// CUSTOMER SUPPORT
-// ===============================
+/* =========================================================
+   CUSTOMER SUPPORT
+========================================================= */
 
 function openSupport() {
+
   if (!currentPlayer) {
     showOnly(welcomeCard);
     return;
