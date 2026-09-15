@@ -100,23 +100,38 @@ function loadProfile() {
 // ======================================
 
 if (walletBtn) {
+
   walletBtn.addEventListener("click", () => {
-    window.location.href = "wallet.html";
+
+    window.location.href =
+      "wallet.html";
+
   });
+
 }
 
 
 if (referBtn) {
+
   referBtn.addEventListener("click", () => {
-    window.location.href = "refer.html";
+
+    window.location.href =
+      "refer.html";
+
   });
+
 }
 
 
 if (supportBtn) {
+
   supportBtn.addEventListener("click", () => {
-    window.location.href = "support.html";
+
+    window.location.href =
+      "support.html";
+
   });
+
 }
 
 
@@ -131,19 +146,35 @@ if (logoutBtn) {
     const confirmLogout =
       confirm("Are you sure you want to logout?");
 
+
     if (!confirmLogout) {
       return;
     }
 
+
     // Remove both login keys
-    localStorage.removeItem("BALAJI_LOGIN");
-    localStorage.removeItem("balajiLogin");
+
+    localStorage.removeItem(
+      "BALAJI_LOGIN"
+    );
+
+    localStorage.removeItem(
+      "balajiLogin"
+    );
+
 
     // Remove login mobile
-    localStorage.removeItem("balajiMobile");
 
-    // Go to actual login page
-    window.location.href = "index.html";
+    localStorage.removeItem(
+      "balajiMobile"
+    );
+
+
+    // Go to HOME page after logout
+
+    window.location.href =
+      "home.html";
+
   });
 
 }
