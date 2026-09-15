@@ -41,79 +41,191 @@
 
 
     <!-- ========================= -->
-    <!-- LOGIN -->
+    <!-- LOGIN PAGE -->
     <!-- ========================= -->
 
     <section
       id="welcomeCard"
       class="card login-card">
 
-      <h1>🎲 Balaji Ludo King</h1>
+      <div class="login-brand">
 
-      <h2>Welcome Back 👋</h2>
+        <div class="brand-logo">
+          🎲
+        </div>
+
+        <div class="brand-name">
+          BALAJI<br>LUDO
+        </div>
+
+      </div>
+
+
+      <div class="login-title">
+        LOGIN
+      </div>
+
+
+      <h2>
+        Welcome Back
+      </h2>
+
 
       <p>
-        Enter your mobile number to continue
+        Enter your mobile number to get started
       </p>
+
+
+      <label for="playerMobile">
+        Mobile Number
+      </label>
+
 
       <input
         id="playerMobile"
         type="tel"
         inputmode="numeric"
         maxlength="10"
-        placeholder="Enter 10-digit mobile number">
+        placeholder="98765 43210"
+        autocomplete="tel">
+
 
       <button
         id="startBtn"
         type="button"
         onclick="sendOTP()">
+
         Send OTP
+
       </button>
 
+
       <p id="message"></p>
+
+
+      <div class="security-text">
+        🔒 Protected by end-to-end security protocol
+      </div>
+
+
+      <div class="login-footer-text">
+
+        <strong>logo</strong>
+
+        <span>
+          Turn Fun into Funds!
+        </span>
+
+      </div>
+
+
+      <div class="chrome-note">
+
+        For best experience, open
+        <strong>bajigerludo.com</strong>
+        on chrome mobile
+
+      </div>
 
     </section>
 
 
+
     <!-- ========================= -->
-    <!-- OTP -->
+    <!-- OTP PAGE -->
     <!-- ========================= -->
 
     <section
       id="otpCard"
-      class="card"
+      class="card otp-card"
       style="display:none;">
 
-      <h2>🔐 Verify OTP</h2>
+      <div class="login-brand">
+
+        <div class="brand-logo">
+          🎲
+        </div>
+
+        <div class="brand-name">
+          BALAJI<br>LUDO
+        </div>
+
+      </div>
+
+
+      <div class="login-title">
+        LOGIN
+      </div>
+
+
+      <h2>
+        Welcome Back
+      </h2>
+
 
       <p>
-        Enter the 6-digit OTP
+        Enter the verification code sent to your phone
       </p>
+
+
+      <label for="otpInput">
+        Verification OTP
+      </label>
+
 
       <input
         id="otpInput"
         type="tel"
         inputmode="numeric"
         maxlength="6"
-        placeholder="Enter OTP">
+        placeholder="• • • • • •"
+        autocomplete="one-time-code">
+
+
+      <div class="encrypted-text">
+        🔐 Encrypted
+      </div>
+
+
+      <div
+        id="resendTimer"
+        class="resend-text">
+
+        Resend available in 60s
+
+      </div>
+
 
       <button
         id="verifyOtpBtn"
         type="button"
         onclick="verifyOTP()">
-        Verify OTP
+
+        Verify & Continue
+
       </button>
+
 
       <button
         id="backLoginBtn"
         type="button"
-        onclick="backToLogin()">
+        onclick="backToLogin()"
+        class="back-login-btn">
+
         ← Back
+
       </button>
+
 
       <p id="otpMessage"></p>
 
+
+      <div class="security-text">
+        🔒 Protected by end-to-end security protocol
+      </div>
+
     </section>
+
 
 
     <!-- ========================= -->
@@ -125,18 +237,20 @@
       class="card room-card"
       style="display:none;">
 
-      <h2>🎮 2 Player Battle</h2>
+      <h2>
+        🎮 2 Player Battle
+      </h2>
 
       <p class="room-subtitle">
         Create or join a 2 player room
       </p>
 
 
-      <!-- CREATE -->
-
       <div class="room-box">
 
-        <h3>Create Room</h3>
+        <h3>
+          Create Room
+        </h3>
 
         <input
           id="createRoomCode"
@@ -145,11 +259,14 @@
           maxlength="8"
           placeholder="Enter 8-Digit Room Code">
 
+
         <button
           id="createRoomBtn"
           type="button"
           onclick="createRoom()">
+
           Create Room
+
         </button>
 
       </div>
@@ -160,11 +277,11 @@
       </div>
 
 
-      <!-- JOIN -->
-
       <div class="room-box">
 
-        <h3>Join Room</h3>
+        <h3>
+          Join Room
+        </h3>
 
         <input
           id="joinRoomCode"
@@ -173,11 +290,14 @@
           maxlength="8"
           placeholder="Enter 8-Digit Room Code">
 
+
         <button
           id="joinRoomBtn"
           type="button"
           onclick="joinRoom()">
+
           Join Room
+
         </button>
 
       </div>
@@ -185,19 +305,20 @@
 
       <p id="roomMessage"></p>
 
+
       <div
         id="waitingTimer"
         class="timer">
       </div>
 
 
-      <!-- PLAYERS WAITING -->
-
       <div class="players">
 
         <div class="player-card">
 
-          <h3>🔴 Player 1</h3>
+          <h3>
+            🔴 Player 1
+          </h3>
 
           <p id="player1Status">
             Waiting...
@@ -208,7 +329,9 @@
 
         <div class="player-card">
 
-          <h3>🔵 Player 2</h3>
+          <h3>
+            🔵 Player 2
+          </h3>
 
           <p id="player2Status">
             Waiting...
@@ -221,6 +344,7 @@
     </section>
 
 
+
     <!-- ========================= -->
     <!-- MATCH SCREEN -->
     <!-- ========================= -->
@@ -231,23 +355,21 @@
       style="display:none;">
 
 
-      <!-- BACK -->
-
       <button
         class="back-button"
         type="button"
         onclick="goHome()">
+
         ← BACK
+
       </button>
 
 
-      <!-- ========================= -->
+
       <!-- VS CARD -->
-      <!-- ========================= -->
 
       <div class="vs-card">
 
-        <!-- PLAYER 1 -->
 
         <div class="vs-player">
 
@@ -255,33 +377,38 @@
             🎮
           </div>
 
+
           <div
             id="matchPlayer1Name"
             class="player-name">
+
             Player 1
+
           </div>
+
 
           <div class="entry-label">
             Entry Fee
           </div>
 
+
           <div
             id="entryFee"
             class="entry-value">
+
             🪙 150
+
           </div>
 
         </div>
 
 
-        <!-- VS -->
 
         <div class="vs-logo">
           VS
         </div>
 
 
-        <!-- PLAYER 2 -->
 
         <div class="vs-player">
 
@@ -289,20 +416,27 @@
             🎮
           </div>
 
+
           <div
             id="matchPlayer2Name"
             class="player-name">
+
             Player 2
+
           </div>
+
 
           <div class="winning-label">
             Winning Prize
           </div>
 
+
           <div
             id="winningPrize"
             class="winning-value">
+
             🪙 285
+
           </div>
 
         </div>
@@ -310,9 +444,8 @@
       </div>
 
 
-      <!-- ========================= -->
+
       <!-- ROOM CODE -->
-      <!-- ========================= -->
 
       <div class="room-code-card">
 
@@ -320,19 +453,25 @@
           Room Code
         </h2>
 
+
         <div class="room-code-row">
 
           <div
             id="matchRoomCode"
             class="room-code">
+
             00000000
+
           </div>
+
 
           <button
             id="copyRoomBtn"
             type="button"
             onclick="copyRoomCode()">
+
             Copy Code
+
           </button>
 
         </div>
@@ -340,9 +479,8 @@
       </div>
 
 
-      <!-- ========================= -->
+
       <!-- MATCH STATUS -->
-      <!-- ========================= -->
 
       <div class="match-status-card">
 
@@ -353,46 +491,47 @@
 
         <div class="status-buttons">
 
-          <!-- I WON -->
 
           <button
             id="iWonBtn"
             class="won-btn"
             type="button"
             onclick="submitWin()">
+
             I Won
+
           </button>
 
-
-          <!-- I LOST -->
 
           <button
             id="iLostBtn"
             class="lost-btn"
             type="button"
             onclick="submitLost()">
+
             I Lost
+
           </button>
 
-
-          <!-- CANCEL -->
 
           <button
             id="matchCancelBtn"
             class="cancel-btn"
             type="button"
             onclick="cancelRoom()">
+
             Cancel
+
           </button>
+
 
         </div>
 
       </div>
 
 
-      <!-- ========================= -->
-      <!-- RESULT AREA -->
-      <!-- ========================= -->
+
+      <!-- RESULT -->
 
       <div
         id="resultArea"
@@ -403,28 +542,30 @@
           🏆 Submit Winning Result
         </h3>
 
+
         <p>
           अपनी जीत का screenshot upload करें।
         </p>
+
 
         <input
           id="resultScreenshot"
           type="file"
           accept="image/*">
 
+
         <button
           id="submitResultBtn"
           type="button"
           onclick="uploadResult()">
+
           📤 Submit Result
+
         </button>
 
       </div>
 
 
-      <!-- ========================= -->
-      <!-- GAME MESSAGE -->
-      <!-- ========================= -->
 
       <p
         id="gameMessage"
@@ -440,6 +581,7 @@
     </section>
 
 
+
     <!-- ========================= -->
     <!-- PROFILE -->
     <!-- ========================= -->
@@ -449,92 +591,120 @@
       class="card profile-card"
       style="display:none;">
 
-      <h2>👤 Profile</h2>
+
+      <h2>
+        👤 Profile
+      </h2>
+
 
       <h3 id="profileName">
         Player
       </h3>
 
+
       <p id="profileId">
         Player ID: ---
       </p>
 
+
       <div class="profile-grid">
+
 
         <div>
           <strong>Customer ID</strong>
           <p id="customerId">---</p>
         </div>
 
+
         <div>
           <strong>Wallet</strong>
           <p id="profileWallet">₹0.00</p>
         </div>
+
 
         <div>
           <strong>Bonus</strong>
           <p id="profileBonus">₹0.00</p>
         </div>
 
+
         <div>
           <strong>Battle Played</strong>
           <p id="battlePlayed">0</p>
         </div>
+
 
         <div>
           <strong>Coin Won</strong>
           <p id="coinWon">₹0.00</p>
         </div>
 
+
         <div>
           <strong>Referral Earned</strong>
           <p id="referralEarned">₹0.00</p>
         </div>
+
 
         <div>
           <strong>Withdrawal</strong>
           <p id="withdrawalAmount">₹0.00</p>
         </div>
 
+
         <div>
           <strong>Phone</strong>
           <p id="profilePhone">Not Added</p>
         </div>
+
 
         <div>
           <strong>Email</strong>
           <p id="profileEmail">Not Added</p>
         </div>
 
+
         <div>
           <strong>KYC</strong>
           <p id="kycStatus">Pending</p>
         </div>
 
+
       </div>
+
 
 
       <button
         type="button"
         onclick="editProfile()">
+
         ✏️ Edit Name
+
       </button>
+
 
       <button
         type="button"
         onclick="editEmail()">
+
         📧 Edit Email
+
       </button>
+
 
       <button
         type="button"
         onclick="goHome()">
+
         🏠 Home
+
       </button>
+
 
     </section>
 
   </main>
+
 
 
   <!-- ========================= -->
@@ -542,6 +712,7 @@
   <!-- ========================= -->
 
   <nav class="bottom-nav">
+
 
     <button
       type="button"
@@ -593,7 +764,9 @@
 
     </button>
 
+
   </nav>
+
 
 
   <!-- ========================= -->
@@ -606,11 +779,13 @@
       ⚠️ Demo Mode — No real money is used.
     </p>
 
+
     <p>
       © 2026 Balaji Ludo King
     </p>
 
   </footer>
+
 
 
   <script src="script.js"></script>
