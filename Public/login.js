@@ -41,7 +41,9 @@ let countdown = 60;
 
 function showMessage(message) {
 
-  loginMessage.textContent = message;
+  if (loginMessage) {
+    loginMessage.textContent = message;
+  }
 
 }
 
@@ -123,6 +125,10 @@ function verifyOtp() {
   }
 
 
+  /* =========================
+     LOGIN SUCCESS
+  ========================= */
+
   localStorage.setItem(
     "balajiLogin",
     "true"
@@ -134,8 +140,21 @@ function verifyOtp() {
   );
 
 
-  window.location.href =
-    "home.html";
+  showMessage(
+    "Login successful."
+  );
+
+
+  /* =========================
+     OPEN HOME
+  ========================= */
+
+  setTimeout(function () {
+
+    window.location.href =
+      "/home.html";
+
+  }, 300);
 
 }
 
@@ -187,69 +206,4 @@ function startCountdown() {
 
 function resendOtp() {
 
-  generatedOtp = generateOtp();
-
-  console.log(
-    "New Demo OTP:",
-    generatedOtp
-  );
-
-  showMessage(
-    "OTP sent successfully!"
-  );
-
-  startCountdown();
-
-}
-
-
-/* =========================
-   BUTTON EVENTS
-========================= */
-
-sendOtpBtn.addEventListener(
-  "click",
-  sendOtp
-);
-
-
-verifyOtpBtn.addEventListener(
-  "click",
-  verifyOtp
-);
-
-
-resendOtpBtn.addEventListener(
-  "click",
-  resendOtp
-);
-
-
-/* =========================
-   OTP INPUT
-========================= */
-
-otpInput.addEventListener(
-  "input",
-  function () {
-
-    this.value =
-      this.value.replace(/\D/g, "");
-
-  }
-);
-
-
-/* =========================
-   MOBILE INPUT
-========================= */
-
-mobileInput.addEventListener(
-  "input",
-  function () {
-
-    this.value =
-      this.value.replace(/\D/g, "").slice(0, 10);
-
-  }
-);
+ 
