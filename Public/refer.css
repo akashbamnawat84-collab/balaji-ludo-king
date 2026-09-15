@@ -1,0 +1,356 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f6fa;
+  color: #171717;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: 0;
+}
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar {
+  width: 100%;
+  padding: 14px 18px;
+  background: #ffffff;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff0d7;
+  font-size: 23px;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .4px;
+}
+
+.brand-sub {
+  margin-top: 3px;
+  color: #777777;
+  font-size: 11px;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 22px 16px 35px;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.offer {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: 30px;
+  background: #fff0d7;
+  color: #c66b00;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 13px;
+}
+
+.hero h1 {
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 900;
+  margin-bottom: 9px;
+}
+
+.hero p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666666;
+}
+
+.hero p strong {
+  color: #e48a00;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 12px;
+  text-align: center;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .05);
+}
+
+.stat-title {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #888888;
+  letter-spacing: .6px;
+  margin-bottom: 9px;
+}
+
+.stat-card strong {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+/* =========================
+   CODE CARD
+========================= */
+
+.code-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px 16px;
+  text-align: center;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .05);
+  margin-bottom: 20px;
+}
+
+.code-title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .5px;
+}
+
+.instant {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #888888;
+}
+
+.code-box {
+  margin: 13px auto 0;
+  max-width: 260px;
+  min-height: 55px;
+  padding: 8px 10px 8px 18px;
+  border-radius: 12px;
+  background: #f7f7f7;
+  border: 1px dashed #d7d7d7;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#referralCode {
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.copy-small {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: #ffffff;
+  font-size: 17px;
+}
+
+/* =========================
+   SHARE
+========================= */
+
+.share-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.share-section h2 {
+  font-size: 15px;
+  margin-bottom: 13px;
+}
+
+.share-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.share-btn {
+  min-height: 50px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.share-btn:active,
+.copy-link:active,
+.copy-small:active {
+  transform: scale(.98);
+}
+
+.copy-link {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 12px;
+  border-radius: 12px;
+  background: #171717;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.copy-message {
+  min-height: 18px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #16823b;
+  font-weight: 700;
+}
+
+/* =========================
+   HISTORY
+========================= */
+
+.history-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .04);
+}
+
+.history-title {
+  font-size: 15px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.history-list {
+  width: 100%;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.history-row:last-child {
+  border-bottom: 0;
+}
+
+.history-user {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.history-date {
+  margin-top: 3px;
+  color: #999999;
+  font-size: 10px;
+}
+
+.history-amount {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 20px 5px;
+  color: #999999;
+  font-size: 13px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+  text-align: center;
+  padding: 20px 15px 28px;
+  color: #777777;
+  font-size: 12px;
+}
+
+footer small {
+  display: block;
+  margin-top: 5px;
+  color: #aaaaaa;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 360px) {
+
+  .content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .stat-card strong {
+    font-size: 21px;
+  }
+
+  #referralCode {
+    font-size: 22px;
+  }
+}
