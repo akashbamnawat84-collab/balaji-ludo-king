@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>BALAJI LUDO KING - Room</title>
 
@@ -11,10 +15,17 @@
 
 <body>
 
+  <!-- ========================= -->
   <!-- HEADER -->
+  <!-- ========================= -->
+
   <header class="topbar">
 
-    <button id="backBtn" class="back-btn" type="button">
+    <button
+      id="backBtn"
+      class="back-btn"
+      type="button"
+    >
       ← BACK
     </button>
 
@@ -26,52 +37,72 @@
   </header>
 
 
+  <!-- ========================= -->
+  <!-- MAIN -->
+  <!-- ========================= -->
+
   <main class="room-page">
 
-    <!-- MATCH INFO -->
     <section class="room-card">
 
       <div class="match-title">
         🎮 Match Room
       </div>
 
+
+      <!-- ========================= -->
+      <!-- MATCH DETAILS -->
+      <!-- ========================= -->
+
       <div class="fee-grid">
 
         <div class="fee-box">
+
           <span>Entry Fee</span>
-          <strong id="entryFee">50 Demo Coins</strong>
+
+          <strong id="entryFee">
+            50 Demo Coins
+          </strong>
+
         </div>
 
+
         <div class="fee-box">
+
           <span>Winning Prize</span>
-          <strong id="winningPrize">95 Demo Coins</strong>
+
+          <strong id="winningPrize">
+            95 Demo Coins
+          </strong>
+
         </div>
 
       </div>
 
 
-      <!-- WAITING -->
-      <div id="waitingState" class="room-state">
+      <!-- ========================= -->
+      <!-- PLAYER 1 WAITING STATE -->
+      <!-- ========================= -->
+
+      <div
+        id="creatorState"
+        class="room-state"
+        style="display:none;"
+      >
 
         <div class="room-icon">
           🔐
         </div>
 
-        <h2>Waiting for Room Code</h2>
+        <h2>
+          Create Room in Ludo King
+        </h2>
 
         <p class="hindi-text">
-          रूम कोड का इंतजार है
+          Ludo King app में room बनाकर
+          Room Code यहाँ डालें।
         </p>
 
-        <div class="waiting-time">
-          <span>Waiting</span>
-          <strong id="waitingSeconds">5:00</strong>
-        </div>
-
-        <p class="waiting-info">
-          Ludo King app में room बनाने के बाद
-          यहाँ Room Code डालें।
-        </p>
 
         <div class="room-code-input-box">
 
@@ -88,6 +119,7 @@
             autocomplete="off"
           >
 
+
           <button
             type="button"
             id="submitRoomCodeBtn"
@@ -98,13 +130,34 @@
 
         </div>
 
-        <div id="roomCodeMessage" class="message"></div>
+
+        <div
+          id="roomCodeMessage"
+          class="message"
+        ></div>
 
 
         <div class="status-box">
+
           <span>Match Status</span>
-          <strong id="matchStatus">WAITING</strong>
+
+          <strong id="matchStatus">
+            WAITING
+          </strong>
+
         </div>
+
+
+        <div class="waiting-time">
+
+          <span>Room Time</span>
+
+          <strong id="waitingSeconds">
+            05:00
+          </strong>
+
+        </div>
+
 
         <button
           type="button"
@@ -117,7 +170,71 @@
       </div>
 
 
+      <!-- ========================= -->
+      <!-- PLAYER 2 WAITING -->
+      <!-- ========================= -->
+
+      <div
+        id="player2WaitingState"
+        class="room-state"
+        style="display:none;"
+      >
+
+        <div class="room-icon">
+          ⏳
+        </div>
+
+        <h2>
+          Waiting for Room Code
+        </h2>
+
+        <p class="hindi-text">
+          Player 1 Room Code दे रहा है।
+        </p>
+
+        <p class="waiting-info">
+          Player 1 के Room Code डालने के बाद
+          यहाँ Room Code दिखाई देगा।
+        </p>
+
+
+        <div class="status-box">
+
+          <span>Match Status</span>
+
+          <strong id="player2Status">
+            WAITING
+          </strong>
+
+        </div>
+
+
+        <div class="waiting-time">
+
+          <span>Waiting</span>
+
+          <strong id="player2WaitingSeconds">
+            05:00
+          </strong>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="player2CancelBtn"
+          class="cancel-btn"
+        >
+          Cancel Match
+        </button>
+
+      </div>
+
+
+      <!-- ========================= -->
       <!-- ROOM CODE READY -->
+      <!-- ========================= -->
+
       <div
         id="roomCodeState"
         class="room-state"
@@ -128,7 +245,9 @@
           🎮
         </div>
 
-        <h2>Room Code Ready</h2>
+        <h2>
+          Room Code Ready
+        </h2>
 
         <p class="hindi-text">
           Ludo King में यह Room Code डालें
@@ -137,7 +256,9 @@
 
         <div class="code-display">
 
-          <span>ROOM CODE</span>
+          <span>
+            ROOM CODE
+          </span>
 
           <strong id="roomCode">
             --------
@@ -156,8 +277,15 @@
 
 
         <div class="status-box">
-          <span>Match Status</span>
-          <strong id="readyStatus">ROOM READY</strong>
+
+          <span>
+            Match Status
+          </span>
+
+          <strong id="readyStatus">
+            ROOM READY
+          </strong>
+
         </div>
 
 
@@ -176,15 +304,21 @@
         </p>
 
 
+        <!-- ========================= -->
         <!-- RESULT -->
+        <!-- ========================= -->
+
         <div class="result-section">
 
-          <h3>Match Result</h3>
+          <h3>
+            Match Result
+          </h3>
 
           <p>
-            Match खत्म होने के बाद Win Result का
-            screenshot submit करें।
+            Match खत्म होने के बाद
+            Win Result का screenshot submit करें।
           </p>
+
 
           <label
             for="resultScreenshot"
@@ -193,12 +327,14 @@
             📸 Select Win Screenshot
           </label>
 
+
           <input
             type="file"
             id="resultScreenshot"
             accept="image/*"
             hidden
           >
+
 
           <div
             id="selectedFileName"
@@ -215,6 +351,7 @@
           >
             Submit Result
           </button>
+
 
           <div
             id="resultMessage"
@@ -235,10 +372,16 @@
       </div>
 
 
+      <!-- ========================= -->
       <!-- DEMO NOTICE -->
+      <!-- ========================= -->
+
       <div class="demo-notice">
+
         ⚠️ Demo Mode — Demo Coins only.
-        Ludo King app match result is manually verified.
+        Ludo King app match result is
+        manually verified.
+
       </div>
 
     </section>
@@ -246,7 +389,10 @@
   </main>
 
 
+  <!-- ========================= -->
   <!-- BOTTOM NAV -->
+  <!-- ========================= -->
+
   <nav class="bottom-nav">
 
     <a href="home.html">
@@ -280,4 +426,5 @@
   <script src="room.js"></script>
 
 </body>
+
 </html>
