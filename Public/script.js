@@ -65,12 +65,6 @@ let pendingMobile = "";
 let roomPollTimer = null;
 let roomTimer = null;
 
-/*
-  IMPORTANT:
-  Page हमेशा LOGIN से शुरू होगी।
-  पुराना saved room automatically restore नहीं होगा।
-*/
-
 /* =========================================
    START
 ========================================= */
@@ -130,6 +124,7 @@ function goHome() {
 
 /* =========================================
    LOGIN
+   SAME LOGIN CODE
 ========================================= */
 
 async function sendOTP() {
@@ -187,7 +182,10 @@ async function sendOTP() {
 
     if (otpInput) {
       otpInput.value = "";
-      setTimeout(() => otpInput.focus(), 100);
+
+      setTimeout(() => {
+        otpInput.focus();
+      }, 100);
     }
 
   } catch (error) {
@@ -206,6 +204,7 @@ async function sendOTP() {
 
 /* =========================================
    VERIFY OTP
+   SAME OTP CODE
 ========================================= */
 
 async function verifyOTP() {
@@ -231,11 +230,6 @@ async function verifyOTP() {
   }
 
   try {
-    /*
-      Backend OTP verification.
-      No fake/local OTP is created here.
-    */
-
     const response = await fetch(
       `${API}/login`,
       {
@@ -273,7 +267,8 @@ async function verifyOTP() {
   } catch (error) {
     if (otpMessage) {
       otpMessage.textContent =
-        error.message || "OTP verification failed.";
+        error.message ||
+        "OTP verification failed.";
     }
 
   } finally {
@@ -325,6 +320,7 @@ async function createRoom() {
       roomMessage.textContent =
         "Please login first.";
     }
+
     showOnly(welcomeCard);
     return;
   }
@@ -371,7 +367,8 @@ async function createRoom() {
   } catch (error) {
     if (roomMessage) {
       roomMessage.textContent =
-        error.message || "Room creation failed.";
+        error.message ||
+        "Room creation failed.";
     }
 
   } finally {
@@ -404,6 +401,7 @@ async function joinRoom() {
       roomMessage.textContent =
         "Please login first.";
     }
+
     showOnly(welcomeCard);
     return;
   }
@@ -448,7 +446,8 @@ async function joinRoom() {
   } catch (error) {
     if (roomMessage) {
       roomMessage.textContent =
-        error.message || "Unable to join room.";
+        error.message ||
+        "Unable to join room.";
     }
 
   } finally {
@@ -533,7 +532,10 @@ async function fetchRoom(code) {
     handleRoomState(currentRoom);
 
   } catch (error) {
-    console.log("Room polling error:", error);
+    console.log(
+      "Room polling error:",
+      error
+    );
   }
 }
 
@@ -559,7 +561,10 @@ function handleRoomState(room) {
   }
 
   if (roomMessage) {
-    if (room.player1_id && room.player2_id) {
+    if (
+      room.player1_id &&
+      room.player2_id
+    ) {
       roomMessage.textContent =
         "Both Players Ready! 🎉";
     } else {
@@ -604,7 +609,9 @@ function startRoomCountdown(room) {
   }
 
   const updateTimer = () => {
-    const elapsed = Date.now() - startTime;
+    const elapsed =
+      Date.now() - startTime;
+
     const remaining =
       Math.max(
         0,
@@ -621,7 +628,9 @@ function startRoomCountdown(room) {
       seconds % 60;
 
     waitingTimer.textContent =
-      `Room expires in ${minutes}:${String(secs).padStart(2,"0")}`;
+      `Room expires in ${minutes}:${String(
+        secs
+      ).padStart(2, "0")}`;
 
     if (remaining <= 0) {
       clearInterval(roomTimer);
@@ -634,6 +643,7 @@ function startRoomCountdown(room) {
   };
 
   updateTimer();
+
   roomTimer = setInterval(
     updateTimer,
     1000
@@ -668,7 +678,8 @@ function openMatchScreen(room) {
   }
 
   if (resultArea) {
-    resultArea.style.display = "none";
+    resultArea.style.display =
+      "none";
   }
 
   if (gameMessage) {
@@ -723,7 +734,8 @@ async function copyRoomCode() {
 function submitWin() {
   if (!resultArea) return;
 
-  resultArea.style.display = "block";
+  resultArea.style.display =
+    "block";
 
   if (gameMessage) {
     gameMessage.textContent =
@@ -761,10 +773,6 @@ async function uploadResult() {
   }
 
   try {
-    /*
-      Screenshot को base64 में भेजा जाता है।
-    */
-
     const base64 =
       await fileToBase64(file);
 
@@ -800,7 +808,8 @@ async function uploadResult() {
     }
 
     if (resultArea) {
-      resultArea.style.display = "none";
+      resultArea.style.display =
+        "none";
     }
 
   } catch (error) {
@@ -813,17 +822,19 @@ async function uploadResult() {
 }
 
 function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader =
-      new FileReader();
+  return new Promise(
+    (resolve, reject) => {
+      const reader =
+        new FileReader();
 
-    reader.onload = () =>
-      resolve(reader.result);
+      reader.onload = () =>
+        resolve(reader.result);
 
-    reader.onerror = reject;
+      reader.onerror = reject;
 
-    reader.readAsDataURL(file);
-  });
+      reader.readAsDataURL(file);
+    }
+  );
 }
 
 /* =========================================
@@ -837,7 +848,8 @@ function submitLost() {
   }
 
   if (resultArea) {
-    resultArea.style.display = "none";
+    resultArea.style.display =
+      "none";
   }
 }
 
@@ -887,6 +899,7 @@ async function cancelRoom() {
   }
 
   currentRoom = null;
+
   stopRoomPolling();
 
   if (createRoomCode) {
@@ -970,25 +983,38 @@ function openProfile() {
     0;
 
   const profileName =
-    document.getElementById("profileName");
+    document.getElementById(
+      "profileName"
+    );
 
   const profileId =
-    document.getElementById("profileId");
+    document.getElementById(
+      "profileId"
+    );
 
   const customerIdEl =
-    document.getElementById("customerId");
+    document.getElementById(
+      "customerId"
+    );
 
   const profileWallet =
-    document.getElementById("profileWallet");
+    document.getElementById(
+      "profileWallet"
+    );
 
   const profileBonus =
-    document.getElementById("profileBonus");
+    document.getElementById(
+      "profileBonus"
+    );
 
   const profilePhone =
-    document.getElementById("profilePhone");
+    document.getElementById(
+      "profilePhone"
+    );
 
   if (profileName)
-    profileName.textContent = name;
+    profileName.textContent =
+      name;
 
   if (profileId)
     profileId.textContent =
@@ -1014,29 +1040,130 @@ function openProfile() {
 }
 
 /* =========================================
-   PLACEHOLDER NAV
+   WALLET
 ========================================= */
 
 function openWallet() {
+  if (!currentPlayer) {
+    showOnly(welcomeCard);
+    return;
+  }
+
   alert("Wallet section coming soon.");
 }
 
+/* =========================================
+   REFER
+========================================= */
+
 function openRefer() {
-  alert("Refer section coming soon.");
-}
+  if (!currentPlayer) {
+    showOnly(welcomeCard);
+    return;
+  }
 
-function openSupport() {
-  alert("Support section coming soon.");
-}
-
-function editProfile() {
-  alert("Profile editing coming soon.");
-}
-
-function editEmail() {
-  alert("Email editing coming soon.");
+  alert("Refer & Earn section coming soon.");
 }
 
 /* =========================================
-   END
+   CUSTOMER SUPPORT
+   WHATSAPP LINK
 ========================================= */
+
+function openSupport() {
+  const whatsappLink =
+    "https://wa.me/qr/M4VB226B2BWQB1";
+
+  window.open(
+    whatsappLink,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+/* =========================================
+   HOME
+========================================= */
+
+function openHome() {
+  goHome();
+}
+
+/* =========================================
+   EDIT PROFILE
+========================================= */
+
+function editProfile() {
+  if (!currentPlayer) {
+    showOnly(welcomeCard);
+    return;
+  }
+
+  const oldName =
+    currentPlayer.name ||
+    "Player";
+
+  const newName =
+    prompt(
+      "Enter your name:",
+      oldName
+    );
+
+  if (
+    newName === null ||
+    !newName.trim()
+  ) {
+    return;
+  }
+
+  currentPlayer.name =
+    newName.trim();
+
+  const profileName =
+    document.getElementById(
+      "profileName"
+    );
+
+  if (profileName) {
+    profileName.textContent =
+      currentPlayer.name;
+  }
+}
+
+/* =========================================
+   EDIT EMAIL
+========================================= */
+
+function editEmail() {
+  if (!currentPlayer) {
+    showOnly(welcomeCard);
+    return;
+  }
+
+  const oldEmail =
+    currentPlayer.email || "";
+
+  const newEmail =
+    prompt(
+      "Enter your email:",
+      oldEmail
+    );
+
+  if (newEmail === null) {
+    return;
+  }
+
+  currentPlayer.email =
+    newEmail.trim();
+
+  const profileEmail =
+    document.getElementById(
+      "profileEmail"
+    );
+
+  if (profileEmail) {
+    profileEmail.textContent =
+      currentPlayer.email ||
+      "Not Added";
+  }
+}
