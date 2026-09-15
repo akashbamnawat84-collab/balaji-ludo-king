@@ -7,6 +7,173 @@
   <title>Balaji Ludo King</title>
 
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* =========================
+       REFER & EARN
+    ========================= */
+
+    #referSection {
+      display: none;
+      padding: 18px;
+    }
+
+    .refer-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.10);
+      margin-bottom: 18px;
+    }
+
+    .refer-title {
+      text-align: center;
+      font-size: 25px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .refer-subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .refer-percent {
+      font-size: 30px;
+      font-weight: 900;
+      text-align: center;
+      margin: 12px 0;
+    }
+
+    .refer-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .refer-stat {
+      background: #f7f7f7;
+      border-radius: 15px;
+      padding: 15px 10px;
+      text-align: center;
+    }
+
+    .refer-stat-label {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 7px;
+      font-weight: 600;
+    }
+
+    .refer-stat-value {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .your-code-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 16px;
+      background: #f5f5f5;
+      text-align: center;
+    }
+
+    .your-code-label {
+      font-size: 13px;
+      color: #777;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    #myReferralCode {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      margin-bottom: 12px;
+    }
+
+    .refer-copy-btn,
+    .refer-share-btn,
+    .refer-home-btn {
+      width: 100%;
+      border: none;
+      border-radius: 13px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 9px;
+    }
+
+    .refer-copy-btn {
+      background: #222;
+      color: #fff;
+    }
+
+    .refer-share-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .refer-share-btn {
+      color: #fff;
+    }
+
+    .whatsapp-btn {
+      background: #25D366;
+    }
+
+    .telegram-btn {
+      background: #229ED9;
+    }
+
+    .refer-home-btn {
+      background: #eeeeee;
+      color: #222;
+    }
+
+    .instant-payout {
+      text-align: center;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 13px;
+      background: #fff7df;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .share-title {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 20px;
+      margin-bottom: 7px;
+    }
+
+    #referMessage {
+      text-align: center;
+      min-height: 20px;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 420px) {
+      .refer-title {
+        font-size: 23px;
+      }
+
+      #myReferralCode {
+        font-size: 27px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -17,25 +184,25 @@
 
   <header class="topbar">
 
-    <div class="menu-icon">
+    <div class="menu-btn" onclick="toggleMenu()">
       ☰
     </div>
 
     <div class="logo">
-      🎲
-      <span>BALAJI<br>LUDO</span>
+      🎮 Balaji Ludo King
     </div>
 
-    <div class="header-wallet">
-      💰 ₹0.00
-    </div>
-
-    <div class="header-bonus">
-      🎁 ₹0.00
+    <div class="wallet-area">
+      <span id="walletBalance">₹0.00</span>
+      <span id="bonusBalance">₹0.00</span>
     </div>
 
   </header>
 
+
+  <!-- ========================= -->
+  <!-- MAIN PAGE -->
+  <!-- ========================= -->
 
   <main class="page">
 
@@ -44,299 +211,122 @@
     <!-- LOGIN PAGE - LOCKED -->
     <!-- ========================= -->
 
-    <section
-      id="welcomeCard"
-      class="card login-card">
+    <section id="welcomeCard" class="card">
 
-      <div class="login-brand">
+      <h1>🎮 Balaji Ludo King</h1>
 
-        <div class="brand-logo">
-          🎲
-        </div>
-
-        <div class="brand-name">
-          BALAJI<br>LUDO
-        </div>
-
-      </div>
-
-
-      <div class="login-title">
-        LOGIN
-      </div>
-
-
-      <h2>
-        Welcome Back
-      </h2>
-
+      <h2>2 Player Battle</h2>
 
       <p>
-        Enter your mobile number to get started
+        Welcome 👋
       </p>
 
-
-      <label for="playerMobile">
-        Mobile Number
-      </label>
-
+      <p>
+        Enter your name to continue
+      </p>
 
       <input
-        id="playerMobile"
+        type="text"
+        id="playerName"
+        placeholder="Enter your name"
+      >
+
+      <input
         type="tel"
-        inputmode="numeric"
+        id="mobileNumber"
+        placeholder="Enter mobile number"
         maxlength="10"
-        placeholder="98765 43210"
-        autocomplete="tel">
+      >
 
-
-      <button
-        id="startBtn"
-        type="button"
-        onclick="sendOTP()">
-
-        Send OTP
-
+      <button onclick="sendOTP()">
+        Continue
       </button>
 
-
-      <p id="message"></p>
-
-
-      <div class="security-text">
-        🔒 Protected by end-to-end security protocol
-      </div>
-
-
-      <div class="login-footer-text">
-
-        <strong>logo</strong>
-
-        <span>
-          Turn Fun into Funds!
-        </span>
-
-      </div>
-
-
-      <div class="chrome-note">
-
-        For best experience, open
-        <strong>bajigerludo.com</strong>
-        on chrome mobile
-
-      </div>
+      <div id="loginMessage"></div>
 
     </section>
-
 
 
     <!-- ========================= -->
     <!-- OTP PAGE - LOCKED -->
     <!-- ========================= -->
 
-    <section
-      id="otpCard"
-      class="card otp-card"
-      style="display:none;">
+    <section id="otpCard" class="card" style="display:none;">
 
-      <div class="login-brand">
-
-        <div class="brand-logo">
-          🎲
-        </div>
-
-        <div class="brand-name">
-          BALAJI<br>LUDO
-        </div>
-
-      </div>
-
-
-      <div class="login-title">
-        LOGIN
-      </div>
-
-
-      <h2>
-        Welcome Back
-      </h2>
-
+      <h2>🔐 Verify Mobile</h2>
 
       <p>
-        Enter the verification code sent to your phone
+        Enter the 6-digit OTP
       </p>
 
-
-      <label for="otpInput">
-        Verification OTP
-      </label>
-
-
       <input
-        id="otpInput"
         type="tel"
-        inputmode="numeric"
+        id="otpInput"
+        placeholder="Enter OTP"
         maxlength="6"
-        placeholder="• • • • • •"
-        autocomplete="one-time-code">
+      >
 
-
-      <div class="encrypted-text">
-        🔐 Encrypted
-      </div>
-
-
-      <div
-        id="resendTimer"
-        class="resend-text">
-
-        Resend available in 60s
-
-      </div>
-
-
-      <button
-        id="verifyOtpBtn"
-        type="button"
-        onclick="verifyOTP()">
-
-        Verify & Continue
-
+      <button onclick="verifyOTP()">
+        Verify OTP
       </button>
 
-
       <button
-        id="backLoginBtn"
-        type="button"
         onclick="backToLogin()"
-        class="back-login-btn">
-
-        ← Back
-
+        style="background:#eee;color:#222;margin-top:10px;"
+      >
+        Back
       </button>
 
-
-      <p id="otpMessage"></p>
-
-
-      <div class="security-text">
-        🔒 Protected by end-to-end security protocol
-      </div>
+      <div id="otpMessage"></div>
 
     </section>
 
 
-
     <!-- ========================= -->
-    <!-- ROOM -->
+    <!-- ROOM PAGE -->
     <!-- ========================= -->
 
-    <section
-      id="roomCard"
-      class="card room-card"
-      style="display:none;">
+    <section id="roomCard" class="card" style="display:none;">
 
-      <h2>
-        🎮 2 Player Battle
-      </h2>
+      <h2>🎮 2 Player Room</h2>
 
-      <p class="room-subtitle">
-        Create or join a 2 player room
-      </p>
+      <button id="createRoomBtn" onclick="createRoom()">
+        Create Room
+      </button>
 
-
-      <div class="room-box">
-
-        <h3>
-          Create Room
-        </h3>
-
-        <input
-          id="createRoomCode"
-          type="tel"
-          inputmode="numeric"
-          maxlength="8"
-          placeholder="Enter 8-Digit Room Code">
-
-
-        <button
-          id="createRoomBtn"
-          type="button"
-          onclick="createRoom()">
-
-          Create Room
-
-        </button>
-
-      </div>
-
-
-      <div class="divider">
+      <div style="text-align:center;margin:12px 0;">
         OR
       </div>
 
+      <input
+        type="text"
+        id="roomCode"
+        placeholder="Enter Room Code"
+        maxlength="8"
+      >
 
-      <div class="room-box">
+      <button onclick="joinRoom()">
+        Join Room
+      </button>
 
-        <h3>
-          Join Room
-        </h3>
-
-        <input
-          id="joinRoomCode"
-          type="tel"
-          inputmode="numeric"
-          maxlength="8"
-          placeholder="Enter 8-Digit Room Code">
-
-
-        <button
-          id="joinRoomBtn"
-          type="button"
-          onclick="joinRoom()">
-
-          Join Room
-
-        </button>
-
-      </div>
-
-
-      <p id="roomMessage"></p>
-
-
-      <div
-        id="waitingTimer"
-        class="timer">
-      </div>
-
+      <p id="roomMessage">
+        No room selected
+      </p>
 
       <div class="players">
 
-        <div class="player-card">
-
-          <h3>
-            🔴 Player 1
-          </h3>
-
-          <p id="player1Status">
+        <div class="player-box">
+          <strong>Player 1</strong>
+          <span id="player1Status">
             Waiting...
-          </p>
-
+          </span>
         </div>
 
-
-        <div class="player-card">
-
-          <h3>
-            🔵 Player 2
-          </h3>
-
-          <p id="player2Status">
+        <div class="player-box">
+          <strong>Player 2</strong>
+          <span id="player2Status">
             Waiting...
-          </p>
-
+          </span>
         </div>
 
       </div>
@@ -344,212 +334,86 @@
     </section>
 
 
-
     <!-- ========================= -->
-    <!-- MATCH SCREEN -->
+    <!-- LUDO GAME -->
     <!-- ========================= -->
 
-    <section
-      id="ludoCard"
-      class="match-page"
-      style="display:none;">
+    <section id="ludoCard" class="card" style="display:none;">
 
+      <h2>🎲 Ludo Battle</h2>
 
-      <button
-        class="back-button"
-        type="button"
-        onclick="goHome()">
+      <p>
+        Room:
+        <strong id="currentRoomCode">---</strong>
+      </p>
 
-        ← BACK
+      <div class="dice-area">
 
-      </button>
+        <button id="rollDiceBtn" onclick="rollDice()">
+          🎲 Roll Dice
+        </button>
 
-
-      <div class="vs-card">
-
-        <div class="vs-player">
-
-          <div class="avatar">
-            🎮
-          </div>
-
-          <div
-            id="matchPlayer1Name"
-            class="player-name">
-
-            Player 1
-
-          </div>
-
-          <div class="entry-label">
-            Entry Fee
-          </div>
-
-          <div
-            id="entryFee"
-            class="entry-value">
-
-            🪙 150
-
-          </div>
-
-        </div>
-
-
-        <div class="vs-logo">
-          VS
-        </div>
-
-
-        <div class="vs-player">
-
-          <div class="avatar">
-            🎮
-          </div>
-
-          <div
-            id="matchPlayer2Name"
-            class="player-name">
-
-            Player 2
-
-          </div>
-
-          <div class="winning-label">
-            Winning Prize
-          </div>
-
-          <div
-            id="winningPrize"
-            class="winning-value">
-
-            🪙 285
-
-          </div>
-
+        <div id="diceResult">
+          -
         </div>
 
       </div>
 
+      <div id="ludoBoard">
 
-      <div class="room-code-card">
-
-        <h2>
-          Room Code
-        </h2>
-
-        <div class="room-code-row">
-
-          <div
-            id="matchRoomCode"
-            class="room-code">
-
-            00000000
-
-          </div>
-
-          <button
-            id="copyRoomBtn"
-            type="button"
-            onclick="copyRoomCode()">
-
-            Copy Code
-
-          </button>
-
+        <div class="ludo-placeholder">
+          🎮
+          <br>
+          Ludo Board
+          <br>
+          <small>
+            Game area
+          </small>
         </div>
 
       </div>
 
+      <div class="game-result-buttons">
 
-      <div class="match-status-card">
+        <button onclick="iWon()">
+          🏆 I Won
+        </button>
 
-        <h2>
-          Match Status
-        </h2>
-
-        <div class="status-buttons">
-
-          <button
-            id="iWonBtn"
-            class="won-btn"
-            type="button"
-            onclick="submitWin()">
-
-            I Won
-
-          </button>
-
-
-          <button
-            id="iLostBtn"
-            class="lost-btn"
-            type="button"
-            onclick="submitLost()">
-
-            I Lost
-
-          </button>
-
-
-          <button
-            id="matchCancelBtn"
-            class="cancel-btn"
-            type="button"
-            onclick="cancelRoom()">
-
-            Cancel
-
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="resultArea"
-        class="result-card"
-        style="display:none;">
-
-        <h3>
-          🏆 Submit Winning Result
-        </h3>
-
-        <p>
-          अपनी जीत का screenshot upload करें।
-        </p>
-
-        <input
-          id="resultScreenshot"
-          type="file"
-          accept="image/*">
-
+        <button onclick="iLost()">
+          ❌ I Lost
+        </button>
 
         <button
-          id="submitResultBtn"
-          type="button"
-          onclick="uploadResult()">
-
-          📤 Submit Result
-
+          onclick="cancelRoom()"
+          style="background:#eee;color:#222;"
+        >
+          Cancel
         </button>
 
       </div>
 
 
-      <p
-        id="gameMessage"
-        class="game-message">
-      </p>
+      <!-- RESULT UPLOAD -->
 
+      <div id="resultUploadSection" style="display:none;">
 
-      <div class="play-text">
-        Play ludo game in Ludo King App
+        <h3>Upload Result</h3>
+
+        <input
+          type="file"
+          id="resultScreenshot"
+          accept="image/*"
+        >
+
+        <button onclick="uploadResult()">
+          Submit Result
+        </button>
+
+        <p id="resultMessage"></p>
+
       </div>
 
     </section>
-
 
 
     <!-- ========================= -->
@@ -558,241 +422,197 @@
 
     <section
       id="profileSection"
-      class="card profile-card"
-      style="display:none;">
+      class="card"
+      style="display:none;"
+    >
 
+      <h2>👤 Profile</h2>
 
-      <h2>
-        👤 Profile
-      </h2>
-
-
-      <h3 id="profileName">
-        Player
-      </h3>
-
-
-      <p id="profileId">
-        Player ID: ---
-      </p>
-
-
-      <div class="profile-grid">
-
-        <div>
-          <strong>Customer ID</strong>
-          <p id="customerId">---</p>
-        </div>
-
-
-        <div>
-          <strong>Wallet</strong>
-          <p id="profileWallet">₹0.00</p>
-        </div>
-
-
-        <div>
-          <strong>Bonus</strong>
-          <p id="profileBonus">₹0.00</p>
-        </div>
-
-
-        <div>
-          <strong>Battle Played</strong>
-          <p id="battlePlayed">0</p>
-        </div>
-
-
-        <div>
-          <strong>Coin Won</strong>
-          <p id="coinWon">₹0.00</p>
-        </div>
-
-
-        <div>
-          <strong>Referral Earned</strong>
-          <p id="referralEarned">₹0.00</p>
-        </div>
-
-
-        <div>
-          <strong>Withdrawal</strong>
-          <p id="withdrawalAmount">₹0.00</p>
-        </div>
-
-
-        <div>
-          <strong>Phone</strong>
-          <p id="profilePhone">Not Added</p>
-        </div>
-
-
-        <div>
-          <strong>Email</strong>
-          <p id="profileEmail">Not Added</p>
-        </div>
-
-
-        <div>
-          <strong>KYC</strong>
-          <p id="kycStatus">Pending</p>
-        </div>
-
+      <div class="profile-row">
+        <strong>Name</strong>
+        <span id="profileName">---</span>
       </div>
 
+      <div class="profile-row">
+        <strong>Mobile</strong>
+        <span id="profileMobile">---</span>
+      </div>
 
-      <button
-        type="button"
-        onclick="editProfile()">
+      <div class="profile-row">
+        <strong>Customer ID</strong>
+        <span id="customerId">---</span>
+      </div>
 
-        ✏️ Edit Name
+      <div class="profile-row">
+        <strong>Wallet</strong>
+        <span id="profileWallet">₹0.00</span>
+      </div>
 
-      </button>
-
-
-      <button
-        type="button"
-        onclick="editEmail()">
-
-        📧 Edit Email
-
-      </button>
-
-
-      <button
-        type="button"
-        onclick="goHome()">
-
-        🏠 Home
-
-      </button>
+      <div class="profile-row">
+        <strong>Bonus</strong>
+        <span id="profileBonus">₹0.00</span>
+      </div>
 
     </section>
 
 
-
     <!-- ========================= -->
-    <!-- SUPPORT SECTION -->
+    <!-- CUSTOMER SUPPORT -->
     <!-- ========================= -->
 
     <section
       id="supportSection"
-      class="card support-card"
-      style="display:none;">
+      class="card"
+      style="display:none;"
+    >
 
-      <div class="support-top">
+      <h2>🎧 Customer Support</h2>
 
-        <div class="support-main-icon">
-          🎧
+      <p>
+        Need help? Contact our support team.
+      </p>
+
+      <button onclick="openSupportWhatsApp()">
+        WhatsApp Support
+      </button>
+
+      <button onclick="openTelegramSupport()">
+        Telegram Support
+      </button>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- REFER & EARN -->
+    <!-- ========================= -->
+
+    <section id="referSection">
+
+      <div class="refer-card">
+
+        <div class="refer-title">
+          Invite & Earn Cash
         </div>
 
-        <h2>
-          Live Agents Online
-        </h2>
-
-        <div class="support-online">
-          <span class="support-online-dot"></span>
-          24/7 Support Center
+        <div class="refer-subtitle">
+          Share with friends & get up to
+          <strong>3% Commission</strong>
+          on every victory!
         </div>
 
-        <p>
-          Having an issue? Our team is active & ready to assist
-        </p>
-
-      </div>
-
-
-      <div class="support-content">
-
-        <h3>
-          Choose a contact channel
-        </h3>
-
-
-        <!-- TELEGRAM -->
-
-        <div class="support-channel">
-
-          <div class="support-channel-left">
-
-            <div class="support-channel-icon">
-              ✈️
-            </div>
-
-            <div class="support-channel-info">
-
-              <h4>
-                Telegram Support
-              </h4>
-
-              <p>
-                24/7 Active
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            class="support-chat-btn"
-            onclick="openTelegramSupport()">
-
-            Chat
-
-          </button>
-
+        <div class="refer-percent">
+          3%
         </div>
 
+        <!-- STATS -->
 
-        <!-- WHATSAPP -->
+        <div class="refer-stats">
 
-        <div class="support-channel">
+          <div class="refer-stat">
 
-          <div class="support-channel-left">
-
-            <div class="support-channel-icon whatsapp-support-icon">
-              💬
+            <div class="refer-stat-label">
+              TOTAL REFERRAL
             </div>
 
-            <div class="support-channel-info">
-
-              <h4>
-                WhatsApp Chat
-              </h4>
-
-              <p>
-                Quick Response (2-5 mins)
-              </p>
-
+            <div
+              class="refer-stat-value"
+              id="totalReferral"
+            >
+              0
             </div>
 
           </div>
 
 
+          <div class="refer-stat">
+
+            <div class="refer-stat-label">
+              TOTAL EARNED
+            </div>
+
+            <div
+              class="refer-stat-value"
+              id="totalEarned"
+            >
+              ₹0.00
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- YOUR CODE -->
+
+        <div class="your-code-box">
+
+          <div class="your-code-label">
+            YOUR CODE
+          </div>
+
+          <div id="myReferralCode">
+            ------
+          </div>
+
           <button
-            type="button"
-            class="support-chat-btn"
-            onclick="openSupportWhatsApp()">
-
-            Chat
-
+            class="refer-copy-btn"
+            onclick="copyReferralLink()"
+          >
+            📋 Copy Referral Link
           </button>
 
         </div>
 
 
-        <div class="support-secure">
-          🔒 100% Secure & Confidential Support
+        <!-- PAYOUT -->
+
+        <div class="instant-payout">
+          ⚡ Instant Payouts
         </div>
+
+
+        <!-- SHARE -->
+
+        <div class="share-title">
+          Share directly via
+        </div>
+
+        <div class="refer-share-row">
+
+          <button
+            class="refer-share-btn whatsapp-btn"
+            onclick="shareReferralWhatsApp()"
+          >
+            WhatsApp
+          </button>
+
+          <button
+            class="refer-share-btn telegram-btn"
+            onclick="shareReferralTelegram()"
+          >
+            Telegram
+          </button>
+
+        </div>
+
+
+        <div id="referMessage"></div>
+
+
+        <button
+          class="refer-home-btn"
+          onclick="referGoHome()"
+        >
+          🏠 Home
+        </button>
 
       </div>
 
     </section>
 
-  </main>
 
+  </main>
 
 
   <!-- ========================= -->
@@ -801,58 +621,32 @@
 
   <nav class="bottom-nav">
 
-    <button
-      type="button"
-      onclick="openWallet()">
-
-      <span>💰</span>
-      <small>Wallet</small>
-
+    <button onclick="openWallet()">
+      💰
+      <span>Wallet</span>
     </button>
 
-
-    <button
-      type="button"
-      onclick="openRefer()">
-
-      <span>🎁</span>
-      <small>Refer</small>
-
+    <button onclick="openRefer()">
+      🎁
+      <span>Refer</span>
     </button>
 
-
-    <button
-      class="home-nav"
-      type="button"
-      onclick="goHome()">
-
-      <span>⌂</span>
-      <small>Home</small>
-
+    <button onclick="goHome()">
+      🏠
+      <span>Home</span>
     </button>
 
-
-    <button
-      type="button"
-      onclick="openSupport()">
-
-      <span>🎧</span>
-      <small>Support</small>
-
+    <button onclick="openSupport()">
+      🎧
+      <span>Support</span>
     </button>
 
-
-    <button
-      type="button"
-      onclick="openProfile()">
-
-      <span>♙</span>
-      <small>Profile</small>
-
+    <button onclick="openProfile()">
+      👤
+      <span>Profile</span>
     </button>
 
   </nav>
-
 
 
   <!-- ========================= -->
@@ -860,226 +654,19 @@
   <!-- ========================= -->
 
   <footer>
-
-    <p>
-      ⚠️ Demo Mode — No real money is used.
-    </p>
-
-    <p>
-      © 2026 Balaji Ludo King
-    </p>
-
+    © 2026 Balaji Ludo King
   </footer>
 
 
-
   <!-- ========================= -->
-  <!-- SUPPORT STYLE -->
-  <!-- ========================= -->
-
-  <style>
-
-    .support-card {
-      padding: 0;
-      overflow: hidden;
-    }
-
-    .support-top {
-      text-align: center;
-      padding: 28px 18px 22px;
-    }
-
-    .support-main-icon {
-      width: 64px;
-      height: 64px;
-
-      margin: 0 auto 14px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 50%;
-
-      font-size: 30px;
-
-      background: rgba(255,255,255,0.08);
-    }
-
-    .support-top h2 {
-      margin: 0;
-
-      font-size: 24px;
-      font-weight: 800;
-    }
-
-    .support-online {
-      margin-top: 8px;
-
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .support-online-dot {
-      display: inline-block;
-
-      width: 9px;
-      height: 9px;
-
-      margin-right: 6px;
-
-      border-radius: 50%;
-
-      background: #22c55e;
-
-      box-shadow:
-        0 0 8px rgba(34,197,94,0.8);
-    }
-
-    .support-top p {
-      margin: 10px auto 0;
-
-      max-width: 340px;
-
-      font-size: 14px;
-      line-height: 1.5;
-
-      opacity: 0.72;
-    }
-
-    .support-content {
-      margin: 0 14px 20px;
-
-      padding: 18px;
-
-      border-radius: 18px;
-
-      background: rgba(255,255,255,0.06);
-
-      border: 1px solid rgba(255,255,255,0.10);
-
-      box-shadow:
-        0 12px 30px rgba(0,0,0,0.18);
-    }
-
-    .support-content h3 {
-      margin: 0 0 16px;
-
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    .support-channel {
-      display: flex;
-
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 12px;
-
-      padding: 14px;
-
-      margin-bottom: 12px;
-
-      border-radius: 15px;
-
-      background: rgba(255,255,255,0.05);
-
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .support-channel-left {
-      display: flex;
-
-      align-items: center;
-
-      gap: 12px;
-
-      min-width: 0;
-    }
-
-    .support-channel-icon {
-      width: 44px;
-      height: 44px;
-
-      flex-shrink: 0;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 12px;
-
-      font-size: 22px;
-
-      background: rgba(255,255,255,0.08);
-    }
-
-    .support-channel-info h4 {
-      margin: 0;
-
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .support-channel-info p {
-      margin: 4px 0 0;
-
-      font-size: 12px;
-
-      opacity: 0.65;
-    }
-
-    .support-chat-btn {
-      border: 0;
-
-      padding: 9px 16px;
-
-      border-radius: 10px;
-
-      font-size: 13px;
-      font-weight: 800;
-
-      cursor: pointer;
-
-      background: #ffffff;
-      color: #111111;
-
-      white-space: nowrap;
-    }
-
-    .support-chat-btn:active {
-      transform: scale(0.96);
-    }
-
-    .support-secure {
-      text-align: center;
-
-      margin-top: 18px;
-
-      padding-top: 14px;
-
-      border-top:
-        1px solid rgba(255,255,255,0.08);
-
-      font-size: 12px;
-
-      opacity: 0.65;
-    }
-
-  </style>
-
-
-
-  <!-- ========================= -->
-  <!-- MAIN SCRIPT -->
+  <!-- EXISTING SCRIPT - DO NOT CHANGE -->
   <!-- ========================= -->
 
   <script src="script.js"></script>
 
 
   <!-- ========================= -->
-  <!-- SUPPORT FUNCTIONS -->
+  <!-- EXISTING SUPPORT FUNCTIONS -->
   <!-- ========================= -->
 
   <script>
@@ -1087,49 +674,51 @@
     function openSupport() {
 
       const sections = [
-        document.getElementById("welcomeCard"),
-        document.getElementById("otpCard"),
-        document.getElementById("roomCard"),
-        document.getElementById("ludoCard"),
-        document.getElementById("profileSection"),
-        document.getElementById("supportSection")
+        "welcomeCard",
+        "otpCard",
+        "roomCard",
+        "ludoCard",
+        "profileSection",
+        "referSection"
       ];
 
-      sections.forEach(function(section) {
+      sections.forEach(function(id) {
 
-        if (section) {
-          section.style.display = "none";
+        const element = document.getElementById(id);
+
+        if (element) {
+          element.style.display = "none";
         }
 
       });
 
-      const supportSection =
+      const support =
         document.getElementById("supportSection");
 
-      if (supportSection) {
-        supportSection.style.display = "block";
+      if (support) {
+        support.style.display = "block";
       }
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
     }
 
 
     function openSupportWhatsApp() {
 
-      const whatsappNumber =
-        "918619706213";
+      const phone = "918619706213";
 
-      const whatsappUrl =
-        "https://wa.me/" + whatsappNumber;
+      const message =
+        encodeURIComponent(
+          "Hello Balaji Ludo King Support"
+        );
 
       window.open(
-        whatsappUrl,
-        "_blank",
-        "noopener,noreferrer"
+        "https://wa.me/" +
+        phone +
+        "?text=" +
+        message,
+        "_blank"
       );
+
     }
 
 
@@ -1140,6 +729,806 @@
       );
 
     }
+
+  </script>
+
+
+  <!-- ========================= -->
+  <!-- REFER & EARN SCRIPT -->
+  <!-- ========================= -->
+
+  <script>
+
+    /* ---------------------------------
+       SAVE REFERRAL CODE FROM LINK
+       Example:
+       ?ref=123456
+    --------------------------------- */
+
+    (function saveIncomingReferral() {
+
+      try {
+
+        const params =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        const ref =
+          params.get("ref");
+
+        if (
+          ref &&
+          /^\d{6}$/.test(ref)
+        ) {
+
+          localStorage.setItem(
+            "pending_referral_code",
+            ref
+          );
+
+        }
+
+      } catch (error) {
+
+        console.log(
+          "Referral link error",
+          error
+        );
+
+      }
+
+    })();
+
+
+    /* ---------------------------------
+       GET LOGGED CUSTOMER ID
+    --------------------------------- */
+
+    function getLoggedCustomerId() {
+
+      const possibleKeys = [
+
+        "customer_id",
+        "customerId",
+        "player_id",
+        "playerId",
+        "BALAJI_CUSTOMER_ID"
+
+      ];
+
+
+      for (
+        let i = 0;
+        i < possibleKeys.length;
+        i++
+      ) {
+
+        try {
+
+          const value =
+            localStorage.getItem(
+              possibleKeys[i]
+            );
+
+          if (
+            value &&
+            value !== "null" &&
+            value !== "undefined"
+          ) {
+
+            return value;
+
+          }
+
+        } catch (error) {}
+
+      }
+
+
+      /* SESSION STORAGE */
+
+      for (
+        let i = 0;
+        i < possibleKeys.length;
+        i++
+      ) {
+
+        try {
+
+          const value =
+            sessionStorage.getItem(
+              possibleKeys[i]
+            );
+
+          if (
+            value &&
+            value !== "null" &&
+            value !== "undefined"
+          ) {
+
+            return value;
+
+          }
+
+        } catch (error) {}
+
+      }
+
+
+      /* CUSTOMER OBJECT */
+
+      const objectKeys = [
+        "customer",
+        "user",
+        "currentCustomer",
+        "loggedCustomer"
+      ];
+
+
+      for (
+        let i = 0;
+        i < objectKeys.length;
+        i++
+      ) {
+
+        try {
+
+          const raw =
+            localStorage.getItem(
+              objectKeys[i]
+            );
+
+          if (!raw) {
+            continue;
+          }
+
+          const data =
+            JSON.parse(raw);
+
+          if (data) {
+
+            if (data.customer_id) {
+              return data.customer_id;
+            }
+
+            if (data.id) {
+              return data.id;
+            }
+
+          }
+
+        } catch (error) {}
+
+      }
+
+
+      /* CUSTOMER ID FROM PROFILE */
+
+      const customerIdElement =
+        document.getElementById(
+          "customerId"
+        );
+
+      if (
+        customerIdElement &&
+        customerIdElement.textContent &&
+        customerIdElement.textContent.trim() !== "---"
+      ) {
+
+        return customerIdElement.textContent.trim();
+
+      }
+
+
+      return null;
+
+    }
+
+
+    /* ---------------------------------
+       SHOW REFER MESSAGE
+    --------------------------------- */
+
+    function showReferralMessage(
+      text
+    ) {
+
+      const box =
+        document.getElementById(
+          "referMessage"
+        );
+
+      if (box) {
+
+        box.textContent = text;
+
+        setTimeout(
+          function() {
+
+            box.textContent = "";
+
+          },
+          3500
+        );
+
+      }
+
+    }
+
+
+    /* ---------------------------------
+       HIDE ALL MAIN SECTIONS
+    --------------------------------- */
+
+    function hideAllForReferral() {
+
+      const ids = [
+
+        "welcomeCard",
+        "otpCard",
+        "roomCard",
+        "ludoCard",
+        "profileSection",
+        "supportSection"
+
+      ];
+
+
+      ids.forEach(
+        function(id) {
+
+          const element =
+            document.getElementById(id);
+
+          if (element) {
+
+            element.style.display =
+              "none";
+
+          }
+
+        }
+      );
+
+    }
+
+
+    /* ---------------------------------
+       OPEN REFER PAGE
+    --------------------------------- */
+
+    window.openRefer =
+      async function() {
+
+        hideAllForReferral();
+
+
+        const refer =
+          document.getElementById(
+            "referSection"
+          );
+
+        if (refer) {
+
+          refer.style.display =
+            "block";
+
+        }
+
+
+        await loadReferralData();
+
+      };
+
+
+    /* ---------------------------------
+       LOAD REFERRAL DATA
+    --------------------------------- */
+
+    async function loadReferralData() {
+
+      const customerId =
+        getLoggedCustomerId();
+
+
+      if (!customerId) {
+
+        document.getElementById(
+          "myReferralCode"
+        ).textContent = "------";
+
+        document.getElementById(
+          "totalReferral"
+        ).textContent = "0";
+
+        document.getElementById(
+          "totalEarned"
+        ).textContent = "₹0.00";
+
+        showReferralMessage(
+          "Please login first."
+        );
+
+        return;
+
+      }
+
+
+      /* TRY PENDING REFERRAL */
+
+      await claimPendingReferral(
+        customerId
+      );
+
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/referral/" +
+            encodeURIComponent(
+              customerId
+            )
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.message ||
+            "Unable to load referral data"
+          );
+
+        }
+
+
+        document.getElementById(
+          "myReferralCode"
+        ).textContent =
+          data.referral_code ||
+          "------";
+
+
+        document.getElementById(
+          "totalReferral"
+        ).textContent =
+          data.total_referral ??
+          0;
+
+
+        document.getElementById(
+          "totalEarned"
+        ).textContent =
+          "₹" +
+          Number(
+            data.total_earned || 0
+          ).toFixed(2);
+
+
+      } catch (error) {
+
+        console.error(
+          "Referral load error:",
+          error
+        );
+
+        showReferralMessage(
+          "Referral data loading failed."
+        );
+
+      }
+
+    }
+
+
+    /* ---------------------------------
+       CLAIM PENDING REFERRAL
+    --------------------------------- */
+
+    async function claimPendingReferral(
+      customerId
+    ) {
+
+      try {
+
+        const referralCode =
+          localStorage.getItem(
+            "pending_referral_code"
+          );
+
+
+        if (
+          !referralCode ||
+          !/^\d{6}$/.test(
+            referralCode
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        const response =
+          await fetch(
+            "/api/referral/claim",
+            {
+
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                customer_id:
+                  customerId,
+
+                referral_code:
+                  referralCode
+
+              })
+
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        /*
+          Successful claim OR already claimed
+          means we can remove pending code.
+        */
+
+        if (
+          response.ok ||
+          data.message ===
+            "Referral already claimed"
+        ) {
+
+          localStorage.removeItem(
+            "pending_referral_code"
+          );
+
+        }
+
+
+      } catch (error) {
+
+        console.log(
+          "Pending referral claim:",
+          error
+        );
+
+      }
+
+    }
+
+
+    /* ---------------------------------
+       GET REFERRAL CODE
+    --------------------------------- */
+
+    function getMyReferralCode() {
+
+      const element =
+        document.getElementById(
+          "myReferralCode"
+        );
+
+      if (!element) {
+        return "";
+      }
+
+      const code =
+        element.textContent.trim();
+
+      if (
+        !code ||
+        code === "------" ||
+        code === "------"
+      ) {
+
+        return "";
+
+      }
+
+      return code;
+
+    }
+
+
+    /* ---------------------------------
+       REFERRAL LINK
+    --------------------------------- */
+
+    function getReferralLink() {
+
+      const code =
+        getMyReferralCode();
+
+
+      if (!code) {
+        return "";
+      }
+
+
+      return (
+        window.location.origin +
+        "/?ref=" +
+        encodeURIComponent(code)
+      );
+
+    }
+
+
+    /* ---------------------------------
+       COPY REFERRAL LINK
+    --------------------------------- */
+
+    window.copyReferralLink =
+      async function() {
+
+        const link =
+          getReferralLink();
+
+
+        if (!link) {
+
+          showReferralMessage(
+            "Referral code not available."
+          );
+
+          return;
+
+        }
+
+
+        try {
+
+          await navigator.clipboard.writeText(
+            link
+          );
+
+          showReferralMessage(
+            "Referral link copied!"
+          );
+
+        } catch (error) {
+
+          /*
+            Fallback for some mobile browsers
+          */
+
+          const textarea =
+            document.createElement(
+              "textarea"
+            );
+
+          textarea.value = link;
+
+          document.body.appendChild(
+            textarea
+          );
+
+          textarea.select();
+
+          document.execCommand(
+            "copy"
+          );
+
+          textarea.remove();
+
+          showReferralMessage(
+            "Referral link copied!"
+          );
+
+        }
+
+      };
+
+
+    /* ---------------------------------
+       WHATSAPP SHARE
+    --------------------------------- */
+
+    window.shareReferralWhatsApp =
+      function() {
+
+        const code =
+          getMyReferralCode();
+
+        const link =
+          getReferralLink();
+
+
+        if (!code || !link) {
+
+          showReferralMessage(
+            "Referral code not available."
+          );
+
+          return;
+
+        }
+
+
+        const message =
+          "🎮 Balaji Ludo King\n\n" +
+          "Join me and play 2 Player Battle!\n\n" +
+          "Use my referral code: " +
+          code +
+          "\n\n" +
+          "Get started here:\n" +
+          link;
+
+
+        window.open(
+          "https://wa.me/?text=" +
+          encodeURIComponent(message),
+          "_blank"
+        );
+
+      };
+
+
+    /* ---------------------------------
+       TELEGRAM SHARE
+    --------------------------------- */
+
+    window.shareReferralTelegram =
+      function() {
+
+        const code =
+          getMyReferralCode();
+
+        const link =
+          getReferralLink();
+
+
+        if (!code || !link) {
+
+          showReferralMessage(
+            "Referral code not available."
+          );
+
+          return;
+
+        }
+
+
+        const message =
+          "🎮 Balaji Ludo King\n\n" +
+          "Join me and play 2 Player Battle!\n" +
+          "My referral code: " +
+          code +
+          "\n\n" +
+          link;
+
+
+        window.open(
+          "https://t.me/share/url?url=" +
+          encodeURIComponent(link) +
+          "&text=" +
+          encodeURIComponent(message),
+          "_blank"
+        );
+
+      };
+
+
+    /* ---------------------------------
+       REFER HOME
+    --------------------------------- */
+
+    window.referGoHome =
+      function() {
+
+        const refer =
+          document.getElementById(
+            "referSection"
+          );
+
+        if (refer) {
+
+          refer.style.display =
+            "none";
+
+        }
+
+
+        if (
+          typeof window.goHome ===
+          "function"
+        ) {
+
+          window.goHome();
+
+        } else {
+
+          const home =
+            document.getElementById(
+              "welcomeCard"
+            );
+
+          if (home) {
+
+            home.style.display =
+              "block";
+
+          }
+
+        }
+
+      };
+
+
+    /* ---------------------------------
+       AUTO CLAIM AFTER LOGIN
+       Does NOT modify Login code.
+    --------------------------------- */
+
+    (function startReferralAutoClaim() {
+
+      let attempts = 0;
+
+      const timer =
+        setInterval(
+          async function() {
+
+            attempts++;
+
+
+            const customerId =
+              getLoggedCustomerId();
+
+            const pendingCode =
+              localStorage.getItem(
+                "pending_referral_code"
+              );
+
+
+            if (
+              customerId &&
+              pendingCode
+            ) {
+
+              await claimPendingReferral(
+                customerId
+              );
+
+              clearInterval(timer);
+
+              return;
+
+            }
+
+
+            /*
+              Stop after approximately
+              3 minutes.
+            */
+
+            if (attempts >= 120) {
+
+              clearInterval(timer);
+
+            }
+
+          },
+          1500
+        );
+
+    })();
 
   </script>
 
