@@ -1,6 +1,7 @@
 // =====================================
 // BALAJI LUDO KING - ROOM
-// Player 1 / Player 2 Room Flow
+// Win / Lost / Cancel
+// Win Screenshot inside I Won
 // Demo Coins Only
 // =====================================
 
@@ -68,8 +69,14 @@ const roomCodeMessage =
 const copyCodeBtn =
   document.getElementById("copyCodeBtn");
 
-const playLudoBtn =
-  document.getElementById("playLudoBtn");
+const wonBtn =
+  document.getElementById("wonBtn");
+
+const lostBtn =
+  document.getElementById("lostBtn");
+
+const winSection =
+  document.getElementById("winSection");
 
 const resultScreenshot =
   document.getElementById("resultScreenshot");
@@ -127,7 +134,7 @@ const selectedBattle =
 
 
 // =====================================
-// PLAYER NAME
+// PLAYER
 // =====================================
 
 function getPlayerName() {
@@ -144,10 +151,6 @@ function getPlayerName() {
 
 }
 
-
-// =====================================
-// DETERMINE PLAYER
-// =====================================
 
 function getPlayerRole() {
 
@@ -166,7 +169,7 @@ function getPlayerRole() {
       "balajiSecondPlayer"
     ) || "";
 
-  // Player 2
+
   if (
     secondPlayer &&
     secondPlayer === currentPlayer &&
@@ -177,7 +180,7 @@ function getPlayerRole() {
 
   }
 
-  // Player 1 / Creator
+
   return "PLAYER1";
 }
 
@@ -187,7 +190,7 @@ const playerRole =
 
 
 // =====================================
-// SHOW BATTLE DETAILS
+// BATTLE DETAILS
 // =====================================
 
 if (selectedBattle) {
@@ -213,7 +216,7 @@ if (selectedBattle) {
 
 
 // =====================================
-// WAITING START TIME
+// WAITING TIME
 // =====================================
 
 let waitingStartedAt =
@@ -248,7 +251,7 @@ let savedRoomCode =
 
 
 // =====================================
-// SHOW CREATOR SCREEN
+// SHOW PLAYER 1
 // =====================================
 
 function showCreatorScreen() {
@@ -296,7 +299,7 @@ function showPlayer2Waiting() {
 
 
 // =====================================
-// SHOW ROOM CODE
+// SHOW ROOM READY
 // =====================================
 
 function showRoomCode(code) {
@@ -311,12 +314,10 @@ function showRoomCode(code) {
       "none";
   }
 
-
   if (player2WaitingState) {
     player2WaitingState.style.display =
       "none";
   }
-
 
   if (roomCodeState) {
     roomCodeState.style.display =
@@ -325,8 +326,10 @@ function showRoomCode(code) {
 
 
   if (roomCode) {
+
     roomCode.textContent =
       code;
+
   }
 
 
@@ -342,7 +345,7 @@ function showRoomCode(code) {
 
 // =====================================
 // SUBMIT ROOM CODE
-// ONLY PLAYER 1
+// PLAYER 1 ONLY
 // =====================================
 
 if (submitRoomCodeBtn) {
@@ -350,12 +353,6 @@ if (submitRoomCodeBtn) {
   submitRoomCodeBtn.addEventListener(
     "click",
     function () {
-
-      if (playerRole !== "PLAYER1") {
-
-        return;
-      }
-
 
       const code =
         roomCodeInput
@@ -483,18 +480,13 @@ function updateWaitingTimer() {
   if (remaining <= 0) {
 
     if (matchStatus) {
-
       matchStatus.textContent =
         "EXPIRED";
-
     }
 
-
     if (player2Status) {
-
       player2Status.textContent =
         "EXPIRED";
-
     }
 
   }
@@ -503,26 +495,7 @@ function updateWaitingTimer() {
 
 
 // =====================================
-// BACK
-// =====================================
-
-if (backBtn) {
-
-  backBtn.addEventListener(
-    "click",
-    function () {
-
-      window.location.href =
-        "battle.html";
-
-    }
-  );
-
-}
-
-
-// =====================================
-// MOVE BATTLE TO RUNNING
+// MOVE TO RUNNING
 // ONLY AFTER ROOM CODE
 // =====================================
 
@@ -548,18 +521,12 @@ function moveBattleToRunning() {
       );
 
 
-    if (
-      !Array.isArray(
-        runningBattles
-      )
-    ) {
-
+    if (!Array.isArray(runningBattles)) {
       runningBattles = [];
-
     }
 
 
-    const alreadyRunning =
+    const exists =
       runningBattles.some(
         function (battle) {
 
@@ -572,7 +539,7 @@ function moveBattleToRunning() {
       );
 
 
-    if (!alreadyRunning) {
+    if (!exists) {
 
       runningBattles.unshift({
 
@@ -599,9 +566,6 @@ function moveBattleToRunning() {
 
         status:
           "RUNNING",
-
-        roomAccepted:
-          true,
 
         resultStatus:
           "WAITING",
@@ -634,54 +598,6 @@ function moveBattleToRunning() {
 
 
 // =====================================
-// OPEN LUDO KING
-// =====================================
-
-if (playLudoBtn) {
-
-  playLudoBtn.addEventListener(
-    "click",
-    function () {
-
-      if (!savedRoomCode) {
-
-        alert(
-          "पहले Room Code डालें।"
-        );
-
-        return;
-
-      }
-
-
-      moveBattleToRunning();
-
-
-      // Try opening Ludo King app
-      window.location.href =
-        "ludoking://";
-
-
-      setTimeout(
-        function () {
-
-          alert(
-            "Ludo King app खोलें और Room Code " +
-            savedRoomCode +
-            " डालकर match खेलें।"
-          );
-
-        },
-        1200
-      );
-
-    }
-  );
-
-}
-
-
-// =====================================
 // COPY ROOM CODE
 // =====================================
 
@@ -701,9 +617,7 @@ if (copyCodeBtn) {
         !code ||
         code === "--------"
       ) {
-
         return;
-
       }
 
 
@@ -727,6 +641,7 @@ if (copyCodeBtn) {
           1500
         );
 
+
       } catch (error) {
 
         alert(
@@ -743,7 +658,195 @@ if (copyCodeBtn) {
 
 
 // =====================================
-// RESULT SCREENSHOT
+// OPEN LUDO KING
+// =====================================
+
+if (roomCodeState) {
+
+  roomCodeState.addEventListener(
+    "click",
+    function () {
+
+      if (savedRoomCode) {
+
+        moveBattleToRunning();
+
+      }
+
+    }
+  );
+
+}
+
+
+// =====================================
+// I WON
+// =====================================
+
+if (wonBtn) {
+
+  wonBtn.addEventListener(
+    "click",
+    function () {
+
+      if (!savedRoomCode) {
+
+        alert(
+          "पहले Room Code ready होना चाहिए।"
+        );
+
+        return;
+
+      }
+
+
+      moveBattleToRunning();
+
+
+      if (winSection) {
+
+        winSection.style.display =
+          "block";
+
+        winSection.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      }
+
+
+      if (readyStatus) {
+
+        readyStatus.textContent =
+          "WIN SCREENSHOT REQUIRED";
+
+      }
+
+    }
+  );
+
+}
+
+
+// =====================================
+// I LOST
+// =====================================
+
+if (lostBtn) {
+
+  lostBtn.addEventListener(
+    "click",
+    function () {
+
+      if (!savedRoomCode) {
+
+        alert(
+          "पहले Room Code ready होना चाहिए।"
+        );
+
+        return;
+
+      }
+
+
+      moveBattleToRunning();
+
+
+      localStorage.setItem(
+        "balajiResultStatus",
+        "LOST"
+      );
+
+
+      try {
+
+        let runningBattles =
+          JSON.parse(
+            localStorage.getItem(
+              "balajiRunningBattles"
+            ) || "[]"
+          );
+
+
+        runningBattles =
+          runningBattles.map(
+            function (battle) {
+
+              if (
+                selectedBattle &&
+                battle.id ===
+                selectedBattle.id
+              ) {
+
+                return {
+
+                  ...battle,
+
+                  resultStatus:
+                    "LOST",
+
+                  submittedAt:
+                    Date.now()
+
+                };
+
+              }
+
+
+              return battle;
+
+            }
+          );
+
+
+        localStorage.setItem(
+          "balajiRunningBattles",
+          JSON.stringify(
+            runningBattles
+          )
+        );
+
+
+      } catch (error) {
+
+        console.log(
+          "Lost result error:",
+          error
+        );
+
+      }
+
+
+      if (readyStatus) {
+
+        readyStatus.textContent =
+          "RESULT: LOST";
+
+      }
+
+
+      wonBtn.disabled =
+        true;
+
+      lostBtn.disabled =
+        true;
+
+      if (resultMessage) {
+
+        resultMessage.textContent =
+          "❌ Lost result submitted.";
+
+      }
+
+    }
+  );
+
+}
+
+
+// =====================================
+// WIN SCREENSHOT SELECT
 // =====================================
 
 if (resultScreenshot) {
@@ -808,7 +911,7 @@ if (resultScreenshot) {
 
 
 // =====================================
-// SUBMIT RESULT
+// SUBMIT WIN RESULT
 // =====================================
 
 if (submitResultBtn) {
@@ -869,19 +972,19 @@ if (submitResultBtn) {
       }
 
 
-      localStorage.setItem(
-        "balajiResultScreenshot",
-        file.name
-      );
+      moveBattleToRunning();
 
 
       localStorage.setItem(
         "balajiResultStatus",
-        "SUBMITTED"
+        "WIN_SUBMITTED"
       );
 
 
-      moveBattleToRunning();
+      localStorage.setItem(
+        "balajiResultScreenshot",
+        file.name
+      );
 
 
       try {
@@ -894,14 +997,8 @@ if (submitResultBtn) {
           );
 
 
-        if (
-          !Array.isArray(
-            runningBattles
-          )
-        ) {
-
+        if (!Array.isArray(runningBattles)) {
           runningBattles = [];
-
         }
 
 
@@ -920,7 +1017,7 @@ if (submitResultBtn) {
                   ...battle,
 
                   resultStatus:
-                    "SUBMITTED",
+                    "WIN_SUBMITTED",
 
                   resultScreenshot:
                     file.name,
@@ -950,7 +1047,7 @@ if (submitResultBtn) {
       } catch (error) {
 
         console.log(
-          "Result update error:",
+          "Win result error:",
           error
         );
 
@@ -960,7 +1057,7 @@ if (submitResultBtn) {
       if (readyStatus) {
 
         readyStatus.textContent =
-          "RESULT SUBMITTED";
+          "WIN SUBMITTED";
 
       }
 
@@ -968,7 +1065,7 @@ if (submitResultBtn) {
       if (resultMessage) {
 
         resultMessage.textContent =
-          "✅ Result submitted. Admin verification pending.";
+          "✅ Win Result submitted. Admin verification pending.";
 
       }
 
@@ -976,9 +1073,14 @@ if (submitResultBtn) {
       submitResultBtn.disabled =
         true;
 
-
       submitResultBtn.textContent =
-        "✅ Result Submitted";
+        "✅ Win Submitted";
+
+      wonBtn.disabled =
+        true;
+
+      lostBtn.disabled =
+        true;
 
     }
   );
@@ -1058,7 +1160,7 @@ if (cancelReadyBtn) {
 
 
 // =====================================
-// INITIAL SCREEN
+// INITIAL STATE
 // =====================================
 
 if (savedRoomCode) {
