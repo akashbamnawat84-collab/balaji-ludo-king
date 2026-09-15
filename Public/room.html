@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Balaji Ludo King - Room</title>
+
+  <link rel="stylesheet" href="room.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="room-header">
+
+    <button id="backBtn" class="back-btn" type="button">
+      ← BACK
+    </button>
+
+    <div class="brand">
+      <h1>BALAJI LUDO KING</h1>
+      <p>Official Gaming</p>
+    </div>
+
+  </header>
+
+
+  <!-- MAIN -->
+  <main class="room-container">
+
+    <!-- GAME TITLE -->
+    <section class="game-title-card">
+
+      <div class="game-icon">🎲</div>
+
+      <div>
+        <span class="live-badge">● LIVE</span>
+        <h2>Ludo Classic</h2>
+        <p>2 Player Match</p>
+      </div>
+
+    </section>
+
+
+    <!-- DEMO NOTICE -->
+    <div class="demo-notice">
+      ⚠️ Demo Mode — No real money is used.
+    </div>
+
+
+    <!-- ROOM INFORMATION -->
+    <section class="room-card">
+
+      <h3>Room Information</h3>
+
+      <div class="info-row">
+        <span>Match Type</span>
+        <strong>2 Player</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Room Status</span>
+        <strong id="roomStatus">Waiting</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Room Code</span>
+        <strong id="roomCode">00000000</strong>
+      </div>
+
+      <button id="copyCodeBtn" class="copy-btn" type="button">
+        📋 Copy Room Code
+      </button>
+
+    </section>
+
+
+    <!-- PLAYERS -->
+    <section class="players-card">
+
+      <h3>Players</h3>
+
+
+      <div class="player-box">
+
+        <div class="player-avatar red-avatar">
+          🔴
+        </div>
+
+        <div class="player-details">
+          <strong id="player1Name">Player 1</strong>
+          <span id="player1Status">Ready</span>
+        </div>
+
+      </div>
+
+
+      <div class="vs">
+        VS
+      </div>
+
+
+      <div class="player-box">
+
+        <div class="player-avatar blue-avatar">
+          🔵
+        </div>
+
+        <div class="player-details">
+          <strong id="player2Name">Player 2</strong>
+          <span id="player2Status">Waiting...</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- WAITING -->
+    <section class="waiting-card" id="waitingCard">
+
+      <div class="loading-circle"></div>
+
+      <h3>Waiting for Player 2</h3>
+
+      <p>
+        Share the room code with the other player.
+      </p>
+
+    </section>
+
+
+    <!-- GAME BUTTON -->
+    <button
+      id="startGameBtn"
+      class="start-game-btn"
+      type="button"
+      disabled
+    >
+      🎮 Waiting for Player 2
+    </button>
+
+
+    <!-- CANCEL -->
+    <button
+      id="cancelBtn"
+      class="cancel-btn"
+      type="button"
+    >
+      Cancel Match
+    </button>
+
+  </main>
+
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+
+    <a href="home.html" class="nav-item">
+      <span>🏠</span>
+      <small>Home</small>
+    </a>
+
+    <a href="refer.html" class="nav-item">
+      <span>🎁</span>
+      <small>Refer</small>
+    </a>
+
+    <a href="wallet.html" class="nav-item">
+      <span>₹</span>
+      <small>Wallet</small>
+    </a>
+
+    <a href="support.html" class="nav-item">
+      <span>💬</span>
+      <small>Support</small>
+    </a>
+
+    <a href="profile.html" class="nav-item">
+      <span>👤</span>
+      <small>Profile</small>
+    </a>
+
+  </nav>
+
+
+  <script src="room.js"></script>
+
+</body>
+</html>
