@@ -7,128 +7,6 @@
   <title>Balaji Ludo King</title>
 
   <link rel="stylesheet" href="style.css">
-
-  <style>
-    /* =====================================================
-       REFER & EARN
-       ===================================================== */
-
-    #referSection {
-      display: none;
-      width: 100%;
-    }
-
-    .refer-card {
-      width: 100%;
-      max-width: 520px;
-      margin: 20px auto;
-      padding: 24px 18px;
-      box-sizing: border-box;
-      text-align: center;
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-    }
-
-    .refer-title {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .refer-subtitle {
-      font-size: 15px;
-      line-height: 1.5;
-      color: #666;
-    }
-
-    .refer-subtitle strong {
-      font-weight: 800;
-    }
-
-    .refer-percent {
-      font-size: 42px;
-      font-weight: 900;
-      margin: 15px 0;
-    }
-
-    .refer-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin: 18px 0;
-    }
-
-    .refer-stat {
-      padding: 15px 10px;
-      border-radius: 14px;
-      background: #f5f5f5;
-    }
-
-    .refer-stat-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #777;
-      margin-bottom: 7px;
-    }
-
-    .refer-stat-value {
-      font-size: 21px;
-      font-weight: 900;
-    }
-
-    .your-code-box {
-      padding: 18px;
-      border-radius: 16px;
-      background: #f7f7f7;
-      margin-top: 15px;
-    }
-
-    .your-code-label {
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    #myReferralCode {
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: 3px;
-      margin-bottom: 14px;
-    }
-
-    .refer-copy-btn,
-    .refer-share-btn,
-    .refer-home-btn {
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      padding: 13px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 9px;
-    }
-
-    .instant-payout {
-      margin: 18px 0 10px;
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .share-title {
-      font-size: 14px;
-      font-weight: 800;
-      margin-top: 20px;
-    }
-
-    .refer-message {
-      min-height: 22px;
-      margin-top: 12px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-  </style>
 </head>
 
 <body>
@@ -139,427 +17,138 @@
 
   <header class="topbar">
 
-    <div class="menu-icon">
-      ☰
+    <div class="brand">
+      <div class="brand-name">BALAJI LUDO KING</div>
+      <div class="brand-subtitle">LOGIN</div>
     </div>
 
-    <div class="logo">
-      🎮 Balaji Ludo King
-    </div>
-
-    <div class="wallet-area">
-      <div>💰 ₹<span id="walletBalance">0</span></div>
-      <div>🎁 ₹<span id="bonusBalance">0</span></div>
-    </div>
+    <nav class="top-nav">
+      <button onclick="openWallet()">Wallet</button>
+      <button onclick="openRefer()">Refer</button>
+      <button onclick="openSupport()">Support</button>
+      <button onclick="openProfile()">Profile</button>
+    </nav>
 
   </header>
 
 
   <!-- ========================= -->
-  <!-- MAIN PAGE -->
+  <!-- LOGIN PAGE -->
   <!-- ========================= -->
 
-  <main class="page">
+  <main>
 
+    <section id="loginSection" class="card login-card">
 
-    <!-- ========================= -->
-    <!-- LOGIN PAGE - LOCKED -->
-    <!-- ========================= -->
+      <div class="logo-area">
+        <h1>BALAJI LUDO KING</h1>
+      </div>
 
-    <section id="welcomeCard" class="card">
+      <h2>Welcome Back</h2>
 
-      <h1>🎮 Balaji Ludo King</h1>
-
-      <h2>2 Player Battle</h2>
-
-      <p>
-        Welcome 👋
+      <p class="login-subtitle">
+        Enter your mobile number to get started
       </p>
 
-      <p>
-        Enter your name to continue
-      </p>
 
-      <input
-        type="text"
-        id="playerName"
-        placeholder="Enter your name"
-        autocomplete="name"
+      <!-- MOBILE NUMBER -->
+
+      <div class="input-group">
+
+        <label for="mobileNumber">
+          Mobile Number
+        </label>
+
+        <input
+          type="tel"
+          id="mobileNumber"
+          maxlength="10"
+          inputmode="numeric"
+          placeholder="98765 43210"
+          autocomplete="tel"
+        >
+
+      </div>
+
+
+      <!-- SEND OTP -->
+
+      <button
+        type="button"
+        class="primary-btn"
+        onclick="sendOTP()"
       >
-
-      <input
-        type="tel"
-        id="mobileNumber"
-        placeholder="Enter 10 digit mobile number"
-        maxlength="10"
-        inputmode="numeric"
-      >
-
-      <button onclick="sendOTP()">
-        Continue
+        Send OTP
       </button>
+
+
+      <!-- LOGIN MESSAGE -->
 
       <div id="loginMessage"></div>
 
+
+      <!-- SECURITY -->
+
+      <p class="security-text">
+        Protected by end-to-end security protocol
+      </p>
+
     </section>
 
 
     <!-- ========================= -->
-    <!-- OTP PAGE - LOCKED -->
+    <!-- OTP PAGE -->
     <!-- ========================= -->
 
     <section
-      id="otpCard"
-      class="card"
+      id="otpSection"
+      class="card otp-card"
       style="display:none;"
     >
 
-      <h2>🔐 Verify OTP</h2>
+      <h2>Verify OTP</h2>
 
       <p>
-        Enter the 6-digit OTP
+        Enter the OTP sent to your mobile number
       </p>
 
-      <input
-        type="tel"
-        id="otpInput"
-        placeholder="Enter OTP"
-        maxlength="6"
-        inputmode="numeric"
-      >
+      <div class="input-group">
 
-      <button onclick="verifyOTP()">
+        <label for="otpInput">
+          OTP
+        </label>
+
+        <input
+          type="tel"
+          id="otpInput"
+          maxlength="6"
+          inputmode="numeric"
+          placeholder="Enter OTP"
+          autocomplete="one-time-code"
+        >
+
+      </div>
+
+
+      <button
+        type="button"
+        class="primary-btn"
+        onclick="verifyOTP()"
+      >
         Verify OTP
       </button>
 
-      <button onclick="backToLogin()">
-        Back
+
+      <button
+        type="button"
+        class="secondary-btn"
+        onclick="backToLogin()"
+      >
+        Back to Login
       </button>
+
 
       <div id="otpMessage"></div>
-
-    </section>
-
-
-    <!-- ========================= -->
-    <!-- ROOM SECTION -->
-    <!-- ========================= -->
-
-    <section
-      id="roomCard"
-      class="card"
-      style="display:none;"
-    >
-
-      <h2>🎮 2 Player Room</h2>
-
-      <button id="createRoomBtn" onclick="createRoom()">
-        Create Room
-      </button>
-
-      <p>OR</p>
-
-      <input
-        type="text"
-        id="roomCode"
-        placeholder="Enter Room Code"
-        maxlength="8"
-      >
-
-      <button onclick="joinRoom()">
-        Join Room
-      </button>
-
-      <div id="roomMessage">
-        No room selected
-      </div>
-
-      <div class="players">
-
-        <div>
-          <strong>Player 1</strong>
-          <div id="player1Status">
-            Waiting...
-          </div>
-        </div>
-
-        <div>
-          <strong>Player 2</strong>
-          <div id="player2Status">
-            Waiting...
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ========================= -->
-    <!-- LUDO GAME -->
-    <!-- ========================= -->
-
-    <section
-      id="ludoCard"
-      class="card"
-      style="display:none;"
-    >
-
-      <h2>🎲 Ludo Battle</h2>
-
-      <p>
-        Room:
-        <strong id="gameRoomCode">------</strong>
-      </p>
-
-      <div id="gameStatus">
-        Waiting for Player 2...
-      </div>
-
-      <div class="dice-area">
-
-        <div id="diceFace">
-          🎲
-        </div>
-
-        <button onclick="rollDice()">
-          Roll Dice
-        </button>
-
-      </div>
-
-      <div class="game-buttons">
-
-        <button onclick="submitWin()">
-          🏆 I Won
-        </button>
-
-        <button onclick="submitLoss()">
-          ❌ I Lost
-        </button>
-
-        <button onclick="cancelRoom()">
-          Cancel
-        </button>
-
-      </div>
-
-
-      <!-- RESULT -->
-
-      <div id="resultSection">
-
-        <h3>Match Result</h3>
-
-        <input
-          type="file"
-          id="resultScreenshot"
-          accept="image/*"
-        >
-
-        <button onclick="uploadResult()">
-          Upload Result
-        </button>
-
-        <div id="resultMessage"></div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ========================= -->
-    <!-- PROFILE -->
-    <!-- ========================= -->
-
-    <section
-      id="profileSection"
-      class="card"
-      style="display:none;"
-    >
-
-      <h2>👤 Profile</h2>
-
-      <p>
-        Name:
-        <strong id="profileName">-</strong>
-      </p>
-
-      <p>
-        Mobile:
-        <strong id="profileMobile">-</strong>
-      </p>
-
-      <p>
-        Customer ID:
-        <strong id="customerId">-</strong>
-      </p>
-
-      <p>
-        Wallet:
-        ₹<strong id="profileWallet">0</strong>
-      </p>
-
-      <p>
-        Bonus:
-        ₹<strong id="profileBonus">0</strong>
-      </p>
-
-    </section>
-
-
-    <!-- ========================= -->
-    <!-- CUSTOMER SUPPORT -->
-    <!-- ========================= -->
-
-    <section
-      id="supportSection"
-      class="card"
-      style="display:none;"
-    >
-
-      <h2>🎧 Customer Support</h2>
-
-      <p>
-        Need help? Contact our support team.
-      </p>
-
-      <button onclick="openSupportWhatsApp()">
-        WhatsApp Support
-      </button>
-
-      <button onclick="openTelegramSupport()">
-        Telegram Support
-      </button>
-
-    </section>
-
-
-    <!-- ========================= -->
-    <!-- REFER & EARN -->
-    <!-- ========================= -->
-
-    <section id="referSection">
-
-      <div class="refer-card">
-
-        <div class="refer-title">
-          Invite & Earn Cash
-        </div>
-
-        <div class="refer-subtitle">
-          Share with friends & get up to
-          <strong>3% Commission</strong>
-          on every victory!
-        </div>
-
-        <div class="refer-percent">
-          3%
-        </div>
-
-
-        <!-- STATS -->
-
-        <div class="refer-stats">
-
-          <div class="refer-stat">
-
-            <div class="refer-stat-title">
-              TOTAL REFERRAL
-            </div>
-
-            <div
-              class="refer-stat-value"
-              id="totalReferral"
-            >
-              0
-            </div>
-
-          </div>
-
-
-          <div class="refer-stat">
-
-            <div class="refer-stat-title">
-              TOTAL EARNED
-            </div>
-
-            <div
-              class="refer-stat-value"
-              id="totalEarned"
-            >
-              ₹0.00
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- REFERRAL CODE -->
-
-        <div class="your-code-box">
-
-          <div class="your-code-label">
-            YOUR CODE
-          </div>
-
-          <div id="myReferralCode">
-            ------
-          </div>
-
-          <button
-            class="refer-copy-btn"
-            onclick="copyReferralLink()"
-          >
-            📋 Copy Referral Link
-          </button>
-
-        </div>
-
-
-        <!-- PAYOUT -->
-
-        <div class="instant-payout">
-          ⚡ Instant Payouts
-        </div>
-
-
-        <!-- SHARE -->
-
-        <div class="share-title">
-          Share directly via
-        </div>
-
-        <button
-          class="refer-share-btn"
-          onclick="shareReferralWhatsApp()"
-        >
-          🟢 WhatsApp
-        </button>
-
-        <button
-          class="refer-share-btn"
-          onclick="shareReferralTelegram()"
-        >
-          🔵 Telegram
-        </button>
-
-
-        <div
-          id="referMessage"
-          class="refer-message"
-        ></div>
-
-
-        <button
-          class="refer-home-btn"
-          onclick="referGoHome()"
-        >
-          🏠 Home
-        </button>
-
-      </div>
 
     </section>
 
@@ -567,1005 +156,176 @@
 
 
   <!-- ========================= -->
-  <!-- BOTTOM NAV -->
+  <!-- FOOTER -->
+  <!-- ========================= -->
+
+  <footer class="footer">
+
+    <div class="footer-title">
+      Fun into Funds!
+    </div>
+
+    <div class="footer-text">
+      For best experience, open
+      <strong>https://bajigerludo.com</strong>
+      on chrome mobile
+    </div>
+
+  </footer>
+
+
+  <!-- ========================= -->
+  <!-- BOTTOM NAVIGATION -->
   <!-- ========================= -->
 
   <nav class="bottom-nav">
 
     <button onclick="openWallet()">
-      💰 Wallet
+      <span>₹</span>
+      <small>Wallet</small>
     </button>
 
     <button onclick="openRefer()">
-      🎁 Refer
+      <span>↗</span>
+      <small>Refer</small>
     </button>
 
-    <button onclick="goHome()">
-      🏠 Home
+    <button onclick="openHome()">
+      <span>⌂</span>
+      <small>Home</small>
     </button>
 
     <button onclick="openSupport()">
-      🎧 Support
+      <span>🎧</span>
+      <small>Support</small>
     </button>
 
     <button onclick="openProfile()">
-      👤 Profile
+      <span>👤</span>
+      <small>Profile</small>
     </button>
 
   </nav>
 
 
   <!-- ========================= -->
-  <!-- FOOTER -->
-  <!-- ========================= -->
-
-  <footer>
-    © 2026 Balaji Ludo King
-  </footer>
-
-
-  <!-- ========================= -->
-  <!-- EXISTING SCRIPT -->
-  <!-- ========================= -->
-
-  <script src="script.js"></script>
-
-
-  <!-- ========================= -->
-  <!-- CUSTOMER SUPPORT FUNCTIONS -->
+  <!-- LOGIN SCRIPT -->
   <!-- ========================= -->
 
   <script>
+
+    let loginMobile = "";
+
+
+    function sendOTP() {
+
+      const input =
+        document.getElementById("mobileNumber");
+
+      const message =
+        document.getElementById("loginMessage");
+
+      const mobile =
+        input.value.replace(/\D/g, "");
+
+      if (mobile.length !== 10) {
+
+        message.textContent =
+          "Please enter a valid 10-digit mobile number.";
+
+        return;
+      }
+
+      loginMobile = mobile;
+
+      message.textContent =
+        "OTP sent successfully.";
+
+      document.getElementById("loginSection").style.display =
+        "none";
+
+      document.getElementById("otpSection").style.display =
+        "block";
+    }
+
+
+    function verifyOTP() {
+
+      const otp =
+        document.getElementById("otpInput").value;
+
+      const message =
+        document.getElementById("otpMessage");
+
+      if (otp.length !== 6) {
+
+        message.textContent =
+          "Please enter a valid 6-digit OTP.";
+
+        return;
+      }
+
+      message.textContent =
+        "Login successful.";
+
+      localStorage.setItem(
+        "BALAJI_MOBILE",
+        loginMobile
+      );
+
+      setTimeout(() => {
+
+        openHome();
+
+      }, 500);
+    }
+
+
+    function backToLogin() {
+
+      document.getElementById("otpSection").style.display =
+        "none";
+
+      document.getElementById("loginSection").style.display =
+        "block";
+
+      document.getElementById("otpInput").value = "";
+
+      document.getElementById("otpMessage").textContent = "";
+    }
+
+
+    function openHome() {
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+
+    function openWallet() {
+
+      alert("Wallet section");
+    }
+
+
+    function openRefer() {
+
+      alert("Refer section");
+    }
+
 
     function openSupport() {
 
-      document.getElementById("welcomeCard").style.display = "none";
-      document.getElementById("otpCard").style.display = "none";
-      document.getElementById("roomCard").style.display = "none";
-      document.getElementById("ludoCard").style.display = "none";
-      document.getElementById("profileSection").style.display = "none";
-      document.getElementById("referSection").style.display = "none";
-
-      document.getElementById("supportSection").style.display = "block";
+      alert("Customer Support");
     }
 
 
-    function openSupportWhatsApp() {
+    function openProfile() {
 
-      const number = "918619706213";
-
-      const message =
-        "Hello Balaji Ludo King Support, I need help.";
-
-      window.open(
-        "https://wa.me/" +
-        number +
-        "?text=" +
-        encodeURIComponent(message),
-        "_blank"
-      );
+      alert("Profile section");
     }
-
-
-    function openTelegramSupport() {
-
-      alert(
-        "Telegram Support link will be added soon."
-      );
-    }
-
-  </script>
-
-
-  <!-- ========================= -->
-  <!-- REFER & EARN SCRIPT -->
-  <!-- ========================= -->
-
-  <script>
-
-    /* -----------------------------------------
-       SAVE REFERRAL CODE FROM URL
-       Example:
-       ?ref=123456
-       ----------------------------------------- */
-
-    function saveIncomingReferral() {
-
-      try {
-
-        const params =
-          new URLSearchParams(
-            window.location.search
-          );
-
-        const ref =
-          params.get("ref");
-
-        if (!ref) {
-          return;
-        }
-
-        const cleanRef =
-          ref
-            .trim()
-            .toUpperCase();
-
-        if (
-          /^[0-9]{6}$/.test(cleanRef)
-        ) {
-
-          localStorage.setItem(
-            "BALAJI_PENDING_REFERRAL",
-            cleanRef
-          );
-
-        }
-
-      } catch (error) {
-
-        console.log(
-          "Referral URL error:",
-          error
-        );
-
-      }
-
-    }
-
-
-    saveIncomingReferral();
-
-
-    /* -----------------------------------------
-       GET LOGGED CUSTOMER ID
-       ----------------------------------------- */
-
-    function getLoggedCustomerId() {
-
-      const possibleKeys = [
-
-        "customer_id",
-        "customerId",
-        "customerID",
-
-        "player_id",
-        "playerId",
-
-        "BALAJI_CUSTOMER_ID",
-
-        "logged_customer_id",
-
-        "user_id",
-        "userId"
-
-      ];
-
-
-      for (
-        const key of possibleKeys
-      ) {
-
-        try {
-
-          const value =
-            localStorage.getItem(key);
-
-          if (
-            value &&
-            value !== "null" &&
-            value !== "undefined" &&
-            value.trim() !== ""
-          ) {
-
-            return value.trim();
-
-          }
-
-        } catch (error) {}
-
-      }
-
-
-      /* -----------------------------------------
-         CHECK CUSTOMER OBJECT
-         ----------------------------------------- */
-
-      const objectKeys = [
-
-        "customer",
-        "currentCustomer",
-        "user",
-        "loggedUser",
-        "player"
-
-      ];
-
-
-      for (
-        const key of objectKeys
-      ) {
-
-        try {
-
-          const raw =
-            localStorage.getItem(key);
-
-          if (!raw) {
-            continue;
-          }
-
-          const obj =
-            JSON.parse(raw);
-
-          if (!obj) {
-            continue;
-          }
-
-
-          const id =
-            obj.customer_id ||
-            obj.customerId ||
-            obj.id ||
-            obj.player_id ||
-            obj.playerId ||
-            obj.user_id ||
-            obj.userId;
-
-
-          if (
-            id &&
-            String(id).trim() !== ""
-          ) {
-
-            return String(id).trim();
-
-          }
-
-        } catch (error) {}
-
-      }
-
-
-      /* -----------------------------------------
-         DOM FALLBACK
-         ----------------------------------------- */
-
-      try {
-
-        const customerElement =
-          document.getElementById(
-            "customerId"
-          );
-
-        if (
-          customerElement
-        ) {
-
-          const text =
-            customerElement.textContent
-              .trim();
-
-          if (
-            text &&
-            text !== "-" &&
-            text !== "0"
-          ) {
-
-            return text;
-
-          }
-
-        }
-
-      } catch (error) {}
-
-
-      return null;
-
-    }
-
-
-    /* -----------------------------------------
-       MESSAGE
-       ----------------------------------------- */
-
-    function showReferralMessage(
-      message,
-      success = true
-    ) {
-
-      const box =
-        document.getElementById(
-          "referMessage"
-        );
-
-      if (!box) {
-        return;
-      }
-
-      box.textContent = message;
-
-      box.style.fontWeight = "700";
-
-    }
-
-
-    /* -----------------------------------------
-       HIDE ALL MAIN SECTIONS FOR REFER
-       ----------------------------------------- */
-
-    function hideAllForReferral() {
-
-      const ids = [
-
-        "welcomeCard",
-        "otpCard",
-        "roomCard",
-        "ludoCard",
-        "profileSection",
-        "supportSection"
-
-      ];
-
-
-      ids.forEach(
-        function(id) {
-
-          const element =
-            document.getElementById(id);
-
-          if (element) {
-
-            element.style.display =
-              "none";
-
-          }
-
-        }
-      );
-
-
-      const refer =
-        document.getElementById(
-          "referSection"
-        );
-
-      if (refer) {
-
-        refer.style.display =
-          "block";
-
-      }
-
-    }
-
-
-    /* -----------------------------------------
-       OPEN REFER PAGE
-       ----------------------------------------- */
-
-    window.openRefer =
-      async function() {
-
-        hideAllForReferral();
-
-        await loadReferralData();
-
-      };
-
-
-    /* -----------------------------------------
-       LOAD REFERRAL DATA
-       ----------------------------------------- */
-
-    async function loadReferralData() {
-
-      const customerId =
-        getLoggedCustomerId();
-
-
-      if (!customerId) {
-
-        document.getElementById(
-          "myReferralCode"
-        ).textContent = "------";
-
-        document.getElementById(
-          "totalReferral"
-        ).textContent = "0";
-
-        document.getElementById(
-          "totalEarned"
-        ).textContent = "₹0.00";
-
-
-        showReferralMessage(
-          "Please login first to see your referral details."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/referral/" +
-            encodeURIComponent(
-              customerId
-            )
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.message ||
-            "Unable to load referral data."
-          );
-
-        }
-
-
-        /* CODE */
-
-        document.getElementById(
-          "myReferralCode"
-        ).textContent =
-          data.referral_code ||
-          "------";
-
-
-        /* REFERRAL COUNT */
-
-        document.getElementById(
-          "totalReferral"
-        ).textContent =
-          data.total_referral ??
-          data.referral_count ??
-          0;
-
-
-        /* EARNED */
-
-        const earned =
-          Number(
-            data.total_earned ??
-            data.referral_earned ??
-            0
-          );
-
-
-        document.getElementById(
-          "totalEarned"
-        ).textContent =
-          "₹" +
-          earned.toFixed(2);
-
-
-        showReferralMessage(
-          "Your referral data is ready."
-        );
-
-
-        /* -----------------------------------------
-           TRY PENDING REFERRAL
-           ----------------------------------------- */
-
-        await claimPendingReferral(
-          customerId
-        );
-
-
-        /* Refresh after claim */
-
-        const pending =
-          localStorage.getItem(
-            "BALAJI_PENDING_REFERRAL"
-          );
-
-        if (!pending) {
-
-          try {
-
-            const refresh =
-              await fetch(
-                "/api/referral/" +
-                encodeURIComponent(
-                  customerId
-                )
-              );
-
-            const refreshData =
-              await refresh.json();
-
-            if (refresh.ok) {
-
-              document.getElementById(
-                "totalReferral"
-              ).textContent =
-                refreshData.total_referral ??
-                refreshData.referral_count ??
-                0;
-
-              const refreshEarned =
-                Number(
-                  refreshData.total_earned ??
-                  refreshData.referral_earned ??
-                  0
-                );
-
-              document.getElementById(
-                "totalEarned"
-              ).textContent =
-                "₹" +
-                refreshEarned.toFixed(2);
-
-            }
-
-          } catch (error) {}
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Referral loading error:",
-          error
-        );
-
-        showReferralMessage(
-          error.message ||
-          "Unable to load referral data."
-        );
-
-      }
-
-    }
-
-
-    /* -----------------------------------------
-       CLAIM PENDING REFERRAL
-       ----------------------------------------- */
-
-    async function claimPendingReferral(
-      customerId
-    ) {
-
-      const pendingCode =
-        localStorage.getItem(
-          "BALAJI_PENDING_REFERRAL"
-        );
-
-
-      if (!pendingCode) {
-
-        return false;
-
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/referral/claim",
-            {
-
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-
-                customer_id:
-                  customerId,
-
-                referral_code:
-                  pendingCode
-
-              })
-
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (
-          response.ok
-        ) {
-
-          localStorage.removeItem(
-            "BALAJI_PENDING_REFERRAL"
-          );
-
-
-          showReferralMessage(
-            "Referral added successfully! 🎉"
-          );
-
-
-          return true;
-
-        }
-
-
-        const message =
-          String(
-            data.message ||
-            ""
-          );
-
-
-        /* Already claimed / duplicate */
-
-        if (
-          message
-            .toLowerCase()
-            .includes("already")
-        ) {
-
-          localStorage.removeItem(
-            "BALAJI_PENDING_REFERRAL"
-          );
-
-          return true;
-
-        }
-
-
-        /* Self referral */
-
-        if (
-          message
-            .toLowerCase()
-            .includes("self")
-        ) {
-
-          localStorage.removeItem(
-            "BALAJI_PENDING_REFERRAL"
-          );
-
-          showReferralMessage(
-            "You cannot use your own referral code."
-          );
-
-          return false;
-
-        }
-
-
-        return false;
-
-      } catch (error) {
-
-        console.error(
-          "Referral claim error:",
-          error
-        );
-
-        return false;
-
-      }
-
-    }
-
-
-    /* -----------------------------------------
-       CREATE REFERRAL LINK
-       ----------------------------------------- */
-
-    function getReferralLink() {
-
-      const code =
-        document.getElementById(
-          "myReferralCode"
-        ).textContent.trim();
-
-
-      if (
-        !code ||
-        code === "------"
-      ) {
-
-        return null;
-
-      }
-
-
-      return (
-        window.location.origin +
-        "/?ref=" +
-        encodeURIComponent(
-          code
-        )
-      );
-
-    }
-
-
-    /* -----------------------------------------
-       COPY REFERRAL LINK
-       ----------------------------------------- */
-
-    async function copyReferralLink() {
-
-      const link =
-        getReferralLink();
-
-
-      if (!link) {
-
-        showReferralMessage(
-          "Please login first to get your referral code."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        if (
-          navigator.clipboard &&
-          navigator.clipboard.writeText
-        ) {
-
-          await navigator.clipboard.writeText(
-            link
-          );
-
-        } else {
-
-          const textarea =
-            document.createElement(
-              "textarea"
-            );
-
-          textarea.value = link;
-
-          document.body.appendChild(
-            textarea
-          );
-
-          textarea.select();
-
-          document.execCommand(
-            "copy"
-          );
-
-          textarea.remove();
-
-        }
-
-
-        showReferralMessage(
-          "Referral link copied! 📋"
-        );
-
-      } catch (error) {
-
-        showReferralMessage(
-          "Copy failed. Please try again."
-        );
-
-      }
-
-    }
-
-
-    /* -----------------------------------------
-       WHATSAPP SHARE
-       ----------------------------------------- */
-
-    function shareReferralWhatsApp() {
-
-      const link =
-        getReferralLink();
-
-
-      if (!link) {
-
-        showReferralMessage(
-          "Please login first to get your referral code."
-        );
-
-        return;
-
-      }
-
-
-      const message =
-        "🎮 Join Balaji Ludo King!\n\n" +
-        "Play 2 Player Battle and win rewards. 🏆\n\n" +
-        "Use my referral code: " +
-        document.getElementById(
-          "myReferralCode"
-        ).textContent.trim() +
-        "\n\n" +
-        "Join here:\n" +
-        link;
-
-
-      window.open(
-        "https://wa.me/?text=" +
-        encodeURIComponent(
-          message
-        ),
-        "_blank"
-      );
-
-    }
-
-
-    /* -----------------------------------------
-       TELEGRAM SHARE
-       ----------------------------------------- */
-
-    function shareReferralTelegram() {
-
-      const link =
-        getReferralLink();
-
-
-      if (!link) {
-
-        showReferralMessage(
-          "Please login first to get your referral code."
-        );
-
-        return;
-
-      }
-
-
-      const message =
-        "🎮 Join Balaji Ludo King!\n\n" +
-        "Use my referral code: " +
-        document.getElementById(
-          "myReferralCode"
-        ).textContent.trim() +
-        "\n\n" +
-        link;
-
-
-      window.open(
-        "https://t.me/share/url?url=" +
-        encodeURIComponent(
-          link
-        ) +
-        "&text=" +
-        encodeURIComponent(
-          message
-        ),
-        "_blank"
-      );
-
-    }
-
-
-    /* -----------------------------------------
-       GO HOME FROM REFER PAGE
-       ----------------------------------------- */
-
-    function referGoHome() {
-
-      const refer =
-        document.getElementById(
-          "referSection"
-        );
-
-      if (refer) {
-
-        refer.style.display =
-          "none";
-
-      }
-
-
-      if (
-        typeof window.goHome ===
-        "function"
-      ) {
-
-        window.goHome();
-
-      } else {
-
-        const welcome =
-          document.getElementById(
-            "welcomeCard"
-          );
-
-        if (welcome) {
-
-          welcome.style.display =
-            "block";
-
-        }
-
-      }
-
-    }
-
-
-    /* -----------------------------------------
-       AUTO CLAIM AFTER LOGIN
-       ----------------------------------------- */
-
-    let referralClaimTimer =
-      null;
-
-
-    function startReferralAutoClaim() {
-
-      if (
-        referralClaimTimer
-      ) {
-
-        clearInterval(
-          referralClaimTimer
-        );
-
-      }
-
-
-      referralClaimTimer =
-        setInterval(
-          async function() {
-
-            const customerId =
-              getLoggedCustomerId();
-
-            const pending =
-              localStorage.getItem(
-                "BALAJI_PENDING_REFERRAL"
-              );
-
-
-            if (
-              customerId &&
-              pending
-            ) {
-
-              const claimed =
-                await claimPendingReferral(
-                  customerId
-                );
-
-
-              if (claimed) {
-
-                clearInterval(
-                  referralClaimTimer
-                );
-
-              }
-
-            }
-
-          },
-          3000
-        );
-
-    }
-
-
-    startReferralAutoClaim();
-
 
   </script>
 
