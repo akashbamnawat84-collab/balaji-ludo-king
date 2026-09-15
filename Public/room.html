@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Balaji Ludo King - Room</title>
 
@@ -11,181 +16,285 @@
 
 <body>
 
-  <!-- HEADER -->
-  <header class="room-header">
+  <!-- ============================= -->
+  <!-- TOP BAR -->
+  <!-- ============================= -->
 
-    <button id="backBtn" class="back-btn" type="button">
+  <header class="room-topbar">
+
+    <button
+      type="button"
+      id="backBtn"
+      class="back-btn"
+    >
       ← BACK
     </button>
 
-    <div class="brand">
-      <h1>BALAJI LUDO KING</h1>
-      <p>Official Gaming</p>
+    <div class="room-brand">
+      <strong>BALAJI LUDO KING</strong>
+      <span>Official Gaming</span>
     </div>
 
   </header>
 
 
+  <!-- ============================= -->
   <!-- MAIN -->
+  <!-- ============================= -->
+
   <main class="room-container">
 
-    <!-- GAME TITLE -->
-    <section class="game-title-card">
+    <!-- =========================== -->
+    <!-- BATTLE DETAILS -->
+    <!-- =========================== -->
 
-      <div class="game-icon">🎲</div>
-
-      <div>
-        <span class="live-badge">● LIVE</span>
-        <h2>Ludo Classic</h2>
-        <p>2 Player Match</p>
-      </div>
-
-    </section>
-
-
-    <!-- DEMO NOTICE -->
-    <div class="demo-notice">
-      ⚠️ Demo Mode — No real money is used.
-    </div>
-
-
-    <!-- ROOM INFORMATION -->
     <section class="room-card">
 
-      <h3>Room Information</h3>
+      <div class="fee-row">
 
-      <div class="info-row">
-        <span>Match Type</span>
-        <strong>2 Player</strong>
+        <div class="fee-box">
+
+          <span>Entry Fee</span>
+
+          <strong id="entryFee">
+            0
+          </strong>
+
+          <small>
+            Demo Coins
+          </small>
+
+        </div>
+
+
+        <div class="fee-box prize-box">
+
+          <span>Winning Prize</span>
+
+          <strong id="winningPrize">
+            0
+          </strong>
+
+          <small>
+            Demo Coins
+          </small>
+
+        </div>
+
       </div>
 
-      <div class="info-row">
-        <span>Room Status</span>
-        <strong id="roomStatus">Waiting</strong>
+
+      <!-- ========================= -->
+      <!-- WAITING STATE -->
+      <!-- ========================= -->
+
+      <div id="waitingState">
+
+        <div class="room-icon">
+          🔐
+        </div>
+
+        <h2>
+          Waiting for Room Code
+        </h2>
+
+        <p class="hindi-text">
+          रूम कोड का इंतजार है
+        </p>
+
+        <div class="waiting-number">
+
+          1
+          <span id="waitingSeconds">
+            5:00
+          </span>
+
+        </div>
+
+        <p class="waiting-text">
+          लूडो यूजर लूडो किंग से
+          रूम कोड निकाल कर दे रहा है
+        </p>
+
+
+        <div class="match-status-box">
+
+          <span>
+            Match Status
+          </span>
+
+          <strong id="matchStatus">
+            WAITING
+          </strong>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="cancelBtn"
+          class="cancel-btn"
+        >
+          Cancel
+        </button>
+
       </div>
 
-      <div class="info-row">
-        <span>Room Code</span>
-        <strong id="roomCode">00000000</strong>
-      </div>
 
-      <button id="copyCodeBtn" class="copy-btn" type="button">
-        📋 Copy Room Code
-      </button>
+      <!-- ========================= -->
+      <!-- ROOM CODE STATE -->
+      <!-- ========================= -->
+
+      <div
+        id="roomCodeState"
+        style="display:none;"
+      >
+
+        <div class="room-icon success-icon">
+          🔑
+        </div>
+
+        <h2>
+          Room Code Ready
+        </h2>
+
+        <div class="room-code-box">
+
+          <span>
+            Room Code
+          </span>
+
+          <strong id="roomCode">
+            00000000
+          </strong>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="copyCodeBtn"
+          class="copy-btn"
+        >
+          📋 Copy Code
+        </button>
+
+
+        <div class="match-status-box">
+
+          <span>
+            Match Status
+          </span>
+
+          <strong id="readyStatus">
+            READY
+          </strong>
+
+        </div>
+
+
+        <div class="result-buttons">
+
+          <button
+            type="button"
+            id="wonBtn"
+            class="won-btn"
+          >
+            🏆 I Won
+          </button>
+
+
+          <button
+            type="button"
+            id="lostBtn"
+            class="lost-btn"
+          >
+            ❌ I Lost
+          </button>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="playLudoBtn"
+          class="play-ludo-btn"
+        >
+          🎲 Play Ludo Game
+        </button>
+
+
+        <button
+          type="button"
+          id="cancelReadyBtn"
+          class="cancel-btn"
+        >
+          Cancel
+        </button>
+
+
+        <p class="ludo-note">
+          Play ludo game in Ludo King App
+        </p>
+
+      </div>
 
     </section>
 
 
-    <!-- PLAYERS -->
-    <section class="players-card">
+    <!-- ============================= -->
+    <!-- DEMO NOTICE -->
+    <!-- ============================= -->
 
-      <h3>Players</h3>
+    <div class="demo-notice">
 
+      ⚠️ Demo Mode — No real money is used.
 
-      <div class="player-box">
-
-        <div class="player-avatar red-avatar">
-          🔴
-        </div>
-
-        <div class="player-details">
-          <strong id="player1Name">Player 1</strong>
-          <span id="player1Status">Ready</span>
-        </div>
-
-      </div>
-
-
-      <div class="vs">
-        VS
-      </div>
-
-
-      <div class="player-box">
-
-        <div class="player-avatar blue-avatar">
-          🔵
-        </div>
-
-        <div class="player-details">
-          <strong id="player2Name">Player 2</strong>
-          <span id="player2Status">Waiting...</span>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- WAITING -->
-    <section class="waiting-card" id="waitingCard">
-
-      <div class="loading-circle"></div>
-
-      <h3>Waiting for Player 2</h3>
-
-      <p>
-        Share the room code with the other player.
-      </p>
-
-    </section>
-
-
-    <!-- GAME BUTTON -->
-    <button
-      id="startGameBtn"
-      class="start-game-btn"
-      type="button"
-      disabled
-    >
-      🎮 Waiting for Player 2
-    </button>
-
-
-    <!-- CANCEL -->
-    <button
-      id="cancelBtn"
-      class="cancel-btn"
-      type="button"
-    >
-      Cancel Match
-    </button>
+    </div>
 
   </main>
 
 
+  <!-- ============================= -->
   <!-- BOTTOM NAV -->
+  <!-- ============================= -->
+
   <nav class="bottom-nav">
 
-    <a href="home.html" class="nav-item">
-      <span>🏠</span>
-      <small>Home</small>
+    <a href="home.html">
+      <span>⌂</span>
+      Home
     </a>
 
-    <a href="refer.html" class="nav-item">
-      <span>🎁</span>
-      <small>Refer</small>
+    <a href="refer.html">
+      <span>👥</span>
+      Refer
     </a>
 
-    <a href="wallet.html" class="nav-item">
-      <span>₹</span>
-      <small>Wallet</small>
+    <a href="wallet.html">
+      <span>💰</span>
+      Wallet
     </a>
 
-    <a href="support.html" class="nav-item">
-      <span>💬</span>
-      <small>Support</small>
+    <a href="support.html">
+      <span>🎧</span>
+      Support
     </a>
 
-    <a href="profile.html" class="nav-item">
+    <a href="profile.html">
       <span>👤</span>
-      <small>Profile</small>
+      Profile
     </a>
 
   </nav>
 
 
+  <!-- ============================= -->
+  <!-- SCRIPT -->
+  <!-- ============================= -->
+
   <script src="room.js"></script>
 
 </body>
+
 </html>
