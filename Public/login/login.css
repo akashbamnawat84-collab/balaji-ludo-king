@@ -1,0 +1,848 @@
+/* =========================================
+   BALAJI LUDO KING
+   LOGIN SCREEN ONLY
+========================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #20283a;
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 5%,
+      #ffe9a8 0%,
+      #ffd77a 18%,
+      #f4a53d 45%,
+      #7a174f 78%,
+      #2a123e 100%
+    );
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* =========================================
+   LOGIN HEADER
+========================================= */
+
+.login-header {
+  width: 100%;
+  min-height: 70px;
+  padding: 10px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: rgba(255,255,255,.96);
+
+  border-bottom: 1px solid rgba(255,255,255,.7);
+
+  box-shadow:
+    0 4px 18px rgba(0,0,0,.12);
+
+  position: relative;
+  z-index: 20;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand-icon {
+  width: 43px;
+  height: 43px;
+
+  border-radius: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7b1552,
+      #d12e82
+    );
+
+  font-size: 24px;
+
+  box-shadow:
+    0 5px 13px rgba(94,15,69,.25);
+}
+
+.brand-name {
+  color: #70134c;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: .7px;
+}
+
+.brand-tagline {
+  margin-top: 3px;
+  color: #9a6b80;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+}
+
+.login-top-btn {
+  border: none;
+  padding: 11px 17px;
+  border-radius: 25px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #73134e,
+      #a92372
+    );
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  box-shadow:
+    0 5px 13px rgba(99,16,70,.25);
+}
+
+.login-top-btn:active {
+  transform: scale(.96);
+}
+
+
+/* =========================================
+   MAIN LOGIN PAGE
+========================================= */
+
+.login-page {
+  width: 100%;
+  max-width: 480px;
+
+  margin: auto;
+
+  padding: 15px 15px 35px;
+}
+
+
+/* =========================================
+   LUDO VISUAL
+========================================= */
+
+.ludo-visual {
+  height: 225px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #7a164e,
+      #c52d7d 48%,
+      #f0a52f
+    );
+
+  box-shadow:
+    0 12px 30px rgba(46,10,42,.28);
+
+  margin-bottom: 15px;
+}
+
+.ludo-board {
+  width: 150px;
+  height: 150px;
+
+  padding: 9px;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  position: relative;
+
+  border-radius: 19px;
+
+  background: #fffaf0;
+
+  border: 5px solid #e6b650;
+
+  transform: rotate(-3deg);
+
+  box-shadow:
+    0 12px 25px rgba(43,15,20,.28);
+
+  z-index: 3;
+}
+
+.home {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  font-size: 18px;
+
+  border: 2px solid rgba(0,0,0,.08);
+}
+
+.red-home {
+  background: #f36c65;
+}
+
+.blue-home {
+  background: #62a7e8;
+}
+
+.yellow-home {
+  background: #ffd85c;
+}
+
+.green-home {
+  background: #62cf8d;
+}
+
+.board-center {
+  position: absolute;
+
+  width: 44px;
+  height: 44px;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%,-50%);
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7b1552,
+      #c62d7d
+    );
+
+  border: 4px solid #fff;
+
+  color: #ffd65c;
+
+  font-size: 21px;
+
+  box-shadow:
+    0 5px 12px rgba(0,0,0,.22);
+}
+
+.dice {
+  position: absolute;
+
+  width: 48px;
+  height: 48px;
+
+  border-radius: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+
+  font-size: 27px;
+
+  box-shadow:
+    0 8px 18px rgba(0,0,0,.25);
+
+  z-index: 5;
+}
+
+.dice-one {
+  left: 27px;
+  top: 25px;
+  transform: rotate(-12deg);
+}
+
+.dice-two {
+  right: 27px;
+  bottom: 25px;
+  transform: rotate(13deg);
+}
+
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: .28;
+  background: #fff;
+}
+
+.glow-one {
+  width: 150px;
+  height: 150px;
+  left: -55px;
+  top: -65px;
+}
+
+.glow-two {
+  width: 130px;
+  height: 130px;
+  right: -40px;
+  bottom: -50px;
+}
+
+
+/* =========================================
+   LOGIN CARD
+========================================= */
+
+.login-card {
+  background: rgba(255,255,255,.98);
+
+  border-radius: 27px;
+
+  padding: 25px 20px 22px;
+
+  text-align: center;
+
+  box-shadow:
+    0 10px 30px rgba(34,9,32,.22);
+
+  border:
+    1px solid rgba(255,255,255,.9);
+}
+
+.welcome-icon {
+  width: 47px;
+  height: 47px;
+
+  margin: 0 auto 10px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff1cf;
+
+  font-size: 23px;
+}
+
+.login-card h1 {
+  color: #293545;
+
+  font-size: 27px;
+
+  font-weight: 900;
+
+  margin-bottom: 8px;
+}
+
+.login-description {
+  color: #788492;
+
+  font-size: 13px;
+
+  line-height: 19px;
+
+  margin-bottom: 23px;
+}
+
+
+/* =========================================
+   MOBILE INPUT
+========================================= */
+
+.input-group {
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+
+  margin: 0 3px 8px;
+
+  color: #53606d;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+.mobile-input {
+  width: 100%;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+
+  border: 1px solid #dfe4e9;
+
+  border-radius: 15px;
+
+  background: #f9fafb;
+
+  overflow: hidden;
+
+  transition: .2s;
+}
+
+.mobile-input:focus-within {
+  border-color: #922263;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 0 4px rgba(146,34,99,.09);
+}
+
+.country-code {
+  min-width: 58px;
+
+  padding-left: 15px;
+
+  color: #70134c;
+
+  font-size: 15px;
+
+  font-weight: 900;
+
+  border-right:
+    1px solid #e2e5e8;
+}
+
+.mobile-input input {
+  width: 100%;
+  height: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  padding: 0 13px;
+
+  color: #263746;
+
+  font-size: 17px;
+
+  font-weight: 600;
+}
+
+.mobile-input input::placeholder {
+  color: #a5adb5;
+}
+
+
+/* =========================================
+   SEND OTP BUTTON
+========================================= */
+
+.send-otp-btn {
+  width: 100%;
+  height: 62px;
+
+  margin-top: 18px;
+
+  border: none;
+
+  border-radius: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #71134e,
+      #a52270,
+      #c22e7e
+    );
+
+  color: #ffffff;
+
+  font-size: 17px;
+
+  font-weight: 900;
+
+  box-shadow:
+    0 8px 20px rgba(103,18,72,.30);
+
+  transition:
+    transform .15s,
+    box-shadow .15s;
+}
+
+.send-otp-btn .arrow {
+  width: 27px;
+  height: 27px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,.18);
+
+  font-size: 18px;
+}
+
+.send-otp-btn:active {
+  transform: scale(.98);
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+.message {
+  min-height: 20px;
+
+  margin-top: 9px;
+
+  color: #d32945;
+
+  font-size: 12px;
+
+  line-height: 17px;
+}
+
+
+/* =========================================
+   SECURITY
+========================================= */
+
+.security {
+  margin-top: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  color: #7e8992;
+
+  font-size: 10px;
+}
+
+.security .lock {
+  font-size: 12px;
+}
+
+
+/* =========================================
+   PROMO CARD
+========================================= */
+
+.promo-card {
+  margin-top: 14px;
+
+  min-height: 70px;
+
+  padding: 13px 15px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  border-radius: 19px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.98),
+      rgba(255,247,220,.98)
+    );
+
+  box-shadow:
+    0 8px 20px rgba(37,11,35,.17);
+}
+
+.promo-icon {
+  width: 43px;
+  height: 43px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: #fff0c4;
+
+  font-size: 23px;
+}
+
+.promo-content {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+
+  text-align: left;
+}
+
+.promo-content strong {
+  color: #641343;
+  font-size: 13px;
+}
+
+.promo-content span {
+  color: #7d858d;
+
+  font-size: 10px;
+
+  line-height: 15px;
+}
+
+
+/* =========================================
+   OTP OVERLAY
+========================================= */
+
+.otp-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 10000;
+
+  padding: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background:
+    rgba(35,8,30,.78);
+
+  backdrop-filter: blur(8px);
+}
+
+.otp-card {
+  width: 100%;
+  max-width: 390px;
+
+  padding: 28px 21px;
+
+  text-align: center;
+
+  border-radius: 27px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 15px 45px rgba(0,0,0,.35);
+}
+
+.otp-icon {
+  width: 55px;
+  height: 55px;
+
+  margin: 0 auto 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #fff1cf;
+
+  font-size: 27px;
+}
+
+.otp-card h2 {
+  color: #293545;
+
+  font-size: 25px;
+
+  margin-bottom: 8px;
+}
+
+.otp-card p {
+  color: #7a8792;
+
+  font-size: 13px;
+
+  line-height: 19px;
+
+  margin-bottom: 20px;
+}
+
+#otpInput {
+  width: 100%;
+  height: 58px;
+
+  border: 1px solid #dfe4e9;
+
+  border-radius: 15px;
+
+  outline: none;
+
+  text-align: center;
+
+  letter-spacing: 9px;
+
+  font-size: 22px;
+
+  font-weight: 900;
+
+  color: #6e144d;
+
+  background: #fafbfc;
+}
+
+#otpInput:focus {
+  border-color: #922263;
+
+  box-shadow:
+    0 0 0 4px rgba(146,34,99,.09);
+}
+
+.verify-btn {
+  width: 100%;
+  height: 57px;
+
+  margin-top: 15px;
+
+  border: none;
+
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #71134e,
+      #a52270
+    );
+
+  color: #ffffff;
+
+  font-size: 16px;
+
+  font-weight: 900;
+}
+
+.back-btn {
+  width: 100%;
+  height: 45px;
+
+  margin-top: 9px;
+
+  border: 1px solid #e0e3e6;
+
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  color: #70134c;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+
+  .login-header {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+  .brand-name {
+    font-size: 13px;
+  }
+
+  .login-top-btn {
+    padding: 10px 13px;
+  }
+
+  .login-page {
+    padding:
+      11px
+      11px
+      25px;
+  }
+
+  .ludo-visual {
+    height: 200px;
+  }
+
+  .ludo-board {
+    width: 135px;
+    height: 135px;
+  }
+
+  .dice {
+    width: 42px;
+    height: 42px;
+    font-size: 23px;
+  }
+
+  .login-card {
+    padding:
+      22px 15px
+      20px;
+  }
+
+  .login-card h1 {
+    font-size: 24px;
+  }
+
+  .send-otp-btn {
+    height: 60px;
+  }
+}
