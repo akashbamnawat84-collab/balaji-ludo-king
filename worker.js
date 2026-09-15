@@ -36,8 +36,10 @@ function validMobile(mobile) {
 function isExpired(createdAt) {
   const time = Number(createdAt);
 
-  return !Number.isFinite(time) ||
-    Date.now() - time >= ROOM_WAIT_MS;
+  return (
+    !Number.isFinite(time) ||
+    Date.now() - time >= ROOM_WAIT_MS
+  );
 }
 
 /* =========================================================
@@ -48,54 +50,21 @@ function customerResponse(customer) {
   return {
     id: customer.id,
     customer_id: customer.id,
-
     mobile: customer.mobile,
     phone: customer.mobile,
-
     name: customer.name,
-
-    wallet_balance: Number(
-      customer.wallet_balance || 0
-    ),
-
-    bonus_balance: Number(
-      customer.bonus_balance || 0
-    ),
-
-    battle_played: Number(
-      customer.battle_played || 0
-    ),
-
-    coin_won: Number(
-      customer.coin_won || 0
-    ),
-
-    referral_code:
-      customer.referral_code || "",
-
-    referral_count: Number(
-      customer.referral_count || 0
-    ),
-
-    referral_earned: Number(
-      customer.referral_earned || 0
-    ),
-
-    withdrawal_amount: Number(
-      customer.withdrawal_amount || 0
-    ),
-
-    email:
-      customer.email || "",
-
-    kyc_status:
-      customer.kyc_status || "Pending",
-
-    account_status:
-      customer.account_status || "ACTIVE",
-
-    created_at:
-      customer.created_at
+    wallet_balance: Number(customer.wallet_balance || 0),
+    bonus_balance: Number(customer.bonus_balance || 0),
+    battle_played: Number(customer.battle_played || 0),
+    coin_won: Number(customer.coin_won || 0),
+    referral_code: customer.referral_code || "",
+    referral_count: Number(customer.referral_count || 0),
+    referral_earned: Number(customer.referral_earned || 0),
+    withdrawal_amount: Number(customer.withdrawal_amount || 0),
+    email: customer.email || "",
+    kyc_status: customer.kyc_status || "Pending",
+    account_status: customer.account_status || "ACTIVE",
+    created_at: customer.created_at
   };
 }
 
@@ -117,22 +86,17 @@ async function getRoom(env, roomCode) {
       created_at
     FROM rooms
     WHERE room_code = ?
-  `)
-    .bind(roomCode)
-    .first();
+  `).bind(roomCode).first();
 }
 
 async function deleteRoom(env, roomCode) {
   await env.DB.prepare(
     "DELETE FROM rooms WHERE room_code = ?"
-  )
-    .bind(roomCode)
-    .run();
+  ).bind(roomCode).run();
 }
 
 /* =========================================================
    REFERRAL TABLE
-   This table is created automatically if it doesn't exist.
 ========================================================= */
 
 async function ensureReferralTable(env) {
@@ -153,26 +117,17 @@ async function ensureReferralTable(env) {
 ========================================================= */
 
 async function generateUniqueReferralCode(env) {
-
   for (let attempt = 0; attempt < 20; attempt++) {
+    const code = String(
+      Math.floor(100000 + Math.random() * 900000)
+    );
 
-    const code =
-      String(
-        Math.floor(
-          100000 +
-          Math.random() * 900000
-        )
-      );
-
-    const existing =
-      await env.DB.prepare(`
-        SELECT id
-        FROM customers
-        WHERE referral_code = ?
-        LIMIT 1
-      `)
-        .bind(code)
-        .first();
+    const existing = await env.DB.prepare(`
+      SELECT id
+      FROM customers
+      WHERE referral_code = ?
+      LIMIT 1
+    `).bind(code).first();
 
     if (!existing) {
       return code;
@@ -185,51 +140,56 @@ async function generateUniqueReferralCode(env) {
 }
 
 /* =========================================================
-   GET REFERRAL SUMMARY
+   REFERRAL SUMMARY
 ========================================================= */
 
 async function getReferralSummary(env, customerId) {
-
   await ensureReferralTable(env);
 
-  const customer =
-    await env.DB.prepare(`
-      SELECT *
-      FROM customers
-      WHERE id = ?
-    `)
-      .bind(customerId)
-      .first();
+  const customer = await env.DB.prepare(`
+    SELECT *
+    FROM customers
+    WHERE id = ?
+  `).bind(customerId).first();
 
   if (!customer) {
     return null;
   }
 
-  const referrals =
-    await env.DB.prepare(`
-      SELECT COUNT(*) AS total
-      FROM referral_links
-      WHERE referrer_id = ?
-        AND status = 'ACTIVE'
-    `)
-      .bind(customerId)
-      .first();
+  const referrals = await env.DB.prepare(`
+    SELECT COUNT(*) AS total
+    FROM referral_links
+    WHERE referrer_id = ?
+    AND status = 'ACTIVE'
+  `).bind(customerId).first();
 
   return {
     customer_id: customer.id,
-
-    referral_code:
-      customer.referral_code || "",
-
-    total_referral:
-      Number(referrals?.total || 0),
-
-    total_earned:
-      Number(customer.referral_earned || 0),
-
-    commission_percent:
-      REFERRAL_PERCENT
+    referral_code: customer.referral_code || "",
+    total_referral: Number(
+      referrals?.total || 0
+    ),
+    total_earned: Number(
+      customer.referral_earned || 0
+    ),
+    commission_percent: REFERRAL_PERCENT
   };
+}
+
+/* =========================================================
+   CANCELLATION TABLE
+========================================================= */
+
+async function ensureCancellationTable(env) {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS room_cancellations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      room_code TEXT NOT NULL,
+      player_id TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    )
+  `).run();
 }
 
 /* =========================================================
@@ -237,7 +197,6 @@ async function getReferralSummary(env, customerId) {
 ========================================================= */
 
 export default {
-
   async fetch(request, env) {
 
     if (request.method === "OPTIONS") {
@@ -260,18 +219,12 @@ export default {
         path === "/api/login" &&
         request.method === "POST"
       ) {
+        const body = await request.json();
 
-        const body =
-          await request.json();
-
-        const mobile =
-          clean(body.mobile);
-
-        const otp =
-          clean(body.otp);
+        const mobile = clean(body.mobile);
+        const otp = clean(body.otp);
 
         if (!validMobile(mobile)) {
-
           return json({
             success: false,
             error:
@@ -279,14 +232,9 @@ export default {
           }, 400);
         }
 
-        /* ---------------------------------------------------
-           OTP VERIFICATION
-        --------------------------------------------------- */
-
         if (otp) {
 
           if (!/^\d{6}$/.test(otp)) {
-
             return json({
               success: false,
               error:
@@ -294,23 +242,14 @@ export default {
             }, 400);
           }
 
-          /*
-            REAL OTP VERIFICATION
-            ---------------------
-            Real SMS OTP provider can be connected here.
-          */
-
           let customer =
             await env.DB.prepare(`
               SELECT *
               FROM customers
               WHERE mobile = ?
-            `)
-              .bind(mobile)
-              .first();
+            `).bind(mobile).first();
 
           if (!customer) {
-
             return json({
               success: false,
               error:
@@ -318,37 +257,26 @@ export default {
             }, 404);
           }
 
-          /*
-             Make sure existing customer has a
-             unique referral code.
-          */
-
           if (!customer.referral_code) {
 
             const newCode =
-              await generateUniqueReferralCode(
-                env
-              );
+              await generateUniqueReferralCode(env);
 
             await env.DB.prepare(`
               UPDATE customers
               SET referral_code = ?
               WHERE id = ?
-            `)
-              .bind(
-                newCode,
-                customer.id
-              )
-              .run();
+            `).bind(
+              newCode,
+              customer.id
+            ).run();
 
             customer =
               await env.DB.prepare(`
                 SELECT *
                 FROM customers
                 WHERE id = ?
-              `)
-                .bind(customer.id)
-                .first();
+              `).bind(customer.id).first();
           }
 
           return json({
@@ -359,47 +287,35 @@ export default {
           });
         }
 
-        /* ---------------------------------------------------
-           EXISTING CUSTOMER
-        --------------------------------------------------- */
-
         let existing =
           await env.DB.prepare(`
             SELECT *
             FROM customers
             WHERE mobile = ?
-          `)
-            .bind(mobile)
-            .first();
+          `).bind(mobile).first();
 
         if (existing) {
 
           if (!existing.referral_code) {
 
             const newCode =
-              await generateUniqueReferralCode(
-                env
-              );
+              await generateUniqueReferralCode(env);
 
             await env.DB.prepare(`
               UPDATE customers
               SET referral_code = ?
               WHERE id = ?
-            `)
-              .bind(
-                newCode,
-                existing.id
-              )
-              .run();
+            `).bind(
+              newCode,
+              existing.id
+            ).run();
 
             existing =
               await env.DB.prepare(`
                 SELECT *
                 FROM customers
                 WHERE id = ?
-              `)
-                .bind(existing.id)
-                .first();
+              `).bind(existing.id).first();
           }
 
           return json({
@@ -412,10 +328,6 @@ export default {
           });
         }
 
-        /* ---------------------------------------------------
-           NEW CUSTOMER
-        --------------------------------------------------- */
-
         const customerId =
           "CUS" +
           crypto.randomUUID()
@@ -423,21 +335,10 @@ export default {
             .slice(0, 10)
             .toUpperCase();
 
-        /*
-          IMPORTANT:
-          Mobile ke last 6 digits ko referral code
-          नहीं बनाया जा रहा है।
-
-          अब हर customer को random unique code मिलेगा.
-        */
-
         const referralCode =
-          await generateUniqueReferralCode(
-            env
-          );
+          await generateUniqueReferralCode(env);
 
-        const createdAt =
-          Date.now();
+        const createdAt = Date.now();
 
         await env.DB.prepare(`
           INSERT INTO customers (
@@ -458,39 +359,33 @@ export default {
             created_at
           )
           VALUES (
-            ?,
-            ?,
-            'Player',
-            0,
-            0,
-            0,
-            0,
-            ?,
-            0,
-            0,
-            0,
-            '',
-            'Pending',
-            'ACTIVE',
-            ?
+            ?, ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?
           )
-        `)
-          .bind(
-            customerId,
-            mobile,
-            referralCode,
-            createdAt
-          )
-          .run();
+        `).bind(
+          customerId,
+          mobile,
+          "Player",
+          0,
+          0,
+          0,
+          0,
+          referralCode,
+          0,
+          0,
+          0,
+          "",
+          "Pending",
+          "ACTIVE",
+          createdAt
+        ).run();
 
         const customer =
           await env.DB.prepare(`
             SELECT *
             FROM customers
             WHERE id = ?
-          `)
-            .bind(customerId)
-            .first();
+          `).bind(customerId).first();
 
         return json({
           success: true,
@@ -510,17 +405,12 @@ export default {
         path.startsWith("/api/customer/") &&
         request.method === "GET"
       ) {
-
         const customerId =
           clean(
-            path.replace(
-              "/api/customer/",
-              ""
-            )
+            path.replace("/api/customer/", "")
           );
 
         if (!customerId) {
-
           return json({
             success: false,
             error:
@@ -533,12 +423,9 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `)
-            .bind(customerId)
-            .first();
+          `).bind(customerId).first();
 
         if (!customer) {
-
           return json({
             success: false,
             error:
@@ -561,9 +448,7 @@ export default {
         path === "/api/customer/update" &&
         request.method === "POST"
       ) {
-
-        const body =
-          await request.json();
+        const body = await request.json();
 
         const customerId =
           clean(body.customer_id);
@@ -575,7 +460,6 @@ export default {
           clean(body.email);
 
         if (!customerId) {
-
           return json({
             success: false,
             error:
@@ -588,12 +472,9 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `)
-            .bind(customerId)
-            .first();
+          `).bind(customerId).first();
 
         if (!customer) {
-
           return json({
             success: false,
             error:
@@ -603,28 +484,20 @@ export default {
 
         await env.DB.prepare(`
           UPDATE customers
-          SET
-            name = ?,
-            email = ?
+          SET name = ?, email = ?
           WHERE id = ?
-        `)
-          .bind(
-            name ||
-              customer.name ||
-              "Player",
-            email,
-            customerId
-          )
-          .run();
+        `).bind(
+          name || customer.name || "Player",
+          email,
+          customerId
+        ).run();
 
         const updated =
           await env.DB.prepare(`
             SELECT *
             FROM customers
             WHERE id = ?
-          `)
-            .bind(customerId)
-            .first();
+          `).bind(customerId).first();
 
         return json({
           success: true,
@@ -635,24 +508,18 @@ export default {
 
       /* =====================================================
          REFERRAL SUMMARY
-         GET /api/referral/:customerId
       ===================================================== */
 
       if (
         path.startsWith("/api/referral/") &&
         request.method === "GET"
       ) {
-
         const customerId =
           clean(
-            path.replace(
-              "/api/referral/",
-              ""
-            )
+            path.replace("/api/referral/", "")
           );
 
         if (!customerId) {
-
           return json({
             success: false,
             error:
@@ -667,7 +534,6 @@ export default {
           );
 
         if (!summary) {
-
           return json({
             success: false,
             error:
@@ -683,18 +549,12 @@ export default {
 
       /* =====================================================
          CLAIM REFERRAL
-         
-         A new customer can submit another customer's
-         referral code.
-
-         POST /api/referral/claim
       ===================================================== */
 
       if (
         path === "/api/referral/claim" &&
         request.method === "POST"
       ) {
-
         const body =
           await request.json();
 
@@ -712,7 +572,6 @@ export default {
           );
 
         if (!customerId) {
-
           return json({
             success: false,
             error:
@@ -721,7 +580,6 @@ export default {
         }
 
         if (!/^\d{6}$/.test(referralCode)) {
-
           return json({
             success: false,
             error:
@@ -736,12 +594,9 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `)
-            .bind(customerId)
-            .first();
+          `).bind(customerId).first();
 
         if (!customer) {
-
           return json({
             success: false,
             error:
@@ -755,12 +610,9 @@ export default {
             FROM customers
             WHERE referral_code = ?
             LIMIT 1
-          `)
-            .bind(referralCode)
-            .first();
+          `).bind(referralCode).first();
 
         if (!referrer) {
-
           return json({
             success: false,
             error:
@@ -769,7 +621,6 @@ export default {
         }
 
         if (referrer.id === customer.id) {
-
           return json({
             success: false,
             error:
@@ -783,12 +634,9 @@ export default {
             FROM referral_links
             WHERE referred_id = ?
             LIMIT 1
-          `)
-            .bind(customer.id)
-            .first();
+          `).bind(customer.id).first();
 
         if (alreadyReferred) {
-
           return json({
             success: false,
             error:
@@ -805,60 +653,37 @@ export default {
             created_at
           )
           VALUES (?, ?, ?, 'ACTIVE', ?)
-        `)
-          .bind(
-            referrer.id,
-            customer.id,
-            referralCode,
-            Date.now()
-          )
-          .run();
-
-        /*
-          Referral count increases only once.
-        */
+        `).bind(
+          referrer.id,
+          customer.id,
+          referralCode,
+          Date.now()
+        ).run();
 
         await env.DB.prepare(`
           UPDATE customers
           SET referral_count =
             COALESCE(referral_count, 0) + 1
           WHERE id = ?
-        `)
-          .bind(referrer.id)
-          .run();
+        `).bind(referrer.id).run();
 
         return json({
           success: true,
           message:
             "Referral applied successfully",
-          referrer_id:
-            referrer.id,
-          referral_code:
-            referralCode
+          referrer_id: referrer.id,
+          referral_code: referralCode
         });
       }
 
       /* =====================================================
          REFERRAL COMMISSION
-         
-         POST /api/referral/commission
-
-         This records 3% commission for the referrer.
-         
-         Expected body:
-         {
-           referrer_id: "...",
-           amount: 100
-         }
-
-         Commission = 3% of amount.
       ===================================================== */
 
       if (
         path === "/api/referral/commission" &&
         request.method === "POST"
       ) {
-
         const body =
           await request.json();
 
@@ -872,7 +697,6 @@ export default {
           Number(body.amount);
 
         if (!referrerId) {
-
           return json({
             success: false,
             error:
@@ -884,7 +708,6 @@ export default {
           !Number.isFinite(amount) ||
           amount <= 0
         ) {
-
           return json({
             success: false,
             error:
@@ -899,22 +722,15 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `)
-            .bind(referrerId)
-            .first();
+          `).bind(referrerId).first();
 
         if (!referrer) {
-
           return json({
             success: false,
             error:
               "Referrer not found"
           }, 404);
         }
-
-        /*
-          Find referred players belonging to this referrer.
-        */
 
         const commission =
           Number(
@@ -930,34 +746,24 @@ export default {
           SET referral_earned =
             COALESCE(referral_earned, 0) + ?
           WHERE id = ?
-        `)
-          .bind(
-            commission,
-            referrerId
-          )
-          .run();
+        `).bind(
+          commission,
+          referrerId
+        ).run();
 
         const updated =
           await env.DB.prepare(`
             SELECT *
             FROM customers
             WHERE id = ?
-          `)
-            .bind(referrerId)
-            .first();
+          `).bind(referrerId).first();
 
         return json({
           success: true,
-
           commission_percent:
             REFERRAL_PERCENT,
-
-          amount:
-            amount,
-
-          commission:
-            commission,
-
+          amount,
+          commission,
           total_earned:
             Number(
               updated.referral_earned || 0
@@ -973,7 +779,6 @@ export default {
         path === "/api/rooms/create" &&
         request.method === "POST"
       ) {
-
         const body =
           await request.json();
 
@@ -997,7 +802,6 @@ export default {
           );
 
         if (!playerId) {
-
           return json({
             success: false,
             error:
@@ -1006,7 +810,6 @@ export default {
         }
 
         if (!validRoomCode(roomCode)) {
-
           return json({
             success: false,
             error:
@@ -1024,18 +827,13 @@ export default {
 
           if (
             existing.status === "WAITING" &&
-            isExpired(
-              existing.created_at
-            )
+            isExpired(existing.created_at)
           ) {
-
             await deleteRoom(
               env,
               roomCode
             );
-
           } else {
-
             return json({
               success: false,
               error:
@@ -1058,48 +856,80 @@ export default {
             created_at
           )
           VALUES (
-            ?,
-            ?,
-            ?,
-            NULL,
-            NULL,
-            'WAITING',
-            ?
+            ?, ?, ?, NULL, NULL, 'WAITING', ?
           )
-        `)
-          .bind(
-            roomCode,
-            playerId,
-            playerName,
-            createdAt
-          )
-          .run();
+        `).bind(
+          roomCode,
+          playerId,
+          playerName,
+          createdAt
+        ).run();
 
         return json({
           success: true,
-
           room: {
-            room_code:
-              roomCode,
-
-            player1_id:
-              playerId,
-
-            player1_name:
-              playerName,
-
-            player2_id:
-              null,
-
-            player2_name:
-              null,
-
-            status:
-              "WAITING",
-
-            created_at:
-              createdAt
+            room_code: roomCode,
+            player1_id: playerId,
+            player1_name: playerName,
+            player2_id: null,
+            player2_name: null,
+            status: "WAITING",
+            created_at: createdAt
           }
+        });
+      }
+
+      /* =====================================================
+         GET WAITING ROOM
+         PLAYER 2 AUTO DISPLAY
+      ===================================================== */
+
+      if (
+        path === "/api/rooms/waiting" &&
+        request.method === "GET"
+      ) {
+        const room =
+          await env.DB.prepare(`
+            SELECT
+              room_code,
+              player1_id,
+              player1_name,
+              player2_id,
+              player2_name,
+              status,
+              result_screenshot,
+              result_player_id,
+              created_at
+            FROM rooms
+            WHERE status = 'WAITING'
+            ORDER BY created_at DESC
+            LIMIT 1
+          `).first();
+
+        if (!room) {
+          return json({
+            success: true,
+            room: null
+          });
+        }
+
+        if (
+          isExpired(room.created_at)
+        ) {
+          await deleteRoom(
+            env,
+            room.room_code
+          );
+
+          return json({
+            success: true,
+            room: null
+          });
+        }
+
+        return json({
+          success: true,
+          room
         });
       }
 
@@ -1111,7 +941,6 @@ export default {
         path === "/api/rooms/join" &&
         request.method === "POST"
       ) {
-
         const body =
           await request.json();
 
@@ -1135,7 +964,6 @@ export default {
           );
 
         if (!playerId) {
-
           return json({
             success: false,
             error:
@@ -1144,7 +972,6 @@ export default {
         }
 
         if (!validRoomCode(roomCode)) {
-
           return json({
             success: false,
             error:
@@ -1159,7 +986,6 @@ export default {
           );
 
         if (!room) {
-
           return json({
             success: false,
             error:
@@ -1171,7 +997,6 @@ export default {
           room.status === "WAITING" &&
           isExpired(room.created_at)
         ) {
-
           await deleteRoom(
             env,
             roomCode
@@ -1187,7 +1012,6 @@ export default {
         if (
           room.player1_id === playerId
         ) {
-
           return json({
             success: false,
             error:
@@ -1196,7 +1020,6 @@ export default {
         }
 
         if (room.player2_id) {
-
           return json({
             success: false,
             error:
@@ -1212,17 +1035,14 @@ export default {
               player2_name = ?,
               status = 'READY'
             WHERE room_code = ?
-              AND player2_id IS NULL
-          `)
-            .bind(
-              playerId,
-              playerName,
-              roomCode
-            )
-            .run();
+            AND player2_id IS NULL
+          `).bind(
+            playerId,
+            playerName,
+            roomCode
+          ).run();
 
         if (!result.success) {
-
           return json({
             success: false,
             error:
@@ -1240,7 +1060,6 @@ export default {
           !updatedRoom ||
           updatedRoom.player2_id !== playerId
         ) {
-
           return json({
             success: false,
             error:
@@ -1250,12 +1069,9 @@ export default {
 
         return json({
           success: true,
-
           message:
             "Player 2 joined successfully 🎉",
-
-          room:
-            updatedRoom
+          room: updatedRoom
         });
       }
 
@@ -1267,17 +1083,12 @@ export default {
         path.startsWith("/api/rooms/") &&
         request.method === "GET"
       ) {
-
         const roomCode =
           path
-            .replace(
-              "/api/rooms/",
-              ""
-            )
+            .replace("/api/rooms/", "")
             .trim();
 
         if (!validRoomCode(roomCode)) {
-
           return json({
             success: false,
             error:
@@ -1292,7 +1103,6 @@ export default {
           );
 
         if (!room) {
-
           return json({
             success: false,
             error:
@@ -1302,11 +1112,8 @@ export default {
 
         if (
           room.status === "WAITING" &&
-          isExpired(
-            room.created_at
-          )
+          isExpired(room.created_at)
         ) {
-
           await deleteRoom(
             env,
             roomCode
@@ -1321,7 +1128,7 @@ export default {
 
         return json({
           success: true,
-          room: room
+          room
         });
       }
 
@@ -1333,7 +1140,6 @@ export default {
         path === "/api/rooms/cancel" &&
         request.method === "POST"
       ) {
-
         const body =
           await request.json();
 
@@ -1349,15 +1155,37 @@ export default {
             body.roomCode
           );
 
+        const reason =
+          clean(
+            body.reason ||
+            body.cancel_reason
+          );
+
+        const validReasons = [
+          "No Room Code",
+          "Not Game Start",
+          "Not Player Join",
+          "Opposite Error"
+        ];
+
         if (
           !playerId ||
           !validRoomCode(roomCode)
         ) {
-
           return json({
             success: false,
             error:
               "Player and valid Room Code required"
+          }, 400);
+        }
+
+        if (
+          !validReasons.includes(reason)
+        ) {
+          return json({
+            success: false,
+            error:
+              "Valid cancellation reason required"
           }, 400);
         }
 
@@ -1368,7 +1196,6 @@ export default {
           );
 
         if (!room) {
-
           return json({
             success: false,
             error:
@@ -1380,7 +1207,6 @@ export default {
           room.player1_id !== playerId &&
           room.player2_id !== playerId
         ) {
-
           return json({
             success: false,
             error:
@@ -1388,13 +1214,35 @@ export default {
           }, 403);
         }
 
+        await ensureCancellationTable(
+          env
+        );
+
+        await env.DB.prepare(`
+          INSERT INTO room_cancellations (
+            room_code,
+            player_id,
+            reason,
+            created_at
+          )
+          VALUES (?, ?, ?, ?)
+        `).bind(
+          roomCode,
+          playerId,
+          reason,
+          Date.now()
+        ).run();
+
         await deleteRoom(
           env,
           roomCode
         );
 
         return json({
-          success: true
+          success: true,
+          message:
+            "Room cancelled successfully",
+          reason
         });
       }
 
@@ -1406,7 +1254,6 @@ export default {
         path === "/api/rooms/result" &&
         request.method === "POST"
       ) {
-
         const body =
           await request.json();
 
@@ -1432,7 +1279,6 @@ export default {
           !validRoomCode(roomCode) ||
           !screenshot
         ) {
-
           return json({
             success: false,
             error:
@@ -1447,7 +1293,6 @@ export default {
           );
 
         if (!room) {
-
           return json({
             success: false,
             error:
@@ -1459,7 +1304,6 @@ export default {
           room.player1_id !== playerId &&
           room.player2_id !== playerId
         ) {
-
           return json({
             success: false,
             error:
@@ -1474,13 +1318,11 @@ export default {
             result_player_id = ?,
             status = 'RESULT_SUBMITTED'
           WHERE room_code = ?
-        `)
-          .bind(
-            screenshot,
-            playerId,
-            roomCode
-          )
-          .run();
+        `).bind(
+          screenshot,
+          playerId,
+          roomCode
+        ).run();
 
         return json({
           success: true,
@@ -1488,10 +1330,6 @@ export default {
             "Screenshot submitted successfully"
         });
       }
-
-      /* =====================================================
-         NOT FOUND
-      ===================================================== */
 
       return new Response(
         "Not Found",
