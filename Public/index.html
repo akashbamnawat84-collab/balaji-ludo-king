@@ -6,962 +6,612 @@
 
   <title>Balaji Ludo King</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      color: #222;
-      min-height: 100vh;
-      padding-bottom: 75px;
-    }
-
-    button,
-    input {
-      font-family: inherit;
-    }
-
-    .screen {
-      width: 100%;
-      max-width: 500px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    /* TOP BAR */
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 18px;
-      background: #ffffff;
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-
-    .logo {
-      font-size: 21px;
-      font-weight: bold;
-    }
-
-    .login-text {
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    /* LOGIN */
-
-    #welcomeCard {
-      margin-top: 35px;
-    }
-
-    .login-card {
-      background: white;
-      border-radius: 22px;
-      padding: 28px 22px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.08);
-    }
-
-    .login-logo {
-      text-align: center;
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 30px;
-    }
-
-    .login-card h1 {
-      font-size: 25px;
-      margin-bottom: 8px;
-    }
-
-    .login-card .sub {
-      color: #777;
-      font-size: 14px;
-      margin-bottom: 25px;
-    }
-
-    .label {
-      display: block;
-      font-size: 13px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .mobile-box {
-      display: flex;
-      align-items: center;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .country {
-      padding: 14px 10px;
-      background: #f4f4f4;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    #playerMobile {
-      flex: 1;
-      border: 0;
-      outline: none;
-      padding: 14px;
-      font-size: 16px;
-    }
-
-    #startBtn {
-      width: 100%;
-      margin-top: 18px;
-      padding: 15px;
-      border: 0;
-      border-radius: 12px;
-      background: #222;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .security {
-      text-align: center;
-      color: #888;
-      font-size: 11px;
-      margin-top: 18px;
-    }
-
-    #message {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 13px;
-    }
-
-    /* OTP */
-
-    #otpCard {
-      display: none;
-    }
-
-    .otp-card {
-      background: white;
-      border-radius: 22px;
-      padding: 28px 22px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.08);
-      text-align: center;
-      margin-top: 35px;
-    }
-
-    .otp-card h2 {
-      margin-bottom: 10px;
-    }
-
-    .otp-card p {
-      color: #777;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    #otpInput {
-      width: 100%;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      text-align: center;
-      font-size: 22px;
-      letter-spacing: 8px;
-      outline: none;
-    }
-
-    #verifyOtpBtn {
-      width: 100%;
-      margin-top: 15px;
-      padding: 15px;
-      border: 0;
-      border-radius: 12px;
-      background: #222;
-      color: white;
-      font-weight: bold;
-    }
-
-    #backLoginBtn {
-      margin-top: 12px;
-      background: transparent;
-      border: 0;
-      color: #555;
-    }
-
-    /* ROOM */
-
-    #roomCard {
-      display: none;
-    }
-
-    .room-card {
-      background: white;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.08);
-    }
-
-    .room-card h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .room-box {
-      margin-top: 18px;
-    }
-
-    .room-box input {
-      width: 100%;
-      padding: 14px;
-      margin-top: 8px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 16px;
-      text-align: center;
-      letter-spacing: 2px;
-    }
-
-    .room-box button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 14px;
-      border: 0;
-      border-radius: 10px;
-      background: #222;
-      color: white;
-      font-weight: bold;
-    }
-
-    #roomMessage {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 13px;
-    }
-
-    .players {
-      margin-top: 20px;
-    }
-
-    .player-box {
-      background: #f5f5f5;
-      padding: 14px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-
-    #waitingTimer {
-      text-align: center;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    /* LUDO */
-
-    #ludoCard {
-      display: none;
-    }
-
-    .ludo-card {
-      background: white;
-      padding: 25px;
-      border-radius: 18px;
-      text-align: center;
-      box-shadow: 0 4px 18px rgba(0,0,0,.08);
-    }
-
-    /* PROFILE */
-
-    #profileSection {
-      display: none;
-    }
-
-    .profile-card {
-      background: white;
-      border-radius: 20px;
-      padding: 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.08);
-    }
-
-    .profile-title {
-      font-size: 22px;
-      font-weight: bold;
-      margin-bottom: 18px;
-    }
-
-    .profile-header {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 15px;
-    }
-
-    .avatar {
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      background: #ddd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
-    }
-
-    .profile-info {
-      flex: 1;
-    }
-
-    .profile-info h2 {
-      font-size: 19px;
-    }
-
-    .profile-info p {
-      color: #777;
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-    .verified {
-      position: absolute;
-      left: 15px;
-      bottom: -11px;
-      background: #222;
-      color: white;
-      border-radius: 20px;
-      padding: 5px 9px;
-      font-size: 9px;
-    }
-
-    .edit-btn {
-      border: 0;
-      background: white;
-      border-radius: 8px;
-      padding: 8px;
-    }
-
-    .balance-grid,
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 28px;
-    }
-
-    .stats-grid {
-      margin-top: 12px;
-    }
-
-    .info-box {
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 14px;
-    }
-
-    .info-box span {
-      display: block;
-      color: #777;
-      font-size: 11px;
-      margin-top: 5px;
-    }
-
-    .info-box strong {
-      display: block;
-      font-size: 18px;
-      margin-top: 5px;
-    }
-
-    .settings {
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 14px;
-      margin-top: 15px;
-    }
-
-    .settings h3 {
-      font-size: 15px;
-      margin-bottom: 10px;
-    }
-
-    .setting {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 13px 0;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .setting:last-child {
-      border-bottom: 0;
-    }
-
-    .setting-content {
-      flex: 1;
-    }
-
-    .setting-content span {
-      display: block;
-      color: #777;
-      font-size: 10px;
-    }
-
-    .setting-content strong {
-      display: block;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    .customer-id {
-      margin-top: 15px;
-      background: #222;
-      color: white;
-      padding: 15px;
-      border-radius: 14px;
-    }
-
-    .customer-id span {
-      font-size: 11px;
-      opacity: .7;
-    }
-
-    .customer-id strong {
-      display: block;
-      margin-top: 5px;
-    }
-
-    /* BOTTOM NAV */
-
-    .bottom-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 68px;
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -3px 15px rgba(0,0,0,.1);
-      z-index: 999;
-    }
-
-    .bottom-nav button {
-      background: transparent;
-      border: 0;
-      color: #555;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      font-size: 11px;
-    }
-
-    .bottom-nav span {
-      font-size: 21px;
-    }
-
-    .home-icon {
-      font-size: 28px !important;
-    }
-
-    @media(max-width:380px) {
-      .screen {
-        padding: 14px;
-      }
-
-      .login-card {
-        padding: 23px 17px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- TOP BAR -->
+  <!-- ========================= -->
+  <!-- TOP HEADER -->
+  <!-- ========================= -->
 
-  <div class="topbar">
-    <div class="logo">🎮 BALAJI LUDO KING</div>
-    <div class="login-text">LOGIN</div>
-  </div>
+  <header class="topbar">
+
+    <div class="menu-icon">
+      ☰
+    </div>
+
+    <div class="logo">
+      🎲
+      <span>BALAJI<br>LUDO</span>
+    </div>
+
+    <div class="header-wallet">
+      💰 ₹0.00
+    </div>
+
+    <div class="header-bonus">
+      🎁 ₹0.00
+    </div>
+
+  </header>
 
 
-  <!-- LOGIN -->
+  <main class="page">
 
-  <section id="welcomeCard" class="screen">
 
-    <div class="login-card">
+    <!-- ========================= -->
+    <!-- LOGIN -->
+    <!-- ========================= -->
 
-      <div class="login-logo">
-        BAJIGERLUDO
-      </div>
+    <section
+      id="welcomeCard"
+      class="card login-card">
 
-      <h1>Welcome Back</h1>
+      <h1>🎲 Balaji Ludo King</h1>
 
-      <p class="sub">
-        Enter your mobile number to get started
+      <h2>Welcome Back 👋</h2>
+
+      <p>
+        Enter your mobile number to continue
       </p>
 
-      <label class="label">
-        Mobile Number
-      </label>
-
-      <div class="mobile-box">
-
-        <div class="country">
-          +91
-        </div>
-
-        <input
-          type="tel"
-          id="playerMobile"
-          placeholder="98765 43210"
-          maxlength="10"
-          inputmode="numeric"
-          autocomplete="tel"
-        >
-
-      </div>
-
       <input
-        type="hidden"
-        id="playerName"
-        value="Player"
-      >
+        id="playerMobile"
+        type="tel"
+        inputmode="numeric"
+        maxlength="10"
+        placeholder="Enter 10-digit mobile number">
 
-      <button id="startBtn">
+      <button
+        id="startBtn"
+        type="button"
+        onclick="sendOTP()">
         Send OTP
       </button>
 
-      <p class="security">
-        🔒 Protected by end-to-end security protocol
-      </p>
-
       <p id="message"></p>
 
-    </div>
-
-  </section>
+    </section>
 
 
-  <!-- OTP -->
+    <!-- ========================= -->
+    <!-- OTP -->
+    <!-- ========================= -->
 
-  <section id="otpCard" class="screen">
+    <section
+      id="otpCard"
+      class="card"
+      style="display:none;">
 
-    <div class="otp-card">
-
-      <h2>Enter OTP</h2>
+      <h2>🔐 Verify OTP</h2>
 
       <p>
-        Demo OTP has been sent to your mobile number.
+        Enter the 6-digit OTP
       </p>
 
       <input
         id="otpInput"
         type="tel"
-        maxlength="6"
         inputmode="numeric"
-        placeholder="••••••"
-      >
+        maxlength="6"
+        placeholder="Enter OTP">
 
-      <button id="verifyOtpBtn">
+      <button
+        id="verifyOtpBtn"
+        type="button"
+        onclick="verifyOTP()">
         Verify OTP
       </button>
 
-      <button id="backLoginBtn">
-        ← Change Mobile Number
+      <button
+        id="backLoginBtn"
+        type="button"
+        onclick="backToLogin()">
+        ← Back
       </button>
 
       <p id="otpMessage"></p>
 
-    </div>
-
-  </section>
+    </section>
 
 
-  <!-- ROOM -->
+    <!-- ========================= -->
+    <!-- ROOM -->
+    <!-- ========================= -->
 
-  <section id="roomCard" class="screen">
-
-    <div class="room-card">
+    <section
+      id="roomCard"
+      class="card room-card"
+      style="display:none;">
 
       <h2>🎮 2 Player Battle</h2>
 
-      <p style="text-align:center;color:#777;">
-        Create or Join Room
+      <p class="room-subtitle">
+        Create or join a 2 player room
       </p>
+
+
+      <!-- CREATE -->
 
       <div class="room-box">
 
         <h3>Create Room</h3>
 
         <input
-          type="tel"
           id="createRoomCode"
-          maxlength="8"
+          type="tel"
           inputmode="numeric"
-          placeholder="Enter 8-Digit Room Code"
-        >
+          maxlength="8"
+          placeholder="Enter 8-Digit Room Code">
 
-        <button id="createRoomBtn">
+        <button
+          id="createRoomBtn"
+          type="button"
+          onclick="createRoom()">
           Create Room
         </button>
 
       </div>
 
 
+      <div class="divider">
+        OR
+      </div>
+
+
+      <!-- JOIN -->
+
       <div class="room-box">
 
         <h3>Join Room</h3>
 
         <input
-          type="tel"
           id="joinRoomCode"
-          maxlength="8"
+          type="tel"
           inputmode="numeric"
-          placeholder="Enter 8-Digit Room Code"
-        >
+          maxlength="8"
+          placeholder="Enter 8-Digit Room Code">
 
-        <button id="joinRoomBtn">
+        <button
+          id="joinRoomBtn"
+          type="button"
+          onclick="joinRoom()">
           Join Room
         </button>
 
       </div>
 
+
       <p id="roomMessage"></p>
 
-      <div id="waitingTimer"></div>
+      <div
+        id="waitingTimer"
+        class="timer">
+      </div>
+
+
+      <!-- PLAYERS WAITING -->
 
       <div class="players">
 
-        <div class="player-box">
-          <strong>Player 1</strong>
+        <div class="player-card">
+
+          <h3>🔴 Player 1</h3>
+
           <p id="player1Status">
             Waiting...
           </p>
+
         </div>
 
-        <div class="player-box">
-          <strong>Player 2</strong>
+
+        <div class="player-card">
+
+          <h3>🔵 Player 2</h3>
+
           <p id="player2Status">
             Waiting...
           </p>
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- LUDO -->
-
-  <section id="ludoCard" class="screen">
-
-    <div class="ludo-card">
-
-      <h2>🎲 Ludo King</h2>
-
-      <br>
-
-      <h3>Both Players Ready!</h3>
-
-      <p style="margin-top:10px;color:#777;">
-        Game area will be connected here.
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- PROFILE -->
-
-  <section id="profileSection" class="screen">
-
-    <div class="profile-card">
-
-      <div class="profile-title">
-        Profile
-      </div>
-
-
-      <div class="profile-header">
-
-        <div class="avatar">
-          👤
-        </div>
-
-        <div class="profile-info">
-
-          <h2 id="profileName">
-            Player
-          </h2>
-
-          <p id="profileId">
-            Player ID: --
-          </p>
-
-        </div>
-
-        <button
-          class="edit-btn"
-          onclick="editProfile()"
-        >
-          ✏️
-        </button>
-
-        <div class="verified">
-          ✓ VERIFIED
-        </div>
-
-      </div>
-
-
-      <!-- BALANCE -->
-
-      <div class="balance-grid">
-
-        <div class="info-box">
-
-          <div>💳</div>
-
-          <span>
-            Wallet Balance
-          </span>
-
-          <strong id="profileWallet">
-            ₹0.00
-          </strong>
-
-        </div>
-
-
-        <div class="info-box">
-
-          <div>🎁</div>
-
-          <span>
-            Bonus
-          </span>
-
-          <strong id="profileBonus">
-            ₹0.00
-          </strong>
 
         </div>
 
       </div>
 
-
-      <!-- STATS -->
-
-      <div class="stats-grid">
-
-        <div class="info-box">
-
-          <div>⚔️</div>
-
-          <span>
-            BATTLE PLAYED
-          </span>
-
-          <strong id="battlePlayed">
-            0
-          </strong>
-
-        </div>
+    </section>
 
 
-        <div class="info-box">
+    <!-- ========================= -->
+    <!-- MATCH SCREEN -->
+    <!-- ========================= -->
 
-          <div>🪙</div>
-
-          <span>
-            COIN WON
-          </span>
-
-          <strong id="coinWon">
-            ₹0
-          </strong>
-
-        </div>
+    <section
+      id="ludoCard"
+      class="match-page"
+      style="display:none;">
 
 
-        <div class="info-box">
+      <!-- BACK -->
 
-          <div>👥</div>
-
-          <span>
-            REFERRAL
-          </span>
-
-          <strong id="referralEarned">
-            ₹0
-          </strong>
-
-        </div>
+      <button
+        class="back-button"
+        type="button"
+        onclick="goHome()">
+        ← BACK
+      </button>
 
 
-        <div class="info-box">
+      <!-- ========================= -->
+      <!-- VS CARD -->
+      <!-- ========================= -->
 
-          <div>💸</div>
+      <div class="vs-card">
 
-          <span>
-            WITHDRAWAL
-          </span>
+        <!-- PLAYER 1 -->
 
-          <strong id="withdrawalAmount">
-            ₹0
-          </strong>
+        <div class="vs-player">
 
-        </div>
-
-      </div>
-
-
-      <!-- SETTINGS -->
-
-      <div class="settings">
-
-        <h3>
-          ACCOUNT SETTINGS
-        </h3>
-
-
-        <div class="setting">
-
-          <div>
-            📞
+          <div class="avatar">
+            🎮
           </div>
 
-          <div class="setting-content">
+          <div
+            id="matchPlayer1Name"
+            class="player-name">
+            Player 1
+          </div>
 
-            <span>
-              Phone Number
-            </span>
+          <div class="entry-label">
+            Entry Fee
+          </div>
 
-            <strong id="profilePhone">
-              Not Added
-            </strong>
-
+          <div
+            id="entryFee"
+            class="entry-value">
+            🪙 150
           </div>
 
         </div>
 
 
-        <div class="setting">
+        <!-- VS -->
 
-          <div>
-            ✉️
+        <div class="vs-logo">
+          VS
+        </div>
+
+
+        <!-- PLAYER 2 -->
+
+        <div class="vs-player">
+
+          <div class="avatar">
+            🎮
           </div>
 
-          <div class="setting-content">
+          <div
+            id="matchPlayer2Name"
+            class="player-name">
+            Player 2
+          </div>
 
-            <span>
-              Email ID
-            </span>
+          <div class="winning-label">
+            Winning Prize
+          </div>
 
-            <strong id="profileEmail">
-              Not Added
-            </strong>
+          <div
+            id="winningPrize"
+            class="winning-value">
+            🪙 285
+          </div>
 
+        </div>
+
+      </div>
+
+
+      <!-- ========================= -->
+      <!-- ROOM CODE -->
+      <!-- ========================= -->
+
+      <div class="room-code-card">
+
+        <h2>
+          Room Code
+        </h2>
+
+        <div class="room-code-row">
+
+          <div
+            id="matchRoomCode"
+            class="room-code">
+            00000000
           </div>
 
           <button
-            onclick="editEmail()"
-            style="border:0;background:transparent;"
-          >
-            ✏️
+            id="copyRoomBtn"
+            type="button"
+            onclick="copyRoomCode()">
+            Copy Code
           </button>
 
         </div>
 
+      </div>
 
-        <div class="setting">
 
-          <div>
-            🪪
-          </div>
+      <!-- ========================= -->
+      <!-- MATCH STATUS -->
+      <!-- ========================= -->
 
-          <div class="setting-content">
+      <div class="match-status-card">
 
-            <span>
-              KYC Status
-            </span>
+        <h2>
+          Match Status
+        </h2>
 
-            <strong id="kycStatus">
-              ✓ Verified User
-            </strong>
 
-          </div>
+        <div class="status-buttons">
+
+          <!-- I WON -->
+
+          <button
+            id="iWonBtn"
+            class="won-btn"
+            type="button"
+            onclick="submitWin()">
+            I Won
+          </button>
+
+
+          <!-- I LOST -->
+
+          <button
+            id="iLostBtn"
+            class="lost-btn"
+            type="button"
+            onclick="submitLost()">
+            I Lost
+          </button>
+
+
+          <!-- CANCEL -->
+
+          <button
+            id="matchCancelBtn"
+            class="cancel-btn"
+            type="button"
+            onclick="cancelRoom()">
+            Cancel
+          </button>
 
         </div>
 
       </div>
 
 
-      <!-- CUSTOMER ID -->
+      <!-- ========================= -->
+      <!-- RESULT AREA -->
+      <!-- ========================= -->
 
-      <div class="customer-id">
+      <div
+        id="resultArea"
+        class="result-card"
+        style="display:none;">
 
-        <span>
-          Customer ID
-        </span>
+        <h3>
+          🏆 Submit Winning Result
+        </h3>
 
-        <strong id="customerId">
-          ---
-        </strong>
+        <p>
+          अपनी जीत का screenshot upload करें।
+        </p>
+
+        <input
+          id="resultScreenshot"
+          type="file"
+          accept="image/*">
+
+        <button
+          id="submitResultBtn"
+          type="button"
+          onclick="uploadResult()">
+          📤 Submit Result
+        </button>
 
       </div>
 
-    </div>
 
-  </section>
+      <!-- ========================= -->
+      <!-- GAME MESSAGE -->
+      <!-- ========================= -->
+
+      <p
+        id="gameMessage"
+        class="game-message">
+      </p>
 
 
-  <!-- BOTTOM NAV -->
+      <div class="play-text">
+        Play ludo game in Ludo King App
+      </div>
+
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- PROFILE -->
+    <!-- ========================= -->
+
+    <section
+      id="profileSection"
+      class="card profile-card"
+      style="display:none;">
+
+      <h2>👤 Profile</h2>
+
+      <h3 id="profileName">
+        Player
+      </h3>
+
+      <p id="profileId">
+        Player ID: ---
+      </p>
+
+      <div class="profile-grid">
+
+        <div>
+          <strong>Customer ID</strong>
+          <p id="customerId">---</p>
+        </div>
+
+        <div>
+          <strong>Wallet</strong>
+          <p id="profileWallet">₹0.00</p>
+        </div>
+
+        <div>
+          <strong>Bonus</strong>
+          <p id="profileBonus">₹0.00</p>
+        </div>
+
+        <div>
+          <strong>Battle Played</strong>
+          <p id="battlePlayed">0</p>
+        </div>
+
+        <div>
+          <strong>Coin Won</strong>
+          <p id="coinWon">₹0.00</p>
+        </div>
+
+        <div>
+          <strong>Referral Earned</strong>
+          <p id="referralEarned">₹0.00</p>
+        </div>
+
+        <div>
+          <strong>Withdrawal</strong>
+          <p id="withdrawalAmount">₹0.00</p>
+        </div>
+
+        <div>
+          <strong>Phone</strong>
+          <p id="profilePhone">Not Added</p>
+        </div>
+
+        <div>
+          <strong>Email</strong>
+          <p id="profileEmail">Not Added</p>
+        </div>
+
+        <div>
+          <strong>KYC</strong>
+          <p id="kycStatus">Pending</p>
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        onclick="editProfile()">
+        ✏️ Edit Name
+      </button>
+
+      <button
+        type="button"
+        onclick="editEmail()">
+        📧 Edit Email
+      </button>
+
+      <button
+        type="button"
+        onclick="goHome()">
+        🏠 Home
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <!-- ========================= -->
+  <!-- BOTTOM NAVIGATION -->
+  <!-- ========================= -->
 
   <nav class="bottom-nav">
 
-    <button onclick="openWallet()">
-      <span>💳</span>
-      Wallet
+    <button
+      type="button"
+      onclick="openWallet()">
+
+      <span>💰</span>
+      <small>Wallet</small>
+
     </button>
 
-    <button onclick="openRefer()">
+
+    <button
+      type="button"
+      onclick="openRefer()">
+
       <span>🎁</span>
-      Refer
+      <small>Refer</small>
+
     </button>
 
-    <button onclick="goHome()">
-      <span class="home-icon">⌂</span>
-      Home
+
+    <button
+      class="home-nav"
+      type="button"
+      onclick="goHome()">
+
+      <span>⌂</span>
+      <small>Home</small>
+
     </button>
 
-    <button onclick="openSupport()">
+
+    <button
+      type="button"
+      onclick="openSupport()">
+
       <span>🎧</span>
-      Support
+      <small>Support</small>
+
     </button>
 
-    <button onclick="openProfile()">
+
+    <button
+      type="button"
+      onclick="openProfile()">
+
       <span>♙</span>
-      Profile
+      <small>Profile</small>
+
     </button>
 
   </nav>
 
 
-  <!-- EXISTING JAVASCRIPT -->
+  <!-- ========================= -->
+  <!-- FOOTER -->
+  <!-- ========================= -->
+
+  <footer>
+
+    <p>
+      ⚠️ Demo Mode — No real money is used.
+    </p>
+
+    <p>
+      © 2026 Balaji Ludo King
+    </p>
+
+  </footer>
+
 
   <script src="script.js"></script>
 
