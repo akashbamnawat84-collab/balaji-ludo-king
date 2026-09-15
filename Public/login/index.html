@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <title>Balaji Ludo King - Login</title>
+
+  <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+  <!-- =========================================
+       LOGIN HEADER
+  ========================================== -->
+
+  <header class="login-header">
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        🎲
+      </div>
+
+      <div>
+        <div class="brand-name">
+          BALAJI LUDO KING
+        </div>
+
+        <div class="brand-tagline">
+          PLAY • BATTLE • WIN
+        </div>
+      </div>
+
+    </div>
+
+
+    <button
+      class="login-top-btn"
+      type="button">
+
+      👤 Login
+
+    </button>
+
+  </header>
+
+
+  <!-- =========================================
+       LOGIN PAGE
+  ========================================== -->
+
+  <main class="login-page">
+
+
+    <!-- LUDO VISUAL -->
+
+    <section class="ludo-visual">
+
+      <div class="glow glow-one"></div>
+      <div class="glow glow-two"></div>
+
+
+      <div class="dice dice-one">
+        🎲
+      </div>
+
+      <div class="dice dice-two">
+        🎲
+      </div>
+
+
+      <div class="ludo-board">
+
+        <div class="home red-home">
+          <span>🔴</span>
+          <span>🔴</span>
+        </div>
+
+        <div class="home blue-home">
+          <span>🔵</span>
+          <span>🔵</span>
+        </div>
+
+        <div class="home yellow-home">
+          <span>🟡</span>
+          <span>🟡</span>
+        </div>
+
+        <div class="home green-home">
+          <span>🟢</span>
+          <span>🟢</span>
+        </div>
+
+
+        <div class="board-center">
+          <span>♛</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================
+         LOGIN CARD
+    ========================================== -->
+
+    <section
+      id="loginSection"
+      class="login-card">
+
+      <div class="welcome-icon">
+        👋
+      </div>
+
+
+      <h1>
+        Welcome Back
+      </h1>
+
+
+      <p class="login-description">
+        Enter your mobile number to get started
+      </p>
+
+
+      <!-- MOBILE NUMBER -->
+
+      <div class="input-group">
+
+        <label for="mobileNumber">
+          Mobile Number
+        </label>
+
+
+        <div class="mobile-input">
+
+          <span class="country-code">
+            +91
+          </span>
+
+
+          <input
+            type="tel"
+            id="mobileNumber"
+            maxlength="10"
+            inputmode="numeric"
+            autocomplete="tel"
+            placeholder="98765 43210">
+
+        </div>
+
+      </div>
+
+
+      <!-- SEND OTP -->
+
+      <button
+        type="button"
+        id="sendOtpBtn"
+        class="send-otp-btn"
+        onclick="sendOTP()">
+
+        <span>
+          Send OTP
+        </span>
+
+        <span class="arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <div
+        id="loginMessage"
+        class="message">
+      </div>
+
+
+      <!-- SECURITY -->
+
+      <div class="security">
+
+        <span class="lock">
+          🔒
+        </span>
+
+        <span>
+          Protected by secure login protocol
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================
+         PROMOTIONAL CARD
+    ========================================== -->
+
+    <section class="promo-card">
+
+      <div class="promo-icon">
+        🏆
+      </div>
+
+
+      <div class="promo-content">
+
+        <strong>
+          Ready for the Battle?
+        </strong>
+
+        <span>
+          Login and start playing with your opponent.
+        </span>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================================
+       OTP SECTION
+  ========================================== -->
+
+  <section
+    id="otpSection"
+    class="otp-overlay"
+    style="display:none;">
+
+    <div class="otp-card">
+
+      <div class="otp-icon">
+        🔐
+      </div>
+
+
+      <h2>
+        Verify OTP
+      </h2>
+
+
+      <p>
+        Enter the 6-digit OTP sent to your mobile number.
+      </p>
+
+
+      <input
+        type="tel"
+        id="otpInput"
+        maxlength="6"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        placeholder="••••••">
+
+
+      <button
+        type="button"
+        class="verify-btn"
+        onclick="verifyOTP()">
+
+        Verify OTP
+
+      </button>
+
+
+      <button
+        type="button"
+        class="back-btn"
+        onclick="backToLogin()">
+
+        ← Back to Login
+
+      </button>
+
+
+      <div
+        id="otpMessage"
+        class="message">
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================================
+       LOGIN JAVASCRIPT
+  ========================================== -->
+
+  <script src="login.js"></script>
+
+</body>
+
+</html>
