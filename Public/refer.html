@@ -4,139 +4,267 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Refer & Earn - Balaji Ludo King</title>
+  <title>Balaji Ludo King - Refer & Earn</title>
 
   <link rel="stylesheet" href="refer.css">
 </head>
 
 <body>
 
-  <div class="page">
+  <!-- HEADER -->
+  <header class="refer-header">
 
-    <!-- HEADER -->
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">🎮</div>
-        <div>
-          <div class="brand-name">BALAJI LUDO KING</div>
-          <div class="brand-sub">Official Gaming</div>
-        </div>
+    <a href="../home.html" class="back-btn">←</a>
+
+    <div>
+      <div class="brand-name">
+        BALAJI LUDO KING
       </div>
-    </header>
 
-    <!-- MAIN -->
-    <main class="content">
+      <div class="brand-subtitle">
+        Refer & Earn
+      </div>
+    </div>
 
-      <section class="hero">
-        <div class="offer">🎁 BAMPER DHAMAKA</div>
+  </header>
 
-        <h1>Invite &amp; Earn Cash</h1>
 
-        <p>
-          Share with friends &amp; get up to
-          <strong>3% Commission</strong>
-          on every victory!
-        </p>
-      </section>
+  <!-- MAIN -->
+  <main class="refer-container">
 
-      <!-- STATS -->
-      <section class="stats">
+    <!-- HERO -->
+    <section class="refer-hero">
 
-        <div class="stat-card">
-          <span class="stat-title">TOTAL REFERAL</span>
-          <strong id="totalReferral">0</strong>
-        </div>
+      <div class="refer-logo">
+        🎁
+      </div>
 
-        <div class="stat-card">
-          <span class="stat-title">TOTAL EARNED</span>
-          <strong id="totalEarned">₹0</strong>
-        </div>
+      <h1>
+        Invite & Earn Cash
+      </h1>
 
-      </section>
+      <p>
+        Share with friends & get up to
+        <strong>3% Commission</strong>
+        on every victory!
+      </p>
 
-      <!-- REFERRAL CODE -->
-      <section class="code-card">
+    </section>
 
-        <div class="code-title">YOUR CODE</div>
 
-        <div class="instant">
-          Instant Payouts
-        </div>
+    <!-- STATS -->
+    <section class="stats-grid">
 
-        <div class="code-box">
-          <span id="referralCode">000000</span>
+      <div class="stat-card">
 
-          <button
-            id="copyCodeBtn"
-            class="copy-small"
-            type="button"
-            aria-label="Copy referral code">
-            📋
-          </button>
-        </div>
+        <span class="stat-label">
+          TOTAL REFERRAL
+        </span>
 
-      </section>
+        <strong
+          id="totalReferral"
+          class="stat-value">
+          0
+        </strong>
 
-      <!-- SHARE -->
-      <section class="share-section">
+      </div>
 
-        <h2>Share directly via</h2>
 
-        <div class="share-buttons">
+      <div class="stat-card">
 
-          <button
-            id="whatsappBtn"
-            class="share-btn whatsapp"
-            type="button">
-            <span>🟢</span>
-            WhatsApp
-          </button>
+        <span class="stat-label">
+          TOTAL EARNED
+        </span>
 
-          <button
-            id="telegramBtn"
-            class="share-btn telegram"
-            type="button">
-            <span>🔵</span>
-            Telegram
-          </button>
+        <strong
+          id="totalEarned"
+          class="stat-value">
+          ₹0.00
+        </strong>
 
-        </div>
+      </div>
+
+    </section>
+
+
+    <!-- REFERRAL CODE -->
+    <section class="code-card">
+
+      <div class="section-title">
+        YOUR CODE
+      </div>
+
+      <div
+        id="referralCode"
+        class="referral-code">
+        LOADING
+      </div>
+
+      <div class="instant-payout">
+        ⚡ Instant Payouts
+      </div>
+
+      <button
+        id="copyCodeBtn"
+        class="copy-btn"
+        type="button">
+
+        📋 Copy Code
+
+      </button>
+
+    </section>
+
+
+    <!-- SHARE -->
+    <section class="share-card">
+
+      <h2>
+        Share directly via
+      </h2>
+
+      <div class="share-buttons">
+
+        <button
+          id="whatsappBtn"
+          class="share-btn"
+          type="button">
+
+          <span>💬</span>
+          WhatsApp
+
+        </button>
+
+
+        <button
+          id="telegramBtn"
+          class="share-btn"
+          type="button">
+
+          <span>✈️</span>
+          Telegram
+
+        </button>
+
 
         <button
           id="copyLinkBtn"
-          class="copy-link"
+          class="share-btn"
           type="button">
-          📋 Copy Link
+
+          <span>🔗</span>
+          Copy Link
+
         </button>
 
-        <div id="copyMessage" class="copy-message"></div>
+      </div>
 
-      </section>
+    </section>
 
-      <!-- REFERRAL HISTORY -->
-      <section class="history-card">
 
-        <div class="history-title">
-          Referral History
+    <!-- INFO -->
+    <section class="info-card">
+
+      <h2>
+        How it works
+      </h2>
+
+      <div class="step">
+
+        <div class="step-number">1</div>
+
+        <div>
+          <strong>Share your code</strong>
+          <p>Invite your friends using your referral code.</p>
         </div>
 
-        <div id="historyList" class="history-list">
-          <div class="empty-history">
-            No referral activity yet.
-          </div>
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">2</div>
+
+        <div>
+          <strong>Friend joins</strong>
+          <p>Your friend registers using your code.</p>
         </div>
 
-      </section>
+      </div>
 
-    </main>
 
-    <!-- FOOTER -->
-    <footer>
-      <div>Turn Fun into Funds!</div>
-      <small>Balaji Ludo King</small>
-    </footer>
+      <div class="step">
 
-  </div>
+        <div class="step-number">3</div>
+
+        <div>
+          <strong>Earn commission</strong>
+          <p>Get up to 3% commission on eligible victories.</p>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+
+    <a
+      href="../home.html"
+      class="nav-item">
+
+      <span>🏠</span>
+      Home
+
+    </a>
+
+
+    <a
+      href="refer.html"
+      class="nav-item active">
+
+      <span>🎁</span>
+      Refer
+
+    </a>
+
+
+    <a
+      href="#"
+      class="nav-item"
+      id="walletBtn">
+
+      <span>💰</span>
+      Wallet
+
+    </a>
+
+
+    <a
+      href="../support.html"
+      class="nav-item">
+
+      <span>🎧</span>
+      Support
+
+    </a>
+
+
+    <a
+      href="#"
+      class="nav-item"
+      id="profileBtn">
+
+      <span>👤</span>
+      Profile
+
+    </a>
+
+  </nav>
+
 
   <script src="refer.js"></script>
 
