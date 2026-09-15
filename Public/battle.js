@@ -6,13 +6,60 @@
 const MIN_BET = 50;
 const MAX_BET = 10000;
 
-// ------------------------------------------
-// ELEMENTS
-// ------------------------------------------
 
-const amountInput = document.getElementById("amountInput");
-const setBattleBtn = document.getElementById("setBattleBtn");
-const amountMessage = document.getElementById("amountMessage");
+// ==========================================
+// SAFE LOCAL STORAGE
+// ==========================================
+
+function loadData(key) {
+
+  try {
+
+    const data = localStorage.getItem(key);
+
+    if (!data) {
+      return [];
+    }
+
+    const parsed = JSON.parse(data);
+
+    return Array.isArray(parsed) ? parsed : [];
+
+  } catch (error) {
+
+    console.log("Storage reset:", key);
+
+    localStorage.removeItem(key);
+
+    return [];
+
+  }
+
+}
+
+
+function saveData(key, data) {
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(data)
+  );
+
+}
+
+
+// ==========================================
+// ELEMENTS
+// ==========================================
+
+const amountInput =
+  document.getElementById("amountInput");
+
+const setBattleBtn =
+  document.getElementById("setBattleBtn");
+
+const amountMessage =
+  document.getElementById("amountMessage");
 
 const openBattlesContainer =
   document.getElementById("openBattles");
@@ -33,9 +80,20 @@ const understandBtn =
   document.getElementById("understandBtn");
 
 
-// ------------------------------------------
+// ==========================================
+// LOAD DATA
+// ==========================================
+
+let openBattles =
+  loadData("balajiOpenBattles");
+
+let runningBattles =
+  loadData("balajiRunningBattles");
+
+
+// ==========================================
 // PLAYER NAME
-// ------------------------------------------
+// ==========================================
 
 function getPlayerName() {
 
@@ -48,141 +106,189 @@ function getPlayerName() {
 }
 
 
-// ------------------------------------------
-// LOAD BATTLES
-// ------------------------------------------
-
-let openBattles = JSON.parse(
-  localStorage.getItem("balajiOpenBattles") || "[]"
-);
-
-let runningBattles = JSON.parse(
-  localStorage.getItem("balajiRunningBattles") || "[]"
-);
-
-
-// ------------------------------------------
+// ==========================================
 // SAVE BATTLES
-// ------------------------------------------
+// ==========================================
 
 function saveBattles() {
 
-  localStorage.setItem(
+  saveData(
     "balajiOpenBattles",
-    JSON.stringify(openBattles)
+    openBattles
   );
 
-  localStorage.setItem(
+  saveData(
     "balajiRunningBattles",
-    JSON.stringify(runningBattles)
+    runningBattles
   );
 
 }
 
 
-// ------------------------------------------
+// ==========================================
 // SET BATTLE
-// ------------------------------------------
+// ==========================================
 
 if (setBattleBtn) {
 
-  setBattleBtn.addEventListener("click", function () {
+  setBattleBtn.addEventListener(
+    "click",
+    function () {
 
-    const amount = Number(
-      amountInput.value
-    );
+      const amount =
+        Number(amountInput.value);
 
-    // Clear old message
-    amountMessage.textContent = "";
+      // Clear previous message
+      if (amountMessage) {
+        amountMessage.textContent = "";
+      }
 
-    // Minimum
-    if (!amount || amount < MIN_BET) {
 
-      amountMessage.textContent =
-        "Minimum 50 Demo Coins की bet लगाएँ।";
+      // -------------------------------
+      // MINIMUM
+      // -------------------------------
 
-      return;
+      if (!amount || amount < MIN_BET) {
+
+        if (amountMessage) {
+          amountMessage.textContent =
+            "Minimum 50 Demo Coins की bet लगाएँ।";
+        }
+
+        return;
+      }
+
+
+      // -------------------------------
+      // MAXIMUM
+      // -------------------------------
+
+      if (amount > MAX_BET) {
+
+        if (amountMessage) {
+          amountMessage.textContent =
+            "Maximum 10000 Demo Coins तक है।";
+        }
+
+        return;
+      }
+
+
+      // -------------------------------
+      // 50 MULTIPLE
+      // -------------------------------
+
+      if (amount % 50 !== 0) {
+
+        if (amountMessage) {
+          amountMessage.textContent =
+            "Amount 50, 100, 150, 200, 250... में होना चाहिए।";
+        }
+
+        return;
+      }
+
+
+      // -------------------------------
+      // DEMO PRIZE
+      // -------------------------------
+
+      const prize =
+        Math.round(amount * 1.9);
+
+
+      // -------------------------------
+      // CREATE BATTLE
+      // -------------------------------
+
+      const battle = {
+
+        id:
+          "battle_" +
+          Date.now() +
+          "_" +
+          Math.floor(
+            Math.random() * 1000
+          ),
+
+        playerName:
+          getPlayerName(),
+
+        entry:
+          amount,
+
+        prize:
+          prize,
+
+        status:
+          "OPEN",
+
+        createdAt:
+          Date.now()
+
+      };
+
+
+      // -------------------------------
+      // ADD TO OPEN BATTLES
+      // -------------------------------
+
+      openBattles.unshift(battle);
+
+
+      // -------------------------------
+      // SAVE
+      // -------------------------------
+
+      saveBattles();
+
+
+      // -------------------------------
+      // CLEAR INPUT
+      // -------------------------------
+
+      amountInput.value = "";
+
+
+      // -------------------------------
+      // SUCCESS MESSAGE
+      // -------------------------------
+
+      if (amountMessage) {
+
+        amountMessage.textContent =
+          "✅ Battle successfully Open हो गई।";
+
+      }
+
+
+      // -------------------------------
+      // REFRESH
+      // -------------------------------
+
+      renderOpenBattles();
+
+      renderRunningBattles();
+
     }
-
-    // Maximum
-    if (amount > MAX_BET) {
-
-      amountMessage.textContent =
-        "Maximum 10000 Demo Coins तक है।";
-
-      return;
-    }
-
-    // 50,100,150,200,250...
-    if (amount % 50 !== 0) {
-
-      amountMessage.textContent =
-        "Amount 50, 100, 150, 200, 250... में होना चाहिए।";
-
-      return;
-    }
-
-    // --------------------------------------
-    // DEMO PRIZE
-    // --------------------------------------
-
-    const prize = Math.round(amount * 1.9);
-
-    // --------------------------------------
-    // CREATE OPEN BATTLE
-    // --------------------------------------
-
-    const battle = {
-
-      id:
-        "battle_" +
-        Date.now() +
-        "_" +
-        Math.floor(Math.random() * 1000),
-
-      playerName: getPlayerName(),
-
-      entry: amount,
-
-      prize: prize,
-
-      status: "OPEN",
-
-      createdAt: Date.now()
-
-    };
-
-    // Add newest battle first
-    openBattles.unshift(battle);
-
-    saveBattles();
-
-    // Clear input
-    amountInput.value = "";
-
-    // Success message
-    amountMessage.textContent =
-      "✅ Battle successfully Open हो गई।";
-
-    // Refresh list
-    renderOpenBattles();
-
-    renderRunningBattles();
-
-  });
+  );
 
 }
 
 
-// ------------------------------------------
+// ==========================================
 // OPEN BATTLES
-// ------------------------------------------
+// ==========================================
 
 function renderOpenBattles() {
 
-  if (!openBattlesContainer) return;
+  if (!openBattlesContainer) {
+    return;
+  }
+
 
   openBattlesContainer.innerHTML = "";
+
 
   if (openBattles.length === 0) {
 
@@ -195,73 +301,89 @@ function renderOpenBattles() {
     return;
   }
 
-  openBattles.forEach(function (battle, index) {
 
-    const card =
-      document.createElement("div");
+  openBattles.forEach(
+    function (battle, index) {
 
-    card.className = "battle-card";
+      const card =
+        document.createElement("div");
 
-    card.innerHTML = `
+      card.className =
+        "battle-card";
 
-      <div class="battle-title">
-        Challenge From
-      </div>
 
-      <div class="challenger-name">
-        ${escapeHTML(battle.playerName)}
-      </div>
+      card.innerHTML = `
 
-      <div class="battle-info">
-
-        <div>
-          <span>ENTRY FEE</span>
-          <strong>
-            ${battle.entry} Demo Coins
-          </strong>
+        <div class="battle-title">
+          Challenge From
         </div>
 
-        <div>
-          <span>PRIZE</span>
-          <strong>
-            ${battle.prize} Demo Coins
-          </strong>
+        <div class="challenger-name">
+          ${escapeHTML(battle.playerName)}
         </div>
 
-      </div>
+        <div class="battle-info">
 
-      <button
-        type="button"
-        class="play-battle-btn"
-        onclick="playOpenBattle(${index})"
-      >
-        Play
-      </button>
+          <div>
+            <span>ENTRY FEE</span>
 
-    `;
+            <strong>
+              ${battle.entry} Demo Coins
+            </strong>
+          </div>
 
-    openBattlesContainer.appendChild(card);
+          <div>
+            <span>PRIZE</span>
 
-  });
+            <strong>
+              ${battle.prize} Demo Coins
+            </strong>
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="play-battle-btn"
+          onclick="playOpenBattle(${index})"
+        >
+          Play
+        </button>
+
+      `;
+
+
+      openBattlesContainer.appendChild(
+        card
+      );
+
+    }
+  );
 
 }
 
 
-// ------------------------------------------
+// ==========================================
 // PLAY OPEN BATTLE
-// ------------------------------------------
+// ==========================================
 
 function playOpenBattle(index) {
 
-  const battle = openBattles[index];
+  const battle =
+    openBattles[index];
 
-  if (!battle) return;
+
+  if (!battle) {
+    return;
+  }
+
 
   const secondPlayer =
     getPlayerName();
 
+
   // ----------------------------------------
-  // DO NOT PLAY YOUR OWN BATTLE
+  // OWN BATTLE CHECK
   // ----------------------------------------
 
   if (
@@ -275,6 +397,7 @@ function playOpenBattle(index) {
     return;
   }
 
+
   // ----------------------------------------
   // SAVE SELECTED BATTLE
   // ----------------------------------------
@@ -283,6 +406,7 @@ function playOpenBattle(index) {
     "balajiSelectedBattle",
     JSON.stringify(battle)
   );
+
 
   // ----------------------------------------
   // SAVE SECOND PLAYER
@@ -293,8 +417,9 @@ function playOpenBattle(index) {
     secondPlayer
   );
 
+
   // ----------------------------------------
-  // GO TO ROOM
+  // ROOM
   // ----------------------------------------
 
   window.location.href =
@@ -303,15 +428,19 @@ function playOpenBattle(index) {
 }
 
 
-// ------------------------------------------
+// ==========================================
 // RUNNING BATTLES
-// ------------------------------------------
+// ==========================================
 
 function renderRunningBattles() {
 
-  if (!runningBattlesContainer) return;
+  if (!runningBattlesContainer) {
+    return;
+  }
+
 
   runningBattlesContainer.innerHTML = "";
+
 
   if (runningBattles.length === 0) {
 
@@ -324,74 +453,85 @@ function renderRunningBattles() {
     return;
   }
 
-  runningBattles.forEach(function (battle) {
 
-    const card =
-      document.createElement("div");
+  runningBattles.forEach(
+    function (battle) {
 
-    card.className =
-      "battle-card running";
+      const card =
+        document.createElement("div");
 
-    card.innerHTML = `
+      card.className =
+        "battle-card running";
 
-      <div class="battle-title">
-        Running Battle
-      </div>
 
-      <div class="players">
+      card.innerHTML = `
 
-        <strong>
-          ${escapeHTML(battle.player1)}
-        </strong>
-
-        <span>VS</span>
-
-        <strong>
-          ${escapeHTML(battle.player2)}
-        </strong>
-
-      </div>
-
-      <div class="battle-info">
-
-        <div>
-          <span>ENTRY FEE</span>
-          <strong>
-            ${battle.entry} Demo Coins
-          </strong>
+        <div class="battle-title">
+          Running Battle
         </div>
 
-        <div>
-          <span>PRIZE</span>
+        <div class="players">
+
           <strong>
-            ${battle.prize} Demo Coins
+            ${escapeHTML(battle.player1)}
           </strong>
+
+          <span>
+            VS
+          </span>
+
+          <strong>
+            ${escapeHTML(battle.player2)}
+          </strong>
+
         </div>
 
-      </div>
+        <div class="battle-info">
 
-      ${
-        battle.roomCode
-        ? `
-          <div class="room-small">
-            Room Code: ${battle.roomCode}
+          <div>
+            <span>ENTRY FEE</span>
+
+            <strong>
+              ${battle.entry} Demo Coins
+            </strong>
           </div>
-        `
-        : ""
-      }
 
-    `;
+          <div>
+            <span>PRIZE</span>
 
-    runningBattlesContainer.appendChild(card);
+            <strong>
+              ${battle.prize} Demo Coins
+            </strong>
+          </div>
 
-  });
+        </div>
+
+        ${
+          battle.roomCode
+          ? `
+            <div class="room-small">
+              Room Code: ${battle.roomCode}
+            </div>
+          `
+          : ""
+        }
+
+      `;
+
+
+      runningBattlesContainer.appendChild(
+        card
+      );
+
+    }
+  );
 
 }
 
 
-// ------------------------------------------
+// ==========================================
 // RULES
-// ------------------------------------------
+// ==========================================
 
 if (rulesBtn && rulesModal) {
 
@@ -399,7 +539,8 @@ if (rulesBtn && rulesModal) {
     "click",
     function () {
 
-      rulesModal.style.display = "flex";
+      rulesModal.style.display =
+        "flex";
 
     }
   );
@@ -413,7 +554,8 @@ if (closeRulesBtn && rulesModal) {
     "click",
     function () {
 
-      rulesModal.style.display = "none";
+      rulesModal.style.display =
+        "none";
 
     }
   );
@@ -427,7 +569,8 @@ if (understandBtn && rulesModal) {
     "click",
     function () {
 
-      rulesModal.style.display = "none";
+      rulesModal.style.display =
+        "none";
 
     }
   );
@@ -441,9 +584,12 @@ if (rulesModal) {
     "click",
     function (event) {
 
-      if (event.target === rulesModal) {
+      if (
+        event.target === rulesModal
+      ) {
 
-        rulesModal.style.display = "none";
+        rulesModal.style.display =
+          "none";
 
       }
 
@@ -453,30 +599,45 @@ if (rulesModal) {
 }
 
 
-// ------------------------------------------
-// SECURITY
-// ------------------------------------------
+// ==========================================
+// ESCAPE HTML
+// ==========================================
 
 function escapeHTML(value) {
 
   return String(value)
 
-    .replace(/&/g, "&amp;")
+    .replace(
+      /&/g,
+      "&amp;"
+    )
 
-    .replace(/</g, "&lt;")
+    .replace(
+      /</g,
+      "&lt;"
+    )
 
-    .replace(/>/g, "&gt;")
+    .replace(
+      />/g,
+      "&gt;"
+    )
 
-    .replace(/"/g, "&quot;")
+    .replace(
+      /"/g,
+      "&quot;"
+    )
 
-    .replace(/'/g, "&#039;");
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
 
-// ------------------------------------------
+// ==========================================
 // START
-// ------------------------------------------
+// ==========================================
 
 renderOpenBattles();
 
