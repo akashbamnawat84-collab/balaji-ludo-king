@@ -1,373 +1,605 @@
+/* =====================================
+   BALAJI LUDO KING - ROOM
+   ===================================== */
+
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
 }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #f5f6fa;
-  color: #222;
-  padding-bottom: 85px;
+  background: #f4f6fb;
+  color: #20242b;
+  padding-bottom: 80px;
 }
 
 
-/* =========================
-   HEADER
-========================= */
+/* =====================================
+   TOP BAR
+   ===================================== */
 
-.room-header {
-  background: linear-gradient(135deg, #111827, #252f46);
-  color: white;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.back-btn {
-  border: none;
-  background: rgba(255,255,255,.12);
-  color: white;
-  padding: 9px 11px;
-  border-radius: 9px;
-  font-size: 11px;
-  font-weight: bold;
-}
-
-.brand h1 {
-  font-size: 17px;
-}
-
-.brand p {
-  margin-top: 3px;
-  font-size: 11px;
-  opacity: .75;
-}
-
-
-/* =========================
-   CONTAINER
-========================= */
-
-.room-container {
-  max-width: 520px;
-  margin: auto;
-  padding: 15px;
-}
-
-
-/* =========================
-   GAME TITLE
-========================= */
-
-.game-title-card {
-  background: white;
-  border-radius: 18px;
-  padding: 16px;
-
-  display: flex;
-  align-items: center;
-  gap: 13px;
-
-  box-shadow: 0 4px 14px rgba(0,0,0,.07);
-}
-
-.game-icon {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-
-  background: #f1f3f7;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 31px;
-}
-
-.live-badge {
-  font-size: 10px;
-  color: #16a34a;
-  font-weight: bold;
-}
-
-.game-title-card h2 {
-  margin-top: 5px;
-  font-size: 19px;
-}
-
-.game-title-card p {
-  margin-top: 4px;
-  font-size: 11px;
-  color: #777;
-}
-
-
-/* =========================
-   DEMO NOTICE
-========================= */
-
-.demo-notice {
-  margin: 12px 0;
-
-  background: #fff8e1;
-  color: #795600;
-
-  border-radius: 12px;
-
-  padding: 11px;
-
-  text-align: center;
-
-  font-size: 11px;
-}
-
-
-/* =========================
-   ROOM CARD
-========================= */
-
-.room-card,
-.players-card,
-.waiting-card {
-  background: white;
-  border-radius: 18px;
-  padding: 17px;
-  margin-bottom: 13px;
-
-  box-shadow: 0 4px 14px rgba(0,0,0,.06);
-}
-
-.room-card h3,
-.players-card h3 {
-  font-size: 16px;
-  margin-bottom: 13px;
-}
-
-.info-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 11px 0;
-
-  border-bottom: 1px solid #eeeeee;
-
-  font-size: 13px;
-}
-
-.info-row span {
-  color: #777;
-}
-
-.info-row strong {
-  font-size: 13px;
-}
-
-#roomCode {
-  letter-spacing: 2px;
-  font-size: 18px;
-}
-
-
-.copy-btn {
+.room-topbar {
   width: 100%;
+  min-height: 68px;
+  padding: 10px 14px;
 
-  margin-top: 14px;
-
-  border: none;
-  border-radius: 11px;
-
-  padding: 12px;
-
-  background: #111827;
-  color: white;
-
-  font-weight: bold;
-  font-size: 12px;
-}
-
-
-/* =========================
-   PLAYERS
-========================= */
-
-.player-box {
   display: flex;
   align-items: center;
   gap: 12px;
 
-  padding: 13px;
+  background: linear-gradient(
+    135deg,
+    #171b35,
+    #292f68
+  );
 
-  background: #f7f8fa;
+  color: #ffffff;
 
-  border-radius: 13px;
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.18);
 }
 
-.player-avatar {
-  width: 45px;
-  height: 45px;
+.back-btn {
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
 
-  border-radius: 50%;
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.room-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.room-brand strong {
+  font-size: 17px;
+  letter-spacing: 0.3px;
+}
+
+.room-brand span {
+  margin-top: 3px;
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+
+/* =====================================
+   MAIN
+   ===================================== */
+
+.room-container {
+  width: 100%;
+  max-width: 520px;
+
+  margin: 0 auto;
+  padding: 18px 14px 25px;
+}
+
+
+/* =====================================
+   ROOM CARD
+   ===================================== */
+
+.room-card {
+  width: 100%;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 18px 15px;
+
+  box-shadow:
+    0 5px 22px rgba(22, 28, 50, 0.09);
+}
+
+
+/* =====================================
+   ENTRY / PRIZE
+   ===================================== */
+
+.fee-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+.fee-box {
+  text-align: center;
+
+  background: #f5f6fb;
+
+  border-radius: 13px;
+
+  padding: 12px 8px;
+}
+
+.fee-box span {
+  display: block;
+
+  font-size: 12px;
+  color: #777d89;
+
+  margin-bottom: 5px;
+}
+
+.fee-box strong {
+  display: block;
+
+  font-size: 22px;
+  color: #20242b;
+}
+
+.fee-box small {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 10px;
+  color: #999fa9;
+}
+
+.prize-box {
+  background: #fff7e8;
+}
+
+.prize-box strong {
+  color: #d88a00;
+}
+
+
+/* =====================================
+   ROOM ICON
+   ===================================== */
+
+.room-icon {
+  width: 68px;
+  height: 68px;
+
+  margin: 8px auto 12px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 22px;
-}
-
-.red-avatar {
-  background: #ffe5e5;
-}
-
-.blue-avatar {
-  background: #e5edff;
-}
-
-.player-details strong {
-  display: block;
-  font-size: 14px;
-}
-
-.player-details span {
-  display: block;
-  margin-top: 4px;
-  font-size: 11px;
-  color: #777;
-}
-
-.vs {
-  text-align: center;
-  font-weight: bold;
-  font-size: 12px;
-  color: #999;
-  padding: 7px;
-}
-
-
-/* =========================
-   WAITING
-========================= */
-
-.waiting-card {
-  text-align: center;
-}
-
-.loading-circle {
-  width: 35px;
-  height: 35px;
-
-  border: 4px solid #eeeeee;
-  border-top-color: #111827;
-
   border-radius: 50%;
+
+  background: #eef1ff;
+
+  font-size: 32px;
+}
+
+.success-icon {
+  background: #eaf8ef;
+}
+
+
+/* =====================================
+   HEADINGS
+   ===================================== */
+
+.room-card h2 {
+  text-align: center;
+
+  font-size: 20px;
+
+  margin-bottom: 6px;
+
+  color: #20242b;
+}
+
+.hindi-text {
+  text-align: center;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #303643;
+
+  margin-bottom: 12px;
+}
+
+
+/* =====================================
+   WAITING NUMBER
+   ===================================== */
+
+.waiting-number {
+  width: fit-content;
 
   margin: 0 auto 12px;
 
-  animation: spin 1s linear infinite;
-}
+  padding: 7px 14px;
 
-.waiting-card h3 {
-  font-size: 15px;
-}
+  border-radius: 20px;
 
-.waiting-card p {
-  margin-top: 6px;
-  color: #777;
-  font-size: 11px;
-}
+  background: #fff0f0;
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-/* =========================
-   BUTTONS
-========================= */
-
-.start-game-btn {
-  width: 100%;
-
-  border: none;
-  border-radius: 12px;
-
-  padding: 14px;
-
-  background: #111827;
-  color: white;
+  color: #e04444;
 
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
-.start-game-btn:disabled {
-  opacity: .5;
+.waiting-number span {
+  margin-left: 5px;
 }
+
+
+/* =====================================
+   WAITING TEXT
+   ===================================== */
+
+.waiting-text {
+  text-align: center;
+
+  max-width: 330px;
+
+  margin: 0 auto 17px;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  color: #747b87;
+}
+
+
+/* =====================================
+   MATCH STATUS
+   ===================================== */
+
+.match-status-box {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 13px;
+
+  margin-top: 12px;
+  margin-bottom: 14px;
+
+  border-radius: 12px;
+
+  background: #f5f6fa;
+}
+
+.match-status-box span {
+  font-size: 12px;
+  color: #777d89;
+}
+
+.match-status-box strong {
+  font-size: 12px;
+  color: #287c4b;
+}
+
+
+/* =====================================
+   CANCEL
+   ===================================== */
 
 .cancel-btn {
   width: 100%;
 
-  margin-top: 10px;
+  border: 1px solid #e2e4e9;
 
-  border: 1px solid #dddddd;
-  border-radius: 12px;
+  background: #ffffff;
+
+  color: #e04444;
 
   padding: 12px;
 
-  background: white;
-  color: #dc2626;
+  border-radius: 11px;
 
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.cancel-btn:active {
+  transform: scale(0.98);
 }
 
 
-/* =========================
+/* =====================================
+   ROOM CODE
+   ===================================== */
+
+.room-code-box {
+  width: 100%;
+
+  margin: 15px 0 10px;
+
+  padding: 16px;
+
+  text-align: center;
+
+  border-radius: 14px;
+
+  background: #f3f5ff;
+
+  border: 1px dashed #6874d8;
+}
+
+.room-code-box span {
+  display: block;
+
+  font-size: 11px;
+
+  color: #777d89;
+
+  margin-bottom: 7px;
+}
+
+.room-code-box strong {
+  display: block;
+
+  font-size: 30px;
+
+  letter-spacing: 5px;
+
+  color: #252d72;
+}
+
+
+/* =====================================
+   COPY CODE
+   ===================================== */
+
+.copy-btn {
+  width: 100%;
+
+  border: none;
+
+  background: #252d72;
+
+  color: #ffffff;
+
+  padding: 12px;
+
+  border-radius: 11px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.copy-btn:active {
+  transform: scale(0.98);
+}
+
+
+/* =====================================
+   RESULT BUTTONS
+   ===================================== */
+
+.result-buttons {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+
+  margin: 14px 0 10px;
+}
+
+.result-buttons button {
+  border: none;
+
+  padding: 12px 8px;
+
+  border-radius: 11px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.won-btn {
+  background: #e8f7ed;
+  color: #208348;
+}
+
+.lost-btn {
+  background: #fff0f0;
+  color: #d63d3d;
+}
+
+
+/* =====================================
+   PLAY LUDO
+   ===================================== */
+
+.play-ludo-btn {
+  width: 100%;
+
+  border: none;
+
+  background: linear-gradient(
+    135deg,
+    #252d72,
+    #4654b6
+  );
+
+  color: #ffffff;
+
+  padding: 13px;
+
+  border-radius: 11px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  margin: 4px 0 10px;
+}
+
+.play-ludo-btn:active {
+  transform: scale(0.98);
+}
+
+
+/* =====================================
+   NOTE
+   ===================================== */
+
+.ludo-note {
+  text-align: center;
+
+  font-size: 11px;
+
+  color: #8a909a;
+
+  margin-top: 8px;
+}
+
+
+/* =====================================
+   DEMO NOTICE
+   ===================================== */
+
+.demo-notice {
+  max-width: 520px;
+
+  margin: 10px auto 0;
+
+  padding: 11px 14px;
+
+  text-align: center;
+
+  border-radius: 11px;
+
+  background: #fff8e8;
+
+  color: #8a6a1e;
+
+  font-size: 11px;
+}
+
+
+/* =====================================
    BOTTOM NAV
-========================= */
+   ===================================== */
 
 .bottom-nav {
   position: fixed;
+
   left: 0;
   right: 0;
   bottom: 0;
 
-  height: 70px;
+  z-index: 1000;
 
-  background: white;
+  height: 68px;
 
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
 
-  border-top: 1px solid #e5e7eb;
+  grid-template-columns:
+    repeat(5, 1fr);
 
-  z-index: 100;
+  background: #ffffff;
+
+  border-top: 1px solid #e7e8ed;
+
+  box-shadow:
+    0 -3px 15px rgba(0, 0, 0, 0.08);
 }
 
-.nav-item {
+.bottom-nav a {
   text-decoration: none;
-  color: #777;
+
+  color: #777d89;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 4px;
 
-  font-size: 19px;
-}
-
-.nav-item small {
   font-size: 10px;
+
+  font-weight: 600;
 }
 
-.nav-item.active {
-  color: #111827;
+.bottom-nav a span {
+  font-size: 19px;
+
+  line-height: 1;
+}
+
+
+/* =====================================
+   MOBILE
+   ===================================== */
+
+@media (max-width: 380px) {
+
+  .room-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .room-card {
+    padding: 15px 12px;
+  }
+
+  .room-brand strong {
+    font-size: 15px;
+  }
+
+  .room-card h2 {
+    font-size: 18px;
+  }
+
+  .room-code-box strong {
+    font-size: 26px;
+    letter-spacing: 4px;
+  }
+
+}
+
+
+/* =====================================
+   LARGE SCREEN
+   ===================================== */
+
+@media (min-width: 700px) {
+
+  .room-container {
+    padding-top: 28px;
+  }
+
+  .room-card {
+    padding: 22px;
+  }
+
 }
