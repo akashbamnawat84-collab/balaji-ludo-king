@@ -1,36 +1,18 @@
 // ==========================================
 // BALAJI LUDO KING - BATTLE SYSTEM
-// DEMO COINS ONLY
+// DEMO MODE
 // ==========================================
 
 const MIN_BET = 50;
-
-// ------------------------------------------
-// OPEN BATTLES
-// ------------------------------------------
-
-let openBattles = JSON.parse(
-  localStorage.getItem("balajiOpenBattles") || "[]"
-);
-
-// ------------------------------------------
-// RUNNING BATTLES
-// ------------------------------------------
-
-let runningBattles = JSON.parse(
-  localStorage.getItem("balajiRunningBattles") || "[]"
-);
-
+const MAX_BET = 10000;
 
 // ------------------------------------------
 // ELEMENTS
 // ------------------------------------------
 
-const amountInput =
-  document.getElementById("amountInput");
-
-const setBetBtn =
-  document.getElementById("setBetBtn");
+const amountInput = document.getElementById("amountInput");
+const setBattleBtn = document.getElementById("setBattleBtn");
+const amountMessage = document.getElementById("amountMessage");
 
 const openBattlesContainer =
   document.getElementById("openBattles");
@@ -47,6 +29,9 @@ const rulesModal =
 const closeRulesBtn =
   document.getElementById("closeRulesBtn");
 
+const understandBtn =
+  document.getElementById("understandBtn");
+
 
 // ------------------------------------------
 // PLAYER NAME
@@ -57,14 +42,27 @@ function getPlayerName() {
   return (
     localStorage.getItem("balajiPlayerName") ||
     localStorage.getItem("playerName") ||
-    "Player"
+    "Customer"
   );
 
 }
 
 
 // ------------------------------------------
-// SAVE DATA
+// LOAD BATTLES
+// ------------------------------------------
+
+let openBattles = JSON.parse(
+  localStorage.getItem("balajiOpenBattles") || "[]"
+);
+
+let runningBattles = JSON.parse(
+  localStorage.getItem("balajiRunningBattles") || "[]"
+);
+
+
+// ------------------------------------------
+// SAVE BATTLES
 // ------------------------------------------
 
 function saveBattles() {
@@ -83,36 +81,43 @@ function saveBattles() {
 
 
 // ------------------------------------------
-// CREATE BET
+// SET BATTLE
 // ------------------------------------------
 
-if (setBetBtn) {
+if (setBattleBtn) {
 
-  setBetBtn.addEventListener("click", function () {
+  setBattleBtn.addEventListener("click", function () {
 
     const amount = Number(
-      amountInput ? amountInput.value : 0
+      amountInput.value
     );
 
+    // Clear old message
+    amountMessage.textContent = "";
+
+    // Minimum
     if (!amount || amount < MIN_BET) {
 
-      alert(
-        "Minimum 50 Demo Coins की bet लगानी है।"
-      );
+      amountMessage.textContent =
+        "Minimum 50 Demo Coins की bet लगाएँ।";
 
       return;
     }
 
-    // --------------------------------------
-    // केवल 50 के multiples
-    // 50, 100, 150, 200, 250, 300...
-    // --------------------------------------
+    // Maximum
+    if (amount > MAX_BET) {
 
+      amountMessage.textContent =
+        "Maximum 10000 Demo Coins तक है।";
+
+      return;
+    }
+
+    // 50,100,150,200,250...
     if (amount % 50 !== 0) {
 
-      alert(
-        "Bet amount 50, 100, 150, 200, 250, 300... में होना चाहिए।"
-      );
+      amountMessage.textContent =
+        "Amount 50, 100, 150, 200, 250... में होना चाहिए।";
 
       return;
     }
@@ -123,14 +128,19 @@ if (setBetBtn) {
 
     const prize = Math.round(amount * 1.9);
 
-    const newBattle = {
+    // --------------------------------------
+    // CREATE OPEN BATTLE
+    // --------------------------------------
+
+    const battle = {
 
       id:
-        "B" +
+        "battle_" +
         Date.now() +
+        "_" +
         Math.floor(Math.random() * 1000),
 
-      name: getPlayerName(),
+      playerName: getPlayerName(),
 
       entry: amount,
 
@@ -138,24 +148,26 @@ if (setBetBtn) {
 
       status: "OPEN",
 
-      roomCode: null,
-
       createdAt: Date.now()
 
     };
 
-    openBattles.unshift(newBattle);
+    // Add newest battle first
+    openBattles.unshift(battle);
 
     saveBattles();
 
+    // Clear input
     amountInput.value = "";
 
+    // Success message
+    amountMessage.textContent =
+      "✅ Battle successfully Open हो गई।";
+
+    // Refresh list
     renderOpenBattles();
 
-    alert(
-      amount +
-      " Demo Coins की Battle Open Bets में लगा दी गई है।"
-    );
+    renderRunningBattles();
 
   });
 
@@ -163,7 +175,7 @@ if (setBetBtn) {
 
 
 // ------------------------------------------
-// RENDER OPEN BATTLES
+// OPEN BATTLES
 // ------------------------------------------
 
 function renderOpenBattles() {
@@ -185,7 +197,8 @@ function renderOpenBattles() {
 
   openBattles.forEach(function (battle, index) {
 
-    const card = document.createElement("div");
+    const card =
+      document.createElement("div");
 
     card.className = "battle-card";
 
@@ -196,24 +209,29 @@ function renderOpenBattles() {
       </div>
 
       <div class="challenger-name">
-        ${escapeHTML(battle.name)}
+        ${escapeHTML(battle.playerName)}
       </div>
 
       <div class="battle-info">
 
         <div>
           <span>ENTRY FEE</span>
-          <strong>${battle.entry} Demo Coins</strong>
+          <strong>
+            ${battle.entry} Demo Coins
+          </strong>
         </div>
 
         <div>
           <span>PRIZE</span>
-          <strong>${battle.prize} Demo Coins</strong>
+          <strong>
+            ${battle.prize} Demo Coins
+          </strong>
         </div>
 
       </div>
 
       <button
+        type="button"
         class="play-battle-btn"
         onclick="playOpenBattle(${index})"
       >
@@ -239,22 +257,16 @@ function playOpenBattle(index) {
 
   if (!battle) return;
 
-  // ----------------------------------------
-  // PLAYER WHO CREATED THE BET
-  // ----------------------------------------
-
-  const firstPlayer = battle.name;
+  const secondPlayer =
+    getPlayerName();
 
   // ----------------------------------------
-  // SECOND PLAYER
+  // DO NOT PLAY YOUR OWN BATTLE
   // ----------------------------------------
 
-  const secondPlayer = getPlayerName();
-
-  // Same player cannot join own battle
-  // ----------------------------------------
-
-  if (firstPlayer === secondPlayer) {
+  if (
+    battle.playerName === secondPlayer
+  ) {
 
     alert(
       "आप अपनी खुद की Battle Play नहीं कर सकते।"
@@ -264,73 +276,35 @@ function playOpenBattle(index) {
   }
 
   // ----------------------------------------
-  // GENERATE 8 DIGIT ROOM CODE
-  // ----------------------------------------
-
-  const roomCode =
-    String(
-      Math.floor(
-        10000000 +
-        Math.random() * 90000000
-      )
-    );
-
-  // ----------------------------------------
-  // MOVE OPEN BATTLE TO RUNNING
-  // ----------------------------------------
-
-  const runningBattle = {
-
-    id: battle.id,
-
-    player1: firstPlayer,
-
-    player2: secondPlayer,
-
-    entry: battle.entry,
-
-    prize: battle.prize,
-
-    roomCode: roomCode,
-
-    status: "RUNNING",
-
-    createdAt: Date.now()
-
-  };
-
-  runningBattles.unshift(runningBattle);
-
-  // Remove from Open Bets
-  openBattles.splice(index, 1);
-
-  saveBattles();
-
-  // ----------------------------------------
-  // SAVE CURRENT MATCH
+  // SAVE SELECTED BATTLE
   // ----------------------------------------
 
   localStorage.setItem(
-    "balajiCurrentBattle",
-    JSON.stringify(runningBattle)
+    "balajiSelectedBattle",
+    JSON.stringify(battle)
   );
+
+  // ----------------------------------------
+  // SAVE SECOND PLAYER
+  // ----------------------------------------
 
   localStorage.setItem(
-    "balajiRoomCode",
-    roomCode
+    "balajiSecondPlayer",
+    secondPlayer
   );
 
   // ----------------------------------------
-  // OPEN ROOM SCREEN
+  // GO TO ROOM
   // ----------------------------------------
 
-  window.location.href = "room.html";
+  window.location.href =
+    "room.html";
 
 }
 
 
 // ------------------------------------------
-// RENDER RUNNING BATTLES
+// RUNNING BATTLES
 // ------------------------------------------
 
 function renderRunningBattles() {
@@ -352,9 +326,11 @@ function renderRunningBattles() {
 
   runningBattles.forEach(function (battle) {
 
-    const card = document.createElement("div");
+    const card =
+      document.createElement("div");
 
-    card.className = "battle-card running";
+    card.className =
+      "battle-card running";
 
     card.innerHTML = `
 
@@ -380,19 +356,29 @@ function renderRunningBattles() {
 
         <div>
           <span>ENTRY FEE</span>
-          <strong>${battle.entry} Demo Coins</strong>
+          <strong>
+            ${battle.entry} Demo Coins
+          </strong>
         </div>
 
         <div>
           <span>PRIZE</span>
-          <strong>${battle.prize} Demo Coins</strong>
+          <strong>
+            ${battle.prize} Demo Coins
+          </strong>
         </div>
 
       </div>
 
-      <div class="room-small">
-        Room Code: ${battle.roomCode}
-      </div>
+      ${
+        battle.roomCode
+        ? `
+          <div class="room-small">
+            Room Code: ${battle.roomCode}
+          </div>
+        `
+        : ""
+      }
 
     `;
 
@@ -404,48 +390,71 @@ function renderRunningBattles() {
 
 
 // ------------------------------------------
-// RULES MODAL
+// RULES
 // ------------------------------------------
 
 if (rulesBtn && rulesModal) {
 
-  rulesBtn.addEventListener("click", function () {
+  rulesBtn.addEventListener(
+    "click",
+    function () {
 
-    rulesModal.style.display = "flex";
+      rulesModal.style.display = "flex";
 
-  });
+    }
+  );
 
 }
 
 
 if (closeRulesBtn && rulesModal) {
 
-  closeRulesBtn.addEventListener("click", function () {
+  closeRulesBtn.addEventListener(
+    "click",
+    function () {
 
-    rulesModal.style.display = "none";
+      rulesModal.style.display = "none";
 
-  });
+    }
+  );
+
+}
+
+
+if (understandBtn && rulesModal) {
+
+  understandBtn.addEventListener(
+    "click",
+    function () {
+
+      rulesModal.style.display = "none";
+
+    }
+  );
 
 }
 
 
 if (rulesModal) {
 
-  rulesModal.addEventListener("click", function (event) {
+  rulesModal.addEventListener(
+    "click",
+    function (event) {
 
-    if (event.target === rulesModal) {
+      if (event.target === rulesModal) {
 
-      rulesModal.style.display = "none";
+        rulesModal.style.display = "none";
+
+      }
 
     }
-
-  });
+  );
 
 }
 
 
 // ------------------------------------------
-// ESCAPE HTML
+// SECURITY
 // ------------------------------------------
 
 function escapeHTML(value) {
