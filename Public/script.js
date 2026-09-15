@@ -1,8 +1,13 @@
+/* =========================================
+   BALAJI LUDO KING
+   LOGIN → OTP → ROOM → MATCH
+========================================= */
+
 const API = "/api";
 
-// =====================================
-// ELEMENTS
-// =====================================
+/* =========================================
+   ELEMENTS
+========================================= */
 
 const welcomeCard = document.getElementById("welcomeCard");
 const otpCard = document.getElementById("otpCard");
@@ -10,52 +15,25 @@ const roomCard = document.getElementById("roomCard");
 const ludoCard = document.getElementById("ludoCard");
 const profileSection = document.getElementById("profileSection");
 
-const playerMobileInput =
-  document.getElementById("playerMobile");
+const playerMobile = document.getElementById("playerMobile");
+const startBtn = document.getElementById("startBtn");
+const message = document.getElementById("message");
 
-const startBtn =
-  document.getElementById("startBtn");
+const otpInput = document.getElementById("otpInput");
+const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+const backLoginBtn = document.getElementById("backLoginBtn");
+const otpMessage = document.getElementById("otpMessage");
 
-const verifyOtpBtn =
-  document.getElementById("verifyOtpBtn");
+const createRoomCode = document.getElementById("createRoomCode");
+const joinRoomCode = document.getElementById("joinRoomCode");
+const createRoomBtn = document.getElementById("createRoomBtn");
+const joinRoomBtn = document.getElementById("joinRoomBtn");
+const roomMessage = document.getElementById("roomMessage");
 
-const backLoginBtn =
-  document.getElementById("backLoginBtn");
+const waitingTimer = document.getElementById("waitingTimer");
+const player1Status = document.getElementById("player1Status");
+const player2Status = document.getElementById("player2Status");
 
-const otpInput =
-  document.getElementById("otpInput");
-
-const message =
-  document.getElementById("message");
-
-const otpMessage =
-  document.getElementById("otpMessage");
-
-const createRoomCodeInput =
-  document.getElementById("createRoomCode");
-
-const joinRoomCodeInput =
-  document.getElementById("joinRoomCode");
-
-const createRoomBtn =
-  document.getElementById("createRoomBtn");
-
-const joinRoomBtn =
-  document.getElementById("joinRoomBtn");
-
-const roomMessage =
-  document.getElementById("roomMessage");
-
-const waitingTimer =
-  document.getElementById("waitingTimer");
-
-const player1Status =
-  document.getElementById("player1Status");
-
-const player2Status =
-  document.getElementById("player2Status");
-
-// Match elements
 const matchPlayer1Name =
   document.getElementById("matchPlayer1Name");
 
@@ -68,1993 +46,997 @@ const matchRoomCode =
 const copyRoomBtn =
   document.getElementById("copyRoomBtn");
 
-const iWonBtn =
-  document.getElementById("iWonBtn");
-
-const iLostBtn =
-  document.getElementById("iLostBtn");
-
-const matchCancelBtn =
-  document.getElementById("matchCancelBtn");
-
 const resultArea =
   document.getElementById("resultArea");
 
 const resultScreenshot =
   document.getElementById("resultScreenshot");
 
-const submitResultBtn =
-  document.getElementById("submitResultBtn");
-
 const gameMessage =
   document.getElementById("gameMessage");
 
-// =====================================
-// CONSTANTS
-// =====================================
+/* =========================================
+   STATE
+========================================= */
 
-const DEMO_OTP = "123456";
-const ROOM_WAIT_MS = 5 * 60 * 1000;
-
-let pendingMobile = "";
-
-let currentRoomCode =
-  localStorage.getItem("room_code") || "";
-
+let currentPlayer = null;
 let currentRoom = null;
+let pendingMobile = "";
+let roomPollTimer = null;
+let roomTimer = null;
 
-let timerInterval = null;
-let roomPollInterval = null;
+/*
+  IMPORTANT:
+  Page हमेशा LOGIN से शुरू होगी।
+  पुराना saved room automatically restore नहीं होगा।
+*/
 
+/* =========================================
+   START
+========================================= */
 
-// =====================================
-// HELPERS
-// =====================================
+document.addEventListener("DOMContentLoaded", () => {
+  showOnly(welcomeCard);
 
-function clean(value) {
-  return String(value ?? "").trim();
+  if (playerMobile) {
+    playerMobile.value = "";
+  }
+
+  if (otpInput) {
+    otpInput.value = "";
+  }
+
+  clearMessages();
+});
+
+/* =========================================
+   SCREEN CONTROL
+========================================= */
+
+function showOnly(section) {
+  const sections = [
+    welcomeCard,
+    otpCard,
+    roomCard,
+    ludoCard,
+    profileSection
+  ];
+
+  sections.forEach((item) => {
+    if (item) {
+      item.style.display =
+        item === section ? "block" : "none";
+    }
+  });
 }
 
-function digits(value) {
-  return String(value ?? "").replace(/\D/g, "");
+function clearMessages() {
+  if (message) message.textContent = "";
+  if (otpMessage) otpMessage.textContent = "";
+  if (roomMessage) roomMessage.textContent = "";
+  if (gameMessage) gameMessage.textContent = "";
 }
 
+function goHome() {
+  stopRoomPolling();
+  currentRoom = null;
+  showOnly(roomCard);
 
-// =====================================
-// MESSAGES
-// =====================================
-
-function showMessage(text, type = "") {
-
-  if (!message) return;
-
-  message.textContent = text;
-
-  message.style.color =
-    type === "error"
-      ? "red"
-      : type === "success"
-      ? "green"
-      : "#555";
+  if (roomMessage) {
+    roomMessage.textContent =
+      "Create or join a 2 player room";
+  }
 }
 
+/* =========================================
+   LOGIN
+========================================= */
 
-function showOtpMessage(text, type = "") {
+async function sendOTP() {
+  const mobile = String(
+    playerMobile?.value || ""
+  ).replace(/\D/g, "");
 
-  if (!otpMessage) return;
-
-  otpMessage.textContent = text;
-
-  otpMessage.style.color =
-    type === "error"
-      ? "red"
-      : type === "success"
-      ? "green"
-      : "#555";
-}
-
-
-function showRoomMessage(text, type = "") {
-
-  if (!roomMessage) return;
-
-  roomMessage.textContent = text;
-
-  roomMessage.style.color =
-    type === "error"
-      ? "red"
-      : type === "success"
-      ? "green"
-      : "#555";
-}
-
-
-function showGameMessage(text, type = "") {
-
-  if (!gameMessage) return;
-
-  gameMessage.textContent = text;
-
-  gameMessage.style.color =
-    type === "error"
-      ? "red"
-      : type === "success"
-      ? "green"
-      : "#555";
-}
-
-
-// =====================================
-// HIDE ALL
-// =====================================
-
-function hideAll() {
-
-  if (welcomeCard)
-    welcomeCard.style.display = "none";
-
-  if (otpCard)
-    otpCard.style.display = "none";
-
-  if (roomCard)
-    roomCard.style.display = "none";
-
-  if (ludoCard)
-    ludoCard.style.display = "none";
-
-  if (profileSection)
-    profileSection.style.display = "none";
-}
-
-
-// =====================================
-// LOGIN
-// =====================================
-
-function sendOTP() {
-
-  const mobile =
-    digits(playerMobileInput?.value);
-
-  if (!/^\d{10}$/.test(mobile)) {
-
-    showMessage(
-      "Valid 10-digit mobile number डालें।",
-      "error"
-    );
-
+  if (mobile.length !== 10) {
+    if (message) {
+      message.textContent =
+        "Please enter a valid 10-digit mobile number.";
+    }
     return;
   }
 
   pendingMobile = mobile;
 
-  hideAll();
-
-  if (otpCard)
-    otpCard.style.display = "block";
-
-  if (otpInput) {
-
-    otpInput.value = "";
-
-    otpInput.focus();
+  if (startBtn) {
+    startBtn.disabled = true;
+    startBtn.textContent = "Sending...";
   }
 
-  showOtpMessage(
-    "Demo OTP: 123456",
-    "success"
-  );
+  if (message) {
+    message.textContent = "";
+  }
+
+  try {
+    const response = await fetch(
+      `${API}/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          mobile
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error || "Unable to send OTP."
+      );
+    }
+
+    showOnly(otpCard);
+
+    if (otpMessage) {
+      otpMessage.textContent =
+        "OTP sent to your mobile number.";
+    }
+
+    if (otpInput) {
+      otpInput.value = "";
+      setTimeout(() => otpInput.focus(), 100);
+    }
+
+  } catch (error) {
+    if (message) {
+      message.textContent =
+        error.message || "Unable to send OTP.";
+    }
+
+  } finally {
+    if (startBtn) {
+      startBtn.disabled = false;
+      startBtn.textContent = "Send OTP";
+    }
+  }
 }
 
-
-// =====================================
-// VERIFY OTP
-// =====================================
+/* =========================================
+   VERIFY OTP
+========================================= */
 
 async function verifyOTP() {
+  const otp = String(
+    otpInput?.value || ""
+  ).replace(/\D/g, "");
 
-  const otp =
-    digits(otpInput?.value);
-
-  if (otp !== DEMO_OTP) {
-
-    showOtpMessage(
-      "गलत OTP। Demo OTP 123456 है।",
-      "error"
-    );
-
-    return;
-  }
-
-  if (!pendingMobile) {
-
-    showOtpMessage(
-      "Mobile number missing है।",
-      "error"
-    );
-
+  if (otp.length !== 6) {
+    if (otpMessage) {
+      otpMessage.textContent =
+        "Please enter the 6-digit OTP.";
+    }
     return;
   }
 
   if (verifyOtpBtn) {
-
     verifyOtpBtn.disabled = true;
+    verifyOtpBtn.textContent = "Verifying...";
+  }
 
-    verifyOtpBtn.textContent =
-      "Logging in...";
+  if (otpMessage) {
+    otpMessage.textContent = "";
   }
 
   try {
+    /*
+      Backend OTP verification.
+      No fake/local OTP is created here.
+    */
 
-    const response =
-      await fetch(`${API}/login`, {
-
+    const response = await fetch(
+      `${API}/login`,
+      {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
-
-          name: "Player",
-
-          mobile: pendingMobile
-
+          mobile: pendingMobile,
+          otp
         })
-
-      });
-
-    const data =
-      await response.json();
-
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-
-      throw new Error(
-        data.error ||
-        data.message ||
-        "Login failed"
-      );
-    }
-
-    const customer =
-      data.customer;
-
-    if (!customer) {
-
-      throw new Error(
-        "Customer data नहीं मिला।"
-      );
-    }
-
-    saveCustomer(customer);
-
-    showOtpMessage(
-      "Login successful ✅",
-      "success"
+      }
     );
 
-    setTimeout(() => {
+    const data = await response.json();
 
-      showRoom();
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error || "Invalid OTP."
+      );
+    }
 
-    }, 400);
+    currentPlayer = {
+      ...(data.customer || {}),
+      mobile: pendingMobile
+    };
+
+    showOnly(roomCard);
+
+    if (roomMessage) {
+      roomMessage.textContent =
+        "Create or join a 2 player room";
+    }
 
   } catch (error) {
-
-    console.error(
-      "LOGIN ERROR:",
-      error
-    );
-
-    showOtpMessage(
-      error.message ||
-      "Login failed",
-      "error"
-    );
+    if (otpMessage) {
+      otpMessage.textContent =
+        error.message || "OTP verification failed.";
+    }
 
   } finally {
-
     if (verifyOtpBtn) {
-
       verifyOtpBtn.disabled = false;
-
       verifyOtpBtn.textContent =
-        "Verify OTP";
+        "Verify & Continue";
     }
   }
 }
 
+/* =========================================
+   BACK TO LOGIN
+========================================= */
 
-// =====================================
-// SAVE CUSTOMER
-// =====================================
+function backToLogin() {
+  pendingMobile = "";
 
-function saveCustomer(customer) {
-
-  const id =
-    customer.customer_id ||
-    customer.id ||
-    "";
-
-  const mobile =
-    customer.mobile ||
-    customer.phone ||
-    pendingMobile ||
-    "";
-
-  const name =
-    customer.name ||
-    "Player";
-
-  localStorage.setItem(
-    "player_id",
-    id
-  );
-
-  localStorage.setItem(
-    "customer_id",
-    id
-  );
-
-  localStorage.setItem(
-    "player_name",
-    name
-  );
-
-  localStorage.setItem(
-    "phone_number",
-    mobile
-  );
-
-  localStorage.setItem(
-    "email",
-    customer.email || ""
-  );
-
-  window.currentCustomer =
-    customer;
-}
-
-
-// =====================================
-// SHOW ROOM
-// =====================================
-
-function showRoom() {
-
-  hideAll();
-
-  if (roomCard)
-    roomCard.style.display = "block";
-
-  if (currentRoomCode) {
-
-    checkRoom(currentRoomCode);
+  if (otpInput) {
+    otpInput.value = "";
   }
+
+  if (otpMessage) {
+    otpMessage.textContent = "";
+  }
+
+  showOnly(welcomeCard);
 }
 
-
-// =====================================
-// CREATE ROOM
-// =====================================
+/* =========================================
+   CREATE ROOM
+========================================= */
 
 async function createRoom() {
+  const code = String(
+    createRoomCode?.value || ""
+  ).replace(/\D/g, "");
 
-  const roomCode =
-    digits(
-      createRoomCodeInput?.value
-    );
-
-  const playerId =
-    localStorage.getItem("player_id");
-
-  const playerName =
-    localStorage.getItem("player_name") ||
-    "Player";
-
-  if (!playerId) {
-
-    showRoomMessage(
-      "पहले login करें।",
-      "error"
-    );
-
-    showLogin();
-
+  if (code.length !== 8) {
+    if (roomMessage) {
+      roomMessage.textContent =
+        "8-Digit Room Code डालें।";
+    }
     return;
   }
 
-  if (!/^\d{8}$/.test(roomCode)) {
-
-    showRoomMessage(
-      "8-digit Room Code डालें।",
-      "error"
-    );
-
+  if (!currentPlayer) {
+    if (roomMessage) {
+      roomMessage.textContent =
+        "Please login first.";
+    }
+    showOnly(welcomeCard);
     return;
+  }
+
+  if (createRoomBtn) {
+    createRoomBtn.disabled = true;
+    createRoomBtn.textContent = "Creating...";
   }
 
   try {
+    const response = await fetch(
+      `${API}/rooms/create`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          room_code: code,
+          player_id: getPlayerId(),
+          player_name: getPlayerName()
+        })
+      }
+    );
 
-    createRoomBtn.disabled = true;
+    const data = await response.json();
 
-    createRoomBtn.textContent =
-      "Creating...";
-
-    const response =
-      await fetch(
-        `${API}/rooms/create`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-
-            room_code: roomCode,
-
-            player_id: playerId,
-
-            player_name: playerName
-
-          })
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-
+    if (!response.ok || !data.success) {
       throw new Error(
-        data.error ||
-        "Room create failed"
+        data.error || "Room creation failed."
       );
     }
 
-    currentRoomCode =
-      roomCode;
+    currentRoom = data.room || {
+      room_code: code,
+      player1_id: getPlayerId(),
+      player1_name: getPlayerName(),
+      status: "WAITING"
+    };
 
-    currentRoom =
-      data.room;
-
-    localStorage.setItem(
-      "room_code",
-      roomCode
-    );
-
-    showRoomMessage(
-      `Room ${roomCode} created successfully ✅`,
-      "success"
-    );
-
-    startTimer(
-      Date.now() + ROOM_WAIT_MS
-    );
-
-    startPolling();
-
-    updateRoom(data.room);
+    showRoomWaiting();
+    startRoomPolling(code);
 
   } catch (error) {
-
-    console.error(error);
-
-    showRoomMessage(
-      error.message ||
-      "Room create failed",
-      "error"
-    );
+    if (roomMessage) {
+      roomMessage.textContent =
+        error.message || "Room creation failed.";
+    }
 
   } finally {
-
     if (createRoomBtn) {
-
       createRoomBtn.disabled = false;
-
-      createRoomBtn.textContent =
-        "Create Room";
+      createRoomBtn.textContent = "Create Room";
     }
   }
 }
 
-
-// =====================================
-// JOIN ROOM
-// =====================================
+/* =========================================
+   JOIN ROOM
+========================================= */
 
 async function joinRoom() {
+  const code = String(
+    joinRoomCode?.value || ""
+  ).replace(/\D/g, "");
 
-  const roomCode =
-    digits(
-      joinRoomCodeInput?.value
-    );
-
-  const playerId =
-    localStorage.getItem("player_id");
-
-  const playerName =
-    localStorage.getItem("player_name") ||
-    "Player";
-
-  if (!playerId) {
-
-    showRoomMessage(
-      "पहले login करें।",
-      "error"
-    );
-
-    showLogin();
-
+  if (code.length !== 8) {
+    if (roomMessage) {
+      roomMessage.textContent =
+        "8-Digit Room Code डालें।";
+    }
     return;
   }
 
-  if (!/^\d{8}$/.test(roomCode)) {
-
-    showRoomMessage(
-      "8-digit Room Code डालें।",
-      "error"
-    );
-
+  if (!currentPlayer) {
+    if (roomMessage) {
+      roomMessage.textContent =
+        "Please login first.";
+    }
+    showOnly(welcomeCard);
     return;
+  }
+
+  if (joinRoomBtn) {
+    joinRoomBtn.disabled = true;
+    joinRoomBtn.textContent = "Joining...";
   }
 
   try {
+    const response = await fetch(
+      `${API}/rooms/join`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          room_code: code,
+          player_id: getPlayerId(),
+          player_name: getPlayerName()
+        })
+      }
+    );
 
-    joinRoomBtn.disabled = true;
+    const data = await response.json();
 
-    joinRoomBtn.textContent =
-      "Joining...";
-
-    const response =
-      await fetch(
-        `${API}/rooms/join`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-
-            room_code: roomCode,
-
-            player_id: playerId,
-
-            player_name: playerName
-
-          })
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-
+    if (!response.ok || !data.success) {
       throw new Error(
-        data.error ||
-        "Join failed"
+        data.error || "Unable to join room."
       );
     }
 
-    currentRoomCode =
-      roomCode;
+    currentRoom = data.room || null;
 
-    currentRoom =
-      data.room;
-
-    localStorage.setItem(
-      "room_code",
-      roomCode
-    );
-
-    showRoomMessage(
-      "Room joined successfully ✅",
-      "success"
-    );
-
-    updateRoom(data.room);
-
-    startPolling();
+    if (currentRoom) {
+      handleRoomState(currentRoom);
+    } else {
+      startRoomPolling(code);
+    }
 
   } catch (error) {
-
-    console.error(error);
-
-    showRoomMessage(
-      error.message ||
-      "Join failed",
-      "error"
-    );
+    if (roomMessage) {
+      roomMessage.textContent =
+        error.message || "Unable to join room.";
+    }
 
   } finally {
-
     if (joinRoomBtn) {
-
       joinRoomBtn.disabled = false;
-
-      joinRoomBtn.textContent =
-        "Join Room";
+      joinRoomBtn.textContent = "Join Room";
     }
   }
 }
 
+/* =========================================
+   ROOM WAITING
+========================================= */
 
-// =====================================
-// CHECK ROOM
-// =====================================
+function showRoomWaiting() {
+  showOnly(roomCard);
 
-async function checkRoom(roomCode) {
-
-  if (!roomCode) return;
-
-  try {
-
-    const response =
-      await fetch(
-        `${API}/rooms/${encodeURIComponent(roomCode)}`
-      );
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "Room not found"
-      );
-    }
-
-    const room =
-      data.room || data;
-
-    currentRoom =
-      room;
-
-    updateRoom(room);
-
-    if (
-      room.status === "READY" ||
-      room.player2_id
-    ) {
-
-      stopPolling();
-
-      stopTimer();
-
-      showRoomMessage(
-        "Both Players Ready! 🎉",
-        "success"
-      );
-
-      setTimeout(() => {
-
-        showLudo();
-
-      }, 400);
-
-      return;
-    }
-
-    if (room.created_at) {
-
-      startTimer(
-        Number(room.created_at) +
-        ROOM_WAIT_MS
-      );
-    }
-
-  } catch (error) {
-
-    console.error(error);
-
-    showRoomMessage(
-      error.message ||
-      "Room check failed",
-      "error"
-    );
+  if (roomMessage) {
+    roomMessage.textContent =
+      "Room created. Waiting for Player 2...";
   }
-}
-
-
-// =====================================
-// UPDATE ROOM
-// =====================================
-
-function updateRoom(room) {
-
-  if (!room) return;
-
-  currentRoom =
-    room;
-
-
-  // PLAYER 1
 
   if (player1Status) {
-
     player1Status.textContent =
-      room.player1_id
-        ? `${room.player1_name || "Player 1"} • Ready`
-        : "Waiting...";
+      "Player 1 • Ready";
   }
-
-
-  // PLAYER 2
 
   if (player2Status) {
-
     player2Status.textContent =
-      room.player2_id
-        ? `${room.player2_name || "Player 2"} • Ready`
-        : "Waiting...";
-  }
-
-
-  // BOTH READY
-
-  if (
-    room.status === "READY" ||
-    room.player2_id
-  ) {
-
-    stopPolling();
-
-    stopTimer();
-
-    if (
-      roomCard &&
-      roomCard.style.display !== "none"
-    ) {
-
-      showRoomMessage(
-        "Both Players Ready! 🎉",
-        "success"
-      );
-
-      setTimeout(() => {
-
-        showLudo();
-
-      }, 400);
-    }
+      "Player 2 • Waiting...";
   }
 }
 
+/* =========================================
+   POLL ROOM
+========================================= */
 
-// =====================================
-// POLLING
-// =====================================
+function startRoomPolling(code) {
+  stopRoomPolling();
 
-function startPolling() {
+  fetchRoom(code);
 
-  stopPolling();
+  roomPollTimer = setInterval(() => {
+    fetchRoom(code);
+  }, 2000);
+}
 
-  roomPollInterval =
-    setInterval(() => {
+function stopRoomPolling() {
+  if (roomPollTimer) {
+    clearInterval(roomPollTimer);
+    roomPollTimer = null;
+  }
 
-      if (currentRoomCode) {
+  if (roomTimer) {
+    clearInterval(roomTimer);
+    roomTimer = null;
+  }
+}
 
-        checkRoom(
-          currentRoomCode
-        );
+async function fetchRoom(code) {
+  try {
+    const response = await fetch(
+      `${API}/rooms/${encodeURIComponent(code)}`,
+      {
+        method: "GET",
+        cache: "no-store"
       }
-
-    }, 3000);
-}
-
-
-function stopPolling() {
-
-  if (roomPollInterval) {
-
-    clearInterval(
-      roomPollInterval
     );
 
-    roomPollInterval = null;
-  }
-}
+    const data = await response.json();
 
-
-// =====================================
-// TIMER
-// =====================================
-
-function startTimer(endTime) {
-
-  stopTimer();
-
-  function tick() {
-
-    const remaining =
-      Number(endTime) -
-      Date.now();
-
-    if (remaining <= 0) {
-
-      if (waitingTimer) {
-
-        waitingTimer.textContent =
-          "Room expired ⏰";
-      }
-
-      stopTimer();
-
-      stopPolling();
-
-      currentRoomCode = "";
-
-      currentRoom = null;
-
-      localStorage.removeItem(
-        "room_code"
-      );
-
+    if (!response.ok || !data.success) {
       return;
     }
 
-    const totalSeconds =
-      Math.floor(
-        remaining / 1000
-      );
+    if (!data.room) {
+      return;
+    }
 
-    const minutes =
-      Math.floor(
-        totalSeconds / 60
+    currentRoom = data.room;
+
+    handleRoomState(currentRoom);
+
+  } catch (error) {
+    console.log("Room polling error:", error);
+  }
+}
+
+/* =========================================
+   ROOM STATE
+========================================= */
+
+function handleRoomState(room) {
+  if (!room) return;
+
+  if (player1Status) {
+    player1Status.textContent =
+      room.player1_id
+        ? "Player 1 • Ready"
+        : "Player 1 • Waiting...";
+  }
+
+  if (player2Status) {
+    player2Status.textContent =
+      room.player2_id
+        ? "Player 2 • Ready"
+        : "Player 2 • Waiting...";
+  }
+
+  if (roomMessage) {
+    if (room.player1_id && room.player2_id) {
+      roomMessage.textContent =
+        "Both Players Ready! 🎉";
+    } else {
+      roomMessage.textContent =
+        "Waiting for Player 2...";
+    }
+  }
+
+  startRoomCountdown(room);
+
+  if (
+    room.player1_id &&
+    room.player2_id
+  ) {
+    stopRoomPolling();
+    openMatchScreen(room);
+  }
+}
+
+/* =========================================
+   ROOM TIMER
+========================================= */
+
+function startRoomCountdown(room) {
+  if (!waitingTimer) return;
+
+  let createdAt =
+    room.created_at ||
+    room.createdAt;
+
+  let startTime =
+    createdAt
+      ? new Date(createdAt).getTime()
+      : Date.now();
+
+  if (!Number.isFinite(startTime)) {
+    startTime = Date.now();
+  }
+
+  if (roomTimer) {
+    clearInterval(roomTimer);
+  }
+
+  const updateTimer = () => {
+    const elapsed = Date.now() - startTime;
+    const remaining =
+      Math.max(
+        0,
+        5 * 60 * 1000 - elapsed
       );
 
     const seconds =
-      totalSeconds % 60;
+      Math.ceil(remaining / 1000);
 
-    if (waitingTimer) {
+    const minutes =
+      Math.floor(seconds / 60);
+
+    const secs =
+      seconds % 60;
+
+    waitingTimer.textContent =
+      `Room expires in ${minutes}:${String(secs).padStart(2,"0")}`;
+
+    if (remaining <= 0) {
+      clearInterval(roomTimer);
 
       waitingTimer.textContent =
-        `Room expires in ${minutes}:${String(seconds).padStart(2, "0")}`;
+        "Room expired.";
+
+      stopRoomPolling();
     }
-  }
+  };
 
-  tick();
-
-  timerInterval =
-    setInterval(
-      tick,
-      1000
-    );
+  updateTimer();
+  roomTimer = setInterval(
+    updateTimer,
+    1000
+  );
 }
 
+/* =========================================
+   MATCH SCREEN
+========================================= */
 
-function stopTimer() {
+function openMatchScreen(room) {
+  stopRoomPolling();
 
-  if (timerInterval) {
-
-    clearInterval(
-      timerInterval
-    );
-
-    timerInterval = null;
-  }
-}
-
-
-// =====================================
-// SHOW MATCH SCREEN
-// =====================================
-
-function showLudo() {
-
-  hideAll();
-
-  if (ludoCard)
-    ludoCard.style.display = "block";
-
-
-  if (!currentRoom) {
-
-    showGameMessage(
-      "Room information नहीं मिली।",
-      "error"
-    );
-
-    return;
-  }
-
-
-  // PLAYER 1 NAME
+  showOnly(ludoCard);
 
   if (matchPlayer1Name) {
-
     matchPlayer1Name.textContent =
-      currentRoom.player1_name ||
+      room.player1_name ||
       "Player 1";
   }
 
-
-  // PLAYER 2 NAME
-
   if (matchPlayer2Name) {
-
     matchPlayer2Name.textContent =
-      currentRoom.player2_name ||
+      room.player2_name ||
       "Player 2";
   }
 
-
-  // ROOM CODE
-
   if (matchRoomCode) {
-
     matchRoomCode.textContent =
-      currentRoom.room_code ||
-      currentRoomCode ||
+      room.room_code ||
       "00000000";
   }
 
-
-  // RESET BUTTONS
-
-  if (iWonBtn) {
-
-    iWonBtn.disabled = false;
-    iWonBtn.textContent = "I Won";
-  }
-
-  if (iLostBtn) {
-
-    iLostBtn.disabled = false;
-    iLostBtn.textContent = "I Lost";
-  }
-
-  if (matchCancelBtn) {
-
-    matchCancelBtn.disabled = false;
-    matchCancelBtn.textContent =
-      "Cancel";
-  }
-
   if (resultArea) {
-
-    resultArea.style.display =
-      "none";
+    resultArea.style.display = "none";
   }
 
   if (gameMessage) {
-
-    gameMessage.textContent = "";
+    gameMessage.textContent =
+      "Both Players Ready! 🎉";
   }
 }
 
-
-// =====================================
-// COPY ROOM CODE
-// =====================================
+/* =========================================
+   COPY ROOM CODE
+========================================= */
 
 async function copyRoomCode() {
-
   const code =
-    currentRoom?.room_code ||
-    currentRoomCode ||
-    matchRoomCode?.textContent ||
-    "";
+    matchRoomCode?.textContent || "";
 
-  if (!code) {
-
-    showGameMessage(
-      "Room Code नहीं मिला।",
-      "error"
-    );
-
-    return;
-  }
+  if (!code) return;
 
   try {
+    await navigator.clipboard.writeText(code);
 
-    await navigator.clipboard.writeText(
-      code
-    );
+    if (gameMessage) {
+      gameMessage.textContent =
+        "Room Code copied successfully!";
+    }
 
     if (copyRoomBtn) {
+      const oldText =
+        copyRoomBtn.textContent;
 
       copyRoomBtn.textContent =
         "Copied ✓";
 
       setTimeout(() => {
-
         copyRoomBtn.textContent =
-          "Copy Code";
-
+          oldText;
       }, 1500);
     }
 
-    showGameMessage(
-      "Room Code copied ✅",
-      "success"
-    );
-
   } catch (error) {
-
-    showGameMessage(
-      `Room Code: ${code}`,
-      "success"
-    );
+    if (gameMessage) {
+      gameMessage.textContent =
+        `Room Code: ${code}`;
+    }
   }
 }
 
-
-// =====================================
-// I WON
-// =====================================
+/* =========================================
+   I WON
+========================================= */
 
 function submitWin() {
+  if (!resultArea) return;
 
-  if (!currentRoomCode) {
+  resultArea.style.display = "block";
 
-    showGameMessage(
-      "Room Code नहीं मिला।",
-      "error"
-    );
-
-    return;
+  if (gameMessage) {
+    gameMessage.textContent =
+      "अपनी जीत का screenshot upload करें।";
   }
 
-  if (resultArea) {
-
-    resultArea.style.display =
-      "block";
-  }
-
-  showGameMessage(
-    "🏆 अपनी जीत का screenshot upload करें।",
-    "success"
-  );
+  resultArea.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
 }
 
-
-// =====================================
-// I LOST
-// =====================================
-
-function submitLost() {
-
-  if (!currentRoomCode) {
-
-    showGameMessage(
-      "Room Code नहीं मिला।",
-      "error"
-    );
-
-    return;
-  }
-
-  const ok =
-    confirm(
-      "क्या आप Match में हार गए हैं?"
-    );
-
-  if (!ok) return;
-
-  if (iLostBtn) {
-
-    iLostBtn.disabled = true;
-
-    iLostBtn.textContent =
-      "I Lost ✓";
-  }
-
-  showGameMessage(
-    "I Lost status selected.",
-    "success"
-  );
-}
-
-
-// =====================================
-// UPLOAD WIN RESULT
-// =====================================
+/* =========================================
+   UPLOAD RESULT
+========================================= */
 
 async function uploadResult() {
-
-  const playerId =
-    localStorage.getItem(
-      "player_id"
-    );
-
-  if (!playerId) {
-
-    showGameMessage(
-      "Player login required.",
-      "error"
-    );
-
-    return;
-  }
-
-  if (!currentRoomCode) {
-
-    showGameMessage(
-      "Room Code नहीं मिला।",
-      "error"
-    );
-
-    return;
-  }
-
   const file =
     resultScreenshot?.files?.[0];
 
   if (!file) {
-
-    showGameMessage(
-      "पहले screenshot चुनें।",
-      "error"
-    );
-
+    if (gameMessage) {
+      gameMessage.textContent =
+        "पहले winning screenshot select करें।";
+    }
     return;
   }
 
-
-  if (file.size > 5 * 1024 * 1024) {
-
-    showGameMessage(
-      "Screenshot 5MB से छोटा रखें।",
-      "error"
-    );
-
+  if (!currentRoom) {
+    if (gameMessage) {
+      gameMessage.textContent =
+        "Room information not found.";
+    }
     return;
   }
-
 
   try {
+    /*
+      Screenshot को base64 में भेजा जाता है।
+    */
 
-    submitResultBtn.disabled = true;
+    const base64 =
+      await fileToBase64(file);
 
-    submitResultBtn.textContent =
-      "Uploading...";
+    const response = await fetch(
+      `${API}/rooms/result`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          player_id: getPlayerId(),
+          room_code:
+            currentRoom.room_code,
+          screenshot: base64
+        })
+      }
+    );
 
+    const data =
+      await response.json();
 
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error ||
+        "Result submission failed."
+      );
+    }
+
+    if (gameMessage) {
+      gameMessage.textContent =
+        "Winning screenshot submitted successfully! ✅";
+    }
+
+    if (resultArea) {
+      resultArea.style.display = "none";
+    }
+
+  } catch (error) {
+    if (gameMessage) {
+      gameMessage.textContent =
+        error.message ||
+        "Result submission failed.";
+    }
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
     const reader =
       new FileReader();
 
+    reader.onload = () =>
+      resolve(reader.result);
 
-    reader.onload = async function () {
-
-      try {
-
-        const screenshot =
-          reader.result;
-
-
-        const response =
-          await fetch(
-            `${API}/rooms/result`,
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-
-                room_code:
-                  currentRoomCode,
-
-                player_id:
-                  playerId,
-
-                screenshot:
-                  screenshot
-
-              })
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        if (
-          !response.ok ||
-          data.success !== true
-        ) {
-
-          throw new Error(
-            data.error ||
-            "Result submit failed"
-          );
-        }
-
-
-        showGameMessage(
-          "🏆 Result submitted successfully!",
-          "success"
-        );
-
-
-        if (iWonBtn) {
-
-          iWonBtn.disabled = true;
-
-          iWonBtn.textContent =
-            "I Won ✓";
-        }
-
-
-        if (submitResultBtn) {
-
-          submitResultBtn.disabled =
-            true;
-
-          submitResultBtn.textContent =
-            "✅ Result Submitted";
-        }
-
-      } catch (error) {
-
-        console.error(error);
-
-        showGameMessage(
-          error.message ||
-          "Result submit failed",
-          "error"
-        );
-
-        submitResultBtn.disabled =
-          false;
-
-        submitResultBtn.textContent =
-          "📤 Submit Result";
-      }
-    };
-
+    reader.onerror = reject;
 
     reader.readAsDataURL(file);
+  });
+}
 
-  } catch (error) {
+/* =========================================
+   I LOST
+========================================= */
 
-    console.error(error);
+function submitLost() {
+  if (gameMessage) {
+    gameMessage.textContent =
+      "You selected I Lost.";
+  }
 
-    showGameMessage(
-      error.message ||
-      "Upload failed",
-      "error"
-    );
-
-    submitResultBtn.disabled =
-      false;
-
-    submitResultBtn.textContent =
-      "📤 Submit Result";
+  if (resultArea) {
+    resultArea.style.display = "none";
   }
 }
 
-
-// =====================================
-// CANCEL ROOM
-// =====================================
+/* =========================================
+   CANCEL ROOM
+========================================= */
 
 async function cancelRoom() {
-
-  const playerId =
-    localStorage.getItem(
-      "player_id"
-    );
-
-  if (!playerId) {
-
-    showGameMessage(
-      "Player login required.",
-      "error"
-    );
-
+  if (!currentRoom) {
+    goHome();
     return;
   }
 
-  if (!currentRoomCode) {
-
-    showGameMessage(
-      "Room Code नहीं मिला।",
-      "error"
-    );
-
-    return;
-  }
-
-
-  const ok =
-    confirm(
-      "क्या आप यह Match Cancel करना चाहते हैं?"
-    );
-
-  if (!ok) return;
-
+  const code =
+    currentRoom.room_code;
 
   try {
-
-    if (matchCancelBtn) {
-
-      matchCancelBtn.disabled =
-        true;
-
-      matchCancelBtn.textContent =
-        "Cancelling...";
-    }
-
-
-    const response =
-      await fetch(
-        `${API}/rooms/cancel`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            room_code:
-              currentRoomCode,
-
-            player_id:
-              playerId
-
-          })
-        }
-      );
-
+    const response = await fetch(
+      `${API}/rooms/cancel`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          room_code: code,
+          player_id: getPlayerId()
+        })
+      }
+    );
 
     const data =
       await response.json();
 
-
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-
+    if (!response.ok || !data.success) {
       throw new Error(
         data.error ||
-        "Cancel failed"
+        "Unable to cancel room."
       );
     }
-
-
-    stopPolling();
-
-    stopTimer();
-
-    currentRoomCode = "";
-
-    currentRoom = null;
-
-    localStorage.removeItem(
-      "room_code"
-    );
-
-
-    showRoom();
-
-
-    showRoomMessage(
-      "Match cancelled successfully ✅",
-      "success"
-    );
-
 
   } catch (error) {
-
-    console.error(error);
-
-    showGameMessage(
-      error.message ||
-      "Cancel failed",
-      "error"
+    console.log(
+      "Cancel room:",
+      error.message
     );
+  }
 
-    if (matchCancelBtn) {
+  currentRoom = null;
+  stopRoomPolling();
 
-      matchCancelBtn.disabled =
-        false;
+  if (createRoomCode) {
+    createRoomCode.value = "";
+  }
 
-      matchCancelBtn.textContent =
-        "Cancel";
-    }
+  if (joinRoomCode) {
+    joinRoomCode.value = "";
+  }
+
+  showOnly(roomCard);
+
+  if (roomMessage) {
+    roomMessage.textContent =
+      "Room cancelled.";
   }
 }
 
+/* =========================================
+   PLAYER HELPERS
+========================================= */
 
-// =====================================
-// PROFILE
-// =====================================
-
-async function openProfile() {
-
-  const customerId =
-    localStorage.getItem(
-      "customer_id"
-    ) ||
-    localStorage.getItem(
-      "player_id"
-    );
-
-  if (!customerId) {
-
-    showLogin();
-
-    return;
-  }
-
-  hideAll();
-
-  if (profileSection)
-    profileSection.style.display =
-      "block";
-
-  await loadProfile(
-    customerId
-  );
-}
-
-
-async function loadProfile(customerId) {
-
-  try {
-
-    const response =
-      await fetch(
-        `${API}/customer/${encodeURIComponent(customerId)}`
-      );
-
-    const data =
-      await response.json();
-
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Profile load failed"
-      );
-    }
-
-    const customer =
-      data.customer;
-
-    saveCustomer(
-      customer
-    );
-
-    renderProfile(
-      customer
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      error.message ||
-      "Profile load failed"
+function getPlayerId() {
+  if (currentPlayer) {
+    return (
+      currentPlayer.player_id ||
+      currentPlayer.playerId ||
+      currentPlayer.customer_id ||
+      currentPlayer.customerId ||
+      currentPlayer.id ||
+      pendingMobile
     );
   }
+
+  return pendingMobile;
 }
 
-
-// =====================================
-// PROFILE RENDER
-// =====================================
-
-function renderProfile(customer) {
-
-  setText(
-    "profileName",
-    customer.name || "Player"
-  );
-
-  setText(
-    "profileId",
-    `Player ID: ${customer.id || "---"}`
-  );
-
-  setText(
-    "customerId",
-    customer.id || "---"
-  );
-
-  setText(
-    "profileWallet",
-    money(customer.wallet_balance)
-  );
-
-  setText(
-    "profileBonus",
-    money(customer.bonus_balance)
-  );
-
-  setText(
-    "battlePlayed",
-    customer.battle_played || 0
-  );
-
-  setText(
-    "coinWon",
-    money(customer.coin_won)
-  );
-
-  setText(
-    "referralEarned",
-    money(customer.referral_earned)
-  );
-
-  setText(
-    "withdrawalAmount",
-    money(customer.withdrawal_amount)
-  );
-
-  setText(
-    "profilePhone",
-    customer.mobile ||
-    "Not Added"
-  );
-
-  setText(
-    "profileEmail",
-    customer.email ||
-    "Not Added"
-  );
-
-  setText(
-    "kycStatus",
-    customer.kyc_status ||
-    "Pending"
-  );
-}
-
-
-function setText(id, value) {
-
-  const el =
-    document.getElementById(id);
-
-  if (el) {
-
-    el.textContent =
-      String(value);
-  }
-}
-
-
-function money(value) {
-
-  return `₹${Number(
-    value || 0
-  ).toFixed(2)}`;
-}
-
-
-// =====================================
-// EDIT PROFILE
-// =====================================
-
-async function editProfile() {
-
-  const customerId =
-    localStorage.getItem(
-      "customer_id"
+function getPlayerName() {
+  if (currentPlayer) {
+    return (
+      currentPlayer.name ||
+      currentPlayer.player_name ||
+      currentPlayer.playerName ||
+      "Player"
     );
-
-  if (!customerId) {
-
-    showLogin();
-
-    return;
   }
 
-  const oldName =
-    localStorage.getItem(
-      "player_name"
-    ) ||
-    "Player";
+  return "Player";
+}
 
-  const newName =
-    prompt(
-      "अपना नाम डालें:",
-      oldName
-    );
+/* =========================================
+   PROFILE
+========================================= */
 
-  if (newName === null)
-    return;
+function openProfile() {
+  showOnly(profileSection);
+
+  if (!currentPlayer) return;
 
   const name =
-    clean(newName);
-
-  if (name.length < 2) {
-
-    alert(
-      "कम से कम 2 अक्षर का नाम डालें।"
-    );
-
-    return;
-  }
-
-  try {
-
-    const response =
-      await fetch(
-        `${API}/customer/update`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            customer_id:
-              customerId,
-
-            name:
-              name
-
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Name update failed"
-      );
-    }
-
-
-    saveCustomer(
-      data.customer
-    );
-
-    renderProfile(
-      data.customer
-    );
-
-
-    alert(
-      "Name updated successfully ✅"
-    );
-
-  } catch (error) {
-
-    alert(
-      error.message ||
-      "Name update failed"
-    );
-  }
-}
-
-
-// =====================================
-// EDIT EMAIL
-// =====================================
-
-async function editEmail() {
-
-  const customerId =
-    localStorage.getItem(
-      "customer_id"
-    );
-
-  if (!customerId) {
-
-    showLogin();
-
-    return;
-  }
-
-  const oldEmail =
-    localStorage.getItem(
-      "email"
-    ) ||
-    "";
-
-  const newEmail =
-    prompt(
-      "अपना Email डालें:",
-      oldEmail
-    );
-
-  if (newEmail === null)
-    return;
-
-  const email =
-    clean(newEmail);
-
-  if (
-    email &&
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  ) {
-
-    alert(
-      "Valid Email डालें।"
-    );
-
-    return;
-  }
-
-  try {
-
-    const response =
-      await fetch(
-        `${API}/customer/update`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            customer_id:
-              customerId,
-
-            email:
-              email
-
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok ||
-      data.success !== true
-    ) {
-
-      throw new Error(
-        data.error ||
-        "Email update failed"
-      );
-    }
-
-
-    saveCustomer(
-      data.customer
-    );
-
-    renderProfile(
-      data.customer
-    );
-
-
-    alert(
-      "Email updated successfully ✅"
-    );
-
-  } catch (error) {
-
-    alert(
-      error.message ||
-      "Email update failed"
-    );
-  }
-}
-
-
-// =====================================
-// HOME
-// =====================================
-
-function goHome() {
+    currentPlayer.name ||
+    currentPlayer.player_name ||
+    "Player";
 
   const id =
-    localStorage.getItem(
-      "customer_id"
-    );
+    getPlayerId();
 
-  if (!id) {
+  const customerId =
+    currentPlayer.customer_id ||
+    currentPlayer.customerId ||
+    "---";
 
-    showLogin();
+  const wallet =
+    currentPlayer.wallet ??
+    currentPlayer.wallet_balance ??
+    0;
 
-    return;
-  }
+  const bonus =
+    currentPlayer.bonus ??
+    currentPlayer.bonus_balance ??
+    0;
 
-  showRoom();
+  const profileName =
+    document.getElementById("profileName");
+
+  const profileId =
+    document.getElementById("profileId");
+
+  const customerIdEl =
+    document.getElementById("customerId");
+
+  const profileWallet =
+    document.getElementById("profileWallet");
+
+  const profileBonus =
+    document.getElementById("profileBonus");
+
+  const profilePhone =
+    document.getElementById("profilePhone");
+
+  if (profileName)
+    profileName.textContent = name;
+
+  if (profileId)
+    profileId.textContent =
+      `Player ID: ${id}`;
+
+  if (customerIdEl)
+    customerIdEl.textContent =
+      customerId;
+
+  if (profileWallet)
+    profileWallet.textContent =
+      `₹${Number(wallet).toFixed(2)}`;
+
+  if (profileBonus)
+    profileBonus.textContent =
+      `₹${Number(bonus).toFixed(2)}`;
+
+  if (profilePhone)
+    profilePhone.textContent =
+      currentPlayer.mobile ||
+      pendingMobile ||
+      "Not Added";
 }
 
-
-// =====================================
-// OTHER BUTTONS
-// =====================================
+/* =========================================
+   PLACEHOLDER NAV
+========================================= */
 
 function openWallet() {
-
-  alert(
-    "Wallet section जल्द उपलब्ध होगा।"
-  );
+  alert("Wallet section coming soon.");
 }
-
 
 function openRefer() {
-
-  alert(
-    "Refer & Earn section जल्द उपलब्ध होगा।"
-  );
+  alert("Refer section coming soon.");
 }
-
 
 function openSupport() {
-
-  alert(
-    "Support section जल्द उपलब्ध होगा।"
-  );
+  alert("Support section coming soon.");
 }
 
-
-// =====================================
-// BACK LOGIN
-// =====================================
-
-function backToLogin() {
-
-  pendingMobile = "";
-
-  if (otpInput)
-    otpInput.value = "";
-
-  showOtpMessage("");
-
-  showLogin();
+function editProfile() {
+  alert("Profile editing coming soon.");
 }
 
-
-// =====================================
-// SHOW LOGIN
-// =====================================
-
-function showLogin() {
-
-  hideAll();
-
-  if (welcomeCard)
-    welcomeCard.style.display =
-      "block";
-
-  if (playerMobileInput)
-    playerMobileInput.focus();
+function editEmail() {
+  alert("Email editing coming soon.");
 }
 
-
-// =====================================
-// INPUT RESTRICTIONS
-// =====================================
-
-if (playerMobileInput) {
-
-  playerMobileInput.addEventListener(
-    "input",
-    function () {
-
-      this.value =
-        digits(this.value)
-          .slice(0, 10);
-    }
-  );
-}
-
-
-if (otpInput) {
-
-  otpInput.addEventListener(
-    "input",
-    function () {
-
-      this.value =
-        digits(this.value)
-          .slice(0, 6);
-    }
-  );
-}
-
-
-if (createRoomCodeInput) {
-
-  createRoomCodeInput.addEventListener(
-    "input",
-    function () {
-
-      this.value =
-        digits(this.value)
-          .slice(0, 8);
-    }
-  );
-}
-
-
-if (joinRoomCodeInput) {
-
-  joinRoomCodeInput.addEventListener(
-    "input",
-    function () {
-
-      this.value =
-        digits(this.value)
-          .slice(0, 8);
-    }
-  );
-}
-
-
-// =====================================
-// AUTO RESTORE ROOM
-// =====================================
-
-window.addEventListener(
-  "load",
-  function () {
-
-    const savedId =
-      localStorage.getItem(
-        "customer_id"
-      );
-
-    const savedRoom =
-      localStorage.getItem(
-        "room_code"
-      );
-
-    if (
-      savedId &&
-      savedRoom
-    ) {
-
-      currentRoomCode =
-        savedRoom;
-
-      showRoom();
-
-    } else if (savedId) {
-
-      showRoom();
-
-    } else {
-
-      showLogin();
-    }
-  }
-);
+/* =========================================
+   END
+========================================= */
