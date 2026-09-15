@@ -30,7 +30,7 @@ const walletNavBtn = document.getElementById("walletNavBtn");
 
 function openWallet() {
 
-  alert("Wallet section");
+  window.location.href = "wallet.html";
 
 }
 
@@ -59,7 +59,7 @@ if (profileNavBtn) {
 
   profileNavBtn.addEventListener("click", function () {
 
-    alert("Profile section");
+    window.location.href = "profile.html";
 
   });
 
