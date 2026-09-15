@@ -1,20 +1,20 @@
-// ==========================================
-// BALAJI LUDO KING - BATTLE SYSTEM
-// DEMO MODE
-// ==========================================
+// =====================================
+// BALAJI LUDO KING - BATTLE
+// Demo Coins • 5 Minute Battle Expiry
+// =====================================
 
 const MIN_BET = 50;
 const MAX_BET = 10000;
 
+// Battle open रहने का समय
+const BATTLE_TIME_MS = 5 * 60 * 1000;
 
-// ==========================================
+// =====================================
 // SAFE LOCAL STORAGE
-// ==========================================
+// =====================================
 
 function loadData(key) {
-
   try {
-
     const data = localStorage.getItem(key);
 
     if (!data) {
@@ -26,74 +26,45 @@ function loadData(key) {
     return Array.isArray(parsed) ? parsed : [];
 
   } catch (error) {
-
     console.log("Storage reset:", key);
 
     localStorage.removeItem(key);
 
     return [];
-
   }
-
 }
-
 
 function saveData(key, data) {
-
-  localStorage.setItem(
-    key,
-    JSON.stringify(data)
-  );
-
+  localStorage.setItem(key, JSON.stringify(data));
 }
 
-
-// ==========================================
+// =====================================
 // ELEMENTS
-// ==========================================
+// =====================================
 
-const amountInput =
-  document.getElementById("amountInput");
+const amountInput = document.getElementById("amountInput");
+const setBattleBtn = document.getElementById("setBattleBtn");
+const amountMessage = document.getElementById("amountMessage");
 
-const setBattleBtn =
-  document.getElementById("setBattleBtn");
+const openBattlesBox = document.getElementById("openBattles");
+const runningBattlesBox = document.getElementById("runningBattles");
 
-const amountMessage =
-  document.getElementById("amountMessage");
+const rulesBtn = document.getElementById("rulesBtn");
+const rulesModal = document.getElementById("rulesModal");
+const closeRulesBtn = document.getElementById("closeRulesBtn");
+const understandBtn = document.getElementById("understandBtn");
 
-const openBattlesContainer =
-  document.getElementById("openBattles");
+// =====================================
+// LOAD BATTLES
+// =====================================
 
-const runningBattlesContainer =
-  document.getElementById("runningBattles");
+let openBattles = loadData("balajiOpenBattles");
 
-const rulesBtn =
-  document.getElementById("rulesBtn");
+let runningBattles = loadData("balajiRunningBattles");
 
-const rulesModal =
-  document.getElementById("rulesModal");
-
-const closeRulesBtn =
-  document.getElementById("closeRulesBtn");
-
-const understandBtn =
-  document.getElementById("understandBtn");
-
-
-// ==========================================
-// LOAD DATA
-// ==========================================
-
-let openBattles =
-  loadData("balajiOpenBattles");
-
-let runningBattles =
-  loadData("balajiRunningBattles");
-
-
-// ==========================================
+// =====================================
 // PLAYER NAME
-// ==========================================
+// =====================================
 
 function getPlayerName() {
 
@@ -105,10 +76,9 @@ function getPlayerName() {
 
 }
 
-
-// ==========================================
+// =====================================
 // SAVE BATTLES
-// ==========================================
+// =====================================
 
 function saveBattles() {
 
@@ -124,10 +94,85 @@ function saveBattles() {
 
 }
 
+// =====================================
+// REMOVE EXPIRED OPEN BATTLES
+// =====================================
 
-// ==========================================
+function removeExpiredBattles() {
+
+  const now = Date.now();
+
+  const beforeCount = openBattles.length;
+
+  openBattles = openBattles.filter(function (battle) {
+
+    if (!battle.createdAt) {
+      return false;
+    }
+
+    const age = now - Number(battle.createdAt);
+
+    return age < BATTLE_TIME_MS;
+
+  });
+
+  if (openBattles.length !== beforeCount) {
+
+    saveBattles();
+
+  }
+
+}
+
+// =====================================
+// TIME LEFT
+// =====================================
+
+function getTimeLeft(createdAt) {
+
+  const now = Date.now();
+
+  const endTime =
+    Number(createdAt) + BATTLE_TIME_MS;
+
+  const remaining =
+    Math.max(0, endTime - now);
+
+  const totalSeconds =
+    Math.floor(remaining / 1000);
+
+  const minutes =
+    Math.floor(totalSeconds / 60);
+
+  const seconds =
+    totalSeconds % 60;
+
+  return (
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0")
+  );
+
+}
+
+// =====================================
+// ESCAPE HTML
+// =====================================
+
+function escapeHTML(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+// =====================================
 // SET BATTLE
-// ==========================================
+// =====================================
 
 if (setBattleBtn) {
 
@@ -138,69 +183,54 @@ if (setBattleBtn) {
       const amount =
         Number(amountInput.value);
 
-      // Clear previous message
       if (amountMessage) {
         amountMessage.textContent = "";
       }
 
-
-      // -------------------------------
-      // MINIMUM
-      // -------------------------------
-
+      // Minimum
       if (!amount || amount < MIN_BET) {
 
         if (amountMessage) {
+
           amountMessage.textContent =
-            "Minimum 50 Demo Coins की bet लगाएँ।";
+            "❌ Minimum Battle amount is 50 Demo Coins.";
+
         }
 
         return;
       }
 
-
-      // -------------------------------
-      // MAXIMUM
-      // -------------------------------
-
+      // Maximum
       if (amount > MAX_BET) {
 
         if (amountMessage) {
+
           amountMessage.textContent =
-            "Maximum 10000 Demo Coins तक है।";
+            "❌ Maximum Battle amount is 10000 Demo Coins.";
+
         }
 
         return;
       }
 
-
-      // -------------------------------
-      // 50 MULTIPLE
-      // -------------------------------
-
+      // 50 step
       if (amount % 50 !== 0) {
 
         if (amountMessage) {
+
           amountMessage.textContent =
-            "Amount 50, 100, 150, 200, 250... में होना चाहिए।";
+            "❌ Amount 50 के multiples में होना चाहिए.";
+
         }
 
         return;
       }
 
-
-      // -------------------------------
-      // DEMO PRIZE
-      // -------------------------------
-
+      // Prize
       const prize =
         Math.round(amount * 1.9);
 
-
-      // -------------------------------
-      // CREATE BATTLE
-      // -------------------------------
-
+      // New Battle
       const battle = {
 
         id:
@@ -208,7 +238,7 @@ if (setBattleBtn) {
           Date.now() +
           "_" +
           Math.floor(
-            Math.random() * 1000
+            Math.random() * 10000
           ),
 
         playerName:
@@ -228,31 +258,13 @@ if (setBattleBtn) {
 
       };
 
-
-      // -------------------------------
-      // ADD TO OPEN BATTLES
-      // -------------------------------
-
+      // सबसे ऊपर नई Battle
       openBattles.unshift(battle);
-
-
-      // -------------------------------
-      // SAVE
-      // -------------------------------
 
       saveBattles();
 
-
-      // -------------------------------
-      // CLEAR INPUT
-      // -------------------------------
-
+      // Clear input
       amountInput.value = "";
-
-
-      // -------------------------------
-      // SUCCESS MESSAGE
-      // -------------------------------
 
       if (amountMessage) {
 
@@ -260,11 +272,6 @@ if (setBattleBtn) {
           "✅ Battle successfully Open हो गई।";
 
       }
-
-
-      // -------------------------------
-      // REFRESH
-      // -------------------------------
 
       renderOpenBattles();
 
@@ -275,263 +282,272 @@ if (setBattleBtn) {
 
 }
 
-
-// ==========================================
-// OPEN BATTLES
-// ==========================================
-
-function renderOpenBattles() {
-
-  if (!openBattlesContainer) {
-    return;
-  }
-
-
-  openBattlesContainer.innerHTML = "";
-
-
-  if (openBattles.length === 0) {
-
-    openBattlesContainer.innerHTML = `
-      <div class="empty-battle">
-        अभी कोई Open Battle नहीं है।
-      </div>
-    `;
-
-    return;
-  }
-
-
-  openBattles.forEach(
-    function (battle, index) {
-
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "battle-card";
-
-
-      card.innerHTML = `
-
-        <div class="battle-title">
-          Challenge From
-        </div>
-
-        <div class="challenger-name">
-          ${escapeHTML(battle.playerName)}
-        </div>
-
-        <div class="battle-info">
-
-          <div>
-            <span>ENTRY FEE</span>
-
-            <strong>
-              ${battle.entry} Demo Coins
-            </strong>
-          </div>
-
-          <div>
-            <span>PRIZE</span>
-
-            <strong>
-              ${battle.prize} Demo Coins
-            </strong>
-          </div>
-
-        </div>
-
-        <button
-          type="button"
-          class="play-battle-btn"
-          onclick="playOpenBattle(${index})"
-        >
-          Play
-        </button>
-
-      `;
-
-
-      openBattlesContainer.appendChild(
-        card
-      );
-
-    }
-  );
-
-}
-
-
-// ==========================================
+// =====================================
 // PLAY OPEN BATTLE
-// ==========================================
+// =====================================
 
 function playOpenBattle(index) {
+
+  removeExpiredBattles();
 
   const battle =
     openBattles[index];
 
-
   if (!battle) {
+
+    renderOpenBattles();
+
     return;
+
   }
 
-
-  const secondPlayer =
+  const currentPlayer =
     getPlayerName();
 
-
-  // ----------------------------------------
-  // OWN BATTLE CHECK
-  // ----------------------------------------
-
+  // अपने ही Battle पर Play नहीं
   if (
-    battle.playerName === secondPlayer
+    battle.playerName === currentPlayer
   ) {
 
     alert(
-      "आप अपनी खुद की Battle Play नहीं कर सकते।"
+      "❌ आप अपनी खुद की Battle join नहीं कर सकते।"
     );
 
     return;
+
   }
 
-
-  // ----------------------------------------
-  // SAVE SELECTED BATTLE
-  // ----------------------------------------
-
+  // Selected Battle save
   localStorage.setItem(
     "balajiSelectedBattle",
     JSON.stringify(battle)
   );
 
-
-  // ----------------------------------------
-  // SAVE SECOND PLAYER
-  // ----------------------------------------
-
+  // दूसरा player
   localStorage.setItem(
     "balajiSecondPlayer",
-    secondPlayer
+    currentPlayer
   );
 
-
-  // ----------------------------------------
-  // ROOM
-  // ----------------------------------------
-
+  // Room waiting screen
   window.location.href =
     "room.html";
 
 }
 
+// =====================================
+// OPEN BATTLES
+// =====================================
 
-// ==========================================
-// RUNNING BATTLES
-// ==========================================
+function renderOpenBattles() {
 
-function renderRunningBattles() {
+  removeExpiredBattles();
 
-  if (!runningBattlesContainer) {
+  if (!openBattlesBox) {
     return;
   }
 
+  if (openBattles.length === 0) {
 
-  runningBattlesContainer.innerHTML = "";
-
-
-  if (runningBattles.length === 0) {
-
-    runningBattlesContainer.innerHTML = `
-      <div class="empty-battle">
-        अभी कोई Running Battle नहीं है।
+    openBattlesBox.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎮</div>
+        <div>No Open Battles</div>
+        <small>Create a Battle to appear here.</small>
       </div>
     `;
 
     return;
   }
 
+  let html = "";
 
-  runningBattles.forEach(
-    function (battle) {
+  openBattles.forEach(
+    function (battle, index) {
 
-      const card =
-        document.createElement("div");
+      const timeLeft =
+        getTimeLeft(
+          battle.createdAt
+        );
 
-      card.className =
-        "battle-card running";
+      html += `
 
+        <div class="battle-card">
 
-      card.innerHTML = `
+          <div class="battle-top">
 
-        <div class="battle-title">
-          Running Battle
-        </div>
-
-        <div class="players">
-
-          <strong>
-            ${escapeHTML(battle.player1)}
-          </strong>
-
-          <span>
-            VS
-          </span>
-
-          <strong>
-            ${escapeHTML(battle.player2)}
-          </strong>
-
-        </div>
-
-        <div class="battle-info">
-
-          <div>
-            <span>ENTRY FEE</span>
-
-            <strong>
-              ${battle.entry} Demo Coins
-            </strong>
-          </div>
-
-          <div>
-            <span>PRIZE</span>
-
-            <strong>
-              ${battle.prize} Demo Coins
-            </strong>
-          </div>
-
-        </div>
-
-        ${
-          battle.roomCode
-          ? `
-            <div class="room-small">
-              Room Code: ${battle.roomCode}
+            <div class="challenge-title">
+              ⚔️ Challenge From
             </div>
-          `
-          : ""
-        }
+
+            <div class="battle-timer">
+              ⏱️ ${timeLeft}
+            </div>
+
+          </div>
+
+          <div class="player-name">
+            ${escapeHTML(
+              battle.playerName
+            )}
+          </div>
+
+          <div class="battle-info">
+
+            <div class="info-box">
+
+              <span>Entry</span>
+
+              <strong>
+                ${battle.entry}
+              </strong>
+
+              <small>
+                Demo Coins
+              </small>
+
+            </div>
+
+            <div class="info-box">
+
+              <span>Winning Prize</span>
+
+              <strong>
+                ${battle.prize}
+              </strong>
+
+              <small>
+                Demo Coins
+              </small>
+
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            class="play-battle-btn"
+            onclick="playOpenBattle(${index})"
+          >
+            ▶ Play
+          </button>
+
+        </div>
 
       `;
-
-
-      runningBattlesContainer.appendChild(
-        card
-      );
 
     }
   );
 
+  openBattlesBox.innerHTML =
+    html;
+
 }
 
+// =====================================
+// RUNNING BATTLES
+// =====================================
 
-// ==========================================
-// RULES
-// ==========================================
+function renderRunningBattles() {
+
+  if (!runningBattlesBox) {
+    return;
+  }
+
+  if (runningBattles.length === 0) {
+
+    runningBattlesBox.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🏆</div>
+        <div>No Running Battles</div>
+        <small>Joined battles will appear here.</small>
+      </div>
+    `;
+
+    return;
+  }
+
+  let html = "";
+
+  runningBattles.forEach(
+    function (battle) {
+
+      html += `
+
+        <div class="battle-card running-card">
+
+          <div class="battle-top">
+
+            <div class="challenge-title">
+              🔥 Running Battle
+            </div>
+
+            <div class="running-status">
+              RUNNING
+            </div>
+
+          </div>
+
+          <div class="player-name">
+
+            ${escapeHTML(
+              battle.playerName ||
+              "Player"
+            )}
+
+          </div>
+
+          <div class="battle-info">
+
+            <div class="info-box">
+
+              <span>Entry</span>
+
+              <strong>
+                ${battle.entry}
+              </strong>
+
+              <small>
+                Demo Coins
+              </small>
+
+            </div>
+
+            <div class="info-box">
+
+              <span>Winning Prize</span>
+
+              <strong>
+                ${battle.prize}
+              </strong>
+
+              <small>
+                Demo Coins
+              </small>
+
+            </div>
+
+          </div>
+
+          <div class="match-status">
+            Room Code Accepted
+          </div>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+  runningBattlesBox.innerHTML =
+    html;
+
+}
+
+// =====================================
+// RULES MODAL
+// =====================================
 
 if (rulesBtn && rulesModal) {
 
@@ -547,7 +563,6 @@ if (rulesBtn && rulesModal) {
 
 }
 
-
 if (closeRulesBtn && rulesModal) {
 
   closeRulesBtn.addEventListener(
@@ -561,7 +576,6 @@ if (closeRulesBtn && rulesModal) {
   );
 
 }
-
 
 if (understandBtn && rulesModal) {
 
@@ -577,6 +591,9 @@ if (understandBtn && rulesModal) {
 
 }
 
+// =====================================
+// CLOSE MODAL OUTSIDE
+// =====================================
 
 if (rulesModal) {
 
@@ -598,47 +615,34 @@ if (rulesModal) {
 
 }
 
+// =====================================
+// INITIAL RENDER
+// =====================================
 
-// ==========================================
-// ESCAPE HTML
-// ==========================================
-
-function escapeHTML(value) {
-
-  return String(value)
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-// ==========================================
-// START
-// ==========================================
+removeExpiredBattles();
 
 renderOpenBattles();
 
 renderRunningBattles();
+
+// =====================================
+// LIVE 5-MINUTE TIMER
+// =====================================
+
+setInterval(
+  function () {
+
+    removeExpiredBattles();
+
+    renderOpenBattles();
+
+  },
+  1000
+);
+
+// =====================================
+// MAKE PLAY FUNCTION AVAILABLE
+// =====================================
+
+window.playOpenBattle =
+  playOpenBattle;
