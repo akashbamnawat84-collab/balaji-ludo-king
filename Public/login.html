@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Balaji Ludo King - Login</title>
+
+  <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+  <main class="login-page">
+
+    <div class="login-card">
+
+      <div class="login-logo">🎮</div>
+
+      <h1>BALAJI LUDO KING</h1>
+
+      <div class="login-label">LOGIN</div>
+
+      <h2>Welcome Back</h2>
+
+      <p class="login-description">
+        Enter your mobile number to get started
+      </p>
+
+
+      <!-- MOBILE LOGIN -->
+
+      <div id="mobileSection">
+
+        <label for="mobileNumber">
+          Mobile Number
+        </label>
+
+        <input
+          id="mobileNumber"
+          type="tel"
+          inputmode="numeric"
+          maxlength="10"
+          placeholder="98765 43210"
+          autocomplete="tel"
+        >
+
+        <button
+          type="button"
+          id="sendOtpBtn">
+          Send OTP
+        </button>
+
+      </div>
+
+
+      <!-- OTP -->
+
+      <div id="otpSection" class="hidden">
+
+        <div class="success-message">
+          OTP sent successfully!
+        </div>
+
+        <label for="otpInput">
+          Verification OTP
+        </label>
+
+        <input
+          id="otpInput"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="Enter OTP"
+          autocomplete="one-time-code"
+        >
+
+        <div class="otp-info">
+          <span>Encrypted</span>
+          <span id="resendText">Resend available in 60s</span>
+        </div>
+
+        <button
+          type="button"
+          id="verifyOtpBtn">
+          Verify & Continue
+        </button>
+
+        <button
+          type="button"
+          id="resendOtpBtn"
+          class="secondary-btn"
+          disabled>
+          Resend OTP
+        </button>
+
+      </div>
+
+
+      <p
+        id="loginMessage"
+        class="login-message">
+      </p>
+
+
+      <div class="security-text">
+        🔒 Protected by end-to-end security protocol
+      </div>
+
+    </div>
+
+
+    <div class="login-footer">
+
+      <div class="footer-logo">
+        🎲
+      </div>
+
+      <strong>
+        Turn Fun into Funds!
+      </strong>
+
+      <p>
+        For best experience, open Balaji Ludo King on Chrome mobile
+      </p>
+
+    </div>
+
+  </main>
+
+
+  <script src="login.js"></script>
+
+</body>
+</html>
