@@ -1,95 +1,310 @@
 // =====================================
 // BALAJI LUDO KING - ROOM
-// DEMO / FREE PLAY
+// Demo Coins • Room Waiting System
 // =====================================
 
+const WAIT_TIME_MS = 5 * 60 * 1000;
 
-// Generate 8 digit room code
-function generateRoomCode() {
-  const number = Math.floor(
-    10000000 + Math.random() * 90000000
-  );
+// =====================================
+// ELEMENTS
+// =====================================
 
-  return String(number);
-}
+const entryFee = document.getElementById("entryFee");
+const winningPrize = document.getElementById("winningPrize");
 
+const waitingState =
+  document.getElementById("waitingState");
 
-// Get existing room code
-let roomCode = localStorage.getItem("balajiRoomCode");
+const roomCodeState =
+  document.getElementById("roomCodeState");
 
-if (!roomCode) {
-  roomCode = generateRoomCode();
+const waitingSeconds =
+  document.getElementById("waitingSeconds");
 
-  localStorage.setItem(
-    "balajiRoomCode",
-    roomCode
-  );
-}
+const matchStatus =
+  document.getElementById("matchStatus");
 
+const readyStatus =
+  document.getElementById("readyStatus");
 
-// Show room code
-const roomCodeElement =
+const roomCode =
   document.getElementById("roomCode");
 
-if (roomCodeElement) {
-  roomCodeElement.textContent = roomCode;
-}
+const backBtn =
+  document.getElementById("backBtn");
 
+const cancelBtn =
+  document.getElementById("cancelBtn");
 
-// =====================================
-// PLAYER NAME
-// =====================================
-
-const player1Name =
-  document.getElementById("player1Name");
-
-const savedName =
-  localStorage.getItem("balajiPlayerName");
-
-if (player1Name && savedName) {
-  player1Name.textContent = savedName;
-}
-
-
-// =====================================
-// COPY ROOM CODE
-// =====================================
+const cancelReadyBtn =
+  document.getElementById("cancelReadyBtn");
 
 const copyCodeBtn =
   document.getElementById("copyCodeBtn");
 
-if (copyCodeBtn) {
+const playLudoBtn =
+  document.getElementById("playLudoBtn");
 
-  copyCodeBtn.addEventListener(
-    "click",
-    async function () {
+const wonBtn =
+  document.getElementById("wonBtn");
 
-      try {
+const lostBtn =
+  document.getElementById("lostBtn");
 
-        await navigator.clipboard.writeText(
-          roomCode
-        );
 
-        copyCodeBtn.textContent =
-          "✅ Room Code Copied";
+// =====================================
+// GET SELECTED BATTLE
+// =====================================
 
-        setTimeout(function () {
+function getSelectedBattle() {
 
-          copyCodeBtn.textContent =
-            "📋 Copy Room Code";
+  try {
 
-        }, 1500);
+    const data =
+      localStorage.getItem(
+        "balajiSelectedBattle"
+      );
 
-      } catch (error) {
+    if (!data) {
+      return null;
+    }
 
-        alert(
-          "Room Code: " + roomCode
-        );
+    return JSON.parse(data);
 
-      }
+  } catch (error) {
+
+    console.log(
+      "Selected battle error:",
+      error
+    );
+
+    return null;
+
+  }
+
+}
+
+const selectedBattle =
+  getSelectedBattle();
+
+
+// =====================================
+// SHOW BATTLE DETAILS
+// =====================================
+
+if (selectedBattle) {
+
+  if (entryFee) {
+
+    entryFee.textContent =
+      selectedBattle.entry || 0;
+
+  }
+
+  if (winningPrize) {
+
+    winningPrize.textContent =
+      selectedBattle.prize || 0;
+
+  }
+
+}
+
+
+// =====================================
+// WAITING START TIME
+// =====================================
+
+let waitingStartedAt =
+  Number(
+    localStorage.getItem(
+      "balajiRoomWaitingStartedAt"
+    )
+  );
+
+if (!waitingStartedAt) {
+
+  waitingStartedAt =
+    Date.now();
+
+  localStorage.setItem(
+    "balajiRoomWaitingStartedAt",
+    String(waitingStartedAt)
+  );
+
+}
+
+
+// =====================================
+// GENERATE ROOM CODE
+// =====================================
+
+function generateRoomCode() {
+
+  return String(
+    Math.floor(
+      10000000 +
+      Math.random() * 90000000
+    )
+  );
+
+}
+
+
+// =====================================
+// CHECK SAVED ROOM CODE
+// =====================================
+
+let savedRoomCode =
+  localStorage.getItem(
+    "balajiRoomCode"
+  );
+
+
+// =====================================
+// SHOW ROOM CODE
+// =====================================
+
+function showRoomCode(code) {
+
+  if (!code) {
+    return;
+  }
+
+  if (waitingState) {
+
+    waitingState.style.display =
+      "none";
+
+  }
+
+  if (roomCodeState) {
+
+    roomCodeState.style.display =
+      "block";
+
+  }
+
+  if (roomCode) {
+
+    roomCode.textContent =
+      code;
+
+  }
+
+  if (readyStatus) {
+
+    readyStatus.textContent =
+      "READY";
+
+  }
+
+}
+
+
+// =====================================
+// CREATE ROOM CODE
+// =====================================
+
+function createRoomCode() {
+
+  if (savedRoomCode) {
+
+    showRoomCode(
+      savedRoomCode
+    );
+
+    return;
+
+  }
+
+  const code =
+    generateRoomCode();
+
+  savedRoomCode =
+    code;
+
+  localStorage.setItem(
+    "balajiRoomCode",
+    code
+  );
+
+  localStorage.setItem(
+    "balajiRoomCodeCreatedAt",
+    String(Date.now())
+  );
+
+  showRoomCode(code);
+
+}
+
+
+// =====================================
+// WAITING TIMER
+// =====================================
+
+function updateWaitingTimer() {
+
+  // अगर room code पहले से है
+  if (savedRoomCode) {
+
+    return;
+
+  }
+
+  const elapsed =
+    Date.now() -
+    waitingStartedAt;
+
+  const remaining =
+    Math.max(
+      0,
+      WAIT_TIME_MS - elapsed
+    );
+
+  const totalSeconds =
+    Math.floor(
+      remaining / 1000
+    );
+
+  const minutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+  if (waitingSeconds) {
+
+    waitingSeconds.textContent =
+      String(minutes).padStart(2, "0") +
+      ":" +
+      String(seconds).padStart(2, "0");
+
+  }
+
+
+  // 5 मिनट पूरे
+  if (remaining <= 0) {
+
+    if (matchStatus) {
+
+      matchStatus.textContent =
+        "EXPIRED";
 
     }
-  );
+
+    if (waitingSeconds) {
+
+      waitingSeconds.textContent =
+        "00:00";
+
+    }
+
+    return;
+
+  }
 
 }
 
@@ -98,9 +313,6 @@ if (copyCodeBtn) {
 // BACK
 // =====================================
 
-const backBtn =
-  document.getElementById("backBtn");
-
 if (backBtn) {
 
   backBtn.addEventListener(
@@ -108,7 +320,7 @@ if (backBtn) {
     function () {
 
       window.location.href =
-        "home.html";
+        "battle.html";
 
     }
   );
@@ -117,33 +329,102 @@ if (backBtn) {
 
 
 // =====================================
-// CANCEL
+// CANCEL WAITING
 // =====================================
 
-const cancelBtn =
-  document.getElementById("cancelBtn");
+function cancelRoom() {
+
+  localStorage.removeItem(
+    "balajiSelectedBattle"
+  );
+
+  localStorage.removeItem(
+    "balajiSecondPlayer"
+  );
+
+  localStorage.removeItem(
+    "balajiRoomCode"
+  );
+
+  localStorage.removeItem(
+    "balajiRoomWaitingStartedAt"
+  );
+
+  localStorage.removeItem(
+    "balajiRoomCodeCreatedAt"
+  );
+
+  window.location.href =
+    "battle.html";
+
+}
+
 
 if (cancelBtn) {
 
   cancelBtn.addEventListener(
     "click",
-    function () {
+    cancelRoom
+  );
 
-      const confirmCancel =
-        confirm(
-          "Cancel this match?"
-        );
+}
 
-      if (!confirmCancel) {
+
+if (cancelReadyBtn) {
+
+  cancelReadyBtn.addEventListener(
+    "click",
+    cancelRoom
+  );
+
+}
+
+
+// =====================================
+// COPY ROOM CODE
+// =====================================
+
+if (copyCodeBtn) {
+
+  copyCodeBtn.addEventListener(
+    "click",
+    async function () {
+
+      const code =
+        roomCode
+          ? roomCode.textContent.trim()
+          : "";
+
+      if (!code) {
         return;
       }
 
-      localStorage.removeItem(
-        "balajiRoomCode"
-      );
+      try {
 
-      window.location.href =
-        "home.html";
+        await navigator.clipboard.writeText(
+          code
+        );
+
+        copyCodeBtn.textContent =
+          "✅ Code Copied";
+
+        setTimeout(
+          function () {
+
+            copyCodeBtn.textContent =
+              "📋 Copy Code";
+
+          },
+          1500
+        );
+
+      } catch (error) {
+
+        alert(
+          "Room Code: " + code
+        );
+
+      }
 
     }
   );
@@ -152,22 +433,164 @@ if (cancelBtn) {
 
 
 // =====================================
-// START GAME
+// MARK BATTLE AS RUNNING
 // =====================================
 
-const startGameBtn =
-  document.getElementById("startGameBtn");
+function moveBattleToRunning() {
 
-if (startGameBtn) {
+  if (!selectedBattle) {
+    return;
+  }
 
-  startGameBtn.addEventListener(
+  try {
+
+    let runningBattles =
+      JSON.parse(
+        localStorage.getItem(
+          "balajiRunningBattles"
+        ) || "[]"
+      );
+
+    if (!Array.isArray(runningBattles)) {
+      runningBattles = [];
+    }
+
+    const alreadyRunning =
+      runningBattles.some(
+        function (battle) {
+
+          return (
+            battle.id ===
+            selectedBattle.id
+          );
+
+        }
+      );
+
+    if (!alreadyRunning) {
+
+      runningBattles.unshift({
+
+        id:
+          selectedBattle.id,
+
+        playerName:
+          selectedBattle.playerName,
+
+        secondPlayer:
+          localStorage.getItem(
+            "balajiSecondPlayer"
+          ) || "Player 2",
+
+        entry:
+          selectedBattle.entry,
+
+        prize:
+          selectedBattle.prize,
+
+        roomCode:
+          savedRoomCode,
+
+        status:
+          "RUNNING",
+
+        roomAccepted:
+          true,
+
+        createdAt:
+          Date.now()
+
+      });
+
+      localStorage.setItem(
+        "balajiRunningBattles",
+        JSON.stringify(
+          runningBattles
+        )
+      );
+
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Running battle error:",
+      error
+    );
+
+  }
+
+}
+
+
+// =====================================
+// PLAY LUDO
+// =====================================
+
+if (playLudoBtn) {
+
+  playLudoBtn.addEventListener(
     "click",
     function () {
 
-      window.location.href =
-        "game.html";
+      if (!savedRoomCode) {
+
+        alert(
+          "पहले Room Code का इंतजार करें।"
+        );
+
+        return;
+
+      }
+
+      moveBattleToRunning();
+
+      /*
+       * अभी Game page तैयार नहीं है।
+       * इसलिए फिलहाल battle.html पर नहीं भेजेंगे।
+       *
+       * जब actual Ludo board बनेगा,
+       * इसी button से game.html खुलेगा।
+       */
+
+      alert(
+        "Room Ready! Ludo Game अगले step में खुलेगा।"
+      );
 
     }
   );
 
 }
+
+
+// =====================================
+// I WON
+// =====================================
+
+if (wonBtn) {
+
+  wonBtn.addEventListener(
+    "click",
+    function () {
+
+      if (!savedRoomCode) {
+
+        alert(
+          "Room Code मिलने के बाद ही result दे सकते हैं।"
+        );
+
+        return;
+
+      }
+
+      moveBattleToRunning();
+
+      if (readyStatus) {
+
+        readyStatus.textContent =
+          "RESULT: I WON";
+
+      }
+
+      alert(
+        "Demo Result: I Won
