@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Balaji Ludo King - Battle</title>
+
+  <link rel="stylesheet" href="battle.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="battle-header">
+
+    <a href="home.html" class="back-btn">
+      ← BACK
+    </a>
+
+    <div class="brand">
+      <h1>BALAJI LUDO KING</h1>
+      <p>Official Gaming</p>
+    </div>
+
+  </header>
+
+
+  <!-- ANNOUNCEMENT -->
+  <section class="announcement">
+
+    <div class="announcement-icon">🚀✨</div>
+
+    <div>
+      <strong>Welcome to BALAJI LUDO KING</strong>
+
+      <p>
+        🙏 दोस्तों आपका विश्वास हमारी पहचान है।
+        Enjoy fast and fair demo battles.
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- MAIN -->
+  <main class="battle-container">
+
+
+    <!-- CREATE BATTLE -->
+    <section class="create-card">
+
+      <div class="title-row">
+
+        <div>
+          <h2>Create a Battle!</h2>
+          <p>Choose a demo entry amount</p>
+        </div>
+
+        <span class="rules-btn" id="rulesBtn">
+          Rules ⓘ
+        </span>
+
+      </div>
+
+
+      <div class="amount-title">
+        Enter Amount
+      </div>
+
+
+      <div class="amount-box">
+
+        <span>₹</span>
+
+        <input
+          type="number"
+          id="amountInput"
+          placeholder="Enter amount"
+          min="10"
+          max="10000"
+        >
+
+      </div>
+
+
+      <button
+        type="button"
+        id="setBattleBtn"
+        class="set-btn"
+      >
+        Set Battle
+      </button>
+
+
+      <div
+        id="amountMessage"
+        class="amount-message"
+      ></div>
+
+
+      <div class="demo-warning">
+        ⚠️ Demo Mode — amounts shown are demo values only.
+      </div>
+
+    </section>
+
+
+    <!-- OPEN BATTLES -->
+    <section class="battle-section">
+
+      <div class="section-heading">
+
+        <div class="section-icon">⚔️</div>
+
+        <h2>Open Battles</h2>
+
+      </div>
+
+
+      <div id="openBattles"></div>
+
+    </section>
+
+
+    <!-- RUNNING BATTLES -->
+    <section class="battle-section">
+
+      <div class="section-heading">
+
+        <div class="section-icon">🔥</div>
+
+        <h2>Running Battles</h2>
+
+      </div>
+
+
+      <div id="runningBattles"></div>
+
+    </section>
+
+  </main>
+
+
+  <!-- RULES MODAL -->
+  <div
+    id="rulesModal"
+    class="modal"
+  >
+
+    <div class="modal-box">
+
+      <button
+        type="button"
+        id="closeRulesBtn"
+        class="close-btn"
+      >
+        ×
+      </button>
+
+      <h2>Battle Rules</h2>
+
+      <p>🎲 2 players can participate.</p>
+
+      <p>🎮 Battle starts after both players join.</p>
+
+      <p>🏆 Winner is decided by the Ludo game.</p>
+
+      <p>⚠️ This version uses demo values only.</p>
+
+      <button
+        type="button"
+        id="understandBtn"
+        class="understand-btn"
+      >
+        Got it
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+
+    <a href="home.html" class="nav-item">
+      <span>🏠</span>
+      <small>Home</small>
+    </a>
+
+    <a href="refer.html" class="nav-item">
+      <span>🎁</span>
+      <small>Refer</small>
+    </a>
+
+    <a href="wallet.html" class="nav-item">
+      <span>₹</span>
+      <small>Wallet</small>
+    </a>
+
+    <a href="support.html" class="nav-item">
+      <span>💬</span>
+      <small>Support</small>
+    </a>
+
+    <a href="profile.html" class="nav-item">
+      <span>👤</span>
+      <small>Profile</small>
+    </a>
+
+  </nav>
+
+
+  <script src="battle.js"></script>
+
+</body>
+</html>
