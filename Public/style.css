@@ -1,322 +1,668 @@
 /* =========================================
-   BALAJI LUDO KING - PROFILE
+   BALAJI LUDO KING
+   LOGIN + OTP + ROOM + MATCH + PROFILE
 ========================================= */
 
-.profile-page {
-  min-height: 100vh;
-  padding: 18px 16px 110px;
-  background: linear-gradient(
-    180deg,
-    #eefaff 0%,
-    #ffffff 55%,
-    #f1fff0 100%
-  );
+* {
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
-
-/* TOP */
-
-.profile-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.profile-top h2 {
   margin: 0;
-  font-size: 22px;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f7fb;
   color: #263746;
+  padding-bottom: 105px;
 }
 
-.back-btn {
-  width: 42px;
-  height: 42px;
-  border: none;
-  border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 3px 12px rgba(0,0,0,.12);
-  font-size: 25px;
+button,
+input {
+  font-family: inherit;
 }
 
+button {
+  cursor: pointer;
+}
 
-/* PROFILE HEADER */
+/* =========================================
+   TOP BAR
+========================================= */
 
-.profile-header {
-  position: relative;
+.topbar {
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 22px 18px 28px;
+  gap: 8px;
   background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 5px 18px rgba(0,0,0,.10);
-  margin-bottom: 16px;
+  border-bottom: 1px solid #e6e6e6;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
 }
 
-.profile-avatar {
-  width: 74px;
-  height: 74px;
-  border-radius: 50%;
+.menu-icon {
+  width: 32px;
+  font-size: 24px;
+  color: #555;
+  text-align: center;
+}
+
+.logo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 38px;
-  background: linear-gradient(
-    135deg,
-    #16a8df,
-    #75e84d
-  );
-  border: 4px solid #ffffff;
-  box-shadow: 0 3px 12px rgba(0,0,0,.18);
-}
-
-.profile-info {
+  gap: 5px;
+  color: #6d1550;
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 12px;
   flex: 1;
 }
 
-.profile-info h2 {
-  margin: 0 0 5px;
-  font-size: 22px;
-  color: #263746;
+.logo:first-letter {
+  font-size: 20px;
 }
 
-.profile-info p {
-  margin: 0;
+.header-wallet,
+.header-bonus {
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+  background: #f6f6f6;
+  padding: 7px 8px;
+  border-radius: 15px;
+}
+
+/* =========================================
+   PAGE
+========================================= */
+
+.page {
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  padding: 16px;
+}
+
+/* =========================================
+   COMMON CARD
+========================================= */
+
+.card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 22px 18px;
+  box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+/* =========================================
+   LOGIN PAGE
+========================================= */
+
+.login-card {
+  min-height: 590px;
+  text-align: center;
+  padding: 28px 20px 24px;
+  background: #ffffff;
+}
+
+/* BALAJI LUDO LOGO */
+
+.login-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  margin-top: 4px;
+  margin-bottom: 14px;
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg,#7c1656,#c42a82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+  box-shadow: 0 5px 12px rgba(105,15,75,.22);
+}
+
+.brand-name {
+  text-align: left;
+  color: #73144f;
+  font-size: 17px;
+  line-height: 15px;
+  font-weight: 900;
+  letter-spacing: .6px;
+}
+
+/* LOGIN TITLE */
+
+.login-title {
+  display: inline-block;
+  margin: 4px auto 30px;
+  padding: 7px 28px;
+  border-radius: 20px;
+  background: #74124f;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.login-card h2,
+.otp-card h2 {
+  margin-bottom: 9px;
+  color: #263746;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.login-card > p,
+.otp-card > p {
+  color: #788692;
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 25px;
+}
+
+/* LABEL */
+
+.login-card label,
+.otp-card label {
+  display: block;
+  text-align: left;
+  margin: 0 2px 8px;
+  color: #52616d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* INPUT */
+
+.login-card input,
+.otp-card input {
+  width: 100%;
+  height: 53px;
+  border: 1px solid #dfe5ea;
+  border-radius: 13px;
+  background: #fafbfc;
+  padding: 0 15px;
+  outline: none;
+  font-size: 16px;
+  color: #263746;
+  transition: .2s;
+}
+
+.login-card input:focus,
+.otp-card input:focus {
+  border-color: #8d2866;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(141,40,102,.08);
+}
+
+.login-card input::placeholder,
+.otp-card input::placeholder {
+  color: #a7b0b8;
+}
+
+/* SEND / VERIFY */
+
+#startBtn,
+#verifyOtpBtn {
+  width: 100%;
+  height: 52px;
+  margin-top: 17px;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(90deg,#74124f,#9b236e);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 5px 13px rgba(116,18,79,.20);
+}
+
+#startBtn:active,
+#verifyOtpBtn:active {
+  transform: scale(.98);
+}
+
+/* MESSAGE */
+
+#message,
+#otpMessage {
+  min-height: 20px;
+  margin-top: 10px;
+  color: #d22b2b;
+  font-size: 12px;
+}
+
+/* SECURITY */
+
+.security-text {
+  margin-top: 28px;
+  color: #7d8992;
+  font-size: 11px;
+}
+
+/* FOOTER TEXT */
+
+.login-footer-text {
+  margin-top: 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  color: #6d1550;
+  font-size: 13px;
+}
+
+.login-footer-text strong {
+  font-size: 13px;
+}
+
+.chrome-note {
+  margin-top: 10px;
+  color: #929ba3;
+  font-size: 10px;
+  line-height: 16px;
+}
+
+.chrome-note strong {
+  color: #6d1550;
+}
+
+/* =========================================
+   OTP PAGE
+========================================= */
+
+.otp-card {
+  min-height: 590px;
+  text-align: center;
+  padding: 28px 20px;
+}
+
+.otp-card .login-brand {
+  margin-bottom: 14px;
+}
+
+.otp-card .login-title {
+  margin-bottom: 30px;
+}
+
+.otp-card input {
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.encrypted-text {
+  margin-top: 10px;
+  color: #75818b;
+  font-size: 11px;
+}
+
+.resend-text {
+  margin-top: 8px;
+  color: #8b9299;
+  font-size: 11px;
+}
+
+.back-login-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #6d1550;
+  font-weight: bold;
+}
+
+/* =========================================
+   ROOM PAGE
+========================================= */
+
+.room-card h2 {
+  text-align: center;
+  color: #74124f;
+  margin-bottom: 5px;
+}
+
+.room-subtitle {
+  text-align: center;
+  color: #7c8995;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.room-box {
+  background: #fafbfc;
+  border: 1px solid #e7eaed;
+  border-radius: 17px;
+  padding: 17px;
+  margin-bottom: 13px;
+}
+
+.room-box h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.room-box input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  padding: 0 12px;
+  font-size: 15px;
+  outline: none;
+}
+
+.room-box button {
+  width: 100%;
+  height: 47px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 11px;
+  background: #74124f;
+  color: white;
+  font-weight: bold;
+}
+
+.divider {
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+  margin: 12px 0;
+}
+
+#roomMessage {
+  text-align: center;
+  margin: 10px 0;
+  color: #74124f;
+  font-size: 13px;
+}
+
+.timer {
+  text-align: center;
+  font-weight: bold;
+  color: #d44a2a;
+  margin: 10px;
+}
+
+.players {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.player-card {
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 15px;
+  padding: 14px 8px;
+  text-align: center;
+}
+
+.player-card h3 {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.player-card p {
+  color: #777;
+  font-size: 12px;
+}
+
+/* =========================================
+   MATCH PAGE
+========================================= */
+
+.match-page {
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.back-button {
+  border: none;
+  background: transparent;
+  color: #74124f;
+  font-weight: bold;
+  margin: 5px 0 14px;
+}
+
+.vs-card {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  align-items: center;
+  background: #74124f;
+  color: white;
+  border-radius: 22px;
+  padding: 22px 10px;
+  box-shadow: 0 6px 20px rgba(116,18,79,.25);
+}
+
+.vs-player {
+  text-align: center;
+}
+
+.avatar {
+  width: 55px;
+  height: 55px;
+  margin: auto;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+}
+
+.player-name {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.entry-label,
+.winning-label {
+  margin-top: 8px;
+  font-size: 10px;
+  opacity: .8;
+}
+
+.entry-value,
+.winning-value {
+  margin-top: 3px;
+  font-weight: bold;
+}
+
+.vs-logo {
+  width: 50px;
+  height: 50px;
+  margin: auto;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #74124f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.room-code-card,
+.match-status-card,
+.result-card {
+  margin-top: 14px;
+  background: #ffffff;
+  border-radius: 19px;
+  padding: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.room-code-card h2,
+.match-status-card h2 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.room-code-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-code {
+  flex: 1;
+  padding: 13px 8px;
+  border-radius: 10px;
+  background: #f4f4f6;
+  text-align: center;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+#copyRoomBtn {
+  border: none;
+  border-radius: 10px;
+  background: #74124f;
+  color: #fff;
+  padding: 13px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.status-buttons button {
+  height: 46px;
+  border: none;
+  border-radius: 11px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.won-btn {
+  background: #24a148;
+  color: white;
+}
+
+.lost-btn {
+  background: #e14b4b;
+  color: white;
+}
+
+.cancel-btn {
+  background: #777;
+  color: white;
+}
+
+.result-card h3 {
+  color: #74124f;
+  margin-bottom: 8px;
+}
+
+.result-card p {
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.result-card input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+#submitResultBtn {
+  width: 100%;
+  height: 45px;
+  border: none;
+  border-radius: 10px;
+  background: #74124f;
+  color: white;
+  font-weight: bold;
+}
+
+.game-message {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.play-text {
+  text-align: center;
+  color: #888;
+  font-size: 11px;
+  margin-top: 18px;
+}
+
+/* =========================================
+   PROFILE
+========================================= */
+
+.profile-card {
+  margin-bottom: 20px;
+}
+
+.profile-card h2 {
+  color: #098bc4;
+  margin-bottom: 8px;
+}
+
+.profile-card h3 {
+  margin-bottom: 4px;
+}
+
+.profile-card > p {
   color: #7c8995;
   font-size: 12px;
 }
 
-.edit-profile-btn {
-  position: absolute;
-  right: 18px;
-  top: 55px;
-  width: 38px;
-  height: 38px;
-  border: none;
-  border-radius: 50%;
-  background: #079bd3;
-  color: white;
-  font-size: 17px;
-}
-
-.verified-badge {
-  position: absolute;
-  right: 18px;
-  top: 15px;
-  padding: 7px 13px;
-  border: 1px solid #49ad3d;
-  color: #43a43a;
-  border-radius: 18px;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-
-/* BALANCE */
-
-.balance-row {
+.profile-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin: 18px 0;
 }
 
-.balance-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 15px 10px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  box-shadow: 0 4px 15px rgba(0,0,0,.08);
+.profile-grid > div {
+  padding: 13px;
+  background: #f7f9fa;
+  border-radius: 12px;
 }
 
-.balance-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 21px;
-}
-
-.wallet-card .balance-icon {
-  background: #e5f7ff;
-}
-
-.bonus-card .balance-icon {
-  background: #f0e5ff;
-}
-
-.balance-card span {
+.profile-grid strong {
   display: block;
-  color: #6c7b89;
+  color: #71808f;
   font-size: 11px;
   margin-bottom: 5px;
 }
 
-.balance-card strong {
-  font-size: 17px;
-  color: #263746;
-}
-
-
-/* STATS */
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.stat-card {
-  min-height: 100px;
-  background: #ffffff;
-  border-radius: 22px;
-  padding: 17px;
-  box-sizing: border-box;
-  box-shadow: 0 4px 15px rgba(0,0,0,.08);
-}
-
-.stat-icon {
-  font-size: 25px;
-  margin-bottom: 7px;
-}
-
-.stat-card span {
-  display: block;
-  color: #697988;
-  font-size: 12px;
+.profile-grid p {
   font-weight: bold;
-  margin-bottom: 5px;
+  font-size: 14px;
 }
 
-.stat-card strong {
-  display: block;
-  color: #263746;
-  font-size: 22px;
-}
-
-.stat-card.battle {
-  border-left: 6px solid #139ed2;
-}
-
-.stat-card.coin {
-  border-left: 6px solid #ffd000;
-}
-
-.stat-card.referral {
-  border-left: 6px solid #3caf30;
-}
-
-.stat-card.withdrawal {
-  border-left: 6px solid #9850e8;
-}
-
-
-/* ACCOUNT SETTINGS */
-
-.settings-card {
-  background: #ffffff;
-  border-radius: 25px;
-  padding: 22px 18px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.09);
-  margin-bottom: 16px;
-}
-
-.settings-card h2 {
-  margin: 0 0 18px;
-  color: #098bc4;
-  font-size: 22px;
-  letter-spacing: .5px;
-}
-
-.setting-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 76px;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.setting-item:last-child {
-  border-bottom: none;
-}
-
-.setting-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: #f4f8fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 23px;
-}
-
-.setting-item > div:nth-child(2) {
-  flex: 1;
-}
-
-.setting-item span {
-  display: block;
-  color: #71808f;
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-
-.setting-item strong {
-  display: block;
-  color: #263746;
-  font-size: 16px;
-  word-break: break-word;
-}
-
-.setting-item button {
-  border: none;
-  background: transparent;
-  font-size: 20px;
-}
-
-.kyc-verified {
-  color: #43ad35 !important;
-}
-
-.arrow {
-  font-size: 30px !important;
-  color: #7c8790 !important;
-}
-
-
-/* CUSTOMER ID */
-
-.customer-id-card {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 15px 18px;
-  margin-bottom: 20px;
-  box-shadow: 0 3px 12px rgba(0,0,0,.07);
-}
-
-.customer-id-card span {
-  color: #788592;
-  font-size: 12px;
-}
-
-.customer-id-card strong {
-  display: block;
-  margin-top: 5px;
-  color: #263746;
-  font-size: 15px;
-}
-
-
-/* BOTTOM NAV */
+/* =========================================
+   BOTTOM NAV
+========================================= */
 
 .bottom-nav {
   position: fixed;
@@ -324,11 +670,7 @@
   right: 16px;
   bottom: 14px;
   height: 72px;
-  background: linear-gradient(
-    90deg,
-    #74124f,
-    #9b236e
-  );
+  background: linear-gradient(90deg,#74124f,#9b236e);
   border-radius: 38px;
   display: grid;
   grid-template-columns: 1fr 1fr 1.15fr 1fr 1fr;
@@ -369,33 +711,51 @@
   font-size: 35px;
 }
 
+/* =========================================
+   FOOTER
+========================================= */
 
-/* MOBILE */
+footer {
+  text-align: center;
+  color: #8a949c;
+  font-size: 10px;
+  padding: 8px 10px 20px;
+}
+
+footer p {
+  margin: 3px;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 380px) {
 
-  .balance-card {
-    padding: 12px 7px;
+  .page {
+    padding: 12px;
   }
 
-  .balance-card strong {
-    font-size: 15px;
+  .login-card,
+  .otp-card {
+    padding: 24px 15px;
   }
 
-  .stat-card {
-    padding: 14px;
+  .login-card h2,
+  .otp-card h2 {
+    font-size: 22px;
   }
 
-  .settings-card h2 {
-    font-size: 19px;
+  .players {
+    grid-template-columns: 1fr;
   }
 
-  .profile-avatar {
-    width: 64px;
-    height: 64px;
+  .status-buttons {
+    grid-template-columns: 1fr;
   }
 
-  .profile-info h2 {
-    font-size: 19px;
+  .bottom-nav {
+    left: 8px;
+    right: 8px;
   }
 }
