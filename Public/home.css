@@ -1,0 +1,120 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+}
+
+/* TOP HEADER */
+.home-topbar {
+  background: #ffffff;
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.home-brand {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.home-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #777;
+}
+
+/* MAIN */
+.home-container {
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  padding: 20px 15px 90px;
+}
+
+/* WELCOME */
+.home-welcome {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px 18px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.home-welcome h2 {
+  margin-bottom: 8px;
+}
+
+.home-welcome p {
+  color: #777;
+  font-size: 14px;
+}
+
+/* GAME CARD */
+.home-game-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.home-game-card h3 {
+  margin-bottom: 8px;
+}
+
+.home-game-card p {
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+/* PLAY BUTTON */
+.home-play-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px;
+  background: #ff7a00;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.home-play-btn:active {
+  transform: scale(0.98);
+}
+
+/* BOTTOM NAV */
+.home-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 5px;
+  z-index: 100;
+}
+
+.home-nav-item {
+  text-align: center;
+  font-size: 12px;
+  color: #555;
+  text-decoration: none;
+}
+
+.home-nav-icon {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 3px;
+}
