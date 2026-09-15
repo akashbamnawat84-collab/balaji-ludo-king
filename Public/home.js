@@ -8,15 +8,21 @@
    PLAY NOW
 ========================= */
 
-const playNowBtn = document.getElementById("playNowBtn");
+const playNowBtn =
+  document.getElementById("playNowBtn");
 
 if (playNowBtn) {
 
-  playNowBtn.addEventListener("click", function () {
+  playNowBtn.addEventListener(
+    "click",
+    function () {
 
-    window.location.href = "index.html";
+      alert(
+        "Ludo Game page is not connected yet."
+      );
 
-  });
+    }
+  );
 
 }
 
@@ -25,26 +31,37 @@ if (playNowBtn) {
    WALLET
 ========================= */
 
-const walletBtn = document.getElementById("walletBtn");
-const walletNavBtn = document.getElementById("walletNavBtn");
+const walletBtn =
+  document.getElementById("walletBtn");
+
+const walletNavBtn =
+  document.getElementById("walletNavBtn");
+
 
 function openWallet() {
 
-  window.location.href = "wallet.html";
+  window.location.href =
+    "wallet.html";
 
 }
 
 
 if (walletBtn) {
 
-  walletBtn.addEventListener("click", openWallet);
+  walletBtn.addEventListener(
+    "click",
+    openWallet
+  );
 
 }
 
 
 if (walletNavBtn) {
 
-  walletNavBtn.addEventListener("click", openWallet);
+  walletNavBtn.addEventListener(
+    "click",
+    openWallet
+  );
 
 }
 
@@ -53,14 +70,20 @@ if (walletNavBtn) {
    PROFILE
 ========================= */
 
-const profileNavBtn = document.getElementById("profileNavBtn");
+const profileNavBtn =
+  document.getElementById("profileNavBtn");
+
 
 if (profileNavBtn) {
 
-  profileNavBtn.addEventListener("click", function () {
+  profileNavBtn.addEventListener(
+    "click",
+    function () {
 
-    window.location.href = "profile.html";
+      window.location.href =
+        "profile.html";
 
-  });
+    }
+  );
 
 }
