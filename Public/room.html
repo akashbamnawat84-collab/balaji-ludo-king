@@ -1,171 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Balaji Ludo King - Room</title>
+  <title>BALAJI LUDO KING - Room</title>
 
   <link rel="stylesheet" href="room.css">
 </head>
 
 <body>
 
-  <!-- ============================= -->
-  <!-- TOP BAR -->
-  <!-- ============================= -->
+  <!-- HEADER -->
+  <header class="topbar">
 
-  <header class="room-topbar">
-
-    <button
-      type="button"
-      id="backBtn"
-      class="back-btn"
-    >
+    <button id="backBtn" class="back-btn" type="button">
       ← BACK
     </button>
 
-    <div class="room-brand">
-      <strong>BALAJI LUDO KING</strong>
-      <span>Official Gaming</span>
+    <div class="brand">
+      <h1>BALAJI LUDO KING</h1>
+      <p>Official Gaming</p>
     </div>
 
   </header>
 
 
-  <!-- ============================= -->
-  <!-- MAIN -->
-  <!-- ============================= -->
+  <main class="room-page">
 
-  <main class="room-container">
-
-    <!-- =========================== -->
-    <!-- BATTLE DETAILS -->
-    <!-- =========================== -->
-
+    <!-- MATCH INFO -->
     <section class="room-card">
 
-      <div class="fee-row">
+      <div class="match-title">
+        🎮 Match Room
+      </div>
+
+      <div class="fee-grid">
 
         <div class="fee-box">
-
           <span>Entry Fee</span>
-
-          <strong id="entryFee">
-            0
-          </strong>
-
-          <small>
-            Demo Coins
-          </small>
-
+          <strong id="entryFee">50 Demo Coins</strong>
         </div>
 
-
-        <div class="fee-box prize-box">
-
+        <div class="fee-box">
           <span>Winning Prize</span>
-
-          <strong id="winningPrize">
-            0
-          </strong>
-
-          <small>
-            Demo Coins
-          </small>
-
+          <strong id="winningPrize">95 Demo Coins</strong>
         </div>
 
       </div>
 
 
-      <!-- ========================= -->
-      <!-- WAITING STATE -->
-      <!-- ========================= -->
-
-      <div id="waitingState">
+      <!-- WAITING -->
+      <div id="waitingState" class="room-state">
 
         <div class="room-icon">
           🔐
         </div>
 
-        <h2>
-          Waiting for Room Code
-        </h2>
+        <h2>Waiting for Room Code</h2>
 
         <p class="hindi-text">
           रूम कोड का इंतजार है
         </p>
 
-        <div class="waiting-number">
-
-          1
-          <span id="waitingSeconds">
-            5:00
-          </span>
-
+        <div class="waiting-time">
+          <span>Waiting</span>
+          <strong id="waitingSeconds">5:00</strong>
         </div>
 
-        <p class="waiting-text">
-          लूडो यूजर लूडो किंग से
-          रूम कोड निकाल कर दे रहा है
+        <p class="waiting-info">
+          Ludo King app में room बनाने के बाद
+          यहाँ Room Code डालें।
         </p>
 
+        <div class="room-code-input-box">
 
-        <div class="match-status-box">
+          <label for="roomCodeInput">
+            Room Code
+          </label>
 
-          <span>
-            Match Status
-          </span>
+          <input
+            type="text"
+            id="roomCodeInput"
+            placeholder="8-Digit Room Code"
+            maxlength="8"
+            inputmode="numeric"
+            autocomplete="off"
+          >
 
-          <strong id="matchStatus">
-            WAITING
-          </strong>
+          <button
+            type="button"
+            id="submitRoomCodeBtn"
+            class="primary-btn"
+          >
+            Submit Room Code
+          </button>
 
         </div>
 
+        <div id="roomCodeMessage" class="message"></div>
+
+
+        <div class="status-box">
+          <span>Match Status</span>
+          <strong id="matchStatus">WAITING</strong>
+        </div>
 
         <button
           type="button"
           id="cancelBtn"
           class="cancel-btn"
         >
-          Cancel
+          Cancel Match
         </button>
 
       </div>
 
 
-      <!-- ========================= -->
-      <!-- ROOM CODE STATE -->
-      <!-- ========================= -->
-
+      <!-- ROOM CODE READY -->
       <div
         id="roomCodeState"
+        class="room-state"
         style="display:none;"
       >
 
-        <div class="room-icon success-icon">
-          🔑
+        <div class="room-icon">
+          🎮
         </div>
 
-        <h2>
-          Room Code Ready
-        </h2>
+        <h2>Room Code Ready</h2>
 
-        <div class="room-code-box">
+        <p class="hindi-text">
+          Ludo King में यह Room Code डालें
+        </p>
 
-          <span>
-            Room Code
-          </span>
+
+        <div class="code-display">
+
+          <span>ROOM CODE</span>
 
           <strong id="roomCode">
-            00000000
+            --------
           </strong>
 
         </div>
@@ -174,54 +149,79 @@
         <button
           type="button"
           id="copyCodeBtn"
-          class="copy-btn"
+          class="primary-btn"
         >
-          📋 Copy Code
+          📋 Copy Room Code
         </button>
 
 
-        <div class="match-status-box">
-
-          <span>
-            Match Status
-          </span>
-
-          <strong id="readyStatus">
-            READY
-          </strong>
-
-        </div>
-
-
-        <div class="result-buttons">
-
-          <button
-            type="button"
-            id="wonBtn"
-            class="won-btn"
-          >
-            🏆 I Won
-          </button>
-
-
-          <button
-            type="button"
-            id="lostBtn"
-            class="lost-btn"
-          >
-            ❌ I Lost
-          </button>
-
+        <div class="status-box">
+          <span>Match Status</span>
+          <strong id="readyStatus">ROOM READY</strong>
         </div>
 
 
         <button
           type="button"
           id="playLudoBtn"
-          class="play-ludo-btn"
+          class="ludo-btn"
         >
-          🎲 Play Ludo Game
+          🎲 Open Ludo King App
         </button>
+
+
+        <p class="app-note">
+          Room Code copy करें और Ludo King app में
+          डालकर match खेलें।
+        </p>
+
+
+        <!-- RESULT -->
+        <div class="result-section">
+
+          <h3>Match Result</h3>
+
+          <p>
+            Match खत्म होने के बाद Win Result का
+            screenshot submit करें।
+          </p>
+
+          <label
+            for="resultScreenshot"
+            class="upload-label"
+          >
+            📸 Select Win Screenshot
+          </label>
+
+          <input
+            type="file"
+            id="resultScreenshot"
+            accept="image/*"
+            hidden
+          >
+
+          <div
+            id="selectedFileName"
+            class="file-name"
+          >
+            No screenshot selected
+          </div>
+
+
+          <button
+            type="button"
+            id="submitResultBtn"
+            class="result-btn"
+          >
+            Submit Result
+          </button>
+
+          <div
+            id="resultMessage"
+            class="message"
+          ></div>
+
+        </div>
 
 
         <button
@@ -229,72 +229,55 @@
           id="cancelReadyBtn"
           class="cancel-btn"
         >
-          Cancel
+          Cancel Match
         </button>
 
+      </div>
 
-        <p class="ludo-note">
-          Play ludo game in Ludo King App
-        </p>
 
+      <!-- DEMO NOTICE -->
+      <div class="demo-notice">
+        ⚠️ Demo Mode — Demo Coins only.
+        Ludo King app match result is manually verified.
       </div>
 
     </section>
 
-
-    <!-- ============================= -->
-    <!-- DEMO NOTICE -->
-    <!-- ============================= -->
-
-    <div class="demo-notice">
-
-      ⚠️ Demo Mode — No real money is used.
-
-    </div>
-
   </main>
 
 
-  <!-- ============================= -->
   <!-- BOTTOM NAV -->
-  <!-- ============================= -->
-
   <nav class="bottom-nav">
 
     <a href="home.html">
       <span>⌂</span>
-      Home
+      <small>Home</small>
     </a>
 
     <a href="refer.html">
-      <span>👥</span>
-      Refer
+      <span>🎁</span>
+      <small>Refer</small>
     </a>
 
     <a href="wallet.html">
       <span>💰</span>
-      Wallet
+      <small>Wallet</small>
     </a>
 
     <a href="support.html">
-      <span>🎧</span>
-      Support
+      <span>💬</span>
+      <small>Support</small>
     </a>
 
     <a href="profile.html">
       <span>👤</span>
-      Profile
+      <small>Profile</small>
     </a>
 
   </nav>
 
 
-  <!-- ============================= -->
-  <!-- SCRIPT -->
-  <!-- ============================= -->
-
   <script src="room.js"></script>
 
 </body>
-
 </html>
