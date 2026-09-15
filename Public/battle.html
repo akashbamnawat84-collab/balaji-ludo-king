@@ -1,483 +1,385 @@
-// ==========================================
-// BALAJI LUDO KING - BATTLE SYSTEM
-// DEMO MODE
-// ==========================================
+<!DOCTYPE html>
+<html lang="en">
 
-const MIN_BET = 50;
-const MAX_BET = 10000;
+<head>
+  <meta charset="UTF-8">
 
-// ------------------------------------------
-// ELEMENTS
-// ------------------------------------------
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-const amountInput = document.getElementById("amountInput");
-const setBattleBtn = document.getElementById("setBattleBtn");
-const amountMessage = document.getElementById("amountMessage");
+  <title>Balaji Ludo King - Battle</title>
 
-const openBattlesContainer =
-  document.getElementById("openBattles");
+  <link
+    rel="stylesheet"
+    href="battle.css"
+  >
+</head>
 
-const runningBattlesContainer =
-  document.getElementById("runningBattles");
+<body>
 
-const rulesBtn =
-  document.getElementById("rulesBtn");
+  <!-- ================================= -->
+  <!-- HEADER -->
+  <!-- ================================= -->
 
-const rulesModal =
-  document.getElementById("rulesModal");
+  <header class="battle-header">
 
-const closeRulesBtn =
-  document.getElementById("closeRulesBtn");
+    <a
+      href="home.html"
+      class="back-btn"
+    >
+      ← BACK
+    </a>
 
-const understandBtn =
-  document.getElementById("understandBtn");
+    <div class="brand">
 
+      <h1>
+        BALAJI LUDO KING
+      </h1>
 
-// ------------------------------------------
-// PLAYER NAME
-// ------------------------------------------
+      <p>
+        Official Gaming
+      </p>
 
-function getPlayerName() {
+    </div>
 
-  return (
-    localStorage.getItem("balajiPlayerName") ||
-    localStorage.getItem("playerName") ||
-    "Customer"
-  );
+  </header>
 
-}
 
+  <!-- ================================= -->
+  <!-- ANNOUNCEMENT -->
+  <!-- ================================= -->
 
-// ------------------------------------------
-// LOAD BATTLES
-// ------------------------------------------
+  <section class="announcement">
 
-let openBattles = JSON.parse(
-  localStorage.getItem("balajiOpenBattles") || "[]"
-);
+    <div class="announcement-icon">
+      🚀✨
+    </div>
 
-let runningBattles = JSON.parse(
-  localStorage.getItem("balajiRunningBattles") || "[]"
-);
+    <div>
 
+      <strong>
+        Welcome to BALAJI LUDO KING
+      </strong>
 
-// ------------------------------------------
-// SAVE BATTLES
-// ------------------------------------------
+      <p>
+        🙏 दोस्तों आपका विश्वास हमारी पहचान है।
+        Enjoy fast and fair demo battles.
+      </p>
 
-function saveBattles() {
+    </div>
 
-  localStorage.setItem(
-    "balajiOpenBattles",
-    JSON.stringify(openBattles)
-  );
+  </section>
 
-  localStorage.setItem(
-    "balajiRunningBattles",
-    JSON.stringify(runningBattles)
-  );
 
-}
+  <!-- ================================= -->
+  <!-- MAIN -->
+  <!-- ================================= -->
 
+  <main class="battle-container">
 
-// ------------------------------------------
-// SET BATTLE
-// ------------------------------------------
 
-if (setBattleBtn) {
+    <!-- ================================= -->
+    <!-- CREATE BATTLE -->
+    <!-- ================================= -->
 
-  setBattleBtn.addEventListener("click", function () {
+    <section class="create-card">
 
-    const amount = Number(
-      amountInput.value
-    );
-
-    // Clear old message
-    amountMessage.textContent = "";
-
-    // Minimum
-    if (!amount || amount < MIN_BET) {
-
-      amountMessage.textContent =
-        "Minimum 50 Demo Coins की bet लगाएँ।";
-
-      return;
-    }
-
-    // Maximum
-    if (amount > MAX_BET) {
-
-      amountMessage.textContent =
-        "Maximum 10000 Demo Coins तक है।";
-
-      return;
-    }
-
-    // 50,100,150,200,250...
-    if (amount % 50 !== 0) {
-
-      amountMessage.textContent =
-        "Amount 50, 100, 150, 200, 250... में होना चाहिए।";
-
-      return;
-    }
-
-    // --------------------------------------
-    // DEMO PRIZE
-    // --------------------------------------
-
-    const prize = Math.round(amount * 1.9);
-
-    // --------------------------------------
-    // CREATE OPEN BATTLE
-    // --------------------------------------
-
-    const battle = {
-
-      id:
-        "battle_" +
-        Date.now() +
-        "_" +
-        Math.floor(Math.random() * 1000),
-
-      playerName: getPlayerName(),
-
-      entry: amount,
-
-      prize: prize,
-
-      status: "OPEN",
-
-      createdAt: Date.now()
-
-    };
-
-    // Add newest battle first
-    openBattles.unshift(battle);
-
-    saveBattles();
-
-    // Clear input
-    amountInput.value = "";
-
-    // Success message
-    amountMessage.textContent =
-      "✅ Battle successfully Open हो गई।";
-
-    // Refresh list
-    renderOpenBattles();
-
-    renderRunningBattles();
-
-  });
-
-}
-
-
-// ------------------------------------------
-// OPEN BATTLES
-// ------------------------------------------
-
-function renderOpenBattles() {
-
-  if (!openBattlesContainer) return;
-
-  openBattlesContainer.innerHTML = "";
-
-  if (openBattles.length === 0) {
-
-    openBattlesContainer.innerHTML = `
-      <div class="empty-battle">
-        अभी कोई Open Battle नहीं है।
-      </div>
-    `;
-
-    return;
-  }
-
-  openBattles.forEach(function (battle, index) {
-
-    const card =
-      document.createElement("div");
-
-    card.className = "battle-card";
-
-    card.innerHTML = `
-
-      <div class="battle-title">
-        Challenge From
-      </div>
-
-      <div class="challenger-name">
-        ${escapeHTML(battle.playerName)}
-      </div>
-
-      <div class="battle-info">
+      <div class="title-row">
 
         <div>
-          <span>ENTRY FEE</span>
-          <strong>
-            ${battle.entry} Demo Coins
-          </strong>
+
+          <h2>
+            Create a Battle!
+          </h2>
+
+          <p>
+            Choose a demo entry amount
+          </p>
+
         </div>
 
-        <div>
-          <span>PRIZE</span>
-          <strong>
-            ${battle.prize} Demo Coins
-          </strong>
-        </div>
+        <button
+          type="button"
+          class="rules-btn"
+          id="rulesBtn"
+        >
+          Rules ⓘ
+        </button>
 
       </div>
+
+
+      <div class="amount-title">
+        Enter Amount
+      </div>
+
+
+      <div class="amount-box">
+
+        <span>
+          ₹
+        </span>
+
+        <input
+          type="number"
+          id="amountInput"
+          placeholder="50, 100, 150..."
+          min="50"
+          max="10000"
+          step="50"
+          inputmode="numeric"
+        >
+
+      </div>
+
 
       <button
         type="button"
-        class="play-battle-btn"
-        onclick="playOpenBattle(${index})"
+        id="setBattleBtn"
+        class="set-btn"
       >
-        Play
+        Set Battle
       </button>
 
-    `;
 
-    openBattlesContainer.appendChild(card);
-
-  });
-
-}
+      <div
+        id="amountMessage"
+        class="amount-message"
+      ></div>
 
 
-// ------------------------------------------
-// PLAY OPEN BATTLE
-// ------------------------------------------
+      <div class="demo-warning">
 
-function playOpenBattle(index) {
-
-  const battle = openBattles[index];
-
-  if (!battle) return;
-
-  const secondPlayer =
-    getPlayerName();
-
-  // ----------------------------------------
-  // DO NOT PLAY YOUR OWN BATTLE
-  // ----------------------------------------
-
-  if (
-    battle.playerName === secondPlayer
-  ) {
-
-    alert(
-      "आप अपनी खुद की Battle Play नहीं कर सकते।"
-    );
-
-    return;
-  }
-
-  // ----------------------------------------
-  // SAVE SELECTED BATTLE
-  // ----------------------------------------
-
-  localStorage.setItem(
-    "balajiSelectedBattle",
-    JSON.stringify(battle)
-  );
-
-  // ----------------------------------------
-  // SAVE SECOND PLAYER
-  // ----------------------------------------
-
-  localStorage.setItem(
-    "balajiSecondPlayer",
-    secondPlayer
-  );
-
-  // ----------------------------------------
-  // GO TO ROOM
-  // ----------------------------------------
-
-  window.location.href =
-    "room.html";
-
-}
-
-
-// ------------------------------------------
-// RUNNING BATTLES
-// ------------------------------------------
-
-function renderRunningBattles() {
-
-  if (!runningBattlesContainer) return;
-
-  runningBattlesContainer.innerHTML = "";
-
-  if (runningBattles.length === 0) {
-
-    runningBattlesContainer.innerHTML = `
-      <div class="empty-battle">
-        अभी कोई Running Battle नहीं है।
-      </div>
-    `;
-
-    return;
-  }
-
-  runningBattles.forEach(function (battle) {
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "battle-card running";
-
-    card.innerHTML = `
-
-      <div class="battle-title">
-        Running Battle
-      </div>
-
-      <div class="players">
-
-        <strong>
-          ${escapeHTML(battle.player1)}
-        </strong>
-
-        <span>VS</span>
-
-        <strong>
-          ${escapeHTML(battle.player2)}
-        </strong>
+        ⚠️ Demo Mode —
+        amounts shown are demo values only.
 
       </div>
 
-      <div class="battle-info">
+    </section>
 
-        <div>
-          <span>ENTRY FEE</span>
-          <strong>
-            ${battle.entry} Demo Coins
-          </strong>
+
+    <!-- ================================= -->
+    <!-- OPEN BATTLES -->
+    <!-- ================================= -->
+
+    <section class="battle-section">
+
+      <div class="section-heading">
+
+        <div class="section-icon">
+          ⚔️
         </div>
 
-        <div>
-          <span>PRIZE</span>
-          <strong>
-            ${battle.prize} Demo Coins
-          </strong>
+        <h2>
+          Open Battles
+        </h2>
+
+      </div>
+
+
+      <div id="openBattles">
+
+        <div class="empty-battle">
+          अभी कोई Open Battle नहीं है।
         </div>
 
       </div>
 
-      ${
-        battle.roomCode
-        ? `
-          <div class="room-small">
-            Room Code: ${battle.roomCode}
-          </div>
-        `
-        : ""
-      }
-
-    `;
-
-    runningBattlesContainer.appendChild(card);
-
-  });
-
-}
+    </section>
 
 
-// ------------------------------------------
-// RULES
-// ------------------------------------------
+    <!-- ================================= -->
+    <!-- RUNNING BATTLES -->
+    <!-- ================================= -->
 
-if (rulesBtn && rulesModal) {
+    <section class="battle-section">
 
-  rulesBtn.addEventListener(
-    "click",
-    function () {
+      <div class="section-heading">
 
-      rulesModal.style.display = "flex";
+        <div class="section-icon">
+          🔥
+        </div>
 
-    }
-  );
+        <h2>
+          Running Battles
+        </h2>
 
-}
-
-
-if (closeRulesBtn && rulesModal) {
-
-  closeRulesBtn.addEventListener(
-    "click",
-    function () {
-
-      rulesModal.style.display = "none";
-
-    }
-  );
-
-}
+      </div>
 
 
-if (understandBtn && rulesModal) {
+      <div id="runningBattles">
 
-  understandBtn.addEventListener(
-    "click",
-    function () {
+        <div class="empty-battle">
+          अभी कोई Running Battle नहीं है।
+        </div>
 
-      rulesModal.style.display = "none";
+      </div>
 
-    }
-  );
-
-}
+    </section>
 
 
-if (rulesModal) {
-
-  rulesModal.addEventListener(
-    "click",
-    function (event) {
-
-      if (event.target === rulesModal) {
-
-        rulesModal.style.display = "none";
-
-      }
-
-    }
-  );
-
-}
+  </main>
 
 
-// ------------------------------------------
-// SECURITY
-// ------------------------------------------
+  <!-- ================================= -->
+  <!-- RULES MODAL -->
+  <!-- ================================= -->
 
-function escapeHTML(value) {
+  <div
+    id="rulesModal"
+    class="modal"
+  >
 
-  return String(value)
+    <div class="modal-box">
 
-    .replace(/&/g, "&amp;")
-
-    .replace(/</g, "&lt;")
-
-    .replace(/>/g, "&gt;")
-
-    .replace(/"/g, "&quot;")
-
-    .replace(/'/g, "&#039;");
-
-}
+      <button
+        type="button"
+        id="closeRulesBtn"
+        class="close-btn"
+      >
+        ×
+      </button>
 
 
-// ------------------------------------------
-// START
-// ------------------------------------------
+      <h2>
+        Battle Rules
+      </h2>
 
-renderOpenBattles();
 
-renderRunningBattles();
+      <p>
+        🎲 2 players can participate.
+      </p>
+
+
+      <p>
+        🪙 Minimum Battle: 50 Demo Coins.
+      </p>
+
+
+      <p>
+        🎮 Battle starts after both players join.
+      </p>
+
+
+      <p>
+        🏆 Winner is decided by the Ludo game.
+      </p>
+
+
+      <p>
+        ⚠️ This version uses demo values only.
+      </p>
+
+
+      <button
+        type="button"
+        id="understandBtn"
+        class="understand-btn"
+      >
+        Got it
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================= -->
+  <!-- BOTTOM NAVIGATION -->
+  <!-- ================================= -->
+
+  <nav class="bottom-nav">
+
+    <a
+      href="home.html"
+      class="nav-item"
+    >
+
+      <span>
+        🏠
+      </span>
+
+      <small>
+        Home
+      </small>
+
+    </a>
+
+
+    <a
+      href="refer.html"
+      class="nav-item"
+    >
+
+      <span>
+        🎁
+      </span>
+
+      <small>
+        Refer
+      </small>
+
+    </a>
+
+
+    <a
+      href="wallet.html"
+      class="nav-item"
+    >
+
+      <span>
+        ₹
+      </span>
+
+      <small>
+        Wallet
+      </small>
+
+    </a>
+
+
+    <a
+      href="support.html"
+      class="nav-item"
+    >
+
+      <span>
+        💬
+      </span>
+
+      <small>
+        Support
+      </small>
+
+    </a>
+
+
+    <a
+      href="profile.html"
+      class="nav-item"
+    >
+
+      <span>
+        👤
+      </span>
+
+      <small>
+        Profile
+      </small>
+
+    </a>
+
+  </nav>
+
+
+  <!-- ================================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ================================= -->
+
+  <script src="battle.js"></script>
+
+</body>
+
+</html>
