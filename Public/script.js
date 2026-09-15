@@ -1,13 +1,8 @@
-/* =========================================
-   BALAJI LUDO KING
-   LOGIN → OTP → ROOM → MATCH
-========================================= */
-
 const API = "/api";
 
-/* =========================================
-   ELEMENTS
-========================================= */
+// ===============================
+// ELEMENTS
+// ===============================
 
 const welcomeCard = document.getElementById("welcomeCard");
 const otpCard = document.getElementById("otpCard");
@@ -55,9 +50,9 @@ const resultScreenshot =
 const gameMessage =
   document.getElementById("gameMessage");
 
-/* =========================================
-   STATE
-========================================= */
+// ===============================
+// STATE
+// ===============================
 
 let currentPlayer = null;
 let currentRoom = null;
@@ -65,9 +60,9 @@ let pendingMobile = "";
 let roomPollTimer = null;
 let roomTimer = null;
 
-/* =========================================
-   START
-========================================= */
+// ===============================
+// START
+// ===============================
 
 document.addEventListener("DOMContentLoaded", () => {
   showOnly(welcomeCard);
@@ -83,9 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
   clearMessages();
 });
 
-/* =========================================
-   SCREEN CONTROL
-========================================= */
+// ===============================
+// SCREEN CONTROL
+// ===============================
 
 function showOnly(section) {
   const sections = [
@@ -122,10 +117,9 @@ function goHome() {
   }
 }
 
-/* =========================================
-   LOGIN
-   SAME LOGIN CODE
-========================================= */
+// ===============================
+// LOGIN
+// ===============================
 
 async function sendOTP() {
   const mobile = String(
@@ -202,10 +196,9 @@ async function sendOTP() {
   }
 }
 
-/* =========================================
-   VERIFY OTP
-   SAME OTP CODE
-========================================= */
+// ===============================
+// VERIFY OTP
+// ===============================
 
 async function verifyOTP() {
   const otp = String(
@@ -280,9 +273,9 @@ async function verifyOTP() {
   }
 }
 
-/* =========================================
-   BACK TO LOGIN
-========================================= */
+// ===============================
+// BACK TO LOGIN
+// ===============================
 
 function backToLogin() {
   pendingMobile = "";
@@ -298,9 +291,9 @@ function backToLogin() {
   showOnly(welcomeCard);
 }
 
-/* =========================================
-   CREATE ROOM
-========================================= */
+// ===============================
+// CREATE ROOM
+// ===============================
 
 async function createRoom() {
   const code = String(
@@ -379,9 +372,9 @@ async function createRoom() {
   }
 }
 
-/* =========================================
-   JOIN ROOM
-========================================= */
+// ===============================
+// JOIN ROOM
+// ===============================
 
 async function joinRoom() {
   const code = String(
@@ -458,9 +451,9 @@ async function joinRoom() {
   }
 }
 
-/* =========================================
-   ROOM WAITING
-========================================= */
+// ===============================
+// ROOM WAITING
+// ===============================
 
 function showRoomWaiting() {
   showOnly(roomCard);
@@ -481,9 +474,9 @@ function showRoomWaiting() {
   }
 }
 
-/* =========================================
-   POLL ROOM
-========================================= */
+// ===============================
+// POLLING
+// ===============================
 
 function startRoomPolling(code) {
   stopRoomPolling();
@@ -539,9 +532,9 @@ async function fetchRoom(code) {
   }
 }
 
-/* =========================================
-   ROOM STATE
-========================================= */
+// ===============================
+// ROOM STATE
+// ===============================
 
 function handleRoomState(room) {
   if (!room) return;
@@ -584,9 +577,9 @@ function handleRoomState(room) {
   }
 }
 
-/* =========================================
-   ROOM TIMER
-========================================= */
+// ===============================
+// ROOM TIMER
+// ===============================
 
 function startRoomCountdown(room) {
   if (!waitingTimer) return;
@@ -650,9 +643,9 @@ function startRoomCountdown(room) {
   );
 }
 
-/* =========================================
-   MATCH SCREEN
-========================================= */
+// ===============================
+// MATCH SCREEN
+// ===============================
 
 function openMatchScreen(room) {
   stopRoomPolling();
@@ -688,9 +681,9 @@ function openMatchScreen(room) {
   }
 }
 
-/* =========================================
-   COPY ROOM CODE
-========================================= */
+// ===============================
+// COPY ROOM CODE
+// ===============================
 
 async function copyRoomCode() {
   const code =
@@ -727,9 +720,9 @@ async function copyRoomCode() {
   }
 }
 
-/* =========================================
-   I WON
-========================================= */
+// ===============================
+// I WON
+// ===============================
 
 function submitWin() {
   if (!resultArea) return;
@@ -748,9 +741,9 @@ function submitWin() {
   });
 }
 
-/* =========================================
-   UPLOAD RESULT
-========================================= */
+// ===============================
+// UPLOAD RESULT
+// ===============================
 
 async function uploadResult() {
   const file =
@@ -837,9 +830,9 @@ function fileToBase64(file) {
   );
 }
 
-/* =========================================
-   I LOST
-========================================= */
+// ===============================
+// I LOST
+// ===============================
 
 function submitLost() {
   if (gameMessage) {
@@ -853,9 +846,9 @@ function submitLost() {
   }
 }
 
-/* =========================================
-   CANCEL ROOM
-========================================= */
+// ===============================
+// CANCEL ROOM
+// ===============================
 
 async function cancelRoom() {
   if (!currentRoom) {
@@ -918,9 +911,9 @@ async function cancelRoom() {
   }
 }
 
-/* =========================================
-   PLAYER HELPERS
-========================================= */
+// ===============================
+// PLAYER HELPERS
+// ===============================
 
 function getPlayerId() {
   if (currentPlayer) {
@@ -950,9 +943,9 @@ function getPlayerName() {
   return "Player";
 }
 
-/* =========================================
-   PROFILE
-========================================= */
+// ===============================
+// PROFILE
+// ===============================
 
 function openProfile() {
   showOnly(profileSection);
@@ -1039,9 +1032,9 @@ function openProfile() {
       "Not Added";
 }
 
-/* =========================================
-   WALLET
-========================================= */
+// ===============================
+// WALLET
+// ===============================
 
 function openWallet() {
   if (!currentPlayer) {
@@ -1052,9 +1045,9 @@ function openWallet() {
   alert("Wallet section coming soon.");
 }
 
-/* =========================================
-   REFER
-========================================= */
+// ===============================
+// REFER
+// ===============================
 
 function openRefer() {
   if (!currentPlayer) {
@@ -1062,108 +1055,25 @@ function openRefer() {
     return;
   }
 
-  alert("Refer & Earn section coming soon.");
+  alert("Refer section coming soon.");
 }
 
-/* =========================================
-   CUSTOMER SUPPORT
-   WHATSAPP LINK
-========================================= */
+// ===============================
+// CUSTOMER SUPPORT
+// ===============================
 
 function openSupport() {
+  if (!currentPlayer) {
+    showOnly(welcomeCard);
+    return;
+  }
+
   const whatsappLink =
-    "https://wa.me/qr/M4VB226B2BWQB1";
+    "https://wa.me/918619706213";
 
   window.open(
     whatsappLink,
     "_blank",
     "noopener,noreferrer"
   );
-}
-
-/* =========================================
-   HOME
-========================================= */
-
-function openHome() {
-  goHome();
-}
-
-/* =========================================
-   EDIT PROFILE
-========================================= */
-
-function editProfile() {
-  if (!currentPlayer) {
-    showOnly(welcomeCard);
-    return;
-  }
-
-  const oldName =
-    currentPlayer.name ||
-    "Player";
-
-  const newName =
-    prompt(
-      "Enter your name:",
-      oldName
-    );
-
-  if (
-    newName === null ||
-    !newName.trim()
-  ) {
-    return;
-  }
-
-  currentPlayer.name =
-    newName.trim();
-
-  const profileName =
-    document.getElementById(
-      "profileName"
-    );
-
-  if (profileName) {
-    profileName.textContent =
-      currentPlayer.name;
-  }
-}
-
-/* =========================================
-   EDIT EMAIL
-========================================= */
-
-function editEmail() {
-  if (!currentPlayer) {
-    showOnly(welcomeCard);
-    return;
-  }
-
-  const oldEmail =
-    currentPlayer.email || "";
-
-  const newEmail =
-    prompt(
-      "Enter your email:",
-      oldEmail
-    );
-
-  if (newEmail === null) {
-    return;
-  }
-
-  currentPlayer.email =
-    newEmail.trim();
-
-  const profileEmail =
-    document.getElementById(
-      "profileEmail"
-    );
-
-  if (profileEmail) {
-    profileEmail.textContent =
-      currentPlayer.email ||
-      "Not Added";
-  }
 }
