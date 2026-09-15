@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BALAJI LUDO KING - Wallet</title>
+
+  <link rel="stylesheet" href="wallet.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">₹</div>
+      <div>
+        <h1>BALAJI LUDO KING</h1>
+        <p>Official Gaming</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- WALLET -->
+  <main class="wallet-page">
+
+    <section class="wallet-card">
+      <p class="wallet-label">TOTAL BALANCE</p>
+
+      <h2 id="balance">₹0.00</h2>
+
+      <div class="wallet-buttons">
+        <button id="addMoneyBtn" class="primary-btn">
+          + Add Money
+        </button>
+
+        <button id="withdrawBtn" class="secondary-btn">
+          Withdraw
+        </button>
+      </div>
+    </section>
+
+    <!-- QUICK ACTIONS -->
+    <section class="section-card">
+      <h3>Wallet</h3>
+
+      <div class="action-list">
+
+        <button id="addMoneyAction">
+          <span>💰</span>
+          <div>
+            <strong>Add Money</strong>
+            <small>Add funds to your wallet</small>
+          </div>
+        </button>
+
+        <button id="withdrawAction">
+          <span>🏦</span>
+          <div>
+            <strong>Withdraw</strong>
+            <small>Withdraw your available balance</small>
+          </div>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section class="section-card">
+      <div class="section-title">
+        <h3>Recent Transactions</h3>
+      </div>
+
+      <div id="transactions" class="transactions">
+        <div class="empty-state">
+          No transactions yet
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+
+    <a href="../home.html">
+      <span>⌂</span>
+      <small>Home</small>
+    </a>
+
+    <a href="../refer/refer.html">
+      <span>🎁</span>
+      <small>Refer</small>
+    </a>
+
+    <a href="wallet.html" class="active">
+      <span>₹</span>
+      <small>Wallet</small>
+    </a>
+
+    <a href="../support.html">
+      <span>💬</span>
+      <small>Support</small>
+    </a>
+
+    <a href="../profile.html">
+      <span>👤</span>
+      <small>Profile</small>
+    </a>
+
+  </nav>
+
+  <script src="wallet.js"></script>
+
+</body>
+</html>
