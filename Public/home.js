@@ -1,89 +1,48 @@
-/* =========================
-   BALAJI LUDO KING
-   HOME JAVASCRIPT
-========================= */
+// =====================================
+// BALAJI LUDO KING - HOME
+// =====================================
 
 
-/* =========================
-   PLAY NOW
-========================= */
+// Wallet balance
+const walletBalance = document.getElementById("walletBalance");
 
-const playNowBtn =
-  document.getElementById("playNowBtn");
+if (walletBalance) {
+  const balance = localStorage.getItem("balajiWalletBalance");
+
+  if (balance) {
+    walletBalance.textContent = "₹" + balance;
+  } else {
+    walletBalance.textContent = "₹0";
+  }
+}
+
+
+// =====================================
+// PLAY NOW
+// =====================================
+
+const playNowBtn = document.getElementById("playNowBtn");
 
 if (playNowBtn) {
+  playNowBtn.addEventListener("click", function () {
 
-  playNowBtn.addEventListener(
-    "click",
-    function () {
+    // Room/Match page
+    window.location.href = "room.html";
 
-      alert(
-        "Ludo Game page is not connected yet."
-      );
-
-    }
-  );
-
+  });
 }
 
 
-/* =========================
-   WALLET
-========================= */
+// =====================================
+// SUPPORT
+// =====================================
 
-const walletBtn =
-  document.getElementById("walletBtn");
+const supportBtn = document.getElementById("supportBtn");
 
-const walletNavBtn =
-  document.getElementById("walletNavBtn");
+if (supportBtn) {
+  supportBtn.addEventListener("click", function () {
 
+    window.location.href = "support.html";
 
-function openWallet() {
-
-  window.location.href =
-    "wallet.html";
-
-}
-
-
-if (walletBtn) {
-
-  walletBtn.addEventListener(
-    "click",
-    openWallet
-  );
-
-}
-
-
-if (walletNavBtn) {
-
-  walletNavBtn.addEventListener(
-    "click",
-    openWallet
-  );
-
-}
-
-
-/* =========================
-   PROFILE
-========================= */
-
-const profileNavBtn =
-  document.getElementById("profileNavBtn");
-
-
-if (profileNavBtn) {
-
-  profileNavBtn.addEventListener(
-    "click",
-    function () {
-
-      window.location.href =
-        "profile.html";
-
-    }
-  );
-
+  });
 }
