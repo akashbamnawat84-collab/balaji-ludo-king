@@ -12,178 +12,206 @@
 <body>
 
   <!-- TOP HEADER -->
-  <header class="home-topbar">
+  <header class="top-header">
 
-    <div class="home-brand">
-      BALAJI LUDO KING
-    </div>
+    <div class="profile-area">
+      <div class="profile-icon">👤</div>
 
-    <div class="home-subtitle">
-      Official Gaming
+      <div>
+        <h1>BALAJI LUDO KING</h1>
+        <p>Official Gaming</p>
+      </div>
     </div>
 
   </header>
 
 
-  <!-- MAIN HOME -->
-  <main class="home-container">
+  <!-- WALLET / REFER -->
+  <section class="quick-stats">
 
-    <!-- WELCOME -->
-    <section class="home-welcome">
+    <a href="wallet.html" class="stat-card">
+      <span class="stat-icon">₹</span>
 
-      <div class="home-welcome-icon">
-        🎮
+      <div>
+        <small>Wallet</small>
+        <strong id="walletBalance">₹0</strong>
       </div>
+    </a>
 
-      <h1>
-        Welcome Back 👋
-      </h1>
+
+    <a href="refer.html" class="stat-card">
+      <span class="stat-icon">🎁</span>
+
+      <div>
+        <small>Refer</small>
+        <strong>₹13.00</strong>
+      </div>
+    </a>
+
+  </section>
+
+
+  <!-- ANNOUNCEMENT -->
+  <section class="announcement">
+
+    <div class="announcement-icon">🥰</div>
+
+    <div class="announcement-text">
+      <strong>WELCOME TO BALAJI LUDO KING</strong>
 
       <p>
-        Ready to play?
+        ❤️ BALAJI LUDO KING FAMILY में आपका स्वागत है ✨🚀
+        दोस्तों BALAJI LUDO KING में आपका विश्वास हमारी पहचान है।
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- SECOND SLIDE -->
+  <section class="banner">
+
+    <div class="banner-content">
+
+      <span class="banner-badge">🎮 BALAJI LUDO KING</span>
+
+      <h2>Play • Battle • Win</h2>
+
+      <p>
+        Enjoy classic 2 player Ludo gameplay.
       </p>
 
-    </section>
+    </div>
+
+  </section>
 
 
-    <!-- GAME CARD -->
-    <section class="home-game-card">
+  <!-- FEATURED GAMES -->
+  <main class="games-container">
 
-      <div class="game-icon">
-        🎲
+    <div class="section-title">
+      <h2>Featured Games</h2>
+    </div>
+
+
+    <!-- LUDO CLASSIC -->
+    <div class="game-card">
+
+      <div class="game-left">
+
+        <div class="game-logo">🎲</div>
+
+        <div class="game-info">
+
+          <div class="live-row">
+            <span class="live-dot"></span>
+            <span class="live-text">LIVE</span>
+          </div>
+
+          <h3>Ludo Classic</h3>
+
+          <p>Classic 2 Player Ludo</p>
+
+        </div>
+
       </div>
 
-      <div class="game-content">
-
-        <h2>
-          2 Player Ludo
-        </h2>
-
-        <p>
-          Play a classic 2-player battle.
-        </p>
-
-      </div>
 
       <button
         type="button"
-        class="home-play-btn"
-        id="playNowBtn">
-
+        class="play-button"
+        id="playNowBtn"
+      >
         Play Now
-
       </button>
 
-    </section>
+    </div>
 
 
-    <!-- QUICK OPTIONS -->
-    <section class="home-options">
+    <!-- LUDO SUPPORT -->
+    <div class="game-card support-card">
 
-      <a
-        href="refer/refer.html"
-        class="home-option">
+      <div class="game-left">
 
-        <span class="option-icon">
-          🎁
-        </span>
+        <div class="game-logo support-logo">💬</div>
 
-        <span>
-          Refer & Earn
-        </span>
+        <div class="game-info">
 
-      </a>
+          <div class="live-row">
+            <span class="live-dot"></span>
+            <span class="live-text">LIVE</span>
+          </div>
+
+          <h3>Ludo Support</h3>
+
+          <p>Need help? Contact support</p>
+
+        </div>
+
+      </div>
 
 
       <button
         type="button"
-        class="home-option home-option-button"
-        id="walletBtn">
-
-        <span class="option-icon">
-          💰
-        </span>
-
-        <span>
-          Wallet
-        </span>
-
+        class="support-button"
+        id="supportBtn"
+      >
+        Support
       </button>
 
-    </section>
+    </div>
 
   </main>
 
 
+  <!-- FOOTER -->
+  <footer class="home-footer">
+
+    <div class="footer-logo">🎮</div>
+
+    <h3>BALAJI LUDO KING</h3>
+
+    <p>Turn Fun into Funds!</p>
+
+    <small>
+      For best experience, open Balaji Ludo King on Chrome mobile.
+    </small>
+
+  </footer>
+
+
   <!-- BOTTOM NAVIGATION -->
-  <nav class="home-bottom-nav">
+  <nav class="bottom-nav">
 
-    <a
-      href="home.html"
-      class="home-nav-item active">
-
-      <span class="home-nav-icon">
-        🏠
-      </span>
-
-      <span>
-        Home
-      </span>
-
+    <a href="home.html" class="nav-item active">
+      <span>🏠</span>
+      <small>Home</small>
     </a>
 
-
-    <a
-      href="refer/refer.html"
-      class="home-nav-item">
-
-      <span class="home-nav-icon">
-        🎁
-      </span>
-
-      <span>
-        Refer
-      </span>
-
+    <a href="refer.html" class="nav-item">
+      <span>🎁</span>
+      <small>Refer</small>
     </a>
 
+    <a href="wallet.html" class="nav-item">
+      <span>₹</span>
+      <small>Wallet</small>
+    </a>
 
-    <button
-      type="button"
-      class="home-nav-item home-nav-button"
-      id="walletNavBtn">
+    <a href="support.html" class="nav-item">
+      <span>💬</span>
+      <small>Support</small>
+    </a>
 
-      <span class="home-nav-icon">
-        💰
-      </span>
-
-      <span>
-        Wallet
-      </span>
-
-    </button>
-
-
-    <button
-      type="button"
-      class="home-nav-item home-nav-button"
-      id="profileNavBtn">
-
-      <span class="home-nav-icon">
-        👤
-      </span>
-
-      <span>
-        Profile
-      </span>
-
-    </button>
+    <a href="profile.html" class="nav-item">
+      <span>👤</span>
+      <small>Profile</small>
+    </a>
 
   </nav>
 
 
-  <!-- HOME JAVASCRIPT -->
   <script src="home.js"></script>
 
 </body>
-        </html>
+</html>
