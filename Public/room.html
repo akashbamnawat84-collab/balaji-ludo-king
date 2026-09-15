@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +12,15 @@
 
 <body>
 
+  <!-- HEADER -->
+
   <header class="topbar">
 
-    <button id="backBtn" class="back-btn" type="button">
+    <button
+      id="backBtn"
+      class="back-btn"
+      type="button"
+    >
       ← BACK
     </button>
 
@@ -24,6 +31,8 @@
 
   </header>
 
+
+  <!-- MAIN -->
 
   <main class="room-page">
 
@@ -39,19 +48,30 @@
       <div class="fee-grid">
 
         <div class="fee-box">
+
           <span>Entry Fee</span>
-          <strong id="entryFee">50 Demo Coins</strong>
+
+          <strong id="entryFee">
+            50 Demo Coins
+          </strong>
+
         </div>
 
+
         <div class="fee-box">
+
           <span>Winning Prize</span>
-          <strong id="winningPrize">95 Demo Coins</strong>
+
+          <strong id="winningPrize">
+            95 Demo Coins
+          </strong>
+
         </div>
 
       </div>
 
 
-      <!-- PLAYER 1 -->
+      <!-- PLAYER 1 / ROOM CREATOR -->
 
       <div
         id="creatorState"
@@ -63,7 +83,11 @@
           🔐
         </div>
 
-        <h2>Create Room in Ludo King</h2>
+
+        <h2>
+          Create Room in Ludo King
+        </h2>
+
 
         <p class="hindi-text">
           Ludo King app में room बनाकर
@@ -77,6 +101,7 @@
             Room Code
           </label>
 
+
           <input
             type="text"
             id="roomCodeInput"
@@ -84,7 +109,8 @@
             maxlength="8"
             inputmode="numeric"
             autocomplete="off"
-          >
+          />
+
 
           <button
             type="button"
@@ -105,7 +131,9 @@
 
         <div class="status-box">
 
-          <span>Match Status</span>
+          <span>
+            Match Status
+          </span>
 
           <strong id="matchStatus">
             WAITING
@@ -116,7 +144,9 @@
 
         <div class="waiting-time">
 
-          <span>Room Time</span>
+          <span>
+            Room Time
+          </span>
 
           <strong id="waitingSeconds">
             05:00
@@ -136,7 +166,7 @@
       </div>
 
 
-      <!-- PLAYER 2 -->
+      <!-- PLAYER 2 WAITING -->
 
       <div
         id="player2WaitingState"
@@ -148,11 +178,16 @@
           ⏳
         </div>
 
-        <h2>Waiting for Room Code</h2>
+
+        <h2>
+          Waiting for Room Code
+        </h2>
+
 
         <p class="hindi-text">
           Player 1 Room Code दे रहा है।
         </p>
+
 
         <p class="waiting-info">
           Player 1 के Room Code डालने के बाद
@@ -162,7 +197,9 @@
 
         <div class="status-box">
 
-          <span>Match Status</span>
+          <span>
+            Match Status
+          </span>
 
           <strong id="player2Status">
             WAITING
@@ -173,7 +210,9 @@
 
         <div class="waiting-time">
 
-          <span>Waiting</span>
+          <span>
+            Waiting
+          </span>
 
           <strong id="player2WaitingSeconds">
             05:00
@@ -205,7 +244,11 @@
           🎮
         </div>
 
-        <h2>Room Code Ready</h2>
+
+        <h2>
+          Room Code Ready
+        </h2>
+
 
         <p class="hindi-text">
           Ludo King में यह Room Code डालें
@@ -214,7 +257,10 @@
 
         <div class="code-display">
 
-          <span>ROOM CODE</span>
+          <span>
+            ROOM CODE
+          </span>
+
 
           <strong id="roomCode">
             --------
@@ -234,7 +280,10 @@
 
         <div class="status-box">
 
-          <span>Match Status</span>
+          <span>
+            Match Status
+          </span>
+
 
           <strong id="readyStatus">
             ROOM READY
@@ -276,7 +325,7 @@
         </div>
 
 
-        <!-- WIN SCREENSHOT -->
+        <!-- WIN SECTION -->
 
         <div
           id="winSection"
@@ -284,7 +333,10 @@
           style="display:none;"
         >
 
-          <h3>🏆 Win Result</h3>
+          <h3>
+            🏆 Win Result
+          </h3>
+
 
           <p>
             जीतने के बाद अपना Win Screenshot
@@ -304,8 +356,7 @@
             type="file"
             id="resultScreenshot"
             accept="image/*"
-            hidden
-          >
+          />
 
 
           <div
@@ -344,8 +395,10 @@
       <!-- DEMO NOTICE -->
 
       <div class="demo-notice">
+
         ⚠️ Demo Mode — Demo Coins only.
         Match result is manually verified.
+
       </div>
 
     </section>
@@ -362,20 +415,24 @@
       <small>Home</small>
     </a>
 
+
     <a href="refer.html">
       <span>🎁</span>
       <small>Refer</small>
     </a>
+
 
     <a href="wallet.html">
       <span>💰</span>
       <small>Wallet</small>
     </a>
 
+
     <a href="support.html">
       <span>💬</span>
       <small>Support</small>
     </a>
+
 
     <a href="profile.html">
       <span>👤</span>
@@ -388,4 +445,5 @@
   <script src="room.js"></script>
 
 </body>
+
 </html>
