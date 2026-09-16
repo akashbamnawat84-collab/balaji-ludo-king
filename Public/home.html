@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -9,586 +10,497 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
 
-  <meta name="theme-color" content="#17111f">
+  <meta
+    name="theme-color"
+    content="#17111f"
+  >
 
-  <title>Balaji Ludo King - Profile</title>
+  <title>Balaji Ludo King - Home</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(124,58,237,.10), transparent 30%),
-        #f6f3fb;
-      color: #24182f;
-      min-height: 100vh;
-      padding-bottom: 95px;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    button {
-      border: 0;
-      font-family: inherit;
-      cursor: pointer;
-    }
-
-    .header {
-      position: relative;
-      overflow: hidden;
-      padding: 18px 16px 70px;
-      color: #fff;
-      background: linear-gradient(135deg, #100b18, #4c1d95, #7c3aed);
-      border-radius: 0 0 32px 32px;
-      box-shadow: 0 12px 30px rgba(48, 25, 85, .22);
-    }
-
-    .header::before {
-      content: "";
-      position: absolute;
-      width: 190px;
-      height: 190px;
-      right: -80px;
-      top: -100px;
-      border: 25px solid rgba(255,255,255,.06);
-      border-radius: 50%;
-    }
-
-    .back {
-      position: relative;
-      z-index: 2;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      font-weight: 800;
-      color: rgba(255,255,255,.88);
-    }
-
-    .page-title {
-      position: relative;
-      z-index: 2;
-      margin-top: 18px;
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    .page-subtitle {
-      position: relative;
-      z-index: 2;
-      margin-top: 5px;
-      font-size: 11px;
-      color: #d8cbea;
-    }
-
-    .container {
-      width: calc(100% - 28px);
-      max-width: 520px;
-      margin: -45px auto 0;
-      position: relative;
-      z-index: 5;
-    }
-
-    .player-card {
-      position: relative;
-      overflow: hidden;
-      background: #fff;
-      border-radius: 27px;
-      padding: 20px;
-      border: 1px solid #ebe5f5;
-      box-shadow: 0 12px 30px rgba(48,30,80,.12);
-      text-align: center;
-    }
-
-    .player-card::after {
-      content: "🎲";
-      position: absolute;
-      right: -12px;
-      bottom: -25px;
-      font-size: 100px;
-      opacity: .045;
-      transform: rotate(-15deg);
-    }
-
-    .avatar {
-      position: relative;
-      z-index: 2;
-      width: 86px;
-      height: 86px;
-      margin: 0 auto;
-      border-radius: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 43px;
-      background: linear-gradient(135deg, #efe3ff, #cdb0ff);
-      border: 5px solid #fff;
-      box-shadow: 0 8px 22px rgba(91,33,182,.22);
-    }
-
-    .online {
-      position: absolute;
-      right: calc(50% - 43px);
-      margin-top: -22px;
-      z-index: 5;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #19b968;
-      border: 3px solid #fff;
-    }
-
-    .player-name {
-      margin-top: 13px;
-      font-size: 20px;
-      font-weight: 900;
-    }
-
-    .player-id {
-      margin-top: 5px;
-      font-size: 10px;
-      color: #8b8394;
-      font-weight: 700;
-    }
-
-    .verified {
-      display: inline-block;
-      margin-top: 9px;
-      padding: 6px 11px;
-      border-radius: 20px;
-      background: #eee6ff;
-      color: #6828c5;
-      font-size: 9px;
-      font-weight: 900;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 19px;
-    }
-
-    .stat {
-      padding: 12px 5px;
-      border-radius: 16px;
-      background: #f8f5fc;
-      border: 1px solid #eee8f5;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .stat small {
-      display: block;
-      margin-top: 4px;
-      color: #8a8291;
-      font-size: 8px;
-      font-weight: 800;
-    }
-
-    .section {
-      margin-top: 17px;
-    }
-
-    .section-title {
-      margin-bottom: 9px;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .menu-card {
-      overflow: hidden;
-      background: #fff;
-      border: 1px solid #ebe5f5;
-      border-radius: 21px;
-      box-shadow: 0 8px 22px rgba(48,30,80,.07);
-    }
-
-    .menu-item {
-      width: 100%;
-      min-height: 61px;
-      padding: 11px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #fff;
-      border-bottom: 1px solid #f0ebf5;
-      text-align: left;
-    }
-
-    .menu-item:last-child {
-      border-bottom: 0;
-    }
-
-    .menu-icon {
-      width: 40px;
-      height: 40px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 13px;
-      background: #f0e7ff;
-      font-size: 20px;
-    }
-
-    .menu-text {
-      flex: 1;
-    }
-
-    .menu-text strong {
-      display: block;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .menu-text small {
-      display: block;
-      margin-top: 3px;
-      color: #918997;
-      font-size: 9px;
-    }
-
-    .arrow {
-      color: #9b91a5;
-      font-size: 19px;
-      font-weight: 900;
-    }
-
-    .logout {
-      width: 100%;
-      margin-top: 15px;
-      min-height: 50px;
-      border-radius: 17px;
-      background: #fff0f0;
-      border: 1px solid #ffd6d6;
-      color: #d83a3a;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .footer-text {
-      margin-top: 17px;
-      text-align: center;
-      color: #9a919f;
-      font-size: 9px;
-      line-height: 1.5;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      z-index: 100;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 560px;
-      height: 78px;
-      padding: 8px 8px 10px;
-      padding-bottom: calc(10px + env(safe-area-inset-bottom));
-      background: linear-gradient(135deg, #4c1d95, #7029d5);
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      align-items: center;
-      border-radius: 27px 27px 0 0;
-      box-shadow: 0 -8px 24px rgba(56,25,103,.24);
-    }
-
-    .nav-item {
-      height: 58px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      color: rgba(255,255,255,.70);
-    }
-
-    .nav-item span {
-      font-size: 19px;
-      line-height: 1;
-    }
-
-    .nav-item small {
-      font-size: 8px;
-      font-weight: 800;
-    }
-
-    .nav-item.active {
-      color: #fff;
-    }
-
-    .nav-item.active span {
-      width: 50px;
-      height: 50px;
-      margin-top: -23px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff;
-      color: #6828c5;
-      border: 5px solid #7029d5;
-      box-shadow: 0 6px 16px rgba(0,0,0,.23);
-    }
-
-    @media (max-width: 360px) {
-      .container {
-        width: calc(100% - 20px);
-      }
-
-      .player-card {
-        padding: 16px;
-      }
-
-      .stats {
-        gap: 5px;
-      }
-    }
-  </style>
+  <link
+    rel="stylesheet"
+    href="home.css"
+  >
 
 </head>
 
+
 <body>
 
-  <header class="header">
 
-    <a href="home.html" class="back">
-      ← Home
-    </a>
+  <!-- =====================================================
+       TOP HEADER
+  ====================================================== -->
 
-    <h1 class="page-title">
-      My Profile
-    </h1>
+  <header class="top-header">
 
-    <p class="page-subtitle">
-      Manage your Balaji Ludo King account
-    </p>
+    <div class="profile-area">
+
+      <div class="profile-icon">
+        👤
+      </div>
+
+      <div>
+
+        <h1>
+          BALAJI LUDO KING
+        </h1>
+
+        <p>
+          Official Gaming
+        </p>
+
+      </div>
+
+    </div>
 
   </header>
 
 
-  <main class="container">
 
-    <section class="player-card">
+  <!-- =====================================================
+       WALLET / REFER
+  ====================================================== -->
 
-      <div class="avatar">
-        👤
-      </div>
+  <section class="quick-stats">
 
-      <span class="online"></span>
 
-      <h2 class="player-name" id="profileName">
-        Player
-      </h2>
+    <a
+      href="wallet.html"
+      class="stat-card"
+    >
 
-      <p class="player-id" id="playerId">
-        Balaji Ludo King Player
-      </p>
-
-      <span class="verified">
-        ✓ PLAYER ACCOUNT
+      <span class="stat-icon">
+        ₹
       </span>
 
-      <div class="stats">
+      <div>
 
-        <div class="stat">
-          <strong id="profileBalance">₹0</strong>
-          <small>WALLET</small>
-        </div>
+        <small>
+          Wallet
+        </small>
 
-        <div class="stat">
-          <strong>0</strong>
-          <small>MATCHES</small>
-        </div>
-
-        <div class="stat">
-          <strong>0</strong>
-          <small>WINS</small>
-        </div>
+        <strong id="walletBalance">
+          ₹0
+        </strong>
 
       </div>
 
-    </section>
+    </a>
 
 
-    <section class="section">
-
-      <h3 class="section-title">
-        Account
-      </h3>
-
-      <div class="menu-card">
-
-        <a href="edit-profile.html" class="menu-item">
-
-          <div class="menu-icon">
-            ✏️
-          </div>
-
-          <div class="menu-text">
-            <strong>Edit Profile</strong>
-            <small>Update your player information</small>
-          </div>
-
-          <span class="arrow">›</span>
-
-        </a>
-
-
-        <a href="wallet.html" class="menu-item">
-
-          <div class="menu-icon">
-            💰
-          </div>
-
-          <div class="menu-text">
-            <strong>Wallet</strong>
-            <small>View your wallet balance</small>
-          </div>
-
-          <span class="arrow">›</span>
-
-        </a>
-
-
-        <a href="refer.html" class="menu-item">
-
-          <div class="menu-icon">
-            🎁
-          </div>
-
-          <div class="menu-text">
-            <strong>Refer & Earn</strong>
-            <small>Invite friends and earn rewards</small>
-          </div>
-
-          <span class="arrow">›</span>
-
-        </a>
-
-
-        <a href="support.html" class="menu-item">
-
-          <div class="menu-icon">
-            💬
-          </div>
-
-          <div class="menu-text">
-            <strong>Support</strong>
-            <small>Get help from support</small>
-          </div>
-
-          <span class="arrow">›</span>
-
-        </a>
-
-      </div>
-
-    </section>
-
-
-    <button
-      type="button"
-      class="logout"
-      id="logoutBtn"
+    <a
+      href="refer.html"
+      class="stat-card"
     >
-      🚪 Logout
-    </button>
 
-    <p class="footer-text">
-      Balaji Ludo King<br>
-      Play • Battle • Win
-    </p>
+      <span class="stat-icon">
+        🎁
+      </span>
+
+      <div>
+
+        <small>
+          Refer & Earn
+        </small>
+
+        <strong>
+          ₹13.00
+        </strong>
+
+      </div>
+
+    </a>
+
+
+  </section>
+
+
+
+  <!-- =====================================================
+       MAIN HOME CONTENT
+  ====================================================== -->
+
+  <main class="home-container">
+
+
+    <!-- =================================================
+         WELCOME CARD
+    ================================================== -->
+
+    <section class="announcement">
+
+      <div class="announcement-icon">
+        🥰
+      </div>
+
+      <div class="announcement-text">
+
+        <strong>
+          WELCOME TO BALAJI LUDO KING
+        </strong>
+
+        <p>
+          ❤️ BALAJI LUDO KING FAMILY में आपका स्वागत है
+          ✨🚀 दोस्तों BALAJI LUDO KING में आपका विश्वास
+          हमारी पहचान है।
+        </p>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         MAIN HERO
+    ================================================== -->
+
+    <section class="banner">
+
+      <div class="banner-content">
+
+        <span class="banner-badge">
+          🎮 BALAJI LUDO KING
+        </span>
+
+        <h2>
+          Play • Battle • Win
+        </h2>
+
+        <p>
+          Enjoy classic 2 player Ludo gameplay.
+        </p>
+
+      </div>
+
+    </section>
+
 
   </main>
 
 
+
+  <!-- =====================================================
+       FEATURED GAMES
+  ====================================================== -->
+
+  <section class="games-container">
+
+
+    <div class="section-title">
+
+      <h2>
+        Featured Games
+      </h2>
+
+    </div>
+
+
+
+    <!-- =================================================
+         LUDO CLASSIC
+    ================================================== -->
+
+    <div class="game-card">
+
+      <div class="game-left">
+
+        <div class="game-logo">
+          🎲
+        </div>
+
+        <div class="game-info">
+
+          <div class="live-row">
+
+            <span class="live-dot"></span>
+
+            <span class="live-text">
+              LIVE
+            </span>
+
+          </div>
+
+          <h3>
+            Ludo Classic
+          </h3>
+
+          <p>
+            Classic 2 Player Ludo
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="play-button"
+        id="playNowBtn"
+      >
+        Play Now
+      </button>
+
+    </div>
+
+
+
+    <!-- =================================================
+         SUPPORT
+    ================================================== -->
+
+    <div class="game-card support-card">
+
+      <div class="game-left">
+
+        <div class="game-logo support-logo">
+          💬
+        </div>
+
+        <div class="game-info">
+
+          <div class="live-row">
+
+            <span class="live-dot"></span>
+
+            <span class="live-text">
+              LIVE
+            </span>
+
+          </div>
+
+          <h3>
+            Ludo Support
+          </h3>
+
+          <p>
+            Need help? Contact support
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="support-button"
+        id="supportBtn"
+      >
+        Support
+      </button>
+
+    </div>
+
+
+
+    <!-- =================================================
+         REFER & EARN
+    ================================================== -->
+
+    <section class="promo-banner">
+
+      <div class="promo-circle"></div>
+
+
+      <span class="promo-spark one">
+        ✦
+      </span>
+
+      <span class="promo-spark two">
+        ✨
+      </span>
+
+      <span class="promo-spark three">
+        ★
+      </span>
+
+
+      <div class="promo-content">
+
+        <span class="promo-small-title">
+          REFER & EARN
+        </span>
+
+        <h2>
+          Earn More
+        </h2>
+
+        <p>
+          Invite your friends and get extra rewards
+          with Balaji Ludo King.
+        </p>
+
+
+        <div class="promo-badges">
+
+          <div class="promo-badge">
+
+            <strong>
+              5%
+            </strong>
+
+            <span>
+              COMMISSION
+            </span>
+
+          </div>
+
+
+          <div class="promo-badge">
+
+            <strong>
+              3%
+            </strong>
+
+            <span>
+              REFERRAL
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="promo-person">
+        👩🏻
+      </div>
+
+    </section>
+
+
+  </section>
+
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
+  <footer class="home-footer">
+
+    <div class="footer-logo">
+      🎮
+    </div>
+
+    <h3>
+      BALAJI LUDO KING
+    </h3>
+
+    <p>
+      Turn Fun into Funds!
+    </p>
+
+    <small>
+      For best experience, open Balaji Ludo King
+      on Chrome mobile.
+    </small>
+
+  </footer>
+
+
+
+  <!-- =====================================================
+       BOTTOM NAVIGATION
+  ====================================================== -->
+
   <nav class="bottom-nav">
 
-    <a href="refer.html" class="nav-item">
-      <span>🎁</span>
-      <small>Refer</small>
+
+    <a
+      href="refer.html"
+      class="nav-item"
+    >
+
+      <span>
+        🎁
+      </span>
+
+      <small>
+        Refer
+      </small>
+
     </a>
 
-    <a href="wallet.html" class="nav-item">
-      <span>₹</span>
-      <small>Wallet</small>
+
+    <a
+      href="wallet.html"
+      class="nav-item"
+    >
+
+      <span>
+        ₹
+      </span>
+
+      <small>
+        Wallet
+      </small>
+
     </a>
 
-    <a href="home.html" class="nav-item">
-      <span>🏠</span>
-      <small>Home</small>
+
+    <a
+      href="home.html"
+      class="nav-item active"
+    >
+
+      <span>
+        🏠
+      </span>
+
+      <small>
+        Home
+      </small>
+
     </a>
 
-    <a href="support.html" class="nav-item">
-      <span>💬</span>
-      <small>Support</small>
+
+    <a
+      href="support.html"
+      class="nav-item"
+    >
+
+      <span>
+        💬
+      </span>
+
+      <small>
+        Support
+      </small>
+
     </a>
 
-    <a href="profile.html" class="nav-item active">
-      <span>👤</span>
-      <small>Profile</small>
+
+    <a
+      href="profile.html"
+      class="nav-item"
+    >
+
+      <span>
+        👤
+      </span>
+
+      <small>
+        Profile
+      </small>
+
     </a>
+
 
   </nav>
 
 
-  <script>
 
-    // Wallet balance
-    const balance =
-      localStorage.getItem("balajiWalletBalance");
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
 
-    const profileBalance =
-      document.getElementById("profileBalance");
+  <script src="home.js"></script>
 
-    if (profileBalance && balance) {
-      profileBalance.textContent = "₹" + balance;
-    }
-
-
-    // Player name
-    const savedName =
-      localStorage.getItem("playerName");
-
-    const profileName =
-      document.getElementById("profileName");
-
-    if (profileName && savedName) {
-      profileName.textContent = savedName;
-    }
-
-
-    // Logout
-    const logoutBtn =
-      document.getElementById("logoutBtn");
-
-    if (logoutBtn) {
-
-      logoutBtn.addEventListener("click", function () {
-
-        localStorage.removeItem("playerName");
-
-        window.location.href = "index.html";
-
-      });
-
-    }
-
-  </script>
 
 </body>
 
