@@ -1590,6 +1590,31 @@ export default {
 
 
       /* =====================================================
+         KYC PAGE
+      ===================================================== */
+
+      if (
+        path === "/kyc" ||
+        path === "/kyc/"
+      ) {
+
+        const kycUrl =
+          new URL(
+            "/kyc/index.html",
+            request.url
+          );
+
+        return env.ASSETS.fetch(
+          new Request(
+            kycUrl.toString(),
+            request
+          )
+        );
+
+      }
+
+
+      /* =====================================================
          STATIC WEBSITE FILES
       ===================================================== */
 
