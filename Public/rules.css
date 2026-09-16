@@ -1,0 +1,54 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.header-bar {
+    display: flex;
+    align-items: center;
+    background-color: #1f1f1f;
+    padding: 10px 15px;
+    border-bottom: 2px solid #333;
+}
+
+.back-btn {
+    background-color: #ffcc00;
+    color: #000;
+    border: none;
+    padding: 8px 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.header-title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.rules-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.rules-list p {
+    background: #1e1e1e;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    font-size: 14px;
+    border-left: 4px solid #ffcc00;
+}
+
+ul {
+    background: #1e1e1e;
+    padding: 15px 15px 15px 35px;
+    border-radius: 6px;
+}
