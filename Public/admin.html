@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Balaji Ludo King - Admin</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .topbar {
+            background: #111827;
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .topbar-inner {
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .admin-label {
+            font-size: 12px;
+            opacity: .75;
+        }
+
+        .logout-btn {
+            border: 0;
+            background: #dc2626;
+            color: white;
+            padding: 9px 13px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 18px;
+            border-radius: 14px;
+            box-shadow:
+                0 4px 15px rgba(0,0,0,.06);
+        }
+
+        .stat-title {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow:
+                0 4px 15px rgba(0,0,0,.06);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .refresh-btn {
+            border: 0;
+            background: #2563eb;
+            color: white;
+            padding: 9px 13px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* =========================
+           KYC CARD
+        ========================= */
+
+        .kyc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .kyc-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .kyc-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .kyc-name {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .approved {
+            background: #dcfce7;
+            color: #166534;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .rejected {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detail {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 9px;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+
+        /* =========================
+           ACTIONS
+        ========================= */
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .approve-btn,
+        .reject-btn {
+            flex: 1;
+            border: 0;
+            padding: 12px;
+            border-radius: 9px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .approve-btn {
+            background: #16a34a;
+        }
+
+        .reject-btn {
+            background: #dc2626;
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+            text-align: center;
+            padding: 35px 15px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar-inner {
+                align-items: flex-start;
+            }
+
+            .brand {
+                font-size: 17px;
+            }
+
+            .admin-label {
+                display: none;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="topbar-inner">
+
+        <div>
+
+            <div class="brand">
+                👑 Balaji Ludo King
+            </div>
+
+            <div class="admin-label">
+                Admin Dashboard
+            </div>
+
+        </div>
+
+        <button
+            class="logout-btn"
+            id="logoutBtn">
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <!-- =================================================
+         STATS
+    ================================================== -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Pending KYC
+            </div>
+
+            <div
+                class="stat-value"
+                id="pendingCount">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Approved KYC
+            </div>
+
+            <div
+                class="stat-value"
+                id="approvedCount">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Rejected KYC
+            </div>
+
+            <div
+                class="stat-value"
+                id="rejectedCount">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Total KYC
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalCount">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         MESSAGE
+    ================================================== -->
+
+    <div
+        class="message"
+        id="message">
+    </div>
+
+
+    <!-- =================================================
+         PENDING KYC
+    ================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+                📋 Pending KYC
+            </div>
+
+            <button
+                class="refresh-btn"
+                id="refreshBtn">
+                🔄 Refresh
+            </button>
+
+        </div>
+
+
+        <div
+            class="kyc-list"
+            id="pendingList">
+
+            <div class="empty">
+                Loading KYC...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         ALL KYC
+    ================================================== -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div class="section-title">
+                📊 All KYC Records
+            </div>
+
+        </div>
+
+
+        <div
+            class="kyc-list"
+            id="allList">
+
+            <div class="empty">
+                Loading...
+            </div>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const pendingList =
+    document.getElementById(
+        "pendingList"
+    );
+
+const allList =
+    document.getElementById(
+        "allList"
+    );
+
+const pendingCount =
+    document.getElementById(
+        "pendingCount"
+    );
+
+const approvedCount =
+    document.getElementById(
+        "approvedCount"
+    );
+
+const rejectedCount =
+    document.getElementById(
+        "rejectedCount"
+    );
+
+const totalCount =
+    document.getElementById(
+        "totalCount"
+    );
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(text) {
+
+    message.textContent =
+        text;
+
+    message.style.display =
+        "block";
+
+
+    setTimeout(() => {
+
+        message.style.display =
+            "none";
+
+    }, 3000);
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   MASK DOCUMENT NUMBER
+========================================================= */
+
+function maskDocumentNumber(value) {
+
+    const text =
+        String(value ?? "");
+
+    if (text.length <= 4) {
+
+        return "****";
+
+    }
+
+    return (
+        "****" +
+        text.slice(-4)
+    );
+
+}
+
+
+/* =========================================================
+   LOAD PENDING KYC
+========================================================= */
+
+async function loadPendingKYC() {
+
+    pendingList.innerHTML =
+        `<div class="empty">
+            Loading Pending KYC...
+        </div>`;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/kyc/pending"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load KYC"
+            );
+
+        }
+
+
+        const records =
+            data.kyc || [];
+
+
+        pendingCount.textContent =
+            records.length;
+
+
+        if (!records.length) {
+
+            pendingList.innerHTML =
+                `<div class="empty">
+                    ✅ No Pending KYC
+                </div>`;
+
+            return;
+
+        }
+
+
+        pendingList.innerHTML =
+            records.map(
+                createPendingCard
+            ).join("");
+
+
+    } catch (error) {
+
+        pendingList.innerHTML =
+            `<div class="empty">
+                ❌ ${escapeHTML(
+                    error.message
+                )}
+            </div>`;
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE PENDING CARD
+========================================================= */
+
+function createPendingCard(kyc) {
+
+    return `
+
+        <div class="kyc-card">
+
+            <div class="kyc-top">
+
+                <div class="kyc-name">
+                    👤 ${escapeHTML(
+                        kyc.full_name
+                    )}
+                </div>
+
+                <span class="pending">
+                    PENDING
+                </span>
+
+            </div>
+
+
+            <div class="details">
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Customer ID
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.customer_id
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Mobile
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.mobile
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Date of Birth
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.dob
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Document
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.document_type
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Document Number
+                    </div>
+
+                    <div class="detail-value">
+                        ${maskDocumentNumber(
+                            kyc.document_number
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Document File
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.document_file_name
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Selfie File
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.selfie_file_name
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Submitted
+                    </div>
+
+                    <div class="detail-value">
+                        ${formatDate(
+                            kyc.submitted_at
+                        )}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="approve-btn"
+                    onclick="approveKYC(${kyc.id})">
+
+                    ✅ Approve
+
+                </button>
+
+
+                <button
+                    class="reject-btn"
+                    onclick="rejectKYC(${kyc.id})">
+
+                    ❌ Reject
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   LOAD ALL KYC
+========================================================= */
+
+async function loadAllKYC() {
+
+    allList.innerHTML =
+        `<div class="empty">
+            Loading...
+        </div>`;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/kyc/all"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Unable to load KYC"
+            );
+
+        }
+
+
+        const records =
+            data.kyc || [];
+
+
+        totalCount.textContent =
+            records.length;
+
+
+        approvedCount.textContent =
+            records.filter(
+                item =>
+                    item.status === "APPROVED"
+            ).length;
+
+
+        rejectedCount.textContent =
+            records.filter(
+                item =>
+                    item.status === "REJECTED"
+            ).length;
+
+
+        if (!records.length) {
+
+            allList.innerHTML =
+                `<div class="empty">
+                    No KYC records found
+                </div>`;
+
+            return;
+
+        }
+
+
+        allList.innerHTML =
+            records.map(
+                createAllCard
+            ).join("");
+
+
+    } catch (error) {
+
+        allList.innerHTML =
+            `<div class="empty">
+                ❌ ${escapeHTML(
+                    error.message
+                )}
+            </div>`;
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE ALL CARD
+========================================================= */
+
+function createAllCard(kyc) {
+
+    let statusClass =
+        "pending";
+
+
+    if (
+        kyc.status === "APPROVED"
+    ) {
+
+        statusClass =
+            "approved";
+
+    }
+
+
+    if (
+        kyc.status === "REJECTED"
+    ) {
+
+        statusClass =
+            "rejected";
+
+    }
+
+
+    return `
+
+        <div class="kyc-card">
+
+            <div class="kyc-top">
+
+                <div class="kyc-name">
+                    👤 ${escapeHTML(
+                        kyc.full_name
+                    )}
+                </div>
+
+                <span class="${statusClass}">
+                    ${escapeHTML(
+                        kyc.status
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="details">
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Customer ID
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.customer_id
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Mobile
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.mobile
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Document
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHTML(
+                            kyc.document_type
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Document Number
+                    </div>
+
+                    <div class="detail-value">
+                        ${maskDocumentNumber(
+                            kyc.document_number
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <div class="detail-label">
+                        Submitted
+                    </div>
+
+                    <div class="detail-value">
+                        ${formatDate(
+                            kyc.submitted_at
+                        )}
+                    </div>
+
+                </div>
+
+
+                ${
+                    kyc.rejection_reason
+                    ? `
+                    <div class="detail">
+
+                        <div class="detail-label">
+                            Rejection Reason
+                        </div>
+
+                        <div class="detail-value">
+                            ${escapeHTML(
+                                kyc.rejection_reason
+                            )}
+                        </div>
+
+                    </div>
+                    `
+                    : ""
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   APPROVE KYC
+========================================================= */
+
+async function approveKYC(id) {
+
+    const confirmApprove =
+        confirm(
+            "क्या आप इस KYC को Approve करना चाहते हैं?"
+        );
+
+
+    if (!confirmApprove) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/kyc/approve",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        kyc_id: id
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Approve failed"
+            );
+
+        }
+
+
+        showMessage(
+            "✅ KYC Approved Successfully"
+        );
+
+
+        await loadPendingKYC();
+
+        await loadAllKYC();
+
+
+    } catch (error) {
+
+        alert(
+            error.message ||
+            "KYC approve नहीं हुआ।"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   REJECT KYC
+========================================================= */
+
+async function rejectKYC(id) {
+
+    const reason =
+        prompt(
+            "KYC Reject करने का reason लिखें:"
+        );
+
+
+    if (
+        reason === null
+    ) {
+
+        return;
+
+    }
+
+
+    const finalReason =
+        reason.trim() ||
+        "KYC rejected";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/kyc/reject",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        kyc_id: id,
+
+                        reason:
+                            finalReason
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Reject failed"
+            );
+
+        }
+
+
+        showMessage(
+            "❌ KYC Rejected"
+        );
+
+
+        await loadPendingKYC();
+
+        await loadAllKYC();
+
+
+    } catch (error) {
+
+        alert(
+            error.message ||
+            "KYC reject नहीं हुआ।"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatDate(timestamp) {
+
+    if (!timestamp) {
+
+        return "-";
+
+    }
+
+
+    const date =
+        new Date(
+            Number(timestamp)
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "-";
+
+    }
+
+
+    return date.toLocaleString(
+        "en-IN"
+    );
+
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+document
+    .getElementById("refreshBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await loadPendingKYC();
+
+            await loadAllKYC();
+
+        }
+    );
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+document
+    .getElementById("logoutBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            localStorage.removeItem(
+                "balaji_admin"
+            );
+
+            window.location.href =
+                "/admin-login.html";
+
+        }
+    );
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadPendingKYC();
+
+loadAllKYC();
+
+</script>
+
+</body>
+
+</html>
