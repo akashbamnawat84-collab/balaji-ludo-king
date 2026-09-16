@@ -1,7 +1,7 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type"
+  "Access-Control-Allow-Headers": "Content-Type, Authorization"
 };
 
 const ROOM_WAIT_MS = 5 * 60 * 1000;
@@ -12,12 +12,13 @@ const REFERRAL_PERCENT = 3;
    COMMON
 ========================================================= */
 
-function json(data, status = 200) {
+function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       ...corsHeaders,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      ...extraHeaders
     }
   });
 }
@@ -45,42 +46,187 @@ function isExpired(createdAt) {
 
 
 /* =========================================================
+   ADMIN AUTHENTICATION
+========================================================= */
+
+/*
+  Cloudflare Worker Secrets:
+
+  BALAJI_ADMIN_ID
+  BALAJI_ADMIN_PASSWORD
+
+  Example:
+
+  BALAJI_ADMIN_ID
+  = Deepak Kumar Meena
+
+  BALAJI_ADMIN_PASSWORD
+  = आपका password
+*/
+
+const ADMIN_SESSION_TIME =
+  6 * 60 * 60 * 1000;
+
+
+/*
+  Temporary in-memory admin sessions.
+
+  NOTE:
+  Cloudflare Worker isolates are temporary.
+  This provides basic server-side session protection.
+  A permanent multi-instance session system can be added
+  later using Durable Objects or D1.
+*/
+
+const adminSessions = new Map();
+
+
+function getAdminToken(request) {
+
+  const authorization =
+    request.headers.get("Authorization");
+
+  if (!authorization) {
+    return "";
+  }
+
+  if (
+    authorization.startsWith("Bearer ")
+  ) {
+
+    return clean(
+      authorization.slice(7)
+    );
+
+  }
+
+  return "";
+}
+
+
+function createAdminToken() {
+
+  const bytes =
+    new Uint8Array(32);
+
+  crypto.getRandomValues(bytes);
+
+  return Array.from(bytes)
+    .map(
+      byte =>
+        byte.toString(16).padStart(2, "0")
+    )
+    .join("");
+}
+
+
+function saveAdminSession(token) {
+
+  adminSessions.set(
+    token,
+    Date.now()
+  );
+
+}
+
+
+function validAdminSession(token) {
+
+  if (!token) {
+    return false;
+  }
+
+  const createdAt =
+    adminSessions.get(token);
+
+  if (!createdAt) {
+    return false;
+  }
+
+  if (
+    Date.now() - createdAt >
+    ADMIN_SESSION_TIME
+  ) {
+
+    adminSessions.delete(token);
+
+    return false;
+  }
+
+  return true;
+}
+
+
+function requireAdmin(request) {
+
+  const token =
+    getAdminToken(request);
+
+  return validAdminSession(token);
+
+}
+
+
+/* =========================================================
    CUSTOMER RESPONSE
 ========================================================= */
 
 function customerResponse(customer) {
+
   return {
-    id: customer.id,
-    customer_id: customer.id,
 
-    mobile: customer.mobile,
-    phone: customer.mobile,
+    id:
+      customer.id,
 
-    name: customer.name,
+    customer_id:
+      customer.id,
+
+    mobile:
+      customer.mobile,
+
+    phone:
+      customer.mobile,
+
+    name:
+      customer.name,
 
     wallet_balance:
-      Number(customer.wallet_balance || 0),
+      Number(
+        customer.wallet_balance || 0
+      ),
 
     bonus_balance:
-      Number(customer.bonus_balance || 0),
+      Number(
+        customer.bonus_balance || 0
+      ),
 
     battle_played:
-      Number(customer.battle_played || 0),
+      Number(
+        customer.battle_played || 0
+      ),
 
     coin_won:
-      Number(customer.coin_won || 0),
+      Number(
+        customer.coin_won || 0
+      ),
 
     referral_code:
       customer.referral_code || "",
 
     referral_count:
-      Number(customer.referral_count || 0),
+      Number(
+        customer.referral_count || 0
+      ),
 
     referral_earned:
-      Number(customer.referral_earned || 0),
+      Number(
+        customer.referral_earned || 0
+      ),
 
     withdrawal_amount:
-      Number(customer.withdrawal_amount || 0),
+      Number(
+        customer.withdrawal_amount || 0
+      ),
 
     email:
       customer.email || "",
@@ -93,7 +239,9 @@ function customerResponse(customer) {
 
     created_at:
       customer.created_at
+
   };
+
 }
 
 
@@ -161,11 +309,19 @@ async function ensureReferralTable(env) {
 
 async function generateUniqueReferralCode(env) {
 
-  for (let attempt = 0; attempt < 20; attempt++) {
+  for (
+    let attempt = 0;
+    attempt < 20;
+    attempt++
+  ) {
 
-    const code = String(
-      Math.floor(100000 + Math.random() * 900000)
-    );
+    const code =
+      String(
+        Math.floor(
+          100000 +
+          Math.random() * 900000
+        )
+      );
 
     const existing =
       await env.DB.prepare(`
@@ -178,7 +334,9 @@ async function generateUniqueReferralCode(env) {
       .first();
 
     if (!existing) {
+
       return code;
+
     }
 
   }
@@ -194,7 +352,10 @@ async function generateUniqueReferralCode(env) {
    REFERRAL SUMMARY
 ========================================================= */
 
-async function getReferralSummary(env, customerId) {
+async function getReferralSummary(
+  env,
+  customerId
+) {
 
   await ensureReferralTable(env);
 
@@ -208,7 +369,9 @@ async function getReferralSummary(env, customerId) {
     .first();
 
   if (!customer) {
+
     return null;
+
   }
 
   const referrals =
@@ -222,6 +385,7 @@ async function getReferralSummary(env, customerId) {
     .first();
 
   return {
+
     customer_id:
       customer.id,
 
@@ -229,13 +393,18 @@ async function getReferralSummary(env, customerId) {
       customer.referral_code || "",
 
     total_referral:
-      Number(referrals?.total || 0),
+      Number(
+        referrals?.total || 0
+      ),
 
     total_earned:
-      Number(customer.referral_earned || 0),
+      Number(
+        customer.referral_earned || 0
+      ),
 
     commission_percent:
       REFERRAL_PERCENT
+
   };
 
 }
@@ -309,7 +478,9 @@ export default {
 
   async fetch(request, env) {
 
-    if (request.method === "OPTIONS") {
+    if (
+      request.method === "OPTIONS"
+    ) {
 
       return new Response(null, {
         status: 204,
@@ -330,7 +501,192 @@ export default {
 
 
       /* =====================================================
-         LOGIN
+         ADMIN LOGIN
+      ===================================================== */
+
+      if (
+        path === "/api/admin/login" &&
+        request.method === "POST"
+      ) {
+
+        const body =
+          await request.json();
+
+
+        const adminId =
+          clean(
+            body.admin_id ||
+            body.adminId ||
+            body.username
+          );
+
+
+        const password =
+          clean(
+            body.password
+          );
+
+
+        if (
+          !adminId ||
+          !password
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Admin ID and password required"
+          }, 400);
+
+        }
+
+
+        const savedAdminId =
+          clean(
+            env.BALAJI_ADMIN_ID
+          );
+
+
+        const savedPassword =
+          clean(
+            env.BALAJI_ADMIN_PASSWORD
+          );
+
+
+        if (
+          !savedAdminId ||
+          !savedPassword
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication is not configured on the server"
+          }, 500);
+
+        }
+
+
+        if (
+          adminId !== savedAdminId ||
+          password !== savedPassword
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Invalid Admin ID or Password"
+          }, 401);
+
+        }
+
+
+        const token =
+          createAdminToken();
+
+
+        saveAdminSession(token);
+
+
+        return json({
+
+          success:
+            true,
+
+          message:
+            "Admin login successful",
+
+          token,
+
+          admin: {
+            name:
+              savedAdminId
+          }
+
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN LOGOUT
+      ===================================================== */
+
+      if (
+        path === "/api/admin/logout" &&
+        request.method === "POST"
+      ) {
+
+        const token =
+          getAdminToken(request);
+
+
+        if (token) {
+
+          adminSessions.delete(
+            token
+          );
+
+        }
+
+
+        return json({
+
+          success:
+            true,
+
+          message:
+            "Admin logged out"
+
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN SESSION CHECK
+      ===================================================== */
+
+      if (
+        path === "/api/admin/session" &&
+        request.method === "GET"
+      ) {
+
+        if (
+          !requireAdmin(request)
+        ) {
+
+          return json({
+
+            success:
+              false,
+
+            authenticated:
+              false,
+
+            error:
+              "Admin authentication required"
+
+          }, 401);
+
+        }
+
+
+        return json({
+
+          success:
+            true,
+
+          authenticated:
+            true
+
+        });
+
+      }
+
+
+      /* =====================================================
+         CUSTOMER LOGIN
       ===================================================== */
 
       if (
@@ -341,19 +697,27 @@ export default {
         const body =
           await request.json();
 
+
         const mobile =
           clean(body.mobile);
+
 
         const otp =
           clean(body.otp);
 
 
-        if (!validMobile(mobile)) {
+        if (
+          !validMobile(mobile)
+        ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid 10-digit mobile number required"
+
           }, 400);
 
         }
@@ -361,12 +725,18 @@ export default {
 
         if (otp) {
 
-          if (!/^\d{6}$/.test(otp)) {
+          if (
+            !/^\d{6}$/.test(otp)
+          ) {
 
             return json({
-              success: false,
+
+              success:
+                false,
+
               error:
                 "Valid 6-digit OTP required"
+
             }, 400);
 
           }
@@ -385,18 +755,27 @@ export default {
           if (!customer) {
 
             return json({
-              success: false,
+
+              success:
+                false,
+
               error:
                 "Mobile number not registered"
+
             }, 404);
 
           }
 
 
-          if (!customer.referral_code) {
+          if (
+            !customer.referral_code
+          ) {
 
             const newCode =
-              await generateUniqueReferralCode(env);
+              await generateUniqueReferralCode(
+                env
+              );
+
 
             await env.DB.prepare(`
               UPDATE customers
@@ -423,12 +802,18 @@ export default {
 
 
           return json({
-            success: true,
 
-            existing: true,
+            success:
+              true,
+
+            existing:
+              true,
 
             customer:
-              customerResponse(customer)
+              customerResponse(
+                customer
+              )
+
           });
 
         }
@@ -446,10 +831,15 @@ export default {
 
         if (existing) {
 
-          if (!existing.referral_code) {
+          if (
+            !existing.referral_code
+          ) {
 
             const newCode =
-              await generateUniqueReferralCode(env);
+              await generateUniqueReferralCode(
+                env
+              );
+
 
             await env.DB.prepare(`
               UPDATE customers
@@ -476,15 +866,21 @@ export default {
 
 
           return json({
-            success: true,
 
-            existing: true,
+            success:
+              true,
+
+            existing:
+              true,
 
             message:
               "OTP request accepted",
 
             customer:
-              customerResponse(existing)
+              customerResponse(
+                existing
+              )
+
           });
 
         }
@@ -499,7 +895,9 @@ export default {
 
 
         const referralCode =
-          await generateUniqueReferralCode(env);
+          await generateUniqueReferralCode(
+            env
+          );
 
 
         const createdAt =
@@ -560,15 +958,21 @@ export default {
 
 
         return json({
-          success: true,
 
-          existing: false,
+          success:
+            true,
+
+          existing:
+            false,
 
           message:
             "OTP request accepted",
 
           customer:
-            customerResponse(customer)
+            customerResponse(
+              customer
+            )
+
         });
 
       }
@@ -576,14 +980,21 @@ export default {
 
       /* =====================================================
          GET CUSTOMER
-         SUPPORT BOTH:
+
+         SUPPORT:
+
          /api/customer/CUSTOMER_ID
+
          /api/customer?customer_id=CUSTOMER_ID
+
+         /api/customer?customerId=CUSTOMER_ID
       ===================================================== */
 
       if (
         (
-          path.startsWith("/api/customer/") ||
+          path.startsWith(
+            "/api/customer/"
+          ) ||
           path === "/api/customer"
         ) &&
         request.method === "GET"
@@ -592,10 +1003,10 @@ export default {
         let customerId = "";
 
 
-        /* ---------- PATH CUSTOMER ID ---------- */
-
         if (
-          path.startsWith("/api/customer/")
+          path.startsWith(
+            "/api/customer/"
+          )
         ) {
 
           customerId =
@@ -608,8 +1019,6 @@ export default {
 
         }
 
-
-        /* ---------- QUERY CUSTOMER ID ---------- */
 
         if (!customerId) {
 
@@ -629,9 +1038,13 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer ID required"
+
           }, 400);
 
         }
@@ -650,19 +1063,28 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer not found"
+
           }, 404);
 
         }
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           customer:
-            customerResponse(customer)
+            customerResponse(
+              customer
+            )
+
         });
 
       }
@@ -682,23 +1104,33 @@ export default {
 
 
         const customerId =
-          clean(body.customer_id);
+          clean(
+            body.customer_id
+          );
 
 
         const name =
-          clean(body.name);
+          clean(
+            body.name
+          );
 
 
         const email =
-          clean(body.email);
+          clean(
+            body.email
+          );
 
 
         if (!customerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer ID required"
+
           }, 400);
 
         }
@@ -717,9 +1149,13 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer not found"
+
           }, 404);
 
         }
@@ -753,10 +1189,15 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           customer:
-            customerResponse(updated)
+            customerResponse(
+              updated
+            )
+
         });
 
       }
@@ -767,7 +1208,9 @@ export default {
       ===================================================== */
 
       if (
-        path.startsWith("/api/referral/") &&
+        path.startsWith(
+          "/api/referral/"
+        ) &&
         request.method === "GET"
       ) {
 
@@ -783,9 +1226,13 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer ID required"
+
           }, 400);
 
         }
@@ -801,19 +1248,26 @@ export default {
         if (!summary) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer not found"
+
           }, 404);
 
         }
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           referral:
             summary
+
         });
 
       }
@@ -850,20 +1304,32 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer ID required"
+
           }, 400);
 
         }
 
 
-        if (!/^\d{6}$/.test(referralCode)) {
+        if (
+          !/^\d{6}$/.test(
+            referralCode
+          )
+        ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid 6-digit referral code required"
+
           }, 400);
 
         }
@@ -885,9 +1351,13 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer not found"
+
           }, 404);
 
         }
@@ -907,9 +1377,13 @@ export default {
         if (!referrer) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Referral code not found"
+
           }, 404);
 
         }
@@ -920,9 +1394,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "You cannot use your own referral code"
+
           }, 400);
 
         }
@@ -942,9 +1420,13 @@ export default {
         if (alreadyReferred) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Referral already applied"
+
           }, 409);
 
         }
@@ -975,12 +1457,16 @@ export default {
             COALESCE(referral_count, 0) + 1
           WHERE id = ?
         `)
-        .bind(referrer.id)
+        .bind(
+          referrer.id
+        )
         .run();
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           message:
             "Referral applied successfully",
@@ -990,6 +1476,7 @@ export default {
 
           referral_code:
             referralCode
+
         });
 
       }
@@ -1016,15 +1503,21 @@ export default {
 
 
         const amount =
-          Number(body.amount);
+          Number(
+            body.amount
+          );
 
 
         if (!referrerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Referrer ID required"
+
           }, 400);
 
         }
@@ -1036,9 +1529,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid amount required"
+
           }, 400);
 
         }
@@ -1060,9 +1557,13 @@ export default {
         if (!referrer) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Referrer not found"
+
           }, 404);
 
         }
@@ -1102,7 +1603,9 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           commission_percent:
             REFERRAL_PERCENT,
@@ -1115,6 +1618,7 @@ export default {
             Number(
               updated.referral_earned || 0
             )
+
         });
 
       }
@@ -1158,20 +1662,32 @@ export default {
         if (!playerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player login required"
+
           }, 400);
 
         }
 
 
-        if (!validRoomCode(roomCode)) {
+        if (
+          !validRoomCode(
+            roomCode
+          )
+        ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "8-digit Room Code required"
+
           }, 400);
 
         }
@@ -1188,7 +1704,9 @@ export default {
 
           if (
             existing.status === "WAITING" &&
-            isExpired(existing.created_at)
+            isExpired(
+              existing.created_at
+            )
           ) {
 
             await deleteRoom(
@@ -1199,9 +1717,13 @@ export default {
           } else {
 
             return json({
-              success: false,
+
+              success:
+                false,
+
               error:
                 "यह Room Code पहले से मौजूद है। दूसरा code डालें।"
+
             }, 409);
 
           }
@@ -1237,9 +1759,12 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           room: {
+
             room_code:
               roomCode,
 
@@ -1260,7 +1785,9 @@ export default {
 
             created_at:
               createdAt
+
           }
+
         });
 
       }
@@ -1268,7 +1795,6 @@ export default {
 
       /* =====================================================
          GET WAITING ROOM
-         PLAYER 2 AUTO DISPLAY
       ===================================================== */
 
       if (
@@ -1299,15 +1825,22 @@ export default {
         if (!room) {
 
           return json({
-            success: true,
-            room: null
+
+            success:
+              true,
+
+            room:
+              null
+
           });
 
         }
 
 
         if (
-          isExpired(room.created_at)
+          isExpired(
+            room.created_at
+          )
         ) {
 
           await deleteRoom(
@@ -1317,17 +1850,25 @@ export default {
 
 
           return json({
-            success: true,
-            room: null
+
+            success:
+              true,
+
+            room:
+              null
+
           });
 
         }
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           room
+
         });
 
       }
@@ -1371,20 +1912,32 @@ export default {
         if (!playerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player login required"
+
           }, 400);
 
         }
 
 
-        if (!validRoomCode(roomCode)) {
+        if (
+          !validRoomCode(
+            roomCode
+          )
+        ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "8-digit Room Code required"
+
           }, 400);
 
         }
@@ -1400,9 +1953,13 @@ export default {
         if (!room) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Room Code नहीं मिला।"
+
           }, 404);
 
         }
@@ -1410,7 +1967,9 @@ export default {
 
         if (
           room.status === "WAITING" &&
-          isExpired(room.created_at)
+          isExpired(
+            room.created_at
+          )
         ) {
 
           await deleteRoom(
@@ -1420,9 +1979,13 @@ export default {
 
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "⏰ यह Room 5 मिनट बाद expire हो गया।"
+
           }, 410);
 
         }
@@ -1433,9 +1996,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player 1 और Player 2 के लिए अलग mobile number इस्तेमाल करें।"
+
           }, 409);
 
         }
@@ -1444,9 +2011,13 @@ export default {
         if (room.player2_id) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "यह Room पहले से full है।"
+
           }, 409);
 
         }
@@ -1473,9 +2044,13 @@ export default {
         if (!result.success) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player 2 join नहीं कर पाया।"
+
           }, 500);
 
         }
@@ -1494,22 +2069,29 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player 2 database में save नहीं हुआ।"
+
           }, 500);
 
         }
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           message:
             "Player 2 joined successfully 🎉",
 
           room:
             updatedRoom
+
         });
 
       }
@@ -1520,22 +2102,35 @@ export default {
       ===================================================== */
 
       if (
-        path.startsWith("/api/rooms/") &&
+        path.startsWith(
+          "/api/rooms/"
+        ) &&
         request.method === "GET"
       ) {
 
         const roomCode =
           path
-            .replace("/api/rooms/", "")
+            .replace(
+              "/api/rooms/",
+              ""
+            )
             .trim();
 
 
-        if (!validRoomCode(roomCode)) {
+        if (
+          !validRoomCode(
+            roomCode
+          )
+        ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Invalid room code"
+
           }, 400);
 
         }
@@ -1551,9 +2146,13 @@ export default {
         if (!room) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Room not found"
+
           }, 404);
 
         }
@@ -1561,7 +2160,9 @@ export default {
 
         if (
           room.status === "WAITING" &&
-          isExpired(room.created_at)
+          isExpired(
+            room.created_at
+          )
         ) {
 
           await deleteRoom(
@@ -1571,18 +2172,25 @@ export default {
 
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Room expired"
+
           }, 410);
 
         }
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           room
+
         });
 
       }
@@ -1623,35 +2231,52 @@ export default {
 
 
         const validReasons = [
+
           "No Room Code",
+
           "Not Game Start",
+
           "Not Player Join",
+
           "Opposite Error"
+
         ];
 
 
         if (
           !playerId ||
-          !validRoomCode(roomCode)
+          !validRoomCode(
+            roomCode
+          )
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player and valid Room Code required"
+
           }, 400);
 
         }
 
 
         if (
-          !validReasons.includes(reason)
+          !validReasons.includes(
+            reason
+          )
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid cancellation reason required"
+
           }, 400);
 
         }
@@ -1667,9 +2292,13 @@ export default {
         if (!room) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Room not found"
+
           }, 404);
 
         }
@@ -1681,9 +2310,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Not your room"
+
           }, 403);
 
         }
@@ -1719,12 +2352,15 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           message:
             "Room cancelled successfully",
 
           reason
+
         });
 
       }
@@ -1765,14 +2401,20 @@ export default {
 
         if (
           !playerId ||
-          !validRoomCode(roomCode) ||
+          !validRoomCode(
+            roomCode
+          ) ||
           !screenshot
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player, room and screenshot required"
+
           }, 400);
 
         }
@@ -1788,9 +2430,13 @@ export default {
         if (!room) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Room not found"
+
           }, 404);
 
         }
@@ -1802,9 +2448,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Player is not part of this room"
+
           }, 403);
 
         }
@@ -1827,10 +2477,13 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           message:
             "Screenshot submitted successfully"
+
         });
 
       }
@@ -1864,11 +2517,15 @@ export default {
 
 
         const mobile =
-          clean(body.mobile);
+          clean(
+            body.mobile
+          );
 
 
         const dob =
-          clean(body.dob);
+          clean(
+            body.dob
+          );
 
 
         const documentType =
@@ -1899,36 +2556,50 @@ export default {
           );
 
 
-        /* ---------- VALIDATION ---------- */
-
         if (!customerId) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer ID required"
+
           }, 400);
 
         }
 
 
-        if (fullName.length < 2) {
+        if (
+          fullName.length < 2
+        ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Full name required"
+
           }, 400);
 
         }
 
 
-        if (!validMobile(mobile)) {
+        if (
+          !validMobile(mobile)
+        ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid 10-digit mobile number required"
+
           }, 400);
 
         }
@@ -1937,19 +2608,28 @@ export default {
         if (!dob) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Date of birth required"
+
           }, 400);
 
         }
 
 
         const allowedDocuments = [
+
           "aadhaar",
+
           "pan",
+
           "voter",
+
           "driving-license"
+
         ];
 
 
@@ -1960,9 +2640,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid KYC document type required"
+
           }, 400);
 
         }
@@ -1973,9 +2657,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Document number required"
+
           }, 400);
 
         }
@@ -1984,9 +2672,13 @@ export default {
         if (!documentFileName) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "KYC document upload required"
+
           }, 400);
 
         }
@@ -1995,18 +2687,22 @@ export default {
         if (!selfieFileName) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Selfie upload required"
+
           }, 400);
 
         }
 
 
-        await ensureKYCTable(env);
+        await ensureKYCTable(
+          env
+        );
 
-
-        /* ---------- CUSTOMER CHECK ---------- */
 
         const customer =
           await env.DB.prepare(`
@@ -2021,9 +2717,13 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Customer not found"
+
           }, 404);
 
         }
@@ -2035,15 +2735,17 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Mobile number does not match customer account"
+
           }, 403);
 
         }
 
-
-        /* ---------- EXISTING PENDING ---------- */
 
         const pending =
           await env.DB.prepare(`
@@ -2061,14 +2763,18 @@ export default {
         if (pending) {
 
           return json({
-            success: true,
 
-            already_pending: true,
+            success:
+              true,
+
+            already_pending:
+              true,
 
             message:
               "Your KYC is already pending",
 
             kyc: {
+
               id:
                 pending.id,
 
@@ -2077,7 +2783,9 @@ export default {
 
               submitted_at:
                 pending.submitted_at
+
             }
+
           });
 
         }
@@ -2086,8 +2794,6 @@ export default {
         const submittedAt =
           Date.now();
 
-
-        /* ---------- SAVE KYC ---------- */
 
         const result =
           await env.DB.prepare(`
@@ -2125,8 +2831,6 @@ export default {
           .run();
 
 
-        /* ---------- UPDATE CUSTOMER ---------- */
-
         await env.DB.prepare(`
           UPDATE customers
           SET kyc_status = 'Pending'
@@ -2137,14 +2841,18 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           message:
             "KYC submitted successfully",
 
           kyc: {
+
             id:
-              result.meta?.last_row_id || null,
+              result.meta?.last_row_id ||
+              null,
 
             customer_id:
               customerId,
@@ -2154,8 +2862,48 @@ export default {
 
             submitted_at:
               submittedAt
+
           }
+
         });
+
+      }
+
+
+      /* =====================================================
+         ADMIN API PROTECTION
+         
+         Every /api/admin/* endpoint below requires
+         successful Admin Login.
+
+         Login/logout/session are excluded because
+         they handle authentication themselves.
+      ===================================================== */
+
+      if (
+        path.startsWith(
+          "/api/admin/"
+        ) &&
+        path !== "/api/admin/login" &&
+        path !== "/api/admin/logout" &&
+        path !== "/api/admin/session"
+      ) {
+
+        if (
+          !requireAdmin(request)
+        ) {
+
+          return json({
+
+            success:
+              false,
+
+            error:
+              "Admin authentication required"
+
+          }, 401);
+
+        }
 
       }
 
@@ -2169,7 +2917,9 @@ export default {
         request.method === "GET"
       ) {
 
-        await ensureKYCTable(env);
+        await ensureKYCTable(
+          env
+        );
 
 
         const result =
@@ -2194,13 +2944,16 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           count:
             result.results?.length || 0,
 
           kyc:
             result.results || []
+
         });
 
       }
@@ -2215,7 +2968,9 @@ export default {
         request.method === "GET"
       ) {
 
-        await ensureKYCTable(env);
+        await ensureKYCTable(
+          env
+        );
 
 
         const result =
@@ -2241,13 +2996,16 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           count:
             result.results?.length || 0,
 
           kyc:
             result.results || []
+
         });
 
       }
@@ -2275,20 +3033,28 @@ export default {
 
 
         if (
-          !Number.isInteger(kycId) ||
+          !Number.isInteger(
+            kycId
+          ) ||
           kycId <= 0
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid KYC ID required"
+
           }, 400);
 
         }
 
 
-        await ensureKYCTable(env);
+        await ensureKYCTable(
+          env
+        );
 
 
         const kyc =
@@ -2304,9 +3070,13 @@ export default {
         if (!kyc) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "KYC submission not found"
+
           }, 404);
 
         }
@@ -2317,9 +3087,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "KYC is already reviewed"
+
           }, 409);
 
         }
@@ -2356,7 +3130,9 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           message:
             "KYC approved successfully",
@@ -2366,6 +3142,7 @@ export default {
 
           status:
             "APPROVED"
+
         });
 
       }
@@ -2401,20 +3178,28 @@ export default {
 
 
         if (
-          !Number.isInteger(kycId) ||
+          !Number.isInteger(
+            kycId
+          ) ||
           kycId <= 0
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "Valid KYC ID required"
+
           }, 400);
 
         }
 
 
-        await ensureKYCTable(env);
+        await ensureKYCTable(
+          env
+        );
 
 
         const kyc =
@@ -2430,9 +3215,13 @@ export default {
         if (!kyc) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "KYC submission not found"
+
           }, 404);
 
         }
@@ -2443,9 +3232,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+
+            success:
+              false,
+
             error:
               "KYC is already reviewed"
+
           }, 409);
 
         }
@@ -2483,7 +3276,9 @@ export default {
 
 
         return json({
-          success: true,
+
+          success:
+            true,
 
           message:
             "KYC rejected successfully",
@@ -2495,6 +3290,7 @@ export default {
             "REJECTED",
 
           reason
+
         });
 
       }
@@ -2530,7 +3326,9 @@ export default {
          STATIC WEBSITE FILES
       ===================================================== */
 
-      return env.ASSETS.fetch(request);
+      return env.ASSETS.fetch(
+        request
+      );
 
 
     } catch (error) {
@@ -2542,11 +3340,14 @@ export default {
 
 
       return json({
-        success: false,
+
+        success:
+          false,
 
         error:
           error?.message ||
           "Server Error"
+
       }, 500);
 
     }
