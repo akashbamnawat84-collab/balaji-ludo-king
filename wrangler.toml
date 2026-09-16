@@ -19,5 +19,5 @@ type = "durable-object"
 state = "deleted"
 
 [assets]
-directory = "./public"
+directory = "./Public"
 binding = "ASSETS"
