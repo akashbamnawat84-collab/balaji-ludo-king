@@ -3,7 +3,9 @@
 // ======================================
 
 
+// ======================================
 // ELEMENTS
+// ======================================
 
 const profileName =
   document.getElementById("profileName");
@@ -28,6 +30,9 @@ const referBtn =
 
 const supportBtn =
   document.getElementById("supportBtn");
+
+const kycBtn =
+  document.getElementById("kycBtn");
 
 const logoutBtn =
   document.getElementById("logoutBtn");
@@ -74,63 +79,119 @@ function loadProfile() {
 
 
   if (profileName) {
-    profileName.textContent = name;
+
+    profileName.textContent =
+      name;
+
   }
+
 
   if (nameValue) {
-    nameValue.textContent = name;
+
+    nameValue.textContent =
+      name;
+
   }
+
 
   if (profileMobile) {
-    profileMobile.textContent = mobile;
+
+    profileMobile.textContent =
+      mobile;
+
   }
+
 
   if (mobileValue) {
-    mobileValue.textContent = mobile;
+
+    mobileValue.textContent =
+      mobile;
+
   }
 
+
   if (playerIdElement) {
-    playerIdElement.textContent = playerId;
+
+    playerIdElement.textContent =
+      playerId;
+
   }
+
 }
 
 
 // ======================================
-// BUTTONS
+// WALLET
 // ======================================
 
 if (walletBtn) {
 
-  walletBtn.addEventListener("click", () => {
+  walletBtn.addEventListener(
+    "click",
+    () => {
 
-    window.location.href =
-      "wallet.html";
+      window.location.href =
+        "wallet.html";
 
-  });
+    }
+  );
 
 }
 
+
+// ======================================
+// REFER
+// ======================================
 
 if (referBtn) {
 
-  referBtn.addEventListener("click", () => {
+  referBtn.addEventListener(
+    "click",
+    () => {
 
-    window.location.href =
-      "refer.html";
+      window.location.href =
+        "refer.html";
 
-  });
+    }
+  );
 
 }
 
 
+// ======================================
+// SUPPORT
+// ======================================
+
 if (supportBtn) {
 
-  supportBtn.addEventListener("click", () => {
+  supportBtn.addEventListener(
+    "click",
+    () => {
 
-    window.location.href =
-      "support.html";
+      window.location.href =
+        "support.html";
 
-  });
+    }
+  );
+
+}
+
+
+// ======================================
+// KYC
+// ======================================
+
+if (kycBtn) {
+
+  kycBtn.addEventListener(
+    "click",
+    () => {
+
+      window.location.href =
+        "kyc/";
+
+    }
+  );
 
 }
 
@@ -141,41 +202,48 @@ if (supportBtn) {
 
 if (logoutBtn) {
 
-  logoutBtn.addEventListener("click", () => {
+  logoutBtn.addEventListener(
+    "click",
+    () => {
 
-    const confirmLogout =
-      confirm("Are you sure you want to logout?");
+      const confirmLogout =
+        confirm(
+          "Are you sure you want to logout?"
+        );
 
 
-    if (!confirmLogout) {
-      return;
+      if (!confirmLogout) {
+
+        return;
+
+      }
+
+
+      // Remove login keys
+
+      localStorage.removeItem(
+        "BALAJI_LOGIN"
+      );
+
+      localStorage.removeItem(
+        "balajiLogin"
+      );
+
+
+      // Remove login mobile
+
+      localStorage.removeItem(
+        "balajiMobile"
+      );
+
+
+      // Go to HOME page
+
+      window.location.href =
+        "home.html";
+
     }
-
-
-    // Remove both login keys
-
-    localStorage.removeItem(
-      "BALAJI_LOGIN"
-    );
-
-    localStorage.removeItem(
-      "balajiLogin"
-    );
-
-
-    // Remove login mobile
-
-    localStorage.removeItem(
-      "balajiMobile"
-    );
-
-
-    // Go to HOME page after logout
-
-    window.location.href =
-      "home.html";
-
-  });
+  );
 
 }
 
