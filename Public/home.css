@@ -1,7 +1,6 @@
-/* =========================================================
-   BALAJI LUDO KING
-   HOME PAGE — FINAL MATCHING DESIGN
-========================================================= */
+/* =========================================
+   BALAJI LUDO KING - HOME PAGE
+   ========================================= */
 
 * {
   margin: 0;
@@ -15,1118 +14,576 @@ html {
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #f4f8fc;
-  color: #172033;
-  min-height: 100vh;
-  padding-bottom: 92px;
-  overflow-x: hidden;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: 0;
-  touch-action: manipulation;
+  background: #f4f7fb;
+  color: #17122f;
+  padding-bottom: 85px;
 }
 
 
-/* =========================================================
+/* =========================================
    TOP HEADER
-========================================================= */
+   ========================================= */
 
 .top-header {
-  position: relative;
-  overflow: hidden;
-  background:
-    linear-gradient(
-      135deg,
-      #101827 0%,
-      #172337 55%,
-      #111a2b 100%
-    );
-  color: #fff;
-  padding: 14px 14px 20px;
-  border-radius: 0 0 22px 22px;
-  box-shadow: 0 7px 22px rgba(10, 20, 35, .20);
-}
-
-.top-header::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  background: #ffd21c;
-}
-
-
-/* =========================================================
-   HEADER CONTENT
-========================================================= */
-
-.profile-area {
-  position: relative;
-  z-index: 2;
-
+  min-height: 78px;
+  background: linear-gradient(135deg, #17122f, #24164d);
+  border-bottom: 3px solid #ffd21c;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
-
-  max-width: 520px;
-  margin: auto;
-}
-
-.profile-icon {
-  position: relative;
-
-  width: 48px;
-  height: 48px;
-
-  flex-shrink: 0;
-
-  border-radius: 50%;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffe36a,
-      #f5a900
-    );
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 23px;
-
-  border: 3px solid rgba(255,255,255,.9);
-
-  box-shadow:
-    0 4px 12px rgba(0,0,0,.30),
-    inset 0 1px 2px rgba(255,255,255,.7);
-}
-
-.profile-icon::after {
-  content: "";
-
-  position: absolute;
-
-  right: -1px;
-  bottom: -1px;
-
-  width: 12px;
-  height: 12px;
-
-  border-radius: 50%;
-
-  background: #22c55e;
-
-  border: 2px solid #172337;
-}
-
-.profile-area h1 {
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: .4px;
-  line-height: 1.2;
-}
-
-.profile-area p {
-  margin-top: 3px;
-
-  font-size: 10px;
-
-  color: #aeb9ca;
-
-  font-weight: 600;
-}
-
-
-/* =========================================================
-   WALLET / REFER
-========================================================= */
-
-.quick-stats {
-  width: calc(100% - 24px);
-  max-width: 520px;
-
-  margin: -4px auto 0;
-
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  gap: 9px;
-
   position: relative;
   z-index: 10;
 }
 
-.stat-card {
-  min-height: 67px;
-
-  padding: 10px 12px;
-
+.header-left {
   display: flex;
   align-items: center;
-
   gap: 9px;
-
-  background: #fff;
-
-  border-radius: 16px;
-
-  border: 1px solid #e3eaf2;
-
-  box-shadow:
-    0 7px 18px rgba(35, 55, 80, .10);
-
-  transition: transform .15s ease;
-}
-
-.stat-card:active {
-  transform: scale(.97);
-}
-
-.stat-icon {
-  width: 38px;
-  height: 38px;
-
-  flex-shrink: 0;
-
-  border-radius: 12px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #eaf3ff;
-
-  color: #1769d2;
-
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.stat-card div {
   min-width: 0;
 }
 
-.stat-card small {
-  display: block;
-
-  font-size: 9px;
-
-  color: #8995a6;
-
-  font-weight: 700;
-}
-
-.stat-card strong {
-  display: block;
-
-  margin-top: 3px;
-
-  font-size: 14px;
-
-  color: #182337;
-
-  font-weight: 900;
-}
-
-
-/* =========================================================
-   MAIN CONTAINERS
-========================================================= */
-
-.home-container,
-.games-container,
-.home-footer {
-  width: calc(100% - 24px);
-  max-width: 520px;
-
-  margin-left: auto;
-  margin-right: auto;
-}
-
-
-/* =========================================================
-   WELCOME CARD
-========================================================= */
-
-.announcement {
-  margin-top: 15px;
-
-  padding: 14px;
-
-  display: flex;
-
-  gap: 11px;
-
-  background: #fff;
-
-  border-radius: 17px;
-
-  border: 1px solid #e4ebf3;
-
-  box-shadow:
-    0 6px 17px rgba(40, 60, 85, .07);
-}
-
-.announcement-icon {
-  width: 42px;
-  height: 42px;
-
-  flex-shrink: 0;
-
-  border-radius: 13px;
-
-  background: #fff3df;
-
+.menu-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.12);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 21px;
+  font-size: 20px;
 }
 
-.announcement-text {
-  min-width: 0;
-}
-
-.announcement-text strong {
-  display: block;
-
-  font-size: 12px;
-
-  font-weight: 900;
-
-  color: #172033;
-}
-
-.announcement-text p {
-  margin-top: 5px;
-
-  font-size: 10px;
-
-  line-height: 1.55;
-
-  color: #727f91;
-
-  font-weight: 600;
-}
-
-
-/* =========================================================
-   MAIN HERO
-========================================================= */
-
-.banner {
-  margin-top: 12px;
-
-  min-height: 135px;
-
-  border-radius: 19px;
-
-  overflow: hidden;
-
-  position: relative;
-
-  background:
-    radial-gradient(
-      circle at 88% 15%,
-      rgba(255,255,255,.18),
-      transparent 24%
-    ),
-    linear-gradient(
-      135deg,
-      #1769d2,
-      #2088e8 55%,
-      #34a9f4
-    );
-
-  color: #fff;
-
-  box-shadow:
-    0 9px 22px rgba(23, 105, 210, .22);
-}
-
-.banner::before {
-  content: "";
-
-  position: absolute;
-
-  width: 170px;
-  height: 170px;
-
-  right: -75px;
-  top: -72px;
-
+.brand-logo {
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-
-  border: 24px solid rgba(255,255,255,.09);
-}
-
-.banner::after {
-  content: "🎲";
-
-  position: absolute;
-
-  right: 12px;
-  bottom: 2px;
-
-  font-size: 70px;
-
-  opacity: .16;
-
-  transform: rotate(-10deg);
-}
-
-.banner-content {
-  position: relative;
-
-  z-index: 2;
-
-  padding: 19px 17px;
-}
-
-.banner-badge {
-  display: inline-flex;
-
+  background: linear-gradient(145deg, #ffd21c, #ff9f00);
+  border: 3px solid #ffffff;
+  display: flex;
   align-items: center;
-
-  padding: 5px 9px;
-
-  border-radius: 8px;
-
-  background: rgba(255,255,255,.16);
-
-  border: 1px solid rgba(255,255,255,.16);
-
-  font-size: 8px;
-
-  font-weight: 900;
-}
-
-.banner h2 {
-  margin-top: 9px;
-
+  justify-content: center;
   font-size: 25px;
-
-  font-weight: 900;
-
-  letter-spacing: -.3px;
-}
-
-.banner p {
-  margin-top: 5px;
-
-  max-width: 245px;
-
-  font-size: 10px;
-
-  line-height: 1.5;
-
-  color: rgba(255,255,255,.90);
-}
-
-
-/* =========================================================
-   FEATURED GAMES
-========================================================= */
-
-.games-container {
-  margin-top: 19px;
-}
-
-.section-title {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin-bottom: 10px;
-}
-
-.section-title h2 {
-  font-size: 17px;
-
-  font-weight: 900;
-
-  color: #172033;
-}
-
-.section-title::after {
-  content: "View All";
-
-  width: auto;
-  height: auto;
-
-  background: transparent;
-
-  color: #1769d2;
-
-  font-size: 10px;
-
-  font-weight: 900;
-}
-
-
-/* =========================================================
-   GAME CARDS
-========================================================= */
-
-.game-card {
-  min-height: 91px;
-
-  background: #fff;
-
-  border-radius: 18px;
-
-  padding: 11px;
-
-  margin-bottom: 10px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 9px;
-
-  border: 1px solid #e3eaf2;
-
-  box-shadow:
-    0 6px 18px rgba(40, 60, 85, .07);
-}
-
-.game-left {
-  display: flex;
-
-  align-items: center;
-
-  gap: 10px;
-
-  min-width: 0;
-}
-
-.game-logo {
-  width: 59px;
-  height: 59px;
-
   flex-shrink: 0;
-
-  border-radius: 16px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #e7f2ff,
-      #cfe5ff
-    );
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  font-size: 31px;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.8);
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
 }
 
-.support-logo {
-  background:
-    linear-gradient(
-      135deg,
-      #e5f9ef,
-      #c8f0dc
-    );
-}
-
-.game-info {
+.brand-text {
   min-width: 0;
 }
 
-.live-row {
-  display: flex;
-
-  align-items: center;
-
-  gap: 5px;
-}
-
-.live-dot {
-  width: 7px;
-  height: 7px;
-
-  border-radius: 50%;
-
-  background: #18b566;
-
-  box-shadow:
-    0 0 0 3px rgba(24,181,102,.10);
-}
-
-.live-text {
-  font-size: 8px;
-
-  color: #13a25b;
-
-  font-weight: 900;
-
-  letter-spacing: .4px;
-}
-
-.game-info h3 {
-  margin-top: 4px;
-
+.brand-text h1 {
+  color: #ffffff;
   font-size: 14px;
-
   font-weight: 900;
-
-  color: #1b2638;
-}
-
-.game-info p {
-  margin-top: 3px;
-
-  font-size: 9px;
-
-  color: #8995a6;
-
+  letter-spacing: .5px;
   white-space: nowrap;
 }
 
+.brand-text span {
+  color: #c9c5dc;
+  font-size: 9px;
+  margin-top: 3px;
+  display: block;
+}
 
-/* =========================================================
+
+/* =========================================
+   TOP WALLET + REFER
+   ========================================= */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.top-wallet,
+.top-refer {
+  min-height: 34px;
+  padding: 6px 9px;
+  border-radius: 18px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.top-wallet {
+  background: #ffffff;
+  color: #17122f;
+}
+
+.top-refer {
+  background: #ffd21c;
+  color: #17122f;
+}
+
+.top-icon {
+  font-weight: 900;
+  font-size: 13px;
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+   ========================================= */
+
+.home-container {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 14px;
+}
+
+
+/* =========================================
+   WELCOME CARD
+   ========================================= */
+
+.welcome-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 13px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  box-shadow: 0 4px 15px rgba(30,35,70,.08);
+  border: 1px solid #e9edf4;
+  margin-bottom: 13px;
+}
+
+.welcome-icon {
+  width: 43px;
+  height: 43px;
+  border-radius: 13px;
+  background: #fff4c2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+  flex-shrink: 0;
+}
+
+.welcome-card h2 {
+  font-size: 12px;
+  color: #17122f;
+  margin-bottom: 5px;
+}
+
+.welcome-card p {
+  font-size: 10px;
+  line-height: 1.4;
+  color: #77738a;
+}
+
+
+/* =========================================
+   REFERRAL BANNER
+   ========================================= */
+
+.referral-banner {
+  min-height: 165px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, #108d4c, #16b865);
+  color: #ffffff;
+  padding: 20px;
+  margin-bottom: 19px;
+  box-shadow: 0 8px 20px rgba(16,141,76,.18);
+}
+
+.referral-content {
+  position: relative;
+  z-index: 2;
+  max-width: 72%;
+}
+
+.referral-title {
+  display: inline-block;
+  background: rgba(255,255,255,.17);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .5px;
+}
+
+.referral-banner h2 {
+  font-size: 27px;
+  margin: 8px 0 4px;
+}
+
+.referral-banner p {
+  font-size: 10px;
+  line-height: 1.4;
+  max-width: 210px;
+  opacity: .95;
+}
+
+.reward-row {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.reward-box {
+  min-width: 78px;
+  padding: 6px 9px;
+  border-radius: 10px;
+  background: rgba(0,0,0,.17);
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-box strong {
+  font-size: 16px;
+}
+
+.reward-box small {
+  font-size: 7px;
+  font-weight: 900;
+  margin-top: 2px;
+}
+
+.referral-image {
+  position: absolute;
+  right: 14px;
+  bottom: 5px;
+  width: 105px;
+  height: 125px;
+  border-radius: 60px 60px 15px 15px;
+  background: rgba(255,255,255,.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 65px;
+}
+
+
+/* =========================================
+   FEATURED GAMES
+   ========================================= */
+
+.games-section {
+  width: 100%;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 11px;
+}
+
+.section-heading h2 {
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.section-heading span {
+  color: #6352d9;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+
+/* =========================================
+   TWO CARDS - SAME ROW
+   ========================================= */
+
+.games-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.game-card {
+  background: #ffffff;
+  border-radius: 17px;
+  overflow: hidden;
+  border: 1px solid #e7eaf1;
+  box-shadow: 0 5px 16px rgba(30,35,70,.08);
+  min-width: 0;
+}
+
+.game-image {
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  position: relative;
+}
+
+.ludo-image {
+  background:
+    radial-gradient(circle at center, #ffffff 0 25%, transparent 26%),
+    linear-gradient(135deg, #f7d64a, #efb400);
+}
+
+.support-image {
+  background:
+    radial-gradient(circle at center, #ffffff 0 25%, transparent 26%),
+    linear-gradient(135deg, #8b7bea, #5b49c8);
+}
+
+.game-card-content {
+  padding: 11px;
+}
+
+.game-status {
+  color: #18a957;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.game-card h3 {
+  font-size: 13px;
+  margin-top: 5px;
+  color: #17122f;
+}
+
+.game-card p {
+  color: #8a8797;
+  font-size: 9px;
+  margin-top: 3px;
+  min-height: 22px;
+}
+
+
+/* =========================================
    BUTTONS
-========================================================= */
+   ========================================= */
 
 .play-button,
 .support-button {
-  flex-shrink: 0;
-
-  min-height: 38px;
-
-  border-radius: 11px;
-
+  width: 100%;
+  border: 0;
+  border-radius: 9px;
+  padding: 9px 5px;
+  margin-top: 7px;
   font-size: 10px;
-
   font-weight: 900;
+  cursor: pointer;
+}
 
-  transition: transform .15s ease;
+.play-button {
+  background: #5b49d6;
+  color: #ffffff;
+}
+
+.support-button {
+  background: #17122f;
+  color: #ffffff;
 }
 
 .play-button:active,
 .support-button:active {
-  transform: scale(.95);
-}
-
-.play-button {
-  min-width: 82px;
-
-  padding: 0 11px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #207be1,
-      #125fc2
-    );
-
-  color: #fff;
-
-  box-shadow:
-    0 6px 13px rgba(18,95,194,.22);
-}
-
-.support-button {
-  min-width: 73px;
-
-  padding: 0 9px;
-
-  background: #e8fff2;
-
-  color: #15985b;
-
-  border: 1px solid #c8efd9;
+  transform: scale(.97);
 }
 
 
-/* =========================================================
-   REFER & EARN PROMO
-========================================================= */
+/* =========================================
+   INFO CARD
+   ========================================= */
 
-.promo-banner {
-  width: 100%;
-
-  min-height: 160px;
-
+.info-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 13px;
   margin-top: 15px;
-
-  margin-bottom: 17px;
-
-  position: relative;
-
-  overflow: hidden;
-
-  border-radius: 20px;
-
-  background:
-    radial-gradient(
-      circle at 84% 13%,
-      rgba(255,255,255,.16),
-      transparent 23%
-    ),
-    linear-gradient(
-      135deg,
-      #159b58,
-      #08763d
-    );
-
-  color: #fff;
-
-  box-shadow:
-    0 9px 23px rgba(9,113,61,.18);
-}
-
-.promo-circle {
-  position: absolute;
-
-  width: 190px;
-  height: 190px;
-
-  right: -82px;
-  top: -80px;
-
-  border-radius: 50%;
-
-  border: 21px solid rgba(255,255,255,.08);
-}
-
-.promo-content {
-  position: relative;
-
-  z-index: 5;
-
-  width: 73%;
-
-  padding: 17px;
-}
-
-.promo-small-title {
-  font-size: 8px;
-
-  font-weight: 900;
-
-  letter-spacing: 1px;
-
-  color: rgba(255,255,255,.87);
-}
-
-.promo-content h2 {
-  margin-top: 4px;
-
-  font-size: 25px;
-
-  font-weight: 900;
-}
-
-.promo-content p {
-  margin-top: 5px;
-
-  font-size: 9px;
-
-  line-height: 1.45;
-
-  color: rgba(255,255,255,.90);
-}
-
-.promo-badges {
   display: flex;
-
-  gap: 7px;
-
-  margin-top: 11px;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid #e8eaf1;
+  box-shadow: 0 4px 14px rgba(30,35,70,.06);
 }
 
-.promo-badge {
-  min-width: 88px;
-
-  padding: 6px 8px;
-
-  border-radius: 11px;
-
-  background: rgba(255,255,255,.14);
-
-  border: 1px solid rgba(255,255,255,.18);
-
-  text-align: center;
-}
-
-.promo-badge strong {
-  display: block;
-
-  font-size: 22px;
-
-  line-height: 1;
-
-  font-weight: 900;
-
-  color: #ffe329;
-}
-
-.promo-badge span {
-  display: block;
-
-  margin-top: 3px;
-
-  font-size: 7px;
-
-  font-weight: 900;
-
-  letter-spacing: .5px;
-}
-
-.promo-person {
-  position: absolute;
-
-  z-index: 4;
-
-  right: 2px;
-  bottom: -3px;
-
-  width: 108px;
-  height: 116px;
-
+.info-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #fff1b0;
   display: flex;
-
-  align-items: flex-end;
-
-  justify-content: center;
-
-  font-size: 76px;
-
-  line-height: 1;
-}
-
-.promo-spark {
-  position: absolute;
-
-  z-index: 6;
-
-  color: rgba(255,255,255,.76);
-}
-
-.promo-spark.one {
-  right: 104px;
-  top: 14px;
-}
-
-.promo-spark.two {
-  right: 19px;
-  top: 19px;
-
-  font-size: 12px;
-}
-
-.promo-spark.three {
-  right: 82px;
-  bottom: 14px;
-
-  font-size: 12px;
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.home-footer {
-  margin-top: 4px;
-
-  padding: 19px 14px;
-
-  text-align: center;
-
-  border-radius: 19px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #172033,
-      #26354c
-    );
-
-  color: #fff;
-
-  box-shadow:
-    0 7px 20px rgba(25,35,50,.13);
-}
-
-.footer-logo {
-  width: 44px;
-  height: 44px;
-
-  margin: auto auto 8px;
-
-  border-radius: 14px;
-
-  background: rgba(255,255,255,.09);
-
-  display: flex;
-
   align-items: center;
   justify-content: center;
-
   font-size: 22px;
+  flex-shrink: 0;
 }
 
-.home-footer h3 {
+.info-card h3 {
   font-size: 12px;
-
-  font-weight: 900;
+  margin-bottom: 4px;
 }
 
-.home-footer p {
-  margin-top: 4px;
-
+.info-card p {
+  color: #817d91;
   font-size: 9px;
-
-  color: #c8d2df;
-}
-
-.home-footer small {
-  display: block;
-
-  margin-top: 8px;
-
-  font-size: 8px;
-
-  line-height: 1.45;
-
-  color: #8e9bae;
+  line-height: 1.4;
 }
 
 
-/* =========================================================
+/* =========================================
    BOTTOM NAVIGATION
-========================================================= */
+   ========================================= */
 
 .bottom-nav {
   position: fixed;
-
-  z-index: 100;
-
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
-
-  transform: translateX(-50%);
-
-  width: 100%;
-
-  max-width: 560px;
-
-  height: 76px;
-
-  padding: 7px 7px 9px;
-
-  padding-bottom:
-    calc(
-      9px + env(safe-area-inset-bottom)
-    );
-
-  background:
-    linear-gradient(
-      135deg,
-      #4b1d91,
-      #7028d4
-    );
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(5, 1fr);
-
+  height: 70px;
+  background: #191330;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
   align-items: center;
-
-  border-radius: 25px 25px 0 0;
-
-  box-shadow:
-    0 -7px 22px rgba(55,25,100,.23);
+  justify-content: space-around;
+  z-index: 100;
+  padding: 5px 7px;
 }
 
 .nav-item {
-  height: 56px;
-
+  width: 20%;
+  height: 58px;
+  color: #aaa5bd;
+  text-decoration: none;
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 3px;
-
-  color: rgba(255,255,255,.70);
-
-  transition: transform .15s ease;
-}
-
-.nav-item:active {
-  transform: scale(.93);
-}
-
-.nav-item span {
-  font-size: 18px;
-
-  line-height: 1;
+  font-size: 20px;
+  border-radius: 12px;
 }
 
 .nav-item small {
   font-size: 8px;
-
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .nav-item.active {
-  color: #fff;
+  color: #ffd21c;
+  background: rgba(255,210,28,.08);
 }
 
-.nav-item.active span {
-  width: 49px;
-  height: 49px;
-
-  margin-top: -23px;
-
-  border-radius: 50%;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background:
-    linear-gradient(
-      145deg,
-      #26a9ff,
-      #126dd2
-    );
-
-  color: #fff;
-
-  border: 5px solid #7028d4;
-
-  box-shadow:
-    0 6px 17px rgba(0,0,0,.28);
-}
-
-.nav-item.active small {
-  margin-top: 1px;
-
-  color: #fff;
+.nav-item:active {
+  transform: scale(.95);
 }
 
 
-/* =========================================================
+/* =========================================
    MOBILE
-========================================================= */
+   ========================================= */
 
-@media (max-width: 360px) {
+@media (max-width: 390px) {
 
-  .quick-stats,
-  .home-container,
-  .games-container,
-  .home-footer {
-    width: calc(100% - 18px);
+  .top-header {
+    padding: 10px 9px;
   }
 
-  .profile-area h1 {
-    font-size: 14px;
+  .menu-button {
+    width: 30px;
+    height: 30px;
+    font-size: 17px;
   }
 
-  .profile-icon {
-    width: 45px;
-    height: 45px;
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
   }
 
-  .stat-card {
-    padding: 9px;
+  .brand-text h1 {
+    font-size: 11px;
   }
 
-  .stat-icon {
-    width: 35px;
-    height: 35px;
-
-    font-size: 16px;
-  }
-
-  .stat-card strong {
-    font-size: 13px;
-  }
-
-  .game-card {
-    padding: 9px;
-  }
-
-  .game-logo {
-    width: 52px;
-    height: 52px;
-
-    font-size: 27px;
-  }
-
-  .game-left {
-    gap: 8px;
-  }
-
-  .game-info h3 {
-    font-size: 12px;
-  }
-
-  .game-info p {
+  .brand-text span {
     font-size: 8px;
   }
 
-  .play-button {
-    min-width: 70px;
+  .header-actions {
+    gap: 4px;
+  }
+
+  .top-wallet,
+  .top-refer {
+    padding: 5px 7px;
     font-size: 9px;
   }
 
+  .home-container {
+    padding: 11px;
+  }
+
+  .referral-banner {
+    min-height: 155px;
+    padding: 16px;
+  }
+
+  .referral-banner h2 {
+    font-size: 23px;
+  }
+
+  .referral-image {
+    width: 88px;
+    height: 110px;
+    font-size: 53px;
+    right: 8px;
+  }
+
+  .game-image {
+    height: 90px;
+    font-size: 40px;
+  }
+
+  .game-card-content {
+    padding: 9px;
+  }
+
+  .game-card h3 {
+    font-size: 11px;
+  }
+
+  .game-card p {
+    font-size: 8px;
+  }
+
+  .play-button,
   .support-button {
-    min-width: 64px;
     font-size: 9px;
+    padding: 8px 3px;
   }
 
-  .promo-content {
-    width: 78%;
-    padding: 14px;
+}
+
+
+/* =========================================
+   LARGER MOBILE / TABLET
+   ========================================= */
+
+@media (min-width: 600px) {
+
+  .top-header {
+    padding-left: 25px;
+    padding-right: 25px;
   }
 
-  .promo-content h2 {
-    font-size: 21px;
+  .home-container {
+    padding: 20px;
   }
 
-  .promo-badge {
-    min-width: 76px;
+  .games-row {
+    gap: 16px;
   }
 
-  .promo-badge strong {
-    font-size: 20px;
-  }
-
-  .promo-person {
-    font-size: 63px;
-    right: -7px;
-  }
 }
