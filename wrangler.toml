@@ -21,3 +21,4 @@ state = "deleted"
 [assets]
 directory = "./Public"
 binding = "ASSETS"
+html_handling = "auto-trailing-slash"
