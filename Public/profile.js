@@ -188,7 +188,7 @@ if (kycBtn) {
     () => {
 
       window.location.href =
-        "/kyc/";
+        "/kyc/index.html";
 
     }
   );
