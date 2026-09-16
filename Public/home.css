@@ -1,7 +1,7 @@
 /* =========================================================
-   BALAJI LUDO KING — PREMIUM MODERN HOME
-   DESIGN ONLY — FUNCTIONALITY UNCHANGED
-========================================================= */
+   BALAJI LUDO KING
+   HOME PAGE - NEW DESIGN
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -10,422 +10,311 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  min-height: 100%;
 }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background:
-    radial-gradient(circle at 10% 5%, rgba(43,125,255,.12), transparent 28%),
-    radial-gradient(circle at 90% 25%, rgba(124,58,237,.08), transparent 25%),
-    #f5f7fc;
-  color: #111827;
-  padding-bottom: 105px;
+  background: #f4f1ff;
+  color: #17121f;
+  min-height: 100vh;
+  padding-bottom: 95px;
 }
 
 /* =========================================================
-   HEADER
-========================================================= */
+   TOP HEADER
+   ========================================================= */
 
 .top-header {
-  position: relative;
-  overflow: hidden;
-  padding: 25px 18px 65px;
-  color: #fff;
-  background:
-    radial-gradient(circle at 85% 15%, rgba(255,255,255,.20), transparent 24%),
-    radial-gradient(circle at 15% 100%, rgba(0,174,255,.25), transparent 32%),
-    linear-gradient(135deg, #071a4d 0%, #0b43a5 48%, #168cff 100%);
-  border-radius: 0 0 36px 36px;
-  box-shadow: 0 16px 38px rgba(10,72,180,.25);
-}
-
-.top-header::before {
-  content: "";
-  position: absolute;
-  width: 260px;
-  height: 260px;
-  right: -125px;
-  top: -145px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow:
-    0 0 0 35px rgba(255,255,255,.035),
-    0 0 0 70px rgba(255,255,255,.025);
-}
-
-.top-header::after {
-  content: "✦";
-  position: absolute;
-  right: 80px;
-  bottom: 30px;
-  color: rgba(255,255,255,.25);
-  font-size: 25px;
+  width: 100%;
+  background: linear-gradient(135deg, #17121f, #251638);
+  color: #ffffff;
+  padding: 16px 15px 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
 }
 
 .profile-area {
-  position: relative;
-  z-index: 3;
+  max-width: 480px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .profile-icon {
-  width: 58px;
-  height: 58px;
-  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffcc4d, #ff8a00);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 20px;
-  background: rgba(255,255,255,.13);
-  border: 1px solid rgba(255,255,255,.25);
-  font-size: 28px;
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.2),
-    0 10px 25px rgba(0,0,0,.18);
-  backdrop-filter: blur(12px);
+  font-size: 25px;
+  box-shadow: 0 4px 12px rgba(255, 154, 0, 0.35);
 }
 
-.top-header h1 {
+.profile-area h1 {
   font-size: 20px;
   font-weight: 900;
-  letter-spacing: .8px;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
 }
 
-.top-header p {
+.profile-area p {
   margin-top: 5px;
-  font-size: 11px;
-  font-weight: 600;
-  opacity: .75;
+  font-size: 12px;
+  color: #d8cde7;
 }
 
 /* =========================================================
    WALLET / REFER
-========================================================= */
+   ========================================================= */
 
 .quick-stats {
-  position: relative;
-  z-index: 10;
+  max-width: 480px;
+  margin: -2px auto 0;
+  padding: 12px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 0 15px;
-  margin-top: -30px;
+  gap: 10px;
 }
 
 .stat-card {
-  position: relative;
-  overflow: hidden;
-  min-height: 92px;
-  padding: 14px;
+  min-height: 68px;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #21182b;
   text-decoration: none;
-  color: #172033;
-  background: rgba(255,255,255,.94);
-  border: 1px solid rgba(255,255,255,.95);
-  border-radius: 23px;
-  box-shadow:
-    0 12px 30px rgba(15,23,42,.10),
-    inset 0 1px 0 rgba(255,255,255,.9);
-  backdrop-filter: blur(14px);
-  transition: transform .18s ease;
-}
-
-.stat-card::after {
-  content: "";
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  right: -45px;
-  bottom: -45px;
-  border-radius: 50%;
-  background: rgba(30,115,255,.06);
-}
-
-.stat-card:nth-child(2)::after {
-  background: rgba(255,170,30,.08);
+  box-shadow: 0 5px 18px rgba(47, 28, 70, 0.10);
+  border: 1px solid rgba(105, 69, 139, 0.08);
+  transition: transform 0.15s ease;
 }
 
 .stat-card:active {
-  transform: scale(.97);
+  transform: scale(0.97);
 }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #eee1ff, #d8c0ff);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 17px;
-  color: #fff;
-  background: linear-gradient(145deg, #087df5, #32b5ff);
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 900;
-  box-shadow: 0 9px 20px rgba(8,125,245,.28);
-}
-
-.stat-card:nth-child(2) .stat-icon {
-  background: linear-gradient(145deg, #ff8a00, #ffc928);
-  box-shadow: 0 9px 20px rgba(255,151,0,.27);
+  color: #6d35a8;
 }
 
 .stat-card small {
   display: block;
-  color: #8a94a8;
-  font-size: 10px;
-  font-weight: 700;
+  color: #81778a;
+  font-size: 11px;
+  margin-bottom: 3px;
 }
 
 .stat-card strong {
   display: block;
-  margin-top: 4px;
-  font-size: 18px;
-  font-weight: 900;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 /* =========================================================
-   WELCOME
-========================================================= */
+   MAIN AREA
+   ========================================================= */
+
+.announcement,
+.banner,
+.games-container,
+.home-footer {
+  width: calc(100% - 24px);
+  max-width: 456px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =========================================================
+   WELCOME / ANNOUNCEMENT CARD
+   ========================================================= */
 
 .announcement {
-  position: relative;
-  overflow: hidden;
-  margin: 18px 15px 16px;
-  padding: 17px;
+  margin-top: 2px;
+  margin-bottom: 12px;
+  padding: 16px;
   display: flex;
-  gap: 13px;
   align-items: flex-start;
-  background: linear-gradient(135deg, #ffffff, #f9fbff);
-  border: 1px solid #e8edf6;
-  border-radius: 22px;
-  box-shadow: 0 9px 25px rgba(15,23,42,.07);
-}
-
-.announcement::before {
-  content: "";
-  position: absolute;
-  width: 130px;
-  height: 130px;
-  right: -70px;
-  top: -65px;
-  border-radius: 50%;
-  background: #edf4ff;
-}
-
-.announcement::after {
-  content: "✦";
-  position: absolute;
-  right: 17px;
-  top: 10px;
-  color: #ffc83d;
-  font-size: 25px;
+  gap: 12px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ffffff, #f8f0ff);
+  border: 1px solid #eadcf8;
+  box-shadow: 0 6px 20px rgba(57, 27, 79, 0.09);
 }
 
 .announcement-icon {
-  width: 45px;
-  height: 45px;
+  width: 43px;
+  height: 43px;
   flex-shrink: 0;
+  border-radius: 50%;
+  background: #ffe9f1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 15px;
-  background: linear-gradient(145deg, #fff0f4, #ffe1e9);
   font-size: 23px;
-  box-shadow: inset 0 0 0 1px rgba(255,90,120,.06);
-}
-
-.announcement-text {
-  position: relative;
-  z-index: 2;
-  min-width: 0;
 }
 
 .announcement-text strong {
   display: block;
-  color: #172033;
-  font-size: 12px;
+  color: #59258c;
+  font-size: 14px;
   font-weight: 900;
+  margin-bottom: 6px;
 }
 
 .announcement-text p {
-  margin-top: 7px;
-  color: #687386;
-  font-size: 11px;
-  line-height: 1.6;
+  color: #665c70;
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 /* =========================================================
-   HERO
-========================================================= */
+   PLAY / BATTLE / WIN BANNER
+   ========================================================= */
 
 .banner {
   position: relative;
   overflow: hidden;
-  min-height: 205px;
-  margin: 0 15px 27px;
-  color: #fff;
+  min-height: 145px;
+  margin-bottom: 18px;
+  padding: 23px 20px;
+  border-radius: 23px;
   background:
-    radial-gradient(circle at 88% 35%, rgba(37,174,255,.42), transparent 25%),
-    radial-gradient(circle at 65% 100%, rgba(93,45,220,.42), transparent 35%),
-    linear-gradient(135deg, #07184a 0%, #0a3d9a 55%, #075ed0 100%);
-  border-radius: 27px;
-  box-shadow: 0 17px 38px rgba(6,62,150,.27);
+    radial-gradient(circle at 88% 20%, rgba(255,255,255,0.35), transparent 28%),
+    linear-gradient(135deg, #6334a2 0%, #8c4bd1 52%, #bd70e8 100%);
+  color: #ffffff;
+  box-shadow: 0 9px 25px rgba(91, 45, 135, 0.28);
 }
 
 .banner::before {
-  content: "";
+  content: "🎲";
   position: absolute;
-  width: 250px;
-  height: 250px;
-  right: -100px;
-  bottom: -120px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow:
-    0 0 0 28px rgba(255,255,255,.035),
-    0 0 0 56px rgba(255,255,255,.025);
+  right: 22px;
+  bottom: 7px;
+  font-size: 70px;
+  opacity: 0.20;
+  transform: rotate(-12deg);
 }
 
 .banner::after {
-  content: "🎲";
+  content: "✨";
   position: absolute;
-  right: 8px;
-  bottom: -7px;
-  font-size: 108px;
-  opacity: .20;
-  transform: rotate(-14deg);
-  filter: drop-shadow(0 12px 12px rgba(0,0,0,.18));
+  right: 105px;
+  top: 15px;
+  font-size: 28px;
+  opacity: 0.45;
 }
 
 .banner-content {
   position: relative;
-  z-index: 5;
-  padding: 25px 21px;
+  z-index: 2;
 }
 
 .banner-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 7px 12px;
-  color: #fff;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.18);
+  display: inline-block;
+  padding: 6px 10px;
   border-radius: 30px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.20);
   font-size: 10px;
   font-weight: 800;
-  backdrop-filter: blur(10px);
+  margin-bottom: 10px;
 }
 
 .banner h2 {
-  margin-top: 16px;
-  font-size: 29px;
+  font-size: 27px;
+  line-height: 1.1;
   font-weight: 900;
-  letter-spacing: -.4px;
+  letter-spacing: 0.2px;
 }
 
 .banner p {
-  max-width: 220px;
   margin-top: 8px;
-  font-size: 11px;
-  line-height: 1.6;
-  color: rgba(255,255,255,.82);
+  max-width: 230px;
+  color: #f4eaff;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 /* =========================================================
-   FEATURED
-========================================================= */
+   FEATURED GAMES
+   ========================================================= */
 
 .games-container {
-  padding: 0 15px;
+  margin-bottom: 20px;
 }
 
 .section-title {
-  margin-bottom: 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 11px;
+  padding: 0 2px;
 }
 
 .section-title h2 {
-  color: #101b35;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 900;
-  letter-spacing: -.3px;
+  color: #271631;
 }
 
 .section-title::after {
-  content: "View All  ›";
-  padding: 7px 10px;
-  color: #1165d8;
-  background: #eaf3ff;
-  border-radius: 12px;
-  font-size: 9px;
-  font-weight: 900;
+  content: "View All";
+  font-size: 11px;
+  font-weight: 700;
+  color: #7541a5;
 }
 
 /* =========================================================
    GAME CARD
-========================================================= */
+   ========================================================= */
 
 .game-card {
-  position: relative;
-  overflow: hidden;
-  min-height: 91px;
-  margin-bottom: 14px;
-  padding: 15px;
+  min-height: 92px;
+  margin-bottom: 12px;
+  padding: 13px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background: rgba(255,255,255,.97);
-  border: 1px solid #e6ebf4;
-  border-radius: 23px;
-  box-shadow: 0 10px 27px rgba(15,23,42,.075);
-}
-
-.game-card::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 18px;
-  bottom: 18px;
-  width: 4px;
-  border-radius: 0 8px 8px 0;
-  background: linear-gradient(#1686ff, #1d55e8);
-}
-
-.support-card::before {
-  background: linear-gradient(#ffb000, #ff7a00);
+  border-radius: 19px;
+  background: #ffffff;
+  border: 1px solid #eadff1;
+  box-shadow: 0 6px 18px rgba(44, 24, 58, 0.08);
 }
 
 .game-left {
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 13px;
-  min-width: 0;
+  gap: 12px;
 }
 
 .game-logo {
-  width: 59px;
-  height: 59px;
+  width: 60px;
+  height: 60px;
   flex-shrink: 0;
+  border-radius: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #e9f5ff, #d7ebff);
-  font-size: 30px;
-  box-shadow: inset 0 0 0 1px rgba(20,100,220,.05);
-}
-
-.support-logo {
-  background: linear-gradient(145deg, #fff4dd, #ffe3b0);
-  font-size: 25px;
+  background: linear-gradient(135deg, #ffe27a, #ff9d22);
+  font-size: 32px;
+  box-shadow: inset 0 -4px 8px rgba(137, 73, 0, 0.12);
 }
 
 .game-info {
@@ -435,147 +324,176 @@ body {
 .live-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  margin-bottom: 4px;
 }
 
 .live-dot {
   width: 7px;
   height: 7px;
-  background: #19c96b;
   border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(25,201,107,.10);
+  background: #19c56a;
+  box-shadow: 0 0 0 3px rgba(25, 197, 106, 0.12);
 }
 
 .live-text {
-  color: #12a558;
+  color: #19a85b;
   font-size: 9px;
   font-weight: 900;
-  letter-spacing: .6px;
+  letter-spacing: 0.5px;
 }
 
 .game-info h3 {
-  margin-top: 5px;
-  color: #172033;
+  color: #24162e;
   font-size: 16px;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .game-info p {
   margin-top: 4px;
-  color: #7c879c;
-  font-size: 10px;
+  color: #827687;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 /* =========================================================
-   BUTTONS
-========================================================= */
-
-.play-button,
-.support-button {
-  min-width: 86px;
-  padding: 12px 13px;
-  border: none;
-  border-radius: 13px;
-  font-size: 11px;
-  font-weight: 900;
-  cursor: pointer;
-  transition: transform .15s ease;
-}
-
-.play-button:active,
-.support-button:active {
-  transform: scale(.95);
-}
+   PLAY NOW BUTTON
+   ========================================================= */
 
 .play-button {
-  color: #fff;
-  background: linear-gradient(135deg, #0867dc, #168ff5);
-  box-shadow: 0 9px 19px rgba(8,103,220,.25);
+  flex-shrink: 0;
+  border: none;
+  border-radius: 13px;
+  padding: 11px 14px;
+  background: linear-gradient(135deg, #7435b1, #9a51d2);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 5px 12px rgba(111, 47, 160, 0.24);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.play-button:active {
+  transform: scale(0.95);
+}
+
+/* =========================================================
+   SUPPORT CARD
+   ========================================================= */
+
+.support-logo {
+  background: linear-gradient(135deg, #d8f7ff, #8bdff2);
 }
 
 .support-button {
-  color: #9b5b00;
-  background: linear-gradient(135deg, #fff2d4, #ffe0a0);
-  box-shadow: 0 8px 16px rgba(255,168,40,.14);
+  flex-shrink: 0;
+  border: none;
+  border-radius: 13px;
+  padding: 11px 14px;
+  background: #f0e6fa;
+  color: #6d359b;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.support-button:active {
+  transform: scale(0.95);
 }
 
 /* =========================================================
    FOOTER
-========================================================= */
+   ========================================================= */
 
 .home-footer {
-  padding: 34px 20px 27px;
+  margin-top: 15px;
+  margin-bottom: 12px;
+  padding: 22px 15px;
   text-align: center;
-  color: #929caf;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #24162e, #392149);
+  color: #ffffff;
 }
 
 .footer-logo {
-  width: 54px;
-  height: 54px;
-  margin: 0 auto;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #eaf4ff, #dcecff);
-  font-size: 26px;
-  box-shadow: 0 8px 19px rgba(15,23,42,.07);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 24px;
 }
 
 .home-footer h3 {
-  margin-top: 10px;
-  color: #354056;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 900;
 }
 
 .home-footer p {
   margin-top: 5px;
+  color: #d9c9e5;
   font-size: 11px;
 }
 
 .home-footer small {
   display: block;
-  max-width: 275px;
-  margin: 8px auto 0;
+  margin-top: 9px;
+  color: #a999b2;
   font-size: 9px;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 /* =========================================================
-   BOTTOM NAV
-========================================================= */
+   BOTTOM NAVIGATION
+   ========================================================= */
 
 .bottom-nav {
   position: fixed;
-  z-index: 100;
-  left: 9px;
-  right: 9px;
-  bottom: 9px;
-  height: 70px;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  overflow: hidden;
-  background: rgba(255,255,255,.96);
-  border: 1px solid rgba(218,225,237,.95);
-  border-radius: 23px;
-  box-shadow:
-    0 14px 35px rgba(15,23,42,.17),
-    0 2px 8px rgba(15,23,42,.05);
-  backdrop-filter: blur(18px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 76px;
+  padding: 7px 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(135deg, #241331, #42205c);
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 -7px 25px rgba(31, 15, 44, 0.22);
+  z-index: 1000;
 }
 
 .nav-item {
   position: relative;
-  text-decoration: none;
-  color: #8b95a8;
+  flex: 1;
+  height: 62px;
+  max-width: 78px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  font-size: 19px;
-  transition: .2s ease;
+  gap: 3px;
+  color: #cdbbd7;
+  text-decoration: none;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+}
+
+.nav-item span {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 20px;
 }
 
 .nav-item small {
@@ -584,100 +502,94 @@ body {
 }
 
 .nav-item.active {
-  color: #1269dc;
-  font-weight: 900;
-}
-
-.nav-item.active::before {
-  content: "";
-  position: absolute;
-  top: 5px;
-  width: 28px;
-  height: 3px;
-  border-radius: 20px;
-  background: #1269dc;
-  box-shadow: 0 2px 8px rgba(18,105,220,.35);
+  color: #ffffff;
 }
 
 .nav-item.active span {
-  transform: translateY(1px);
+  width: 51px;
+  height: 51px;
+  margin-top: -26px;
+  background: linear-gradient(135deg, #9c55d5, #7134a8);
+  border: 5px solid #42205c;
+  box-shadow:
+    0 7px 18px rgba(153, 79, 211, 0.45),
+    0 0 0 3px rgba(255, 255, 255, 0.06);
+  font-size: 22px;
+}
+
+.nav-item.active small {
+  margin-top: 1px;
+  color: #ffffff;
 }
 
 /* =========================================================
-   SMALL MOBILE
-========================================================= */
+   RESPONSIVE
+   ========================================================= */
+
+@media (min-width: 481px) {
+  body {
+    background:
+      radial-gradient(circle at top, #ffffff 0, #f4f1ff 520px);
+  }
+
+  .top-header {
+    border-radius: 0 0 24px 24px;
+  }
+
+  .bottom-nav {
+    left: 50%;
+    right: auto;
+    width: 480px;
+    transform: translateX(-50%);
+    border-radius: 22px 22px 0 0;
+  }
+}
 
 @media (max-width: 380px) {
 
-  .top-header {
-    padding: 20px 14px 57px;
-  }
-
-  .top-header h1 {
+  .profile-area h1 {
     font-size: 17px;
   }
 
   .profile-icon {
-    width: 53px;
-    height: 53px;
-  }
-
-  .quick-stats {
-    padding: 0 12px;
-  }
-
-  .stat-card {
-    min-height: 84px;
-    padding: 11px;
-  }
-
-  .stat-icon {
     width: 43px;
     height: 43px;
   }
 
-  .stat-card strong {
-    font-size: 15px;
+  .stat-card {
+    padding: 9px;
   }
 
-  .announcement,
-  .banner {
-    margin-left: 12px;
-    margin-right: 12px;
-  }
-
-  .games-container {
-    padding: 0 12px;
-  }
-
-  .banner {
-    min-height: 190px;
+  .stat-icon {
+    width: 36px;
+    height: 36px;
   }
 
   .banner h2 {
-    font-size: 25px;
+    font-size: 24px;
   }
 
   .game-card {
-    padding: 12px;
+    padding: 10px;
   }
 
   .game-logo {
-    width: 51px;
-    height: 51px;
-    font-size: 25px;
+    width: 53px;
+    height: 53px;
+    font-size: 28px;
+  }
+
+  .game-info h3 {
+    font-size: 14px;
+  }
+
+  .game-info p {
+    font-size: 10px;
   }
 
   .play-button,
   .support-button {
-    min-width: 70px;
-    padding: 10px 9px;
-    font-size: 10px;
-  }
-
-  .bottom-nav {
-    left: 6px;
-    right: 6px;
-    bottom: 7px;
+    padding: 10px 10px;
+    font-size: 11px;
   }
 }
