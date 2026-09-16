@@ -29,15 +29,19 @@ documentFile.addEventListener("change", () => {
 if (documentFile.files.length > 0) {
 
   if (documentFileName) {
+
     documentFileName.textContent =
       documentFile.files[0].name;
+
   }
 
 } else {
 
   if (documentFileName) {
+
     documentFileName.textContent =
       "No file selected";
+
   }
 
 }
@@ -53,15 +57,19 @@ selfieFile.addEventListener("change", () => {
 if (selfieFile.files.length > 0) {
 
   if (selfieFileName) {
+
     selfieFileName.textContent =
       selfieFile.files[0].name;
+
   }
 
 } else {
 
   if (selfieFileName) {
+
     selfieFileName.textContent =
       "No file selected";
+
   }
 
 }
@@ -71,16 +79,18 @@ if (selfieFile.files.length > 0) {
 }
 
 /* =========================================================
-FIND CUSTOMER DATA
+READ STORAGE OBJECT
 ========================================================= */
 
 function readStorageObject(storage, key) {
 
 try {
 
-const value = storage.getItem(key);
+const value =
+  storage.getItem(key);
 
 if (!value) return null;
+
 
 try {
 
@@ -101,6 +111,10 @@ return null;
 }
 
 }
+
+/* =========================================================
+GET CUSTOMER OBJECT
+========================================================= */
 
 function getStoredCustomer() {
 
@@ -129,7 +143,11 @@ for (const storage of storages) {
 for (const key of keys) {
 
   const data =
-    readStorageObject(storage, key);
+    readStorageObject(
+      storage,
+      key
+    );
+
 
   if (!data) continue;
 
@@ -205,7 +223,7 @@ return (
 
 }
 
-const keys = [
+const possibleKeys = [
 
 "customer_id",
 "customerId",
@@ -214,10 +232,11 @@ const keys = [
 
 ];
 
-for (const key of keys) {
+for (const key of possibleKeys) {
 
 const value =
   localStorage.getItem(key);
+
 
 if (value) {
 
@@ -225,6 +244,7 @@ if (value) {
 
     const parsed =
       JSON.parse(value);
+
 
     if (
       parsed &&
@@ -322,6 +342,8 @@ document.getElementById("fullName");
 const mobileInput =
 document.getElementById("mobile");
 
+/* Auto-fill registered name */
+
 if (
 nameInput &&
 registeredName &&
@@ -332,6 +354,8 @@ nameInput.value =
   registeredName;
 
 }
+
+/* Auto-fill registered mobile */
 
 if (
 mobileInput &&
@@ -351,8 +375,8 @@ if (/^\d{10}$/.test(cleanMobile)) {
 
 
   /*
-   * Registered mobile को manually बदलने से
-   * mismatch नहीं होगा।
+   * Registered mobile को manually बदलने
+   * से mismatch नहीं होगा।
    */
 
   mobileInput.readOnly = true;
@@ -370,6 +394,7 @@ return {
 
 customer,
 customerId,
+
 registeredMobile:
   registeredMobile
     ? String(registeredMobile)
@@ -387,432 +412,434 @@ SUBMIT KYC
 
 if (form) {
 
-form.addEventListener("submit", async (event) => {
-
-event.preventDefault();
-
-
-if (successMessage) {
-
-  successMessage.textContent = "";
-
-}
-
-
-/*
- * Customer information फिर से पढ़ें
- */
-
-const customerInfo =
-  loadCustomerInformation();
-
-
-const customer =
-  customerInfo.customer;
-
-
-const customerId =
-  customerInfo.customerId;
-
-
-const registeredMobile =
-  customerInfo.registeredMobile;
-
-
-const fullName =
-  document.getElementById("fullName")
-    ?.value
-    .trim() || "";
-
-
-/*
- * अगर registered mobile मिल गया है तो
- * वही भेजेंगे।
- *
- * User द्वारा manually बदला हुआ number
- * use नहीं होगा।
- */
-
-const mobile =
-  registeredMobile ||
-  document.getElementById("mobile")
-    ?.value
-    .trim() || "";
-
-
-const dob =
-  document.getElementById("dob")
-    ?.value || "";
-
-
-const documentType =
-  document.getElementById("documentType")
-    ?.value || "";
-
-
-const documentNumber =
-  document.getElementById("documentNumber")
-    ?.value
-    .trim() || "";
-
-
-const agreement =
-  document.getElementById("agreement")
-    ?.checked || false;
-
-
-/* =====================================================
-   VALIDATION
-===================================================== */
-
-if (!customerId) {
-
-  alert(
-    "Customer login information नहीं मिला। पहले Login करें।"
-  );
-
-  return;
-
-}
-
-
-if (!mobile) {
-
-  alert(
-    "Registered mobile number नहीं मिला। पहले Login करें।"
-  );
-
-  return;
-
-}
-
-
-if (!/^\d{10}$/.test(mobile)) {
-
-  alert(
-    "Registered mobile number सही नहीं है।"
-  );
-
-  return;
-
-}
-
-
-if (fullName.length < 2) {
-
-  alert(
-    "पूरा नाम दर्ज करें।"
-  );
-
-  return;
-
-}
-
-
-if (!dob) {
-
-  alert(
-    "Date of Birth चुनें।"
-  );
-
-  return;
-
-}
-
-
-if (!documentType) {
-
-  alert(
-    "KYC document चुनें।"
-  );
-
-  return;
-
-}
-
-
-if (documentNumber.length < 4) {
-
-  alert(
-    "Document number दर्ज करें।"
-  );
-
-  return;
-
-}
-
-
-if (
-  !documentFile ||
-  documentFile.files.length === 0
-) {
-
-  alert(
-    "KYC document upload करें।"
-  );
-
-  return;
-
-}
-
-
-if (
-  !selfieFile ||
-  selfieFile.files.length === 0
-) {
-
-  alert(
-    "Selfie upload करें।"
-  );
-
-  return;
-
-}
-
-
-if (!agreement) {
-
-  alert(
-    "Declaration checkbox select करें।"
-  );
-
-  return;
-
-}
-
-
-/* =====================================================
-   BUTTON
-===================================================== */
-
-const submitButton =
-  form.querySelector(
-    'button[type="submit"]'
-  );
-
-
-if (submitButton) {
-
-  submitButton.disabled = true;
-
-  submitButton.textContent =
-    "Submitting...";
-
-}
-
-
-try {
-
-  /* ===================================================
-     SEND KYC
-  =================================================== */
-
-  const response =
-    await fetch(
-      "/api/kyc/submit",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body: JSON.stringify({
-
-          customer_id:
-            customerId,
-
-          full_name:
-            fullName,
-
-          mobile:
-            mobile,
-
-          dob:
-            dob,
-
-          document_type:
-            documentType,
-
-          document_number:
-            documentNumber,
-
-          document_file_name:
-            documentFile.files[0].name,
-
-          selfie_file_name:
-            selfieFile.files[0].name
-
-        })
-
-      }
-    );
-
-
-  let data = null;
-
-
-  try {
-
-    data =
-      await response.json();
-
-  } catch {
-
-    data = {};
-
-  }
-
-
-  /* ===================================================
-     ERROR
-  =================================================== */
-
-  if (
-    !response.ok ||
-    !data.success
-  ) {
-
-    throw new Error(
-      data.error ||
-      "KYC submission failed"
-    );
-
-  }
-
-
-  /* ===================================================
-     SAVE LOCAL KYC STATUS
-  =================================================== */
-
-  const submission = {
-
-    id:
-      data.kyc?.id || null,
-
-    customer_id:
-      customerId,
-
-    full_name:
-      fullName,
-
-    mobile:
-      mobile,
-
-    dob:
-      dob,
-
-    document_type:
-      documentType,
-
-    status:
-      "PENDING",
-
-    submitted_at:
-      data.kyc?.submitted_at ||
-      Date.now()
-
-  };
-
-
-  localStorage.setItem(
-    "balaji_kyc_submission",
-    JSON.stringify(submission)
-  );
-
-
-  /* ===================================================
-     STATUS
-  =================================================== */
-
-  if (statusText) {
-
-    statusText.textContent =
-      "KYC Status: Pending";
-
-  }
+form.addEventListener(
+"submit",
+async (event) => {
+
+  event.preventDefault();
 
 
   if (successMessage) {
 
-    successMessage.textContent =
-      "KYC submitted successfully. Your KYC is now Pending for Admin verification.";
+    successMessage.textContent = "";
 
   }
 
 
-  alert(
-    "KYC successfully submitted. Admin verification pending."
-  );
+  /*
+   * Customer information फिर से पढ़ें
+   */
+
+  const customerInfo =
+    loadCustomerInformation();
 
 
-  /* ===================================================
-     RESET FILE INPUTS
-  =================================================== */
+  const customer =
+    customerInfo.customer;
 
-  if (documentFile) {
 
-    documentFile.value = "";
+  const customerId =
+    customerInfo.customerId;
+
+
+  const registeredMobile =
+    customerInfo.registeredMobile;
+
+
+  const fullName =
+    document.getElementById("fullName")
+      ?.value
+      .trim() || "";
+
+
+  /*
+   * हमेशा registered mobile को
+   * priority दें।
+   */
+
+  const mobile =
+    registeredMobile ||
+    document.getElementById("mobile")
+      ?.value
+      .trim() || "";
+
+
+  const dob =
+    document.getElementById("dob")
+      ?.value || "";
+
+
+  const documentType =
+    document.getElementById("documentType")
+      ?.value || "";
+
+
+  const documentNumber =
+    document.getElementById("documentNumber")
+      ?.value
+      .trim() || "";
+
+
+  const agreement =
+    document.getElementById("agreement")
+      ?.checked || false;
+
+
+  /* =====================================================
+     VALIDATION
+  ===================================================== */
+
+  if (!customerId) {
+
+    alert(
+      "Customer login information नहीं मिला। पहले Login करें।"
+    );
+
+    return;
 
   }
 
 
-  if (selfieFile) {
+  if (!mobile) {
 
-    selfieFile.value = "";
+    alert(
+      "Registered mobile number नहीं मिला। पहले Login करें।"
+    );
 
-  }
-
-
-  if (documentFileName) {
-
-    documentFileName.textContent =
-      "No file selected";
+    return;
 
   }
 
 
-  if (selfieFileName) {
+  if (!/^\d{10}$/.test(mobile)) {
 
-    selfieFileName.textContent =
-      "No file selected";
+    alert(
+      "Registered mobile number सही नहीं है।"
+    );
+
+    return;
 
   }
 
 
-} catch (error) {
+  if (fullName.length < 2) {
 
-  console.error(
-    "KYC Submit Error:",
-    error
-  );
+    alert(
+      "पूरा नाम दर्ज करें।"
+    );
+
+    return;
+
+  }
 
 
-  alert(
-    error?.message ||
-    "KYC submit नहीं हो पाया।"
-  );
+  if (!dob) {
 
-} finally {
+    alert(
+      "Date of Birth चुनें।"
+    );
+
+    return;
+
+  }
+
+
+  if (!documentType) {
+
+    alert(
+      "KYC document चुनें।"
+    );
+
+    return;
+
+  }
+
+
+  if (documentNumber.length < 4) {
+
+    alert(
+      "Document number दर्ज करें।"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !documentFile ||
+    documentFile.files.length === 0
+  ) {
+
+    alert(
+      "KYC document upload करें।"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !selfieFile ||
+    selfieFile.files.length === 0
+  ) {
+
+    alert(
+      "Selfie upload करें।"
+    );
+
+    return;
+
+  }
+
+
+  if (!agreement) {
+
+    alert(
+      "Declaration checkbox select करें।"
+    );
+
+    return;
+
+  }
+
+
+  /* =====================================================
+     SUBMIT BUTTON
+  ===================================================== */
+
+  const submitButton =
+    form.querySelector(
+      'button[type="submit"]'
+    );
+
 
   if (submitButton) {
 
-    submitButton.disabled = false;
+    submitButton.disabled = true;
 
     submitButton.textContent =
-      "Submit KYC";
+      "Submitting...";
+
+  }
+
+
+  try {
+
+    /* ===================================================
+       SEND KYC TO WORKER
+    =================================================== */
+
+    const response =
+      await fetch(
+        "/api/kyc/submit",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            customer_id:
+              customerId,
+
+            full_name:
+              fullName,
+
+            mobile:
+              mobile,
+
+            dob:
+              dob,
+
+            document_type:
+              documentType,
+
+            document_number:
+              documentNumber,
+
+            document_file_name:
+              documentFile.files[0].name,
+
+            selfie_file_name:
+              selfieFile.files[0].name
+
+          })
+
+        }
+      );
+
+
+    let data = null;
+
+
+    try {
+
+      data =
+        await response.json();
+
+    } catch {
+
+      data = {};
+
+    }
+
+
+    /* ===================================================
+       ERROR
+    =================================================== */
+
+    if (
+      !response.ok ||
+      !data.success
+    ) {
+
+      throw new Error(
+        data.error ||
+        "KYC submission failed"
+      );
+
+    }
+
+
+    /* ===================================================
+       SAVE LOCAL KYC STATUS
+    =================================================== */
+
+    const submission = {
+
+      id:
+        data.kyc?.id || null,
+
+      customer_id:
+        customerId,
+
+      full_name:
+        fullName,
+
+      mobile:
+        mobile,
+
+      dob:
+        dob,
+
+      document_type:
+        documentType,
+
+      status:
+        "PENDING",
+
+      submitted_at:
+        data.kyc?.submitted_at ||
+        Date.now()
+
+    };
+
+
+    localStorage.setItem(
+      "balaji_kyc_submission",
+      JSON.stringify(submission)
+    );
+
+
+    /* ===================================================
+       STATUS
+    =================================================== */
+
+    if (statusText) {
+
+      statusText.textContent =
+        "KYC Status: Pending";
+
+    }
+
+
+    if (successMessage) {
+
+      successMessage.textContent =
+        "KYC submitted successfully. Your KYC is now Pending for Admin verification.";
+
+    }
+
+
+    alert(
+      "KYC successfully submitted. Admin verification pending."
+    );
+
+
+    /* ===================================================
+       RESET FILE INPUTS
+    =================================================== */
+
+    if (documentFile) {
+
+      documentFile.value = "";
+
+    }
+
+
+    if (selfieFile) {
+
+      selfieFile.value = "";
+
+    }
+
+
+    if (documentFileName) {
+
+      documentFileName.textContent =
+        "No file selected";
+
+    }
+
+
+    if (selfieFileName) {
+
+      selfieFileName.textContent =
+        "No file selected";
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "KYC Submit Error:",
+      error
+    );
+
+
+    alert(
+      error?.message ||
+      "KYC submit नहीं हो पाया।"
+    );
+
+  } finally {
+
+    if (submitButton) {
+
+      submitButton.disabled = false;
+
+      submitButton.textContent =
+        "Submit KYC";
+
+    }
 
   }
 
 }
 
-});
+);
 
 }
 
 /* =========================================================
 BACK BUTTON
+DIRECTLY GO TO PROFILE
 ========================================================= */
 
 const backButton =
@@ -826,15 +853,8 @@ backButton.addEventListener(
 "click",
 () => {
 
-  if (window.history.length > 1) {
-
-    window.history.back();
-
-  } else {
-
-    window.location.href = "/";
-
-  }
+  window.location.href =
+    "/profile.html";
 
 }
 
@@ -853,7 +873,11 @@ localStorage.getItem(
 "balaji_kyc_submission"
 );
 
-if (!saved) return;
+if (!saved) {
+
+return;
+
+}
 
 try {
 
