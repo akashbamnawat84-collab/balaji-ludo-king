@@ -7,20 +7,17 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <meta
     name="theme-color"
-    content="#17122f"
-  >
+    content="#050505">
 
   <title>Balaji Ludo King</title>
 
   <link
     rel="stylesheet"
-    href="home.css"
-  >
+    href="home.css">
 
 </head>
 
@@ -28,81 +25,112 @@
 <body>
 
 
-  <!-- ==============================
+  <!-- =========================================
        TOP HEADER
-  =============================== -->
+  ========================================== -->
 
   <header class="top-header">
 
+
+    <!-- LEFT -->
+
     <div class="header-left">
 
-      <div class="menu-button">
+
+      <!-- MENU -->
+
+      <button
+        class="menu-button"
+        type="button">
+
         ☰
-      </div>
 
-      <div class="brand-logo">
-        🎲
-      </div>
-
-      <div class="brand-text">
-
-        <h1>
-          BALAJI LUDO KING
-        </h1>
-
-        <span>
-          Official Gaming
-        </span>
-
-      </div>
-
-    </div>
+      </button>
 
 
-    <!-- WALLET + REFER ALWAYS ON TOP -->
-
-    <div class="header-actions">
+      <!-- LOGO -->
 
       <a
-        href="wallet.html"
-        class="top-wallet"
-      >
+        href="home.html"
+        class="brand-logo-link">
 
-        <span class="top-icon">
-          ₹
-        </span>
+        <div class="brand-logo">
 
-        <span id="walletBalance">
-          ₹0
-        </span>
+          <div class="logo-crown">
+            👑
+          </div>
+
+          <div class="logo-dice">
+            🎲
+          </div>
+
+          <div class="logo-text">
+
+            BALAJI
+
+            <span>
+              LUDO
+            </span>
+
+          </div>
+
+        </div>
 
       </a>
 
 
-      <a
-        href="refer.html"
-        class="top-refer"
-      >
+    </div>
 
-        <span class="top-icon">
-          🎁
+
+    <!-- RIGHT -->
+
+    <div class="header-actions">
+
+
+      <!-- WALLET -->
+
+      <a
+        href="wallet.html"
+        class="top-action">
+
+        <span class="action-icon wallet-icon">
+          💼
         </span>
 
-        <span>
+        <span id="walletBalance">
           ₹0.00
         </span>
 
       </a>
 
+
+      <!-- REFER -->
+
+      <a
+        href="refer.html"
+        class="top-action">
+
+        <span class="action-icon refer-icon">
+          🎁
+        </span>
+
+        <span>
+          ₹54.00
+        </span>
+
+      </a>
+
+
     </div>
+
 
   </header>
 
 
 
-  <!-- ==============================
-       MAIN
-  =============================== -->
+  <!-- =========================================
+       MAIN CONTENT
+  ========================================== -->
 
   <main class="home-container">
 
@@ -111,9 +139,11 @@
 
     <section class="welcome-card">
 
+
       <div class="welcome-icon">
         🥰
       </div>
+
 
       <div>
 
@@ -122,30 +152,37 @@
         </h2>
 
         <p>
-          ❤️ BALAJI LUDO KING FAMILY में आपका स्वागत है।
+          ❤️ BALAJI LUDO FAMILY में आपका स्वागत है।
+          दोस्तों किसी भाई की दिक्कत आ रही हो तो
+          आईडी में एक बार रिफ्रेश मार ले।
         </p>
 
       </div>
+
 
     </section>
 
 
 
-    <!-- ==============================
-         REFERRAL BANNER
-    =============================== -->
+    <!-- =========================================
+         REFER BANNER
+    ========================================== -->
 
     <section class="referral-banner">
 
+
       <div class="referral-content">
+
 
         <span class="referral-title">
           REFER & EARN
         </span>
 
+
         <h2>
           Earn More
         </h2>
+
 
         <p>
           Invite your friends and get extra rewards.
@@ -153,6 +190,7 @@
 
 
         <div class="reward-row">
+
 
           <div class="reward-box">
 
@@ -179,7 +217,9 @@
 
           </div>
 
+
         </div>
+
 
       </div>
 
@@ -188,20 +228,22 @@
         👩🏻
       </div>
 
+
     </section>
 
 
 
-    <!-- ==============================
+    <!-- =========================================
          FEATURED GAMES
-    =============================== -->
+    ========================================== -->
 
     <section class="games-section">
+
 
       <div class="section-heading">
 
         <h2>
-          Featured Games
+          🎮 Featured Games
         </h2>
 
         <span>
@@ -211,44 +253,61 @@
       </div>
 
 
-      <!-- IMPORTANT:
-           BOTH CARDS SAME ROW
-      -->
 
       <div class="games-row">
 
 
-        <!-- LUDO CLASSIC -->
+        <!-- LUDO -->
 
         <div class="game-card">
 
+
           <div class="game-image ludo-image">
-            🎲
+
+            <span class="live-badge">
+              ● LIVE
+            </span>
+
+            <div class="ludo-logo">
+              🎲
+            </div>
+
+            <strong>
+              LUDO
+            </strong>
+
+            <small>
+              CLASSIC
+            </small>
+
           </div>
+
 
           <div class="game-card-content">
 
-            <span class="game-status">
-              ● LIVE
-            </span>
 
             <h3>
               Ludo Classic
             </h3>
 
+
             <p>
               2 Player Battle
             </p>
 
+
             <button
               type="button"
               class="play-button"
-              id="playNowBtn"
-            >
+              id="playNowBtn">
+
               Play Now
+
             </button>
 
+
           </div>
+
 
         </div>
 
@@ -258,52 +317,69 @@
 
         <div class="game-card">
 
+
           <div class="game-image support-image">
-            💬
+
+            <span class="live-badge support-live">
+              ● LIVE
+            </span>
+
+            <div class="support-logo">
+              💬
+            </div>
+
+            <strong>
+              SUPPORT
+            </strong>
+
           </div>
+
 
           <div class="game-card-content">
 
-            <span class="game-status">
-              ● LIVE
-            </span>
 
             <h3>
               Support
             </h3>
 
+
             <p>
               Need Help?
             </p>
 
+
             <button
               type="button"
               class="support-button"
-              id="supportBtn"
-            >
+              id="supportBtn">
+
               Support
+
             </button>
 
+
           </div>
+
 
         </div>
 
 
       </div>
 
+
     </section>
 
 
 
-    <!-- ==============================
-         INFORMATION
-    =============================== -->
+    <!-- INFO -->
 
     <section class="info-card">
+
 
       <div class="info-icon">
         🏆
       </div>
+
 
       <div>
 
@@ -312,11 +388,12 @@
         </h3>
 
         <p>
-          Enjoy exciting 2 Player Ludo battles with
-          Balaji Ludo King.
+          Enjoy exciting 2 Player Ludo battles
+          with Balaji Ludo King.
         </p>
 
       </div>
+
 
     </section>
 
@@ -325,17 +402,31 @@
 
 
 
-  <!-- ==============================
+  <!-- =========================================
        BOTTOM NAVIGATION
-  =============================== -->
+  ========================================== -->
 
   <nav class="bottom-nav">
 
 
     <a
+      href="wallet.html"
+      class="nav-item">
+
+      <span>
+        💼
+      </span>
+
+      <small>
+        Wallet
+      </small>
+
+    </a>
+
+
+    <a
       href="refer.html"
-      class="nav-item"
-    >
+      class="nav-item">
 
       <span>
         🎁
@@ -349,25 +440,8 @@
 
 
     <a
-      href="wallet.html"
-      class="nav-item"
-    >
-
-      <span>
-        ₹
-      </span>
-
-      <small>
-        Wallet
-      </small>
-
-    </a>
-
-
-    <a
       href="home.html"
-      class="nav-item active"
-    >
+      class="nav-item active">
 
       <span>
         🏠
@@ -382,11 +456,10 @@
 
     <a
       href="support.html"
-      class="nav-item"
-    >
+      class="nav-item">
 
       <span>
-        💬
+        🎧
       </span>
 
       <small>
@@ -398,8 +471,7 @@
 
     <a
       href="profile.html"
-      class="nav-item"
-    >
+      class="nav-item">
 
       <span>
         👤
@@ -416,9 +488,7 @@
 
 
 
-  <!-- ==============================
-       EXISTING JAVASCRIPT
-  =============================== -->
+  <!-- HOME JAVASCRIPT -->
 
   <script src="home.js"></script>
 
