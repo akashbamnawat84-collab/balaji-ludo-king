@@ -1,0 +1,322 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f7fb;
+  color: #172033;
+  min-height: 100vh;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e6eaf0;
+  padding: 14px 18px;
+}
+
+.brand {
+  max-width: 600px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #fff4d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+}
+
+.brand h1 {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.brand p {
+  margin-top: 3px;
+  color: #7b8494;
+  font-size: 12px;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+  width: 100%;
+  padding: 25px 15px 35px;
+}
+
+.kyc-card {
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 25px 20px;
+  box-shadow: 0 8px 30px rgba(20, 35, 60, 0.08);
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.icon-box {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 15px;
+  border-radius: 18px;
+  background: #fff4d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.kyc-card h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #727b8a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status-box {
+  margin: 20px 0;
+  padding: 13px 14px;
+  background: #f8fafc;
+  border: 1px solid #e7ebf1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f59e0b;
+  display: inline-block;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.field {
+  margin-bottom: 17px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #dfe4eb;
+  border-radius: 11px;
+  padding: 0 13px;
+  background: #ffffff;
+  color: #172033;
+  font-size: 14px;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #e0a800;
+  box-shadow: 0 0 0 3px rgba(224, 168, 0, 0.10);
+}
+
+/* =========================
+   UPLOAD
+========================= */
+
+.upload-box {
+  position: relative;
+  width: 100%;
+  min-height: 105px;
+  border: 1.5px dashed #cbd3df;
+  border-radius: 13px;
+  background: #fafbfc;
+  overflow: hidden;
+}
+
+.upload-box input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-content {
+  min-height: 105px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.upload-icon {
+  font-size: 27px;
+  margin-bottom: 6px;
+}
+
+.upload-content strong {
+  font-size: 13px;
+}
+
+.upload-content small {
+  margin-top: 4px;
+  color: #8a93a1;
+  font-size: 11px;
+}
+
+/* =========================
+   AGREEMENT
+========================= */
+
+.agreement {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 5px 0 18px;
+  color: #596273;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.agreement input {
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.submit-btn {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  background: #f2b400;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.submit-btn:hover {
+  background: #dca400;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
+
+.back-btn {
+  display: block;
+  width: 100%;
+  height: 45px;
+  margin-top: 12px;
+  border: 1px solid #e0e5ec;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #596273;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+.message {
+  display: none;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+  text-align: center;
+  padding: 0 15px 25px;
+  color: #8a93a1;
+  font-size: 11px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 480px) {
+
+  .topbar {
+    padding: 12px 14px;
+  }
+
+  .container {
+    padding: 18px 10px 30px;
+  }
+
+  .kyc-card {
+    padding: 22px 16px;
+    border-radius: 19px;
+  }
+
+  .kyc-card h2 {
+    font-size: 22px;
+  }
+
+  .brand h1 {
+    font-size: 16px;
+  }
+
+  .field input,
+  .field select {
+    height: 47px;
+  }
+}
