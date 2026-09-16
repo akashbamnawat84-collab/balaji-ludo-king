@@ -576,20 +576,54 @@ export default {
 
       /* =====================================================
          GET CUSTOMER
+         SUPPORT BOTH:
+         /api/customer/CUSTOMER_ID
+         /api/customer?customer_id=CUSTOMER_ID
       ===================================================== */
 
       if (
-        path.startsWith("/api/customer/") &&
+        (
+          path.startsWith("/api/customer/") ||
+          path === "/api/customer"
+        ) &&
         request.method === "GET"
       ) {
 
-        const customerId =
-          clean(
-            path.replace(
-              "/api/customer/",
-              ""
-            )
-          );
+        let customerId = "";
+
+
+        /* ---------- PATH CUSTOMER ID ---------- */
+
+        if (
+          path.startsWith("/api/customer/")
+        ) {
+
+          customerId =
+            clean(
+              path.replace(
+                "/api/customer/",
+                ""
+              )
+            );
+
+        }
+
+
+        /* ---------- QUERY CUSTOMER ID ---------- */
+
+        if (!customerId) {
+
+          customerId =
+            clean(
+              url.searchParams.get(
+                "customer_id"
+              ) ||
+              url.searchParams.get(
+                "customerId"
+              )
+            );
+
+        }
 
 
         if (!customerId) {
