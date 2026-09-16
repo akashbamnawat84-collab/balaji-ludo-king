@@ -7,6 +7,7 @@ const corsHeaders = {
 const ROOM_WAIT_MS = 5 * 60 * 1000;
 const REFERRAL_PERCENT = 3;
 
+
 /* =========================================================
    COMMON
 ========================================================= */
@@ -42,6 +43,7 @@ function isExpired(createdAt) {
   );
 }
 
+
 /* =========================================================
    CUSTOMER RESPONSE
 ========================================================= */
@@ -67,6 +69,7 @@ function customerResponse(customer) {
     created_at: customer.created_at
   };
 }
+
 
 /* =========================================================
    ROOM HELPERS
@@ -95,6 +98,7 @@ async function deleteRoom(env, roomCode) {
   ).bind(roomCode).run();
 }
 
+
 /* =========================================================
    REFERRAL TABLE
 ========================================================= */
@@ -112,12 +116,14 @@ async function ensureReferralTable(env) {
   `).run();
 }
 
+
 /* =========================================================
    UNIQUE REFERRAL CODE
 ========================================================= */
 
 async function generateUniqueReferralCode(env) {
   for (let attempt = 0; attempt < 20; attempt++) {
+
     const code = String(
       Math.floor(100000 + Math.random() * 900000)
     );
@@ -138,6 +144,7 @@ async function generateUniqueReferralCode(env) {
     "Unable to generate unique referral code"
   );
 }
+
 
 /* =========================================================
    REFERRAL SUMMARY
@@ -176,6 +183,7 @@ async function getReferralSummary(env, customerId) {
   };
 }
 
+
 /* =========================================================
    CANCELLATION TABLE
 ========================================================= */
@@ -192,11 +200,13 @@ async function ensureCancellationTable(env) {
   `).run();
 }
 
+
 /* =========================================================
    MAIN WORKER
 ========================================================= */
 
 export default {
+
   async fetch(request, env) {
 
     if (request.method === "OPTIONS") {
@@ -211,6 +221,7 @@ export default {
 
     try {
 
+
       /* =====================================================
          LOGIN
       ===================================================== */
@@ -219,28 +230,35 @@ export default {
         path === "/api/login" &&
         request.method === "POST"
       ) {
+
         const body = await request.json();
 
         const mobile = clean(body.mobile);
         const otp = clean(body.otp);
 
         if (!validMobile(mobile)) {
+
           return json({
             success: false,
             error:
               "Valid 10-digit mobile number required"
           }, 400);
+
         }
+
 
         if (otp) {
 
           if (!/^\d{6}$/.test(otp)) {
+
             return json({
               success: false,
               error:
                 "Valid 6-digit OTP required"
             }, 400);
+
           }
+
 
           let customer =
             await env.DB.prepare(`
@@ -249,13 +267,17 @@ export default {
               WHERE mobile = ?
             `).bind(mobile).first();
 
+
           if (!customer) {
+
             return json({
               success: false,
               error:
                 "Mobile number not registered"
             }, 404);
+
           }
+
 
           if (!customer.referral_code) {
 
@@ -271,13 +293,16 @@ export default {
               customer.id
             ).run();
 
+
             customer =
               await env.DB.prepare(`
                 SELECT *
                 FROM customers
                 WHERE id = ?
               `).bind(customer.id).first();
+
           }
+
 
           return json({
             success: true,
@@ -285,7 +310,9 @@ export default {
             customer:
               customerResponse(customer)
           });
+
         }
+
 
         let existing =
           await env.DB.prepare(`
@@ -293,6 +320,7 @@ export default {
             FROM customers
             WHERE mobile = ?
           `).bind(mobile).first();
+
 
         if (existing) {
 
@@ -310,13 +338,16 @@ export default {
               existing.id
             ).run();
 
+
             existing =
               await env.DB.prepare(`
                 SELECT *
                 FROM customers
                 WHERE id = ?
               `).bind(existing.id).first();
+
           }
+
 
           return json({
             success: true,
@@ -326,7 +357,9 @@ export default {
             customer:
               customerResponse(existing)
           });
+
         }
+
 
         const customerId =
           "CUS" +
@@ -335,10 +368,14 @@ export default {
             .slice(0, 10)
             .toUpperCase();
 
+
         const referralCode =
           await generateUniqueReferralCode(env);
 
-        const createdAt = Date.now();
+
+        const createdAt =
+          Date.now();
+
 
         await env.DB.prepare(`
           INSERT INTO customers (
@@ -380,12 +417,14 @@ export default {
           createdAt
         ).run();
 
+
         const customer =
           await env.DB.prepare(`
             SELECT *
             FROM customers
             WHERE id = ?
           `).bind(customerId).first();
+
 
         return json({
           success: true,
@@ -395,7 +434,9 @@ export default {
           customer:
             customerResponse(customer)
         });
+
       }
+
 
       /* =====================================================
          GET CUSTOMER
@@ -405,18 +446,23 @@ export default {
         path.startsWith("/api/customer/") &&
         request.method === "GET"
       ) {
+
         const customerId =
           clean(
             path.replace("/api/customer/", "")
           );
 
+
         if (!customerId) {
+
           return json({
             success: false,
             error:
               "Customer ID required"
           }, 400);
+
         }
+
 
         const customer =
           await env.DB.prepare(`
@@ -425,20 +471,26 @@ export default {
             WHERE id = ?
           `).bind(customerId).first();
 
+
         if (!customer) {
+
           return json({
             success: false,
             error:
               "Customer not found"
           }, 404);
+
         }
+
 
         return json({
           success: true,
           customer:
             customerResponse(customer)
         });
+
       }
+
 
       /* =====================================================
          UPDATE CUSTOMER
@@ -448,24 +500,33 @@ export default {
         path === "/api/customer/update" &&
         request.method === "POST"
       ) {
-        const body = await request.json();
+
+        const body =
+          await request.json();
+
 
         const customerId =
           clean(body.customer_id);
 
+
         const name =
           clean(body.name);
+
 
         const email =
           clean(body.email);
 
+
         if (!customerId) {
+
           return json({
             success: false,
             error:
               "Customer ID required"
           }, 400);
+
         }
+
 
         const customer =
           await env.DB.prepare(`
@@ -474,13 +535,17 @@ export default {
             WHERE id = ?
           `).bind(customerId).first();
 
+
         if (!customer) {
+
           return json({
             success: false,
             error:
               "Customer not found"
           }, 404);
+
         }
+
 
         await env.DB.prepare(`
           UPDATE customers
@@ -492,6 +557,7 @@ export default {
           customerId
         ).run();
 
+
         const updated =
           await env.DB.prepare(`
             SELECT *
@@ -499,12 +565,15 @@ export default {
             WHERE id = ?
           `).bind(customerId).first();
 
+
         return json({
           success: true,
           customer:
             customerResponse(updated)
         });
+
       }
+
 
       /* =====================================================
          REFERRAL SUMMARY
@@ -514,18 +583,23 @@ export default {
         path.startsWith("/api/referral/") &&
         request.method === "GET"
       ) {
+
         const customerId =
           clean(
             path.replace("/api/referral/", "")
           );
 
+
         if (!customerId) {
+
           return json({
             success: false,
             error:
               "Customer ID required"
           }, 400);
+
         }
+
 
         const summary =
           await getReferralSummary(
@@ -533,19 +607,25 @@ export default {
             customerId
           );
 
+
         if (!summary) {
+
           return json({
             success: false,
             error:
               "Customer not found"
           }, 404);
+
         }
+
 
         return json({
           success: true,
           referral: summary
         });
+
       }
+
 
       /* =====================================================
          CLAIM REFERRAL
@@ -555,14 +635,17 @@ export default {
         path === "/api/referral/claim" &&
         request.method === "POST"
       ) {
+
         const body =
           await request.json();
+
 
         const customerId =
           clean(
             body.customer_id ||
             body.customerId
           );
+
 
         const referralCode =
           clean(
@@ -571,23 +654,31 @@ export default {
             body.ref
           );
 
+
         if (!customerId) {
+
           return json({
             success: false,
             error:
               "Customer ID required"
           }, 400);
+
         }
 
+
         if (!/^\d{6}$/.test(referralCode)) {
+
           return json({
             success: false,
             error:
               "Valid 6-digit referral code required"
           }, 400);
+
         }
 
+
         await ensureReferralTable(env);
+
 
         const customer =
           await env.DB.prepare(`
@@ -596,13 +687,17 @@ export default {
             WHERE id = ?
           `).bind(customerId).first();
 
+
         if (!customer) {
+
           return json({
             success: false,
             error:
               "Customer not found"
           }, 404);
+
         }
+
 
         const referrer =
           await env.DB.prepare(`
@@ -612,21 +707,28 @@ export default {
             LIMIT 1
           `).bind(referralCode).first();
 
+
         if (!referrer) {
+
           return json({
             success: false,
             error:
               "Referral code not found"
           }, 404);
+
         }
 
+
         if (referrer.id === customer.id) {
+
           return json({
             success: false,
             error:
               "You cannot use your own referral code"
           }, 400);
+
         }
+
 
         const alreadyReferred =
           await env.DB.prepare(`
@@ -636,13 +738,17 @@ export default {
             LIMIT 1
           `).bind(customer.id).first();
 
+
         if (alreadyReferred) {
+
           return json({
             success: false,
             error:
               "Referral already applied"
           }, 409);
+
         }
+
 
         await env.DB.prepare(`
           INSERT INTO referral_links (
@@ -660,6 +766,7 @@ export default {
           Date.now()
         ).run();
 
+
         await env.DB.prepare(`
           UPDATE customers
           SET referral_count =
@@ -667,14 +774,19 @@ export default {
           WHERE id = ?
         `).bind(referrer.id).run();
 
+
         return json({
           success: true,
           message:
             "Referral applied successfully",
-          referrer_id: referrer.id,
-          referral_code: referralCode
+          referrer_id:
+            referrer.id,
+          referral_code:
+            referralCode
         });
+
       }
+
 
       /* =====================================================
          REFERRAL COMMISSION
@@ -684,8 +796,10 @@ export default {
         path === "/api/referral/commission" &&
         request.method === "POST"
       ) {
+
         const body =
           await request.json();
+
 
         const referrerId =
           clean(
@@ -693,29 +807,38 @@ export default {
             body.referrerId
           );
 
+
         const amount =
           Number(body.amount);
 
+
         if (!referrerId) {
+
           return json({
             success: false,
             error:
               "Referrer ID required"
           }, 400);
+
         }
+
 
         if (
           !Number.isFinite(amount) ||
           amount <= 0
         ) {
+
           return json({
             success: false,
             error:
               "Valid amount required"
           }, 400);
+
         }
 
+
         await ensureReferralTable(env);
+
 
         const referrer =
           await env.DB.prepare(`
@@ -724,13 +847,17 @@ export default {
             WHERE id = ?
           `).bind(referrerId).first();
 
+
         if (!referrer) {
+
           return json({
             success: false,
             error:
               "Referrer not found"
           }, 404);
+
         }
+
 
         const commission =
           Number(
@@ -740,6 +867,7 @@ export default {
               100
             ).toFixed(2)
           );
+
 
         await env.DB.prepare(`
           UPDATE customers
@@ -751,12 +879,14 @@ export default {
           referrerId
         ).run();
 
+
         const updated =
           await env.DB.prepare(`
             SELECT *
             FROM customers
             WHERE id = ?
           `).bind(referrerId).first();
+
 
         return json({
           success: true,
@@ -769,7 +899,9 @@ export default {
               updated.referral_earned || 0
             )
         });
+
       }
+
 
       /* =====================================================
          CREATE ROOM
@@ -779,14 +911,17 @@ export default {
         path === "/api/rooms/create" &&
         request.method === "POST"
       ) {
+
         const body =
           await request.json();
+
 
         const playerId =
           clean(
             body.player_id ||
             body.playerId
           );
+
 
         const playerName =
           clean(
@@ -795,27 +930,35 @@ export default {
             "Player"
           );
 
+
         const roomCode =
           clean(
             body.room_code ||
             body.roomCode
           );
 
+
         if (!playerId) {
+
           return json({
             success: false,
             error:
               "Player login required"
           }, 400);
+
         }
 
+
         if (!validRoomCode(roomCode)) {
+
           return json({
             success: false,
             error:
               "8-digit Room Code required"
           }, 400);
+
         }
+
 
         const existing =
           await getRoom(
@@ -823,27 +966,35 @@ export default {
             roomCode
           );
 
+
         if (existing) {
 
           if (
             existing.status === "WAITING" &&
             isExpired(existing.created_at)
           ) {
+
             await deleteRoom(
               env,
               roomCode
             );
+
           } else {
+
             return json({
               success: false,
               error:
                 "यह Room Code पहले से मौजूद है। दूसरा code डालें।"
             }, 409);
+
           }
+
         }
+
 
         const createdAt =
           Date.now();
+
 
         await env.DB.prepare(`
           INSERT INTO rooms (
@@ -865,6 +1016,7 @@ export default {
           createdAt
         ).run();
 
+
         return json({
           success: true,
           room: {
@@ -877,7 +1029,9 @@ export default {
             created_at: createdAt
           }
         });
+
       }
+
 
       /* =====================================================
          GET WAITING ROOM
@@ -888,6 +1042,7 @@ export default {
         path === "/api/rooms/waiting" &&
         request.method === "GET"
       ) {
+
         const room =
           await env.DB.prepare(`
             SELECT
@@ -906,32 +1061,42 @@ export default {
             LIMIT 1
           `).first();
 
+
         if (!room) {
+
           return json({
             success: true,
             room: null
           });
+
         }
+
 
         if (
           isExpired(room.created_at)
         ) {
+
           await deleteRoom(
             env,
             room.room_code
           );
 
+
           return json({
             success: true,
             room: null
           });
+
         }
+
 
         return json({
           success: true,
           room
         });
+
       }
+
 
       /* =====================================================
          JOIN ROOM
@@ -941,14 +1106,17 @@ export default {
         path === "/api/rooms/join" &&
         request.method === "POST"
       ) {
+
         const body =
           await request.json();
+
 
         const playerId =
           clean(
             body.player_id ||
             body.playerId
           );
+
 
         const playerName =
           clean(
@@ -957,27 +1125,35 @@ export default {
             "Player"
           );
 
+
         const roomCode =
           clean(
             body.room_code ||
             body.roomCode
           );
 
+
         if (!playerId) {
+
           return json({
             success: false,
             error:
               "Player login required"
           }, 400);
+
         }
 
+
         if (!validRoomCode(roomCode)) {
+
           return json({
             success: false,
             error:
               "8-digit Room Code required"
           }, 400);
+
         }
+
 
         const room =
           await getRoom(
@@ -985,47 +1161,61 @@ export default {
             roomCode
           );
 
+
         if (!room) {
+
           return json({
             success: false,
             error:
               "Room Code नहीं मिला।"
           }, 404);
+
         }
+
 
         if (
           room.status === "WAITING" &&
           isExpired(room.created_at)
         ) {
+
           await deleteRoom(
             env,
             roomCode
           );
+
 
           return json({
             success: false,
             error:
               "⏰ यह Room 5 मिनट बाद expire हो गया।"
           }, 410);
+
         }
+
 
         if (
           room.player1_id === playerId
         ) {
+
           return json({
             success: false,
             error:
               "Player 1 और Player 2 के लिए अलग mobile number इस्तेमाल करें।"
           }, 409);
+
         }
 
+
         if (room.player2_id) {
+
           return json({
             success: false,
             error:
               "यह Room पहले से full है।"
           }, 409);
+
         }
+
 
         const result =
           await env.DB.prepare(`
@@ -1042,13 +1232,17 @@ export default {
             roomCode
           ).run();
 
+
         if (!result.success) {
+
           return json({
             success: false,
             error:
               "Player 2 join नहीं कर पाया।"
           }, 500);
+
         }
+
 
         const updatedRoom =
           await getRoom(
@@ -1056,24 +1250,31 @@ export default {
             roomCode
           );
 
+
         if (
           !updatedRoom ||
           updatedRoom.player2_id !== playerId
         ) {
+
           return json({
             success: false,
             error:
               "Player 2 database में save नहीं हुआ।"
           }, 500);
+
         }
+
 
         return json({
           success: true,
           message:
             "Player 2 joined successfully 🎉",
-          room: updatedRoom
+          room:
+            updatedRoom
         });
+
       }
+
 
       /* =====================================================
          GET ROOM
@@ -1083,18 +1284,23 @@ export default {
         path.startsWith("/api/rooms/") &&
         request.method === "GET"
       ) {
+
         const roomCode =
           path
             .replace("/api/rooms/", "")
             .trim();
 
+
         if (!validRoomCode(roomCode)) {
+
           return json({
             success: false,
             error:
               "Invalid room code"
           }, 400);
+
         }
+
 
         const room =
           await getRoom(
@@ -1102,35 +1308,45 @@ export default {
             roomCode
           );
 
+
         if (!room) {
+
           return json({
             success: false,
             error:
               "Room not found"
           }, 404);
+
         }
+
 
         if (
           room.status === "WAITING" &&
           isExpired(room.created_at)
         ) {
+
           await deleteRoom(
             env,
             roomCode
           );
+
 
           return json({
             success: false,
             error:
               "Room expired"
           }, 410);
+
         }
+
 
         return json({
           success: true,
           room
         });
+
       }
+
 
       /* =====================================================
          CANCEL ROOM
@@ -1140,8 +1356,10 @@ export default {
         path === "/api/rooms/cancel" &&
         request.method === "POST"
       ) {
+
         const body =
           await request.json();
+
 
         const playerId =
           clean(
@@ -1149,17 +1367,20 @@ export default {
             body.player
           );
 
+
         const roomCode =
           clean(
             body.room_code ||
             body.roomCode
           );
 
+
         const reason =
           clean(
             body.reason ||
             body.cancel_reason
           );
+
 
         const validReasons = [
           "No Room Code",
@@ -1168,26 +1389,33 @@ export default {
           "Opposite Error"
         ];
 
+
         if (
           !playerId ||
           !validRoomCode(roomCode)
         ) {
+
           return json({
             success: false,
             error:
               "Player and valid Room Code required"
           }, 400);
+
         }
+
 
         if (
           !validReasons.includes(reason)
         ) {
+
           return json({
             success: false,
             error:
               "Valid cancellation reason required"
           }, 400);
+
         }
+
 
         const room =
           await getRoom(
@@ -1195,28 +1423,36 @@ export default {
             roomCode
           );
 
+
         if (!room) {
+
           return json({
             success: false,
             error:
               "Room not found"
           }, 404);
+
         }
+
 
         if (
           room.player1_id !== playerId &&
           room.player2_id !== playerId
         ) {
+
           return json({
             success: false,
             error:
               "Not your room"
           }, 403);
+
         }
+
 
         await ensureCancellationTable(
           env
         );
+
 
         await env.DB.prepare(`
           INSERT INTO room_cancellations (
@@ -1233,10 +1469,12 @@ export default {
           Date.now()
         ).run();
 
+
         await deleteRoom(
           env,
           roomCode
         );
+
 
         return json({
           success: true,
@@ -1244,7 +1482,9 @@ export default {
             "Room cancelled successfully",
           reason
         });
+
       }
+
 
       /* =====================================================
          RESULT
@@ -1254,8 +1494,10 @@ export default {
         path === "/api/rooms/result" &&
         request.method === "POST"
       ) {
+
         const body =
           await request.json();
+
 
         const playerId =
           clean(
@@ -1263,28 +1505,34 @@ export default {
             body.playerId
           );
 
+
         const roomCode =
           clean(
             body.room_code ||
             body.roomCode
           );
 
+
         const screenshot =
           String(
             body.screenshot || ""
           );
+
 
         if (
           !playerId ||
           !validRoomCode(roomCode) ||
           !screenshot
         ) {
+
           return json({
             success: false,
             error:
               "Player, room and screenshot required"
           }, 400);
+
         }
+
 
         const room =
           await getRoom(
@@ -1292,24 +1540,31 @@ export default {
             roomCode
           );
 
+
         if (!room) {
+
           return json({
             success: false,
             error:
               "Room not found"
           }, 404);
+
         }
+
 
         if (
           room.player1_id !== playerId &&
           room.player2_id !== playerId
         ) {
+
           return json({
             success: false,
             error:
               "Player is not part of this room"
           }, 403);
+
         }
+
 
         await env.DB.prepare(`
           UPDATE rooms
@@ -1324,20 +1579,22 @@ export default {
           roomCode
         ).run();
 
+
         return json({
           success: true,
           message:
             "Screenshot submitted successfully"
         });
+
       }
 
-      return new Response(
-        "Not Found",
-        {
-          status: 404,
-          headers: corsHeaders
-        }
-      );
+
+      /* =====================================================
+         STATIC WEBSITE FILES
+      ===================================================== */
+
+      return env.ASSETS.fetch(request);
+
 
     } catch (error) {
 
@@ -1346,12 +1603,16 @@ export default {
         error
       );
 
+
       return json({
         success: false,
         error:
           error?.message ||
           "Server Error"
       }, 500);
+
     }
+
   }
+
 };
