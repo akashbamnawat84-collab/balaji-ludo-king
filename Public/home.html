@@ -12,10 +12,10 @@
 
   <meta
     name="theme-color"
-    content="#101827"
+    content="#17122f"
   >
 
-  <title>Balaji Ludo King - Home</title>
+  <title>Balaji Ludo King</title>
 
   <link
     rel="stylesheet"
@@ -28,29 +28,71 @@
 <body>
 
 
-  <!-- =====================================================
+  <!-- ==============================
        TOP HEADER
-  ====================================================== -->
+  =============================== -->
 
   <header class="top-header">
 
-    <div class="profile-area">
+    <div class="header-left">
 
-      <div class="profile-icon">
-        👑
+      <div class="menu-button">
+        ☰
       </div>
 
-      <div>
+      <div class="brand-logo">
+        🎲
+      </div>
+
+      <div class="brand-text">
 
         <h1>
           BALAJI LUDO KING
         </h1>
 
-        <p>
+        <span>
           Official Gaming
-        </p>
+        </span>
 
       </div>
+
+    </div>
+
+
+    <!-- WALLET + REFER ALWAYS ON TOP -->
+
+    <div class="header-actions">
+
+      <a
+        href="wallet.html"
+        class="top-wallet"
+      >
+
+        <span class="top-icon">
+          ₹
+        </span>
+
+        <span id="walletBalance">
+          ₹0
+        </span>
+
+      </a>
+
+
+      <a
+        href="refer.html"
+        class="top-refer"
+      >
+
+        <span class="top-icon">
+          🎁
+        </span>
+
+        <span>
+          ₹0.00
+        </span>
+
+      </a>
 
     </div>
 
@@ -58,92 +100,29 @@
 
 
 
-  <!-- =====================================================
-       WALLET / REFER
-  ====================================================== -->
-
-  <section class="quick-stats">
-
-
-    <a
-      href="wallet.html"
-      class="stat-card"
-    >
-
-      <span class="stat-icon">
-        ₹
-      </span>
-
-      <div>
-
-        <small>
-          Wallet Balance
-        </small>
-
-        <strong id="walletBalance">
-          ₹0
-        </strong>
-
-      </div>
-
-    </a>
-
-
-    <a
-      href="refer.html"
-      class="stat-card"
-    >
-
-      <span class="stat-icon">
-        🎁
-      </span>
-
-      <div>
-
-        <small>
-          Refer & Earn
-        </small>
-
-        <strong>
-          ₹13.00
-        </strong>
-
-      </div>
-
-    </a>
-
-
-  </section>
-
-
-
-  <!-- =====================================================
-       MAIN HOME CONTENT
-  ====================================================== -->
+  <!-- ==============================
+       MAIN
+  =============================== -->
 
   <main class="home-container">
 
 
-    <!-- =================================================
-         WELCOME CARD
-    ================================================== -->
+    <!-- WELCOME -->
 
-    <section class="announcement">
+    <section class="welcome-card">
 
-      <div class="announcement-icon">
+      <div class="welcome-icon">
         🥰
       </div>
 
-      <div class="announcement-text">
+      <div>
 
-        <strong>
+        <h2>
           WELCOME TO BALAJI LUDO KING
-        </strong>
+        </h2>
 
         <p>
           ❤️ BALAJI LUDO KING FAMILY में आपका स्वागत है।
-          ✨ दोस्तों BALAJI LUDO KING में आपका विश्वास
-          हमारी पहचान है।
         </p>
 
       </div>
@@ -152,24 +131,189 @@
 
 
 
-    <!-- =================================================
-         MAIN HERO
-    ================================================== -->
+    <!-- ==============================
+         REFERRAL BANNER
+    =============================== -->
 
-    <section class="banner">
+    <section class="referral-banner">
 
-      <div class="banner-content">
+      <div class="referral-content">
 
-        <span class="banner-badge">
-          🎮 BALAJI LUDO KING
+        <span class="referral-title">
+          REFER & EARN
         </span>
 
         <h2>
-          Play • Battle • Win
+          Earn More
         </h2>
 
         <p>
-          Enjoy classic 2 player Ludo gameplay.
+          Invite your friends and get extra rewards.
+        </p>
+
+
+        <div class="reward-row">
+
+          <div class="reward-box">
+
+            <strong>
+              5%
+            </strong>
+
+            <small>
+              COMMISSION
+            </small>
+
+          </div>
+
+
+          <div class="reward-box">
+
+            <strong>
+              3%
+            </strong>
+
+            <small>
+              REFERRAL
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="referral-image">
+        👩🏻
+      </div>
+
+    </section>
+
+
+
+    <!-- ==============================
+         FEATURED GAMES
+    =============================== -->
+
+    <section class="games-section">
+
+      <div class="section-heading">
+
+        <h2>
+          Featured Games
+        </h2>
+
+        <span>
+          View All
+        </span>
+
+      </div>
+
+
+      <!-- IMPORTANT:
+           BOTH CARDS SAME ROW
+      -->
+
+      <div class="games-row">
+
+
+        <!-- LUDO CLASSIC -->
+
+        <div class="game-card">
+
+          <div class="game-image ludo-image">
+            🎲
+          </div>
+
+          <div class="game-card-content">
+
+            <span class="game-status">
+              ● LIVE
+            </span>
+
+            <h3>
+              Ludo Classic
+            </h3>
+
+            <p>
+              2 Player Battle
+            </p>
+
+            <button
+              type="button"
+              class="play-button"
+              id="playNowBtn"
+            >
+              Play Now
+            </button>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- SUPPORT -->
+
+        <div class="game-card">
+
+          <div class="game-image support-image">
+            💬
+          </div>
+
+          <div class="game-card-content">
+
+            <span class="game-status">
+              ● LIVE
+            </span>
+
+            <h3>
+              Support
+            </h3>
+
+            <p>
+              Need Help?
+            </p>
+
+            <button
+              type="button"
+              class="support-button"
+              id="supportBtn"
+            >
+              Support
+            </button>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ==============================
+         INFORMATION
+    =============================== -->
+
+    <section class="info-card">
+
+      <div class="info-icon">
+        🏆
+      </div>
+
+      <div>
+
+        <h3>
+          Play. Battle. Win.
+        </h3>
+
+        <p>
+          Enjoy exciting 2 Player Ludo battles with
+          Balaji Ludo King.
         </p>
 
       </div>
@@ -181,232 +325,9 @@
 
 
 
-  <!-- =====================================================
-       FEATURED GAMES
-  ====================================================== -->
-
-  <section class="games-container">
-
-
-    <div class="section-title">
-
-      <h2>
-        Featured Games
-      </h2>
-
-    </div>
-
-
-
-    <!-- =================================================
-         LUDO CLASSIC
-    ================================================== -->
-
-    <div class="game-card">
-
-      <div class="game-left">
-
-        <div class="game-logo">
-          🎲
-        </div>
-
-        <div class="game-info">
-
-          <div class="live-row">
-
-            <span class="live-dot"></span>
-
-            <span class="live-text">
-              LIVE
-            </span>
-
-          </div>
-
-          <h3>
-            Ludo Classic
-          </h3>
-
-          <p>
-            Classic 2 Player Ludo
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="play-button"
-        id="playNowBtn"
-      >
-        Play Now
-      </button>
-
-    </div>
-
-
-
-    <!-- =================================================
-         SUPPORT
-    ================================================== -->
-
-    <div class="game-card support-card">
-
-      <div class="game-left">
-
-        <div class="game-logo support-logo">
-          💬
-        </div>
-
-        <div class="game-info">
-
-          <div class="live-row">
-
-            <span class="live-dot"></span>
-
-            <span class="live-text">
-              LIVE
-            </span>
-
-          </div>
-
-          <h3>
-            Ludo Support
-          </h3>
-
-          <p>
-            Need help? Contact support
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="support-button"
-        id="supportBtn"
-      >
-        Support
-      </button>
-
-    </div>
-
-
-
-    <!-- =================================================
-         REFER & EARN
-    ================================================== -->
-
-    <section class="promo-banner">
-
-      <div class="promo-circle"></div>
-
-
-      <span class="promo-spark one">
-        ✦
-      </span>
-
-      <span class="promo-spark two">
-        ✨
-      </span>
-
-      <span class="promo-spark three">
-        ★
-      </span>
-
-
-      <div class="promo-content">
-
-        <span class="promo-small-title">
-          REFER & EARN
-        </span>
-
-        <h2>
-          Earn More
-        </h2>
-
-        <p>
-          Invite your friends and get extra rewards
-          with Balaji Ludo King.
-        </p>
-
-
-        <div class="promo-badges">
-
-          <div class="promo-badge">
-
-            <strong>
-              5%
-            </strong>
-
-            <span>
-              COMMISSION
-            </span>
-
-          </div>
-
-
-          <div class="promo-badge">
-
-            <strong>
-              3%
-            </strong>
-
-            <span>
-              REFERRAL
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="promo-person">
-        👩🏻
-      </div>
-
-    </section>
-
-
-  </section>
-
-
-
-  <!-- =====================================================
-       FOOTER
-  ====================================================== -->
-
-  <footer class="home-footer">
-
-    <div class="footer-logo">
-      🎮
-    </div>
-
-    <h3>
-      BALAJI LUDO KING
-    </h3>
-
-    <p>
-      Turn Fun into Funds!
-    </p>
-
-    <small>
-      For best experience, open Balaji Ludo King
-      on Chrome mobile.
-    </small>
-
-  </footer>
-
-
-
-  <!-- =====================================================
+  <!-- ==============================
        BOTTOM NAVIGATION
-  ====================================================== -->
+  =============================== -->
 
   <nav class="bottom-nav">
 
@@ -495,9 +416,9 @@
 
 
 
-  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->
+  <!-- ==============================
+       EXISTING JAVASCRIPT
+  =============================== -->
 
   <script src="home.js"></script>
 
