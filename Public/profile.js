@@ -1,758 +1,595 @@
-/* ======================================
-BALAJI LUDO KING - PROFILE
-====================================== */
+/* =========================================================
+   BALAJI LUDO KING - PROFILE
+========================================================= */
 
-/* ======================================
-ELEMENTS
-====================================== */
+document.addEventListener("DOMContentLoaded", async function () {
 
-const profileName =
-document.getElementById("profileName");
+  const nameEl = document.getElementById("profileName");
+  const mobileEl = document.getElementById("profileMobile");
+  const playerIdEl = document.getElementById("playerId");
 
-const profileMobile =
-document.getElementById("profileMobile");
-
-const nameValue =
-document.getElementById("nameValue");
-
-const mobileValue =
-document.getElementById("mobileValue");
-
-const playerIdElement =
-document.getElementById("playerId");
-
-const walletBtn =
-document.getElementById("walletBtn");
-
-const referBtn =
-document.getElementById("referBtn");
-
-const supportBtn =
-document.getElementById("supportBtn");
-
-const kycBtn =
-document.getElementById("kycBtn");
-
-const logoutBtn =
-document.getElementById("logoutBtn");
-
-/* ======================================
-LOAD PROFILE
-====================================== */
-
-function loadProfile() {
-
-const savedName =
-localStorage.getItem("balajiPlayerName");
-
-const savedMobile =
-localStorage.getItem("balajiMobile");
-
-let playerId =
-localStorage.getItem("balajiPlayerId");
-
-const name =
-savedName || "Player";
-
-const mobile =
-savedMobile || "Not available";
-
-/* Generate Player ID once */
-
-if (!playerId) {
-
-playerId =
-  "BLK-" +
-  Math.floor(
-    100000 + Math.random() * 900000
-  );
-
-localStorage.setItem(
-  "balajiPlayerId",
-  playerId
-);
-
-}
-
-if (profileName) {
-
-profileName.textContent =
-  name;
-
-}
-
-if (nameValue) {
-
-nameValue.textContent =
-  name;
-
-}
-
-if (profileMobile) {
-
-profileMobile.textContent =
-  mobile;
-
-}
-
-if (mobileValue) {
-
-mobileValue.textContent =
-  mobile;
-
-}
-
-if (playerIdElement) {
-
-playerIdElement.textContent =
-  playerId;
-
-}
-
-}
-
-/* ======================================
-FIND CUSTOMER
-====================================== */
-
-function getCustomer() {
-
-const keys = [
-
-"customer",
-"customerData",
-"currentCustomer",
-"user",
-"userData",
-"balaji_customer",
-"balaji_customer_data",
-"balaji_user"
-
-];
-
-for (const key of keys) {
-
-try {
-
-  const value =
-    localStorage.getItem(key);
-
-  if (!value) continue;
+  const walletBtn = document.getElementById("walletBtn");
+  const referBtn = document.getElementById("referBtn");
+  const supportBtn = document.getElementById("supportBtn");
+  const kycBtn = document.getElementById("kycBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
 
 
-  const parsed =
-    JSON.parse(value);
+  /* =========================================================
+     CUSTOMER DATA
+  ========================================================= */
 
+  function getStoredCustomer() {
 
-  if (
-    parsed &&
-    typeof parsed === "object"
-  ) {
+    const keys = [
+      "customer",
+      "customerData",
+      "currentCustomer",
+      "user",
+      "userData",
+      "balaji_customer",
+      "balaji_customer_data",
+      "balaji_user"
+    ];
 
-    if (
-      parsed.customer &&
-      typeof parsed.customer === "object"
-    ) {
+    for (const key of keys) {
 
-      return parsed.customer;
+      try {
+
+        const value = localStorage.getItem(key);
+
+        if (!value) continue;
+
+        const data = JSON.parse(value);
+
+        if (data && typeof data === "object") {
+          return data;
+        }
+
+      } catch (error) {
+        // Ignore invalid storage values
+      }
 
     }
 
-
-    if (
-      parsed.user &&
-      typeof parsed.user === "object"
-    ) {
-
-      return parsed.user;
-
-    }
-
-
-    if (
-      parsed.data &&
-      typeof parsed.data === "object"
-    ) {
-
-      return parsed.data;
-
-    }
-
-
-    return parsed;
-
+    return null;
   }
 
-} catch {
 
-  continue;
+  const customer = getStoredCustomer();
 
-}
 
-}
+  /* =========================================================
+     GET CUSTOMER ID
+  ========================================================= */
 
-return null;
+  function getCustomerId() {
 
-}
-
-/* ======================================
-GET CUSTOMER ID
-====================================== */
-
-function getCustomerId(customer) {
-
-if (customer) {
-
-return (
-
-  customer.customer_id ||
-  customer.customerId ||
-  customer.id ||
-  customer.player_id ||
-  customer.playerId ||
-  ""
-
-);
-
-}
-
-const possibleKeys = [
-
-"customer_id",
-"customerId",
-"playerId",
-"player_id"
-
-];
-
-for (const key of possibleKeys) {
-
-const value =
-  localStorage.getItem(key);
-
-if (value) {
-
-  try {
-
-    const parsed =
-      JSON.parse(value);
-
-    if (
-      parsed &&
-      typeof parsed === "object"
-    ) {
+    if (customer) {
 
       return (
-
-        parsed.customer_id ||
-        parsed.customerId ||
-        parsed.id ||
-        parsed.player_id ||
-        parsed.playerId ||
+        customer.customer_id ||
+        customer.customerId ||
+        customer.id ||
         ""
-
       );
 
     }
 
-  } catch {
-
-    return value;
-
-  }
-
-}
-
-}
-
-return "";
-
-}
-
-/* ======================================
-NORMALIZE KYC STATUS
-====================================== */
-
-function normalizeKYCStatus(status) {
-
-if (!status) {
-
-return "";
-
-}
-
-return String(status)
-.trim()
-.toUpperCase();
-
-}
-
-/* ======================================
-UPDATE KYC UI
-====================================== */
-
-function updateKYCUI(status) {
-
-if (!kycBtn) return;
-
-const kycContent =
-kycBtn.querySelector(".kyc-content");
-
-const kycIcon =
-kycBtn.querySelector(".kyc-icon");
-
-const normalized =
-normalizeKYCStatus(status);
-
-/* ====================================
-APPROVED
-==================================== */
-
-if (
-normalized === "APPROVED" ||
-normalized === "VERIFIED"
-) {
-
-if (kycIcon) {
-
-  kycIcon.textContent =
-    "✓";
-
-}
-
-
-if (kycContent) {
-
-  const strong =
-    kycContent.querySelector("strong");
-
-  if (strong) {
-
-    strong.textContent =
-      "KYC VERIFIED";
+    return (
+      localStorage.getItem("balajiPlayerId") ||
+      localStorage.getItem("customer_id") ||
+      localStorage.getItem("customerId") ||
+      ""
+    );
 
   }
 
-}
 
+  /* =========================================================
+     GET NAME
+  ========================================================= */
 
-kycBtn.classList.add("kyc-approved");
+  function getName() {
 
-return;
+    if (customer) {
 
-}
+      return (
+        customer.full_name ||
+        customer.fullName ||
+        customer.name ||
+        customer.player_name ||
+        customer.playerName ||
+        ""
+      );
 
-/* ====================================
-PENDING
-==================================== */
+    }
 
-if (normalized === "PENDING") {
-
-if (kycIcon) {
-
-  kycIcon.textContent =
-    "⏳";
-
-}
-
-
-if (kycContent) {
-
-  const strong =
-    kycContent.querySelector("strong");
-
-  if (strong) {
-
-    strong.textContent =
-      "KYC VERIFICATION PENDING";
+    return (
+      localStorage.getItem("balajiPlayerName") ||
+      localStorage.getItem("playerName") ||
+      ""
+    );
 
   }
 
-}
 
+  /* =========================================================
+     GET MOBILE
+  ========================================================= */
 
-kycBtn.classList.remove(
-  "kyc-approved"
-);
+  function getMobile() {
 
-return;
+    if (customer) {
 
-}
+      return (
+        customer.mobile ||
+        customer.phone ||
+        customer.phone_number ||
+        ""
+      );
 
-/* ====================================
-REJECTED
-==================================== */
+    }
 
-if (normalized === "REJECTED") {
-
-if (kycIcon) {
-
-  kycIcon.textContent =
-    "✕";
-
-}
-
-
-if (kycContent) {
-
-  const strong =
-    kycContent.querySelector("strong");
-
-  if (strong) {
-
-    strong.textContent =
-      "KYC REJECTED";
+    return (
+      localStorage.getItem("balajiMobile") ||
+      localStorage.getItem("mobile") ||
+      ""
+    );
 
   }
 
-}
 
+  const customerId = getCustomerId();
+  const customerName = getName();
+  const customerMobile = getMobile();
 
-kycBtn.classList.remove(
-  "kyc-approved"
-);
 
-return;
+  /* =========================================================
+     PROFILE NAME
+  ========================================================= */
 
-}
+  if (nameEl) {
 
-/* ====================================
-NOT SUBMITTED
-==================================== */
+    nameEl.textContent =
+      customerName || "Player";
 
-if (kycIcon) {
+  }
 
-kycIcon.textContent =
-  "✓";
 
-}
+  /* =========================================================
+     PROFILE MOBILE
+  ========================================================= */
 
-if (kycContent) {
+  if (mobileEl) {
 
-const strong =
-  kycContent.querySelector("strong");
+    if (customerMobile) {
 
-if (strong) {
+      const mobileString =
+        String(customerMobile);
 
-  strong.textContent =
-    "Complete KYC Verification";
+      if (mobileString.length >= 10) {
 
-}
+        mobileEl.textContent =
+          "******" +
+          mobileString.slice(-4);
 
-}
+      } else {
 
-kycBtn.classList.remove(
-"kyc-approved"
-);
-
-}
-
-/* ======================================
-LOAD KYC FROM LOCAL STORAGE
-====================================== */
-
-function loadLocalKYCStatus() {
-
-try {
-
-const saved =
-  localStorage.getItem(
-    "balaji_kyc_submission"
-  );
-
-
-if (!saved) return "";
-
-
-const data =
-  JSON.parse(saved);
-
-
-if (
-  data &&
-  data.status
-) {
-
-  return data.status;
-
-}
-
-} catch {
-
-return "";
-
-}
-
-return "";
-
-}
-
-/* ======================================
-LOAD KYC FROM SERVER
-====================================== */
-
-async function loadKYCStatus() {
-
-const customer =
-getCustomer();
-
-const customerId =
-getCustomerId(customer);
-
-/*
-
-* First show locally saved status.
-  */
-
-const localStatus =
-loadLocalKYCStatus();
-
-if (localStatus) {
-
-updateKYCUI(localStatus);
-
-}
-
-/*
-
-* Customer ID नहीं मिला तो local status
-* पर ही रहेंगे।
-  */
-
-if (!customerId) {
-
-return;
-
-}
-
-try {
-
-/*
- * Existing customer API
- */
-
-const response =
-  await fetch(
-    "/api/customer?customer_id=" +
-    encodeURIComponent(customerId)
-  );
-
-
-if (!response.ok) {
-
-  return;
-
-}
-
-
-const data =
-  await response.json();
-
-
-/*
- * API response के अलग-अलग possible
- * structures को support करें।
- */
-
-const serverCustomer =
-
-  data?.customer ||
-  data?.data ||
-  data;
-
-
-const serverStatus =
-
-  serverCustomer?.kyc_status ||
-  serverCustomer?.kycStatus ||
-  data?.kyc_status ||
-  data?.kycStatus ||
-  "";
-
-
-if (serverStatus) {
-
-  updateKYCUI(serverStatus);
-
-
-  /*
-   * Server status local storage में भी
-   * save करें ताकि अगली बार तुरंत दिखे।
-   */
-
-  const oldSubmission = {
-
-    ...(function () {
-
-      try {
-
-        return JSON.parse(
-          localStorage.getItem(
-            "balaji_kyc_submission"
-          ) || "{}"
-        );
-
-      } catch {
-
-        return {};
+        mobileEl.textContent =
+          mobileString;
 
       }
 
-    })()
+    } else {
 
-  };
+      mobileEl.textContent = "";
 
-
-  oldSubmission.customer_id =
-    customerId;
-
-  oldSubmission.status =
-    normalizeKYCStatus(serverStatus);
-
-
-  localStorage.setItem(
-    "balaji_kyc_submission",
-    JSON.stringify(oldSubmission)
-  );
-
-}
-
-} catch (error) {
-
-console.error(
-  "KYC Status Error:",
-  error
-);
-
-}
-
-}
-
-/* ======================================
-WALLET
-====================================== */
-
-if (walletBtn) {
-
-walletBtn.addEventListener(
-"click",
-() => {
-
-  window.location.href =
-    "wallet.html";
-
-}
-
-);
-
-}
-
-/* ======================================
-REFER
-====================================== */
-
-if (referBtn) {
-
-referBtn.addEventListener(
-"click",
-() => {
-
-  window.location.href =
-    "refer.html";
-
-}
-
-);
-
-}
-
-/* ======================================
-SUPPORT
-====================================== */
-
-if (supportBtn) {
-
-supportBtn.addEventListener(
-"click",
-() => {
-
-  window.location.href =
-    "support.html";
-
-}
-
-);
-
-}
-
-/* ======================================
-KYC
-====================================== */
-
-if (kycBtn) {
-
-kycBtn.addEventListener(
-"click",
-() => {
-
-  window.location.href =
-    "/kyc/";
-
-}
-
-);
-
-}
-
-/* ======================================
-LOGOUT
-====================================== */
-
-if (logoutBtn) {
-
-logoutBtn.addEventListener(
-"click",
-() => {
-
-  const confirmLogout =
-    confirm(
-      "Are you sure you want to logout?"
-    );
-
-
-  if (!confirmLogout) {
-
-    return;
+    }
 
   }
 
 
-  localStorage.removeItem(
-    "BALAJI_LOGIN"
-  );
+  /* =========================================================
+     PLAYER ID
+  ========================================================= */
 
-  localStorage.removeItem(
-    "balajiLogin"
-  );
-
-  localStorage.removeItem(
-    "balajiMobile"
-  );
+  let playerId =
+    localStorage.getItem("balajiPlayerId");
 
 
-  window.location.href =
-    "home.html";
+  if (!playerId) {
 
-}
+    playerId =
+      "BLK-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
 
-);
+    localStorage.setItem(
+      "balajiPlayerId",
+      playerId
+    );
 
-}
+  }
 
-/* ======================================
-START
-====================================== */
 
-loadProfile();
+  if (playerIdEl) {
 
-loadKYCStatus();
+    playerIdEl.textContent =
+      playerId;
+
+  }
+
+
+  /* =========================================================
+     KYC ELEMENTS
+  ========================================================= */
+
+  const kycIcon =
+    kycBtn
+      ? kycBtn.querySelector(".kyc-icon")
+      : null;
+
+  const kycStrong =
+    kycBtn
+      ? kycBtn.querySelector("strong")
+      : null;
+
+
+  /* =========================================================
+     NORMALIZE KYC STATUS
+  ========================================================= */
+
+  function normalizeKycStatus(status) {
+
+    if (!status) return "";
+
+    return String(status)
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_-]+/g, "");
+
+  }
+
+
+  /* =========================================================
+     UPDATE KYC UI
+  ========================================================= */
+
+  function updateKycUI(status) {
+
+    const normalized =
+      normalizeKycStatus(status);
+
+
+    if (!kycBtn) return;
+
+
+    if (
+      normalized === "approved" ||
+      normalized === "verified" ||
+      normalized === "complete"
+    ) {
+
+      if (kycIcon) {
+        kycIcon.textContent = "✓";
+      }
+
+      if (kycStrong) {
+        kycStrong.textContent =
+          "KYC VERIFIED";
+      }
+
+      return;
+
+    }
+
+
+    if (
+      normalized === "pending" ||
+      normalized === "verificationpending"
+    ) {
+
+      if (kycIcon) {
+        kycIcon.textContent = "⏳";
+      }
+
+      if (kycStrong) {
+        kycStrong.textContent =
+          "KYC VERIFICATION PENDING";
+      }
+
+      return;
+
+    }
+
+
+    if (
+      normalized === "rejected"
+    ) {
+
+      if (kycIcon) {
+        kycIcon.textContent = "✕";
+      }
+
+      if (kycStrong) {
+        kycStrong.textContent =
+          "KYC REJECTED";
+      }
+
+      return;
+
+    }
+
+
+    if (kycIcon) {
+      kycIcon.textContent = "✓";
+    }
+
+    if (kycStrong) {
+      kycStrong.textContent =
+        "Complete KYC Verification";
+    }
+
+  }
+
+
+  /* =========================================================
+     LOCAL KYC STATUS
+  ========================================================= */
+
+  let currentKycStatus = "";
+
+
+  try {
+
+    const savedKyc =
+      localStorage.getItem(
+        "balaji_kyc_submission"
+      );
+
+
+    if (savedKyc) {
+
+      const kycData =
+        JSON.parse(savedKyc);
+
+
+      currentKycStatus =
+        kycData.status ||
+        kycData.kyc_status ||
+        "";
+
+    }
+
+  } catch (error) {
+
+    console.log(
+      "KYC local data read failed."
+    );
+
+  }
+
+
+  updateKycUI(currentKycStatus);
+
+
+  /* =========================================================
+     GET FRESH KYC STATUS FROM SERVER
+  ========================================================= */
+
+  if (customerId) {
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/customer?customer_id=" +
+          encodeURIComponent(customerId)
+        );
+
+
+      if (response.ok) {
+
+        const data =
+          await response.json();
+
+
+        const serverCustomer =
+          data.customer ||
+          data.data ||
+          data;
+
+
+        const serverKycStatus =
+          serverCustomer.kyc_status ||
+          serverCustomer.kycStatus ||
+          "";
+
+
+        if (serverKycStatus) {
+
+          currentKycStatus =
+            serverKycStatus;
+
+
+          updateKycUI(
+            serverKycStatus
+          );
+
+
+          /* Save latest status locally */
+
+          try {
+
+            let savedData = {};
+
+            const old =
+              localStorage.getItem(
+                "balaji_kyc_submission"
+              );
+
+
+            if (old) {
+
+              savedData =
+                JSON.parse(old);
+
+            }
+
+
+            savedData.status =
+              serverKycStatus;
+
+
+            savedData.kyc_status =
+              serverKycStatus;
+
+
+            localStorage.setItem(
+              "balaji_kyc_submission",
+              JSON.stringify(savedData)
+            );
+
+          } catch (error) {
+
+            console.log(
+              "KYC status cache failed."
+            );
+
+          }
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.log(
+        "KYC server status check failed."
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     WALLET
+  ========================================================= */
+
+  if (walletBtn) {
+
+    walletBtn.addEventListener(
+      "click",
+      function () {
+
+        window.location.href =
+          "wallet.html";
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     REFER
+  ========================================================= */
+
+  if (referBtn) {
+
+    referBtn.addEventListener(
+      "click",
+      function () {
+
+        window.location.href =
+          "refer.html";
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     SUPPORT
+  ========================================================= */
+
+  if (supportBtn) {
+
+    supportBtn.addEventListener(
+      "click",
+      function () {
+
+        window.location.href =
+          "support.html";
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     KYC
+  ========================================================= */
+
+  if (kycBtn) {
+
+    kycBtn.addEventListener(
+      "click",
+      function () {
+
+        window.location.href =
+          "/kyc/";
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     LOGOUT
+     PROFILE → LOGOUT → LOGIN PAGE
+  ========================================================= */
+
+  if (logoutBtn) {
+
+    logoutBtn.addEventListener(
+      "click",
+      function () {
+
+        /* Remove login/session data */
+
+        localStorage.removeItem(
+          "BALAJI_LOGIN"
+        );
+
+        localStorage.removeItem(
+          "balajiLogin"
+        );
+
+        localStorage.removeItem(
+          "balajiMobile"
+        );
+
+
+        /* Keep player/KYC data if needed */
+
+
+        /* Go directly to Login */
+
+        window.location.replace(
+          "/login/"
+        );
+
+      }
+    );
+
+  }
+
+});
