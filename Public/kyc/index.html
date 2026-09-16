@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>KYC Verification - Balaji Ludo King</title>
+
+  <link rel="stylesheet" href="kyc.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">👑</div>
+      <div>
+        <h1>Balaji Ludo King</h1>
+        <p>KYC Verification</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="kyc-card">
+
+      <div class="icon-box">🛡️</div>
+
+      <h2>Complete Your KYC</h2>
+
+      <p class="subtitle">
+        Verify your account to access all available features.
+      </p>
+
+      <div class="status-box">
+        <span class="status-dot"></span>
+        <span>KYC Status: <strong>Not Submitted</strong></span>
+      </div>
+
+      <form id="kycForm">
+
+        <div class="field">
+          <label for="fullName">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="mobile">Mobile Number</label>
+          <input
+            type="tel"
+            id="mobile"
+            name="mobile"
+            placeholder="Enter 10 digit mobile number"
+            inputmode="numeric"
+            maxlength="10"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="dob">Date of Birth</label>
+          <input
+            type="date"
+            id="dob"
+            name="dob"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="documentType">KYC Document</label>
+
+          <select id="documentType" name="documentType" required>
+            <option value="">Select document</option>
+            <option value="aadhaar">Aadhaar Card</option>
+            <option value="pan">PAN Card</option>
+            <option value="voter">Voter ID</option>
+            <option value="driving-license">Driving Licence</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="documentNumber">Document Number</label>
+          <input
+            type="text"
+            id="documentNumber"
+            name="documentNumber"
+            placeholder="Enter document number"
+            autocomplete="off"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="documentFile">Upload Document</label>
+
+          <div class="upload-box">
+            <input
+              type="file"
+              id="documentFile"
+              name="documentFile"
+              accept="image/*,.pdf"
+              required
+            >
+
+            <div class="upload-content">
+              <span class="upload-icon">📄</span>
+              <strong>Choose Document</strong>
+              <small>JPG, PNG or PDF</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="selfieFile">Upload Selfie</label>
+
+          <div class="upload-box">
+            <input
+              type="file"
+              id="selfieFile"
+              name="selfieFile"
+              accept="image/*"
+              required
+            >
+
+            <div class="upload-content">
+              <span class="upload-icon">📷</span>
+              <strong>Choose Selfie</strong>
+              <small>Clear face photo</small>
+            </div>
+          </div>
+        </div>
+
+        <label class="agreement">
+          <input type="checkbox" id="agreement" required>
+
+          <span>
+            I confirm that the information provided by me is correct
+            and belongs to me.
+          </span>
+        </label>
+
+        <button type="submit" class="submit-btn">
+          Submit KYC
+        </button>
+
+      </form>
+
+      <button type="button" class="back-btn" id="backBtn">
+        ← Back
+      </button>
+
+      <div id="message" class="message"></div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Balaji Ludo King</p>
+  </footer>
+
+  <script src="kyc.js"></script>
+
+</body>
+</html>
