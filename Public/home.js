@@ -15,7 +15,7 @@ if (walletBalance) {
   const balance =
     localStorage.getItem("balajiWalletBalance");
 
-  if (balance) {
+  if (balance !== null && balance !== "") {
     walletBalance.textContent = "₹" + balance;
   } else {
     walletBalance.textContent = "₹0";
@@ -37,8 +37,7 @@ if (playNowBtn) {
     "click",
     function () {
 
-      window.location.href =
-        "battle.html";
+      window.location.href = "battle.html";
 
     }
   );
@@ -59,8 +58,7 @@ if (supportBtn) {
     "click",
     function () {
 
-      window.location.href =
-        "support.html";
+      window.location.href = "support.html";
 
     }
   );
