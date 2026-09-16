@@ -52,21 +52,47 @@ function customerResponse(customer) {
   return {
     id: customer.id,
     customer_id: customer.id,
+
     mobile: customer.mobile,
     phone: customer.mobile,
+
     name: customer.name,
-    wallet_balance: Number(customer.wallet_balance || 0),
-    bonus_balance: Number(customer.bonus_balance || 0),
-    battle_played: Number(customer.battle_played || 0),
-    coin_won: Number(customer.coin_won || 0),
-    referral_code: customer.referral_code || "",
-    referral_count: Number(customer.referral_count || 0),
-    referral_earned: Number(customer.referral_earned || 0),
-    withdrawal_amount: Number(customer.withdrawal_amount || 0),
-    email: customer.email || "",
-    kyc_status: customer.kyc_status || "Pending",
-    account_status: customer.account_status || "ACTIVE",
-    created_at: customer.created_at
+
+    wallet_balance:
+      Number(customer.wallet_balance || 0),
+
+    bonus_balance:
+      Number(customer.bonus_balance || 0),
+
+    battle_played:
+      Number(customer.battle_played || 0),
+
+    coin_won:
+      Number(customer.coin_won || 0),
+
+    referral_code:
+      customer.referral_code || "",
+
+    referral_count:
+      Number(customer.referral_count || 0),
+
+    referral_earned:
+      Number(customer.referral_earned || 0),
+
+    withdrawal_amount:
+      Number(customer.withdrawal_amount || 0),
+
+    email:
+      customer.email || "",
+
+    kyc_status:
+      customer.kyc_status || "Pending",
+
+    account_status:
+      customer.account_status || "ACTIVE",
+
+    created_at:
+      customer.created_at
   };
 }
 
@@ -76,6 +102,7 @@ function customerResponse(customer) {
 ========================================================= */
 
 async function getRoom(env, roomCode) {
+
   return env.DB.prepare(`
     SELECT
       room_code,
@@ -89,13 +116,21 @@ async function getRoom(env, roomCode) {
       created_at
     FROM rooms
     WHERE room_code = ?
-  `).bind(roomCode).first();
+  `)
+  .bind(roomCode)
+  .first();
+
 }
 
+
 async function deleteRoom(env, roomCode) {
+
   await env.DB.prepare(
     "DELETE FROM rooms WHERE room_code = ?"
-  ).bind(roomCode).run();
+  )
+  .bind(roomCode)
+  .run();
+
 }
 
 
@@ -104,6 +139,7 @@ async function deleteRoom(env, roomCode) {
 ========================================================= */
 
 async function ensureReferralTable(env) {
+
   await env.DB.prepare(`
     CREATE TABLE IF NOT EXISTS referral_links (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -113,7 +149,9 @@ async function ensureReferralTable(env) {
       status TEXT NOT NULL DEFAULT 'ACTIVE',
       created_at INTEGER NOT NULL
     )
-  `).run();
+  `)
+  .run();
+
 }
 
 
@@ -122,27 +160,33 @@ async function ensureReferralTable(env) {
 ========================================================= */
 
 async function generateUniqueReferralCode(env) {
+
   for (let attempt = 0; attempt < 20; attempt++) {
 
     const code = String(
       Math.floor(100000 + Math.random() * 900000)
     );
 
-    const existing = await env.DB.prepare(`
-      SELECT id
-      FROM customers
-      WHERE referral_code = ?
-      LIMIT 1
-    `).bind(code).first();
+    const existing =
+      await env.DB.prepare(`
+        SELECT id
+        FROM customers
+        WHERE referral_code = ?
+        LIMIT 1
+      `)
+      .bind(code)
+      .first();
 
     if (!existing) {
       return code;
     }
+
   }
 
   throw new Error(
     "Unable to generate unique referral code"
   );
+
 }
 
 
@@ -151,36 +195,49 @@ async function generateUniqueReferralCode(env) {
 ========================================================= */
 
 async function getReferralSummary(env, customerId) {
+
   await ensureReferralTable(env);
 
-  const customer = await env.DB.prepare(`
-    SELECT *
-    FROM customers
-    WHERE id = ?
-  `).bind(customerId).first();
+  const customer =
+    await env.DB.prepare(`
+      SELECT *
+      FROM customers
+      WHERE id = ?
+    `)
+    .bind(customerId)
+    .first();
 
   if (!customer) {
     return null;
   }
 
-  const referrals = await env.DB.prepare(`
-    SELECT COUNT(*) AS total
-    FROM referral_links
-    WHERE referrer_id = ?
-    AND status = 'ACTIVE'
-  `).bind(customerId).first();
+  const referrals =
+    await env.DB.prepare(`
+      SELECT COUNT(*) AS total
+      FROM referral_links
+      WHERE referrer_id = ?
+      AND status = 'ACTIVE'
+    `)
+    .bind(customerId)
+    .first();
 
   return {
-    customer_id: customer.id,
-    referral_code: customer.referral_code || "",
-    total_referral: Number(
-      referrals?.total || 0
-    ),
-    total_earned: Number(
-      customer.referral_earned || 0
-    ),
-    commission_percent: REFERRAL_PERCENT
+    customer_id:
+      customer.id,
+
+    referral_code:
+      customer.referral_code || "",
+
+    total_referral:
+      Number(referrals?.total || 0),
+
+    total_earned:
+      Number(customer.referral_earned || 0),
+
+    commission_percent:
+      REFERRAL_PERCENT
   };
+
 }
 
 
@@ -189,6 +246,7 @@ async function getReferralSummary(env, customerId) {
 ========================================================= */
 
 async function ensureCancellationTable(env) {
+
   await env.DB.prepare(`
     CREATE TABLE IF NOT EXISTS room_cancellations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -197,7 +255,49 @@ async function ensureCancellationTable(env) {
       reason TEXT NOT NULL,
       created_at INTEGER NOT NULL
     )
-  `).run();
+  `)
+  .run();
+
+}
+
+
+/* =========================================================
+   KYC TABLE
+========================================================= */
+
+async function ensureKYCTable(env) {
+
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS kyc_submissions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+      customer_id TEXT NOT NULL,
+
+      full_name TEXT NOT NULL,
+
+      mobile TEXT NOT NULL,
+
+      dob TEXT NOT NULL,
+
+      document_type TEXT NOT NULL,
+
+      document_number TEXT NOT NULL,
+
+      document_file_name TEXT DEFAULT '',
+
+      selfie_file_name TEXT DEFAULT '',
+
+      status TEXT NOT NULL DEFAULT 'PENDING',
+
+      rejection_reason TEXT DEFAULT '',
+
+      submitted_at INTEGER NOT NULL,
+
+      reviewed_at INTEGER
+    )
+  `)
+  .run();
+
 }
 
 
@@ -210,14 +310,21 @@ export default {
   async fetch(request, env) {
 
     if (request.method === "OPTIONS") {
+
       return new Response(null, {
         status: 204,
         headers: corsHeaders
       });
+
     }
 
-    const url = new URL(request.url);
-    const path = url.pathname;
+
+    const url =
+      new URL(request.url);
+
+    const path =
+      url.pathname;
+
 
     try {
 
@@ -231,10 +338,15 @@ export default {
         request.method === "POST"
       ) {
 
-        const body = await request.json();
+        const body =
+          await request.json();
 
-        const mobile = clean(body.mobile);
-        const otp = clean(body.otp);
+        const mobile =
+          clean(body.mobile);
+
+        const otp =
+          clean(body.otp);
+
 
         if (!validMobile(mobile)) {
 
@@ -265,7 +377,9 @@ export default {
               SELECT *
               FROM customers
               WHERE mobile = ?
-            `).bind(mobile).first();
+            `)
+            .bind(mobile)
+            .first();
 
 
           if (!customer) {
@@ -288,10 +402,12 @@ export default {
               UPDATE customers
               SET referral_code = ?
               WHERE id = ?
-            `).bind(
+            `)
+            .bind(
               newCode,
               customer.id
-            ).run();
+            )
+            .run();
 
 
             customer =
@@ -299,14 +415,18 @@ export default {
                 SELECT *
                 FROM customers
                 WHERE id = ?
-              `).bind(customer.id).first();
+              `)
+              .bind(customer.id)
+              .first();
 
           }
 
 
           return json({
             success: true,
+
             existing: true,
+
             customer:
               customerResponse(customer)
           });
@@ -319,7 +439,9 @@ export default {
             SELECT *
             FROM customers
             WHERE mobile = ?
-          `).bind(mobile).first();
+          `)
+          .bind(mobile)
+          .first();
 
 
         if (existing) {
@@ -333,10 +455,12 @@ export default {
               UPDATE customers
               SET referral_code = ?
               WHERE id = ?
-            `).bind(
+            `)
+            .bind(
               newCode,
               existing.id
-            ).run();
+            )
+            .run();
 
 
             existing =
@@ -344,16 +468,21 @@ export default {
                 SELECT *
                 FROM customers
                 WHERE id = ?
-              `).bind(existing.id).first();
+              `)
+              .bind(existing.id)
+              .first();
 
           }
 
 
           return json({
             success: true,
+
             existing: true,
+
             message:
               "OTP request accepted",
+
             customer:
               customerResponse(existing)
           });
@@ -399,7 +528,8 @@ export default {
             ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?
           )
-        `).bind(
+        `)
+        .bind(
           customerId,
           mobile,
           "Player",
@@ -415,7 +545,8 @@ export default {
           "Pending",
           "ACTIVE",
           createdAt
-        ).run();
+        )
+        .run();
 
 
         const customer =
@@ -423,14 +554,19 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `).bind(customerId).first();
+          `)
+          .bind(customerId)
+          .first();
 
 
         return json({
           success: true,
+
           existing: false,
+
           message:
             "OTP request accepted",
+
           customer:
             customerResponse(customer)
         });
@@ -449,7 +585,10 @@ export default {
 
         const customerId =
           clean(
-            path.replace("/api/customer/", "")
+            path.replace(
+              "/api/customer/",
+              ""
+            )
           );
 
 
@@ -469,7 +608,9 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `).bind(customerId).first();
+          `)
+          .bind(customerId)
+          .first();
 
 
         if (!customer) {
@@ -485,6 +626,7 @@ export default {
 
         return json({
           success: true,
+
           customer:
             customerResponse(customer)
         });
@@ -533,7 +675,9 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `).bind(customerId).first();
+          `)
+          .bind(customerId)
+          .first();
 
 
         if (!customer) {
@@ -551,11 +695,17 @@ export default {
           UPDATE customers
           SET name = ?, email = ?
           WHERE id = ?
-        `).bind(
-          name || customer.name || "Player",
+        `)
+        .bind(
+          name ||
+            customer.name ||
+            "Player",
+
           email,
+
           customerId
-        ).run();
+        )
+        .run();
 
 
         const updated =
@@ -563,11 +713,14 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `).bind(customerId).first();
+          `)
+          .bind(customerId)
+          .first();
 
 
         return json({
           success: true,
+
           customer:
             customerResponse(updated)
         });
@@ -586,7 +739,10 @@ export default {
 
         const customerId =
           clean(
-            path.replace("/api/referral/", "")
+            path.replace(
+              "/api/referral/",
+              ""
+            )
           );
 
 
@@ -621,7 +777,9 @@ export default {
 
         return json({
           success: true,
-          referral: summary
+
+          referral:
+            summary
         });
 
       }
@@ -685,7 +843,9 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `).bind(customerId).first();
+          `)
+          .bind(customerId)
+          .first();
 
 
         if (!customer) {
@@ -705,7 +865,9 @@ export default {
             FROM customers
             WHERE referral_code = ?
             LIMIT 1
-          `).bind(referralCode).first();
+          `)
+          .bind(referralCode)
+          .first();
 
 
         if (!referrer) {
@@ -719,7 +881,9 @@ export default {
         }
 
 
-        if (referrer.id === customer.id) {
+        if (
+          referrer.id === customer.id
+        ) {
 
           return json({
             success: false,
@@ -736,7 +900,9 @@ export default {
             FROM referral_links
             WHERE referred_id = ?
             LIMIT 1
-          `).bind(customer.id).first();
+          `)
+          .bind(customer.id)
+          .first();
 
 
         if (alreadyReferred) {
@@ -759,12 +925,14 @@ export default {
             created_at
           )
           VALUES (?, ?, ?, 'ACTIVE', ?)
-        `).bind(
+        `)
+        .bind(
           referrer.id,
           customer.id,
           referralCode,
           Date.now()
-        ).run();
+        )
+        .run();
 
 
         await env.DB.prepare(`
@@ -772,15 +940,20 @@ export default {
           SET referral_count =
             COALESCE(referral_count, 0) + 1
           WHERE id = ?
-        `).bind(referrer.id).run();
+        `)
+        .bind(referrer.id)
+        .run();
 
 
         return json({
           success: true,
+
           message:
             "Referral applied successfully",
+
           referrer_id:
             referrer.id,
+
           referral_code:
             referralCode
         });
@@ -845,7 +1018,9 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `).bind(referrerId).first();
+          `)
+          .bind(referrerId)
+          .first();
 
 
         if (!referrer) {
@@ -874,10 +1049,12 @@ export default {
           SET referral_earned =
             COALESCE(referral_earned, 0) + ?
           WHERE id = ?
-        `).bind(
+        `)
+        .bind(
           commission,
           referrerId
-        ).run();
+        )
+        .run();
 
 
         const updated =
@@ -885,15 +1062,21 @@ export default {
             SELECT *
             FROM customers
             WHERE id = ?
-          `).bind(referrerId).first();
+          `)
+          .bind(referrerId)
+          .first();
 
 
         return json({
           success: true,
+
           commission_percent:
             REFERRAL_PERCENT,
+
           amount,
+
           commission,
+
           total_earned:
             Number(
               updated.referral_earned || 0
@@ -1009,24 +1192,40 @@ export default {
           VALUES (
             ?, ?, ?, NULL, NULL, 'WAITING', ?
           )
-        `).bind(
+        `)
+        .bind(
           roomCode,
           playerId,
           playerName,
           createdAt
-        ).run();
+        )
+        .run();
 
 
         return json({
           success: true,
+
           room: {
-            room_code: roomCode,
-            player1_id: playerId,
-            player1_name: playerName,
-            player2_id: null,
-            player2_name: null,
-            status: "WAITING",
-            created_at: createdAt
+            room_code:
+              roomCode,
+
+            player1_id:
+              playerId,
+
+            player1_name:
+              playerName,
+
+            player2_id:
+              null,
+
+            player2_name:
+              null,
+
+            status:
+              "WAITING",
+
+            created_at:
+              createdAt
           }
         });
 
@@ -1059,7 +1258,8 @@ export default {
             WHERE status = 'WAITING'
             ORDER BY created_at DESC
             LIMIT 1
-          `).first();
+          `)
+          .first();
 
 
         if (!room) {
@@ -1092,6 +1292,7 @@ export default {
 
         return json({
           success: true,
+
           room
         });
 
@@ -1226,11 +1427,13 @@ export default {
               status = 'READY'
             WHERE room_code = ?
             AND player2_id IS NULL
-          `).bind(
+          `)
+          .bind(
             playerId,
             playerName,
             roomCode
-          ).run();
+          )
+          .run();
 
 
         if (!result.success) {
@@ -1267,8 +1470,10 @@ export default {
 
         return json({
           success: true,
+
           message:
             "Player 2 joined successfully 🎉",
+
           room:
             updatedRoom
         });
@@ -1342,6 +1547,7 @@ export default {
 
         return json({
           success: true,
+
           room
         });
 
@@ -1462,12 +1668,14 @@ export default {
             created_at
           )
           VALUES (?, ?, ?, ?)
-        `).bind(
+        `)
+        .bind(
           roomCode,
           playerId,
           reason,
           Date.now()
-        ).run();
+        )
+        .run();
 
 
         await deleteRoom(
@@ -1478,8 +1686,10 @@ export default {
 
         return json({
           success: true,
+
           message:
             "Room cancelled successfully",
+
           reason
         });
 
@@ -1573,17 +1783,684 @@ export default {
             result_player_id = ?,
             status = 'RESULT_SUBMITTED'
           WHERE room_code = ?
-        `).bind(
+        `)
+        .bind(
           screenshot,
           playerId,
           roomCode
-        ).run();
+        )
+        .run();
 
 
         return json({
           success: true,
+
           message:
             "Screenshot submitted successfully"
+        });
+
+      }
+
+
+      /* =====================================================
+         KYC SUBMIT
+      ===================================================== */
+
+      if (
+        path === "/api/kyc/submit" &&
+        request.method === "POST"
+      ) {
+
+        const body =
+          await request.json();
+
+
+        const customerId =
+          clean(
+            body.customer_id ||
+            body.customerId
+          );
+
+
+        const fullName =
+          clean(
+            body.full_name ||
+            body.fullName
+          );
+
+
+        const mobile =
+          clean(body.mobile);
+
+
+        const dob =
+          clean(body.dob);
+
+
+        const documentType =
+          clean(
+            body.document_type ||
+            body.documentType
+          );
+
+
+        const documentNumber =
+          clean(
+            body.document_number ||
+            body.documentNumber
+          );
+
+
+        const documentFileName =
+          clean(
+            body.document_file_name ||
+            body.documentFileName
+          );
+
+
+        const selfieFileName =
+          clean(
+            body.selfie_file_name ||
+            body.selfieFileName
+          );
+
+
+        /* ---------- VALIDATION ---------- */
+
+        if (!customerId) {
+
+          return json({
+            success: false,
+            error:
+              "Customer ID required"
+          }, 400);
+
+        }
+
+
+        if (fullName.length < 2) {
+
+          return json({
+            success: false,
+            error:
+              "Full name required"
+          }, 400);
+
+        }
+
+
+        if (!validMobile(mobile)) {
+
+          return json({
+            success: false,
+            error:
+              "Valid 10-digit mobile number required"
+          }, 400);
+
+        }
+
+
+        if (!dob) {
+
+          return json({
+            success: false,
+            error:
+              "Date of birth required"
+          }, 400);
+
+        }
+
+
+        const allowedDocuments = [
+          "aadhaar",
+          "pan",
+          "voter",
+          "driving-license"
+        ];
+
+
+        if (
+          !allowedDocuments.includes(
+            documentType
+          )
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Valid KYC document type required"
+          }, 400);
+
+        }
+
+
+        if (
+          documentNumber.length < 4
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Document number required"
+          }, 400);
+
+        }
+
+
+        if (!documentFileName) {
+
+          return json({
+            success: false,
+            error:
+              "KYC document upload required"
+          }, 400);
+
+        }
+
+
+        if (!selfieFileName) {
+
+          return json({
+            success: false,
+            error:
+              "Selfie upload required"
+          }, 400);
+
+        }
+
+
+        await ensureKYCTable(env);
+
+
+        /* ---------- CUSTOMER CHECK ---------- */
+
+        const customer =
+          await env.DB.prepare(`
+            SELECT *
+            FROM customers
+            WHERE id = ?
+          `)
+          .bind(customerId)
+          .first();
+
+
+        if (!customer) {
+
+          return json({
+            success: false,
+            error:
+              "Customer not found"
+          }, 404);
+
+        }
+
+
+        if (
+          String(customer.mobile) !==
+          String(mobile)
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Mobile number does not match customer account"
+          }, 403);
+
+        }
+
+
+        /* ---------- EXISTING PENDING ---------- */
+
+        const pending =
+          await env.DB.prepare(`
+            SELECT *
+            FROM kyc_submissions
+            WHERE customer_id = ?
+            AND status = 'PENDING'
+            ORDER BY id DESC
+            LIMIT 1
+          `)
+          .bind(customerId)
+          .first();
+
+
+        if (pending) {
+
+          return json({
+            success: true,
+
+            already_pending: true,
+
+            message:
+              "Your KYC is already pending",
+
+            kyc: {
+              id:
+                pending.id,
+
+              status:
+                pending.status,
+
+              submitted_at:
+                pending.submitted_at
+            }
+          });
+
+        }
+
+
+        const submittedAt =
+          Date.now();
+
+
+        /* ---------- SAVE KYC ---------- */
+
+        const result =
+          await env.DB.prepare(`
+            INSERT INTO kyc_submissions (
+              customer_id,
+              full_name,
+              mobile,
+              dob,
+              document_type,
+              document_number,
+              document_file_name,
+              selfie_file_name,
+              status,
+              rejection_reason,
+              submitted_at
+            )
+            VALUES (
+              ?, ?, ?, ?, ?, ?, ?, ?,
+              'PENDING',
+              '',
+              ?
+            )
+          `)
+          .bind(
+            customerId,
+            fullName,
+            mobile,
+            dob,
+            documentType,
+            documentNumber,
+            documentFileName,
+            selfieFileName,
+            submittedAt
+          )
+          .run();
+
+
+        /* ---------- UPDATE CUSTOMER ---------- */
+
+        await env.DB.prepare(`
+          UPDATE customers
+          SET kyc_status = 'Pending'
+          WHERE id = ?
+        `)
+        .bind(customerId)
+        .run();
+
+
+        return json({
+          success: true,
+
+          message:
+            "KYC submitted successfully",
+
+          kyc: {
+            id:
+              result.meta?.last_row_id || null,
+
+            customer_id:
+              customerId,
+
+            status:
+              "PENDING",
+
+            submitted_at:
+              submittedAt
+          }
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN - PENDING KYC
+      ===================================================== */
+
+      if (
+        path === "/api/admin/kyc/pending" &&
+        request.method === "GET"
+      ) {
+
+        await ensureKYCTable(env);
+
+
+        const result =
+          await env.DB.prepare(`
+            SELECT
+              id,
+              customer_id,
+              full_name,
+              mobile,
+              dob,
+              document_type,
+              document_number,
+              document_file_name,
+              selfie_file_name,
+              status,
+              submitted_at
+            FROM kyc_submissions
+            WHERE status = 'PENDING'
+            ORDER BY submitted_at DESC
+          `)
+          .all();
+
+
+        return json({
+          success: true,
+
+          count:
+            result.results?.length || 0,
+
+          kyc:
+            result.results || []
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN - ALL KYC
+      ===================================================== */
+
+      if (
+        path === "/api/admin/kyc/all" &&
+        request.method === "GET"
+      ) {
+
+        await ensureKYCTable(env);
+
+
+        const result =
+          await env.DB.prepare(`
+            SELECT
+              id,
+              customer_id,
+              full_name,
+              mobile,
+              dob,
+              document_type,
+              document_number,
+              document_file_name,
+              selfie_file_name,
+              status,
+              rejection_reason,
+              submitted_at,
+              reviewed_at
+            FROM kyc_submissions
+            ORDER BY submitted_at DESC
+          `)
+          .all();
+
+
+        return json({
+          success: true,
+
+          count:
+            result.results?.length || 0,
+
+          kyc:
+            result.results || []
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN - APPROVE KYC
+      ===================================================== */
+
+      if (
+        path === "/api/admin/kyc/approve" &&
+        request.method === "POST"
+      ) {
+
+        const body =
+          await request.json();
+
+
+        const kycId =
+          Number(
+            body.kyc_id ||
+            body.kycId ||
+            body.id
+          );
+
+
+        if (
+          !Number.isInteger(kycId) ||
+          kycId <= 0
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Valid KYC ID required"
+          }, 400);
+
+        }
+
+
+        await ensureKYCTable(env);
+
+
+        const kyc =
+          await env.DB.prepare(`
+            SELECT *
+            FROM kyc_submissions
+            WHERE id = ?
+          `)
+          .bind(kycId)
+          .first();
+
+
+        if (!kyc) {
+
+          return json({
+            success: false,
+            error:
+              "KYC submission not found"
+          }, 404);
+
+        }
+
+
+        if (
+          kyc.status !== "PENDING"
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "KYC is already reviewed"
+          }, 409);
+
+        }
+
+
+        const reviewedAt =
+          Date.now();
+
+
+        await env.DB.prepare(`
+          UPDATE kyc_submissions
+          SET
+            status = 'APPROVED',
+            rejection_reason = '',
+            reviewed_at = ?
+          WHERE id = ?
+        `)
+        .bind(
+          reviewedAt,
+          kycId
+        )
+        .run();
+
+
+        await env.DB.prepare(`
+          UPDATE customers
+          SET kyc_status = 'Approved'
+          WHERE id = ?
+        `)
+        .bind(
+          kyc.customer_id
+        )
+        .run();
+
+
+        return json({
+          success: true,
+
+          message:
+            "KYC approved successfully",
+
+          kyc_id:
+            kycId,
+
+          status:
+            "APPROVED"
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN - REJECT KYC
+      ===================================================== */
+
+      if (
+        path === "/api/admin/kyc/reject" &&
+        request.method === "POST"
+      ) {
+
+        const body =
+          await request.json();
+
+
+        const kycId =
+          Number(
+            body.kyc_id ||
+            body.kycId ||
+            body.id
+          );
+
+
+        const reason =
+          clean(
+            body.reason ||
+            body.rejection_reason ||
+            "KYC rejected"
+          );
+
+
+        if (
+          !Number.isInteger(kycId) ||
+          kycId <= 0
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Valid KYC ID required"
+          }, 400);
+
+        }
+
+
+        await ensureKYCTable(env);
+
+
+        const kyc =
+          await env.DB.prepare(`
+            SELECT *
+            FROM kyc_submissions
+            WHERE id = ?
+          `)
+          .bind(kycId)
+          .first();
+
+
+        if (!kyc) {
+
+          return json({
+            success: false,
+            error:
+              "KYC submission not found"
+          }, 404);
+
+        }
+
+
+        if (
+          kyc.status !== "PENDING"
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "KYC is already reviewed"
+          }, 409);
+
+        }
+
+
+        const reviewedAt =
+          Date.now();
+
+
+        await env.DB.prepare(`
+          UPDATE kyc_submissions
+          SET
+            status = 'REJECTED',
+            rejection_reason = ?,
+            reviewed_at = ?
+          WHERE id = ?
+        `)
+        .bind(
+          reason,
+          reviewedAt,
+          kycId
+        )
+        .run();
+
+
+        await env.DB.prepare(`
+          UPDATE customers
+          SET kyc_status = 'Rejected'
+          WHERE id = ?
+        `)
+        .bind(
+          kyc.customer_id
+        )
+        .run();
+
+
+        return json({
+          success: true,
+
+          message:
+            "KYC rejected successfully",
+
+          kyc_id:
+            kycId,
+
+          status:
+            "REJECTED",
+
+          reason
         });
 
       }
@@ -1603,6 +2480,7 @@ export default {
             "/kyc/index.html",
             request.url
           );
+
 
         return env.ASSETS.fetch(
           new Request(
@@ -1631,6 +2509,7 @@ export default {
 
       return json({
         success: false,
+
         error:
           error?.message ||
           "Server Error"
