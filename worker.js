@@ -54,6 +54,17 @@ function isExpired(createdAt) {
 
 /* =========================================================
    LOGIN MOBILE → CUSTOMER ID
+   FIXED VERSION
+
+   Login frontend stores:
+   balajiLogin
+   balajiMobile
+
+   Battle pages send:
+   X-Balaji-Mobile
+
+   If customer already exists → use existing ID.
+   If customer does not exist → create customer.
 ========================================================= */
 
 async function getPlayerIdFromRequest(request, env) {
@@ -63,15 +74,15 @@ async function getPlayerIdFromRequest(request, env) {
       request.headers.get(
         "X-Balaji-Mobile"
       )
-    );
+    ).replace(/\D/g, "");
 
   if (!validMobile(mobile)) {
     return "";
   }
 
-  const customer =
+  let customer =
     await env.DB.prepare(`
-      SELECT id
+      SELECT *
       FROM customers
       WHERE mobile = ?
       LIMIT 1
@@ -79,9 +90,94 @@ async function getPlayerIdFromRequest(request, env) {
     .bind(mobile)
     .first();
 
-  return customer?.id
-    ? clean(customer.id)
-    : "";
+  if (customer?.id) {
+    return clean(customer.id);
+  }
+
+
+  /* =====================================================
+     CUSTOMER DOES NOT EXIST
+     CREATE CUSTOMER FOR LOGGED-IN MOBILE
+  ===================================================== */
+
+  const customerId =
+    "CUS" +
+    crypto.randomUUID()
+      .replace(/-/g, "")
+      .slice(0, 10)
+      .toUpperCase();
+
+  const referralCode =
+    await generateUniqueReferralCode(env);
+
+  const createdAt =
+    Date.now();
+
+  try {
+
+    await env.DB.prepare(`
+      INSERT INTO customers (
+        id,
+        mobile,
+        name,
+        wallet_balance,
+        bonus_balance,
+        battle_played,
+        coin_won,
+        referral_code,
+        referral_count,
+        referral_earned,
+        withdrawal_amount,
+        email,
+        kyc_status,
+        account_status,
+        created_at
+      )
+      VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?
+      )
+    `)
+    .bind(
+      customerId,
+      mobile,
+      "Player",
+      0,
+      0,
+      0,
+      0,
+      referralCode,
+      0,
+      0,
+      0,
+      "",
+      "Pending",
+      "ACTIVE",
+      createdAt
+    )
+    .run();
+
+  } catch (error) {
+
+    /* Another request may have created it first */
+    customer =
+      await env.DB.prepare(`
+        SELECT *
+        FROM customers
+        WHERE mobile = ?
+        LIMIT 1
+      `)
+      .bind(mobile)
+      .first();
+
+    if (customer?.id) {
+      return clean(customer.id);
+    }
+
+    throw error;
+  }
+
+  return customerId;
 }
 
 
@@ -1742,15 +1838,6 @@ export default {
             body.customerId
           );
 
-        /*
-          Login currently stores:
-          balajiLogin
-          balajiMobile
-
-          So if player_id is not sent,
-          identify player from mobile header.
-        */
-
         if (!playerId) {
 
           playerId =
@@ -1989,10 +2076,6 @@ export default {
 
       /* =====================================================
          BATTLE - MY BATTLES
-
-         IMPORTANT:
-         This route MUST come before
-         /api/battles/:id
       ===================================================== */
 
       if (
