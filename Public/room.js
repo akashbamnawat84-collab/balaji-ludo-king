@@ -1,99 +1,337 @@
 /* =========================================================
    BALAJI LUDO KING
-   ROOM / BATTLE RESULT SYSTEM
+   ROOM / BATTLE PAGE
+   Login-compatible version
+   Login.js को बदलने की जरूरत नहीं है.
 ========================================================= */
 
 const API_BASE = "";
 
-const battleId =
-  localStorage.getItem("balajiBattleId") ||
-  localStorage.getItem("balajiSelectedBattle");
-
-const $ = (id) => document.getElementById(id);
-
-let battle = null;
-let refreshTimer = null;
+const REFRESH_TIME = 5000;
 
 
 /* =========================================================
-   COMMON
+   ELEMENTS
 ========================================================= */
 
-function getToken() {
-  return (
-    localStorage.getItem("balajiToken") ||
-    localStorage.getItem("token") ||
-    localStorage.getItem("authToken") ||
-    ""
-  );
-}
+const backBtn =
+  document.getElementById("backBtn");
 
-function showMessage(message, success = false) {
-  const box = $("roomCodeMessage");
+const entryAmount =
+  document.getElementById("entryAmount");
 
-  if (!box) return;
+const winningPrize =
+  document.getElementById("winningPrize");
 
-  box.textContent = message;
-  box.style.color = success ? "#86efac" : "#fca5a5";
-}
+const roomStatus =
+  document.getElementById("roomStatus");
 
-async function api(url, options = {}) {
-  const headers = {
-    "Content-Type": "application/json",
-    ...(options.headers || {})
-  };
+const player1Name =
+  document.getElementById("player1Name");
 
-  const token = getToken();
+const player1Status =
+  document.getElementById("player1Status");
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+const player2Name =
+  document.getElementById("player2Name");
+
+const player2Status =
+  document.getElementById("player2Status");
+
+const roomCodeInput =
+  document.getElementById("roomCodeInput");
+
+const setRoomCodeBtn =
+  document.getElementById("setRoomCodeBtn");
+
+const roomCodeMessage =
+  document.getElementById("roomCodeMessage");
+
+const roomCode =
+  document.getElementById("roomCode");
+
+const copyCodeBtn =
+  document.getElementById("copyCodeBtn");
+
+const waitingCard =
+  document.getElementById("waitingCard");
+
+const appPlayCard =
+  document.getElementById("appPlayCard");
+
+const resultCard =
+  document.getElementById("resultCard");
+
+const wonBtn =
+  document.getElementById("wonBtn");
+
+const lostBtn =
+  document.getElementById("lostBtn");
+
+const cancelResultBtn =
+  document.getElementById("cancelResultBtn");
+
+const cancelBtn =
+  document.getElementById("cancelBtn");
+
+
+/* =========================================================
+   CURRENT LOGIN
+   Existing login.js stores:
+
+   balajiLogin
+   balajiMobile
+
+   इसलिए token/userId की जरूरत नहीं.
+========================================================= */
+
+function getMobile() {
+
+  const mobile =
+    localStorage.getItem("balajiMobile");
+
+  if (!mobile) {
+    return "";
   }
 
-  const response = await fetch(API_BASE + url, {
-    ...options,
-    headers
-  });
+  return mobile
+    .replace(/\D/g, "")
+    .slice(-10);
+}
 
-  let data = {};
+
+/* =========================================================
+   LOGIN CHECK
+========================================================= */
+
+function checkLogin() {
+
+  const loggedIn =
+    localStorage.getItem("balajiLogin");
+
+  const mobile =
+    getMobile();
+
+  if (
+    loggedIn !== "true" ||
+    mobile.length !== 10
+  ) {
+
+    alert("Please login first.");
+
+    window.location.href =
+      "/login/";
+
+    return false;
+  }
+
+  return true;
+}
+
+
+/* =========================================================
+   GET BATTLE ID
+========================================================= */
+
+function getBattleId() {
+
+  const savedId =
+    localStorage.getItem(
+      "balajiBattleId"
+    );
+
+  if (savedId) {
+    return savedId;
+  }
+
 
   try {
-    data = await response.json();
-  } catch (e) {
-    data = {};
+
+    const selected =
+      JSON.parse(
+        localStorage.getItem(
+          "balajiSelectedBattle"
+        ) || "null"
+      );
+
+    if (
+      selected &&
+      (
+        selected.id ||
+        selected.battleId
+      )
+    ) {
+
+      return (
+        selected.id ||
+        selected.battleId
+      );
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Selected battle read error:",
+      error
+    );
+
   }
 
-  if (!response.ok) {
-    throw new Error(data.error || data.message || "Something went wrong");
+  return "";
+}
+
+
+/* =========================================================
+   COMMON API
+========================================================= */
+
+async function api(
+  path,
+  options = {}
+) {
+
+  const mobile =
+    getMobile();
+
+  const headers = {
+
+    "Content-Type":
+      "application/json",
+
+    "X-Balaji-Mobile":
+      mobile
+
+  };
+
+
+  if (options.headers) {
+
+    Object.assign(
+      headers,
+      options.headers
+    );
+
   }
+
+
+  const response =
+    await fetch(
+      API_BASE + path,
+      {
+        ...options,
+        headers
+      }
+    );
+
+
+  let data = null;
+
+  try {
+
+    data =
+      await response.json();
+
+  } catch {
+
+    data = {
+      success: false,
+      message:
+        "Invalid server response."
+    };
+
+  }
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      data.message ||
+      data.error ||
+      "Request failed."
+    );
+
+  }
+
 
   return data;
 }
 
 
 /* =========================================================
-   BATTLE LOAD
+   MESSAGE
 ========================================================= */
 
-async function loadBattle() {
-  if (!battleId) {
-    alert("Battle not found.");
-    window.location.href = "battle.html";
+function message(
+  text,
+  success = false
+) {
+
+  if (!roomCodeMessage) {
     return;
   }
 
-  try {
-    const data = await api(
-      `/api/battles/${encodeURIComponent(battleId)}`
-    );
+  roomCodeMessage.textContent =
+    text;
 
-    battle = data.battle || data;
+  roomCodeMessage.style.color =
+    success
+      ? "#22c55e"
+      : "#ef4444";
+}
 
-    renderBattle();
 
-  } catch (error) {
-    console.error(error);
-    showMessage(error.message || "Battle load failed.");
+/* =========================================================
+   HIDE / SHOW
+========================================================= */
+
+function show(element) {
+
+  if (element) {
+    element.classList.remove("hidden");
   }
+
+}
+
+
+function hide(element) {
+
+  if (element) {
+    element.classList.add("hidden");
+  }
+
+}
+
+
+/* =========================================================
+   FORMAT MONEY
+========================================================= */
+
+function money(value) {
+
+  const number =
+    Number(value || 0);
+
+  return number
+    .toFixed(2)
+    .replace(/\.00$/, "");
+}
+
+
+/* =========================================================
+   SAVE BATTLE ID
+========================================================= */
+
+function saveBattleId(id) {
+
+  if (!id) {
+    return;
+  }
+
+  localStorage.setItem(
+    "balajiBattleId",
+    String(id)
+  );
+
 }
 
 
@@ -101,195 +339,292 @@ async function loadBattle() {
    RENDER BATTLE
 ========================================================= */
 
-function renderBattle() {
-  if (!battle) return;
+function renderBattle(data) {
 
-  /* ---------- Amount ---------- */
+  const battle =
+    data.battle ||
+    data.data ||
+    data;
 
-  if ($("entryAmount")) {
-    $("entryAmount").textContent =
-      `${Number(battle.entry_amount || 0).toFixed(2)} BALAJI LUDO Coin`;
-  }
 
-  if ($("winningPrize")) {
-    $("winningPrize").textContent =
-      `${Number(battle.winning_prize || 0).toFixed(2)} BALAJI LUDO Coin`;
-  }
-
-  if ($("roomStatus")) {
-    $("roomStatus").textContent =
-      formatStatus(battle.status);
+  if (!battle) {
+    return;
   }
 
 
-  /* ---------- Players ---------- */
+  const id =
+    battle.id ||
+    battle.battleId;
 
-  if ($("player1Name")) {
-    $("player1Name").textContent =
-      battle.creator_name || "Player 1";
-  }
-
-  if ($("player2Name")) {
-    $("player2Name").textContent =
-      battle.opponent_name || "Waiting...";
-  }
-
-  if ($("player1Status")) {
-    $("player1Status").textContent =
-      "Player 1";
-  }
-
-  if ($("player2Status")) {
-    $("player2Status").textContent =
-      battle.opponent_id ? "Joined" : "Waiting";
+  if (id) {
+    saveBattleId(id);
   }
 
 
-  /* ---------- Room Code ---------- */
+  /* ENTRY */
 
-  const code = battle.room_code || "";
+  if (entryAmount) {
 
-  if ($("roomCode")) {
-    $("roomCode").textContent =
-      code || "WAITING";
-  }
+    entryAmount.textContent =
+      money(
+        battle.amount ||
+        battle.entry_fee ||
+        battle.entryAmount ||
+        0
+      );
 
-  if ($("roomCodeInput")) {
-    $("roomCodeInput").value = "";
-  }
-
-
-  /* ---------- UI State ---------- */
-
-  const status = String(battle.status || "").toUpperCase();
-
-  const hasOpponent = !!battle.opponent_id;
-  const hasRoomCode = !!battle.room_code;
-
-  const isCancelled =
-    status === "CANCELLED" ||
-    status === "CANCELED";
-
-  const resultSubmitted =
-    !!battle.result_status ||
-    !!battle.result_submitted_at;
-
-  /* Waiting card */
-
-  if ($("waitingCard")) {
-    $("waitingCard").classList.toggle(
-      "hidden",
-      hasOpponent && hasRoomCode
-    );
   }
 
 
-  /* App play card */
+  /* PRIZE */
 
-  if ($("appPlayCard")) {
-    $("appPlayCard").classList.toggle(
-      "hidden",
-      !hasOpponent || !hasRoomCode || isCancelled
-    );
+  if (winningPrize) {
+
+    winningPrize.textContent =
+      money(
+        battle.prize ||
+        battle.winning_prize ||
+        battle.winningPrize ||
+        0
+      );
+
   }
 
 
-  /* Result card */
+  /* STATUS */
 
-  if ($("resultCard")) {
-    $("resultCard").classList.toggle(
-      "hidden",
-      !hasOpponent ||
-      !hasRoomCode ||
-      isCancelled ||
-      resultSubmitted
-    );
+  if (roomStatus) {
+
+    roomStatus.textContent =
+      formatStatus(
+        battle.status
+      );
+
   }
 
 
-  /* Cancel Match */
+  /* PLAYERS */
 
-  if ($("cancelBtn")) {
-    $("cancelBtn").disabled =
-      hasRoomCode ||
-      isCancelled ||
-      resultSubmitted;
+  const players =
+    battle.players ||
+    [];
+
+
+  if (
+    battle.player1 ||
+    battle.player_1
+  ) {
+
+    const p1 =
+      battle.player1 ||
+      battle.player_1;
+
+    if (player1Name) {
+
+      player1Name.textContent =
+        p1.name ||
+        p1.mobile ||
+        "Player 1";
+
+    }
+
   }
 
 
-  /* Room Code input */
+  if (
+    battle.player2 ||
+    battle.player_2
+  ) {
 
-  if ($("roomCodeInput")) {
-    $("roomCodeInput").disabled =
-      hasRoomCode ||
-      !isCreator() ||
-      isCancelled ||
-      resultSubmitted;
+    const p2 =
+      battle.player2 ||
+      battle.player_2;
+
+    if (player2Name) {
+
+      player2Name.textContent =
+        p2.name ||
+        p2.mobile ||
+        "Player 2";
+
+    }
+
   }
 
-  if ($("setRoomCodeBtn")) {
-    $("setRoomCodeBtn").disabled =
-      hasRoomCode ||
-      !isCreator() ||
-      isCancelled ||
-      resultSubmitted;
+
+  if (players.length) {
+
+    const p1 =
+      players[0];
+
+    const p2 =
+      players[1];
+
+
+    if (
+      p1 &&
+      player1Name
+    ) {
+
+      player1Name.textContent =
+        p1.name ||
+        p1.mobile ||
+        "Player 1";
+
+    }
+
+
+    if (
+      p2 &&
+      player2Name
+    ) {
+
+      player2Name.textContent =
+        p2.name ||
+        p2.mobile ||
+        "Player 2";
+
+    }
+
   }
 
 
-  /* Result buttons */
+  /* PLAYER STATUS */
 
-  setResultButtonsDisabled(
-    resultSubmitted || isCancelled
-  );
+  if (player1Status) {
+
+    player1Status.textContent =
+      battle.player1Status ||
+      battle.player_1_status ||
+      "Joined";
+
+  }
+
+
+  if (player2Status) {
+
+    player2Status.textContent =
+      battle.player2Status ||
+      battle.player_2_status ||
+      (
+        battle.player2 ||
+        battle.player_2
+          ? "Joined"
+          : "Waiting"
+      );
+
+  }
+
+
+  /* ROOM CODE */
+
+  const code =
+    battle.roomCode ||
+    battle.room_code ||
+    "";
+
+  if (code) {
+
+    displayRoomCode(code);
+
+    hide(waitingCard);
+    show(appPlayCard);
+    show(resultCard);
+
+  } else {
+
+    show(waitingCard);
+
+  }
+
+
+  /* BATTLE STATUS */
+
+  const status =
+    String(
+      battle.status || ""
+    ).toLowerCase();
+
+
+  if (
+    status === "cancelled" ||
+    status === "canceled"
+  ) {
+
+    hide(waitingCard);
+    hide(appPlayCard);
+    hide(resultCard);
+
+  }
+
+
+  if (
+    status === "completed" ||
+    status === "won" ||
+    status === "lost" ||
+    status === "cancel"
+  ) {
+
+    show(resultCard);
+
+  }
+
 }
 
 
 /* =========================================================
-   STATUS
+   STATUS TEXT
 ========================================================= */
 
 function formatStatus(status) {
-  const value = String(status || "").toUpperCase();
 
-  const map = {
-    OPEN: "Open",
-    JOINED: "Opponent Joined",
-    WAITING: "Waiting",
-    ROOM_READY: "Room Ready",
-    PLAYING: "Playing",
-    RESULT_PENDING: "Result Pending",
-    WON: "Won",
-    LOST: "Lost",
-    CANCELLED: "Cancelled",
-    CANCELED: "Cancelled",
-    COMPLETED: "Completed"
-  };
+  if (!status) {
+    return "Waiting";
+  }
 
-  return map[value] || status || "Unknown";
+  const value =
+    String(status)
+      .replace(/_/g, " ")
+      .toLowerCase();
+
+
+  return value
+    .replace(
+      /\b\w/g,
+      function(char) {
+        return char.toUpperCase();
+      }
+    );
 }
 
 
 /* =========================================================
-   CURRENT USER
+   DISPLAY ROOM CODE
 ========================================================= */
 
-function getCurrentUserId() {
-  return (
-    localStorage.getItem("balajiUserId") ||
-    localStorage.getItem("userId") ||
-    localStorage.getItem("customerId") ||
-    ""
-  );
-}
+function displayRoomCode(code) {
 
-function isCreator() {
-  const currentUserId = getCurrentUserId();
+  const clean =
+    String(code)
+      .replace(/\D/g, "")
+      .slice(0, 8);
 
-  if (!currentUserId || !battle) {
-    return false;
+
+  if (roomCode) {
+
+    roomCode.textContent =
+      clean || "--------";
+
   }
 
-  return String(currentUserId) === String(battle.creator_id);
+
+  if (roomCodeInput) {
+
+    roomCodeInput.value =
+      clean;
+
+  }
+
 }
 
 
@@ -298,57 +633,126 @@ function isCreator() {
 ========================================================= */
 
 async function setRoomCode() {
-  if (!battleId) return;
 
-  const input = $("roomCodeInput");
-
-  if (!input) return;
-
-  const code = input.value.trim();
-
-  if (!/^\d{8}$/.test(code)) {
-    showMessage(
-      "Room Code exactly 8 digits का होना चाहिए।"
-    );
+  if (!checkLogin()) {
     return;
   }
 
-  const button = $("setRoomCodeBtn");
 
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Saving...";
+  const battleId =
+    getBattleId();
+
+
+  if (!battleId) {
+
+    message(
+      "Battle ID not found."
+    );
+
+    return;
   }
 
-  try {
-    await api("/api/battles/room-code", {
-      method: "POST",
-      body: JSON.stringify({
-        battleId,
-        roomCode: code
-      })
-    });
 
-    showMessage(
-      "Room Code successfully set.",
+  const code =
+    roomCodeInput
+      ? roomCodeInput.value
+          .replace(/\D/g, "")
+          .trim()
+      : "";
+
+
+  if (code.length !== 8) {
+
+    message(
+      "Please enter exactly 8 digit room code."
+    );
+
+    return;
+  }
+
+
+  if (setRoomCodeBtn) {
+
+    setRoomCodeBtn.disabled =
+      true;
+
+    setRoomCodeBtn.textContent =
+      "Saving...";
+
+  }
+
+
+  try {
+
+    const data =
+      await api(
+        "/api/battles/room-code",
+        {
+          method: "POST",
+
+          body: JSON.stringify({
+
+            battleId:
+              battleId,
+
+            roomCode:
+              code,
+
+            mobile:
+              getMobile()
+
+          })
+
+        }
+      );
+
+
+    const returnedCode =
+      data.roomCode ||
+      data.room_code ||
+      code;
+
+
+    displayRoomCode(
+      returnedCode
+    );
+
+
+    message(
+      "Room code saved successfully.",
       true
     );
 
+
+    hide(waitingCard);
+    show(appPlayCard);
+    show(resultCard);
+
+
     await loadBattle();
 
-  } catch (error) {
-    console.error(error);
 
-    showMessage(
-      error.message || "Room Code save failed."
+  } catch (error) {
+
+    message(
+      error.message ||
+      "Unable to save room code."
     );
 
   } finally {
-    if (button && !battle?.room_code) {
-      button.disabled = false;
-      button.textContent = "Set";
+
+    if (setRoomCodeBtn) {
+
+      setRoomCodeBtn.disabled =
+        false;
+
+      setRoomCodeBtn.textContent =
+        "Set Room Code";
+
     }
+
   }
+
 }
 
 
@@ -357,50 +761,41 @@ async function setRoomCode() {
 ========================================================= */
 
 async function copyRoomCode() {
-  const code =
-    battle?.room_code ||
-    ($("roomCode") ? $("roomCode").textContent : "");
 
-  if (!code || code === "WAITING") {
-    alert("Room Code अभी available नहीं है.");
+  const code =
+    roomCode
+      ? roomCode.textContent.trim()
+      : "";
+
+
+  if (
+    !code ||
+    code === "--------"
+  ) {
+
     return;
   }
 
+
   try {
-    await navigator.clipboard.writeText(code);
 
-    if ($("copyCodeBtn")) {
-      $("copyCodeBtn").textContent = "Copied ✓";
+    await navigator.clipboard.writeText(
+      code
+    );
 
-      setTimeout(() => {
-        if ($("copyCodeBtn")) {
-          $("copyCodeBtn").textContent = "Copy Code";
-        }
-      }, 1500);
-    }
+    message(
+      "Room code copied.",
+      true
+    );
 
-  } catch (error) {
-    alert("Room Code: " + code);
+  } catch {
+
+    message(
+      "Copy failed. Please copy manually."
+    );
+
   }
-}
 
-
-/* =========================================================
-   RESULT BUTTONS
-========================================================= */
-
-function setResultButtonsDisabled(disabled) {
-  const buttons = [
-    $("wonBtn"),
-    $("lostBtn"),
-    $("cancelResultBtn")
-  ];
-
-  buttons.forEach((button) => {
-    if (button) {
-      button.disabled = disabled;
-    }
-  });
 }
 
 
@@ -408,85 +803,81 @@ function setResultButtonsDisabled(disabled) {
    SUBMIT RESULT
 ========================================================= */
 
-async function submitResult(result) {
-  if (!battleId) return;
+async function submitResult(
+  result
+) {
 
-  if (!battle?.room_code) {
-    alert("पहले Room Code आने के बाद Ludo King App में game खेलें.");
+  if (!checkLogin()) {
     return;
   }
 
-  if (battle.result_status) {
-    alert("Result पहले ही submit हो चुका है.");
-    return;
-  }
 
-  let screenshot = "";
+  const battleId =
+    getBattleId();
 
-  if (result === "WON") {
-    screenshot = prompt(
-      "Win screenshot का link डालें:"
-    );
 
-    if (screenshot === null) {
-      return;
-    }
-
-    screenshot = screenshot.trim();
-
-    if (!screenshot) {
-      alert(
-        "Win result के लिए screenshot जरूरी है."
-      );
-      return;
-    }
-  }
-
-  let confirmText = "";
-
-  if (result === "WON") {
-    confirmText =
-      "क्या आप I WON result submit करना चाहते हैं?\n\nResult submit होने के बाद इसे बदला नहीं जा सकेगा.";
-  }
-
-  if (result === "LOST") {
-    confirmText =
-      "क्या आप I LOST result submit करना चाहते हैं?\n\nResult submit होने के बाद इसे बदला नहीं जा सकेगा.";
-  }
-
-  if (!confirm(confirmText)) {
-    return;
-  }
-
-  setResultButtonsDisabled(true);
-
-  try {
-    await api("/api/battles/result", {
-      method: "POST",
-      body: JSON.stringify({
-        battleId,
-        result,
-        screenshot
-      })
-    });
+  if (!battleId) {
 
     alert(
-      result === "WON"
-        ? "I WON result submit हो गया."
-        : "I LOST result submit हो गया."
+      "Battle ID not found."
     );
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "Once result is submitted, it cannot be changed. Continue?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    await api(
+      "/api/battles/result",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          battleId:
+            battleId,
+
+          result:
+            result,
+
+          mobile:
+            getMobile()
+
+        })
+
+      }
+    );
+
+
+    alert(
+      "Result submitted successfully."
+    );
+
 
     await loadBattle();
 
+
   } catch (error) {
-    console.error(error);
 
     alert(
-      error.message || "Result submit failed."
+      error.message ||
+      "Unable to submit result."
     );
 
-    setResultButtonsDisabled(false);
   }
+
 }
 
 
@@ -495,57 +886,78 @@ async function submitResult(result) {
 ========================================================= */
 
 async function submitCancelResult() {
-  if (!battleId) return;
 
-  const reason = prompt(
-    "Cancel का reason लिखें:"
-  );
-
-  if (reason === null) {
+  if (!checkLogin()) {
     return;
   }
 
-  const cleanReason = reason.trim();
 
-  if (!cleanReason) {
-    alert("Cancel reason जरूरी है.");
-    return;
-  }
+  const battleId =
+    getBattleId();
 
-  const confirmCancel = confirm(
-    "क्या आप Battle Cancel करना चाहते हैं?\n\nCancel submit होने के बाद बाद में game शुरू करने पर Admin responsibility नहीं लेगा."
-  );
 
-  if (!confirmCancel) {
-    return;
-  }
-
-  setResultButtonsDisabled(true);
-
-  try {
-    await api("/api/battles/cancel", {
-      method: "POST",
-      body: JSON.stringify({
-        battleId,
-        reason: cleanReason
-      })
-    });
+  if (!battleId) {
 
     alert(
-      "Cancel request submit हो गई."
+      "Battle ID not found."
     );
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "Cancel result submit करना है? Once submitted, it cannot be changed."
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    await api(
+      "/api/battles/result",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          battleId:
+            battleId,
+
+          result:
+            "cancel",
+
+          mobile:
+            getMobile()
+
+        })
+
+      }
+    );
+
+
+    alert(
+      "Cancel result submitted."
+    );
+
 
     await loadBattle();
 
+
   } catch (error) {
-    console.error(error);
 
     alert(
-      error.message || "Cancel failed."
+      error.message ||
+      "Unable to cancel battle."
     );
 
-    setResultButtonsDisabled(false);
   }
+
 }
 
 
@@ -554,61 +966,137 @@ async function submitCancelResult() {
 ========================================================= */
 
 async function cancelMatch() {
-  if (!battleId) return;
 
-  const reason = prompt(
-    "Cancel Match का reason लिखें:\n\nExample:\nNo player join\nNo room code\nOpponent error"
-  );
-
-  if (reason === null) {
+  if (!checkLogin()) {
     return;
   }
 
-  const cleanReason = reason.trim();
 
-  if (!cleanReason) {
-    alert("Cancel reason जरूरी है.");
+  const battleId =
+    getBattleId();
+
+
+  if (!battleId) {
+
+    alert(
+      "Battle ID not found."
+    );
+
     return;
   }
 
-  if (!confirm(
-    "क्या आप इस Battle को Cancel करना चाहते हैं?"
-  )) {
+
+  const reason =
+    prompt(
+      "Cancel reason enter करें:"
+    );
+
+
+  if (!reason) {
     return;
   }
 
-  const button = $("cancelBtn");
-
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Cancelling...";
-  }
 
   try {
-    await api("/api/battles/cancel", {
-      method: "POST",
-      body: JSON.stringify({
-        battleId,
-        reason: cleanReason
-      })
-    });
 
-    alert("Battle Cancel request submit हो गई.");
+    await api(
+      "/api/battles/cancel",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+
+          battleId:
+            battleId,
+
+          reason:
+            reason,
+
+          mobile:
+            getMobile()
+
+        })
+
+      }
+    );
+
+
+    alert(
+      "Battle cancellation submitted."
+    );
+
 
     await loadBattle();
 
+
   } catch (error) {
-    console.error(error);
 
     alert(
-      error.message || "Cancel failed."
+      error.message ||
+      "Unable to cancel battle."
     );
 
-    if (button) {
-      button.disabled = false;
-      button.textContent = "Cancel Match";
-    }
   }
+
+}
+
+
+/* =========================================================
+   LOAD BATTLE
+========================================================= */
+
+async function loadBattle() {
+
+  if (!checkLogin()) {
+    return;
+  }
+
+
+  const battleId =
+    getBattleId();
+
+
+  if (!battleId) {
+
+    if (roomStatus) {
+      roomStatus.textContent =
+        "Battle not found";
+    }
+
+    return;
+  }
+
+
+  try {
+
+    const data =
+      await api(
+        "/api/battles/" +
+        encodeURIComponent(
+          battleId
+        )
+      );
+
+
+    renderBattle(data);
+
+
+  } catch (error) {
+
+    console.log(
+      "Battle load error:",
+      error
+    );
+
+    if (roomStatus) {
+
+      roomStatus.textContent =
+        "Unable to load";
+
+    }
+
+  }
+
 }
 
 
@@ -616,99 +1104,127 @@ async function cancelMatch() {
    BACK
 ========================================================= */
 
-function goBack() {
-  window.location.href = "battle.html";
-}
+if (backBtn) {
 
-
-/* =========================================================
-   AUTO REFRESH
-========================================================= */
-
-function startAutoRefresh() {
-  stopAutoRefresh();
-
-  refreshTimer = setInterval(() => {
-    loadBattle();
-  }, 5000);
-}
-
-function stopAutoRefresh() {
-  if (refreshTimer) {
-    clearInterval(refreshTimer);
-    refreshTimer = null;
-  }
-}
-
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  $("backBtn")?.addEventListener(
+  backBtn.addEventListener(
     "click",
-    (event) => {
+    function(event) {
+
       event.preventDefault();
-      goBack();
+
+      window.location.href =
+        "/battle.html";
+
     }
   );
 
-  $("setRoomCodeBtn")?.addEventListener(
+}
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+if (setRoomCodeBtn) {
+
+  setRoomCodeBtn.addEventListener(
     "click",
     setRoomCode
   );
 
-  $("copyCodeBtn")?.addEventListener(
+}
+
+
+if (copyCodeBtn) {
+
+  copyCodeBtn.addEventListener(
     "click",
     copyRoomCode
   );
 
-  $("wonBtn")?.addEventListener(
+}
+
+
+if (wonBtn) {
+
+  wonBtn.addEventListener(
     "click",
-    () => submitResult("WON")
+    function() {
+
+      submitResult("won");
+
+    }
   );
 
-  $("lostBtn")?.addEventListener(
+}
+
+
+if (lostBtn) {
+
+  lostBtn.addEventListener(
     "click",
-    () => submitResult("LOST")
+    function() {
+
+      submitResult("lost");
+
+    }
   );
 
-  $("cancelResultBtn")?.addEventListener(
+}
+
+
+if (cancelResultBtn) {
+
+  cancelResultBtn.addEventListener(
     "click",
     submitCancelResult
   );
 
-  $("cancelBtn")?.addEventListener(
+}
+
+
+if (cancelBtn) {
+
+  cancelBtn.addEventListener(
     "click",
     cancelMatch
   );
 
-
-  /* Only numbers in Room Code */
-
-  $("roomCodeInput")?.addEventListener(
-    "input",
-    (event) => {
-      event.target.value =
-        event.target.value
-          .replace(/\D/g, "")
-          .slice(0, 8);
-    }
-  );
-
-
-  loadBattle();
-  startAutoRefresh();
-});
+}
 
 
 /* =========================================================
-   CLEANUP
+   ROOM CODE INPUT
 ========================================================= */
 
-window.addEventListener(
-  "beforeunload",
-  stopAutoRefresh
-);
+if (roomCodeInput) {
+
+  roomCodeInput.addEventListener(
+    "input",
+    function() {
+
+      this.value =
+        this.value
+          .replace(/\D/g, "")
+          .slice(0, 8);
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+if (checkLogin()) {
+
+  loadBattle();
+
+  setInterval(
+    loadBattle,
+    REFRESH_TIME
+  );
+
+}
