@@ -7,6 +7,12 @@ const corsHeaders = {
 const ROOM_WAIT_MS = 5 * 60 * 1000;
 const REFERRAL_PERCENT = 3;
 
+const BATTLE_WAIT_MS = 5 * 60 * 1000;
+const RESULT_WINDOW_MS = 15 * 60 * 1000;
+
+const MIN_BET = 50;
+const MAX_BET = 10000;
+
 
 /* =========================================================
    COMMON
@@ -46,37 +52,64 @@ function isExpired(createdAt) {
 
 
 /* =========================================================
+   BATTLE COMMISSION
+========================================================= */
+
+function calculateBattleCommission(amount) {
+
+  const value = Number(amount);
+
+  if (!Number.isFinite(value) || value <= 0) {
+    return 0;
+  }
+
+  /*
+    Below 250 = 10%
+    250 to 500 = flat 25
+    Above 500 = 5%
+  */
+
+  if (value < 250) {
+    return Number(
+      (value * 0.10).toFixed(2)
+    );
+  }
+
+  if (value <= 500) {
+    return 25;
+  }
+
+  return Number(
+    (value * 0.05).toFixed(2)
+  );
+}
+
+
+function calculateWinningPrize(amount) {
+
+  const entry =
+    Number(amount);
+
+  const commission =
+    calculateBattleCommission(entry);
+
+  /*
+    Two-player total = entry x 2
+    Prize after commission
+  */
+
+  return Number(
+    (entry * 2 - commission).toFixed(2)
+  );
+}
+
+
+/* =========================================================
    ADMIN AUTHENTICATION
 ========================================================= */
 
-/*
-  Cloudflare Worker Secrets:
-
-  BALAJI_ADMIN_ID
-  BALAJI_ADMIN_PASSWORD
-
-  Example:
-
-  BALAJI_ADMIN_ID
-  = Deepak Kumar Meena
-
-  BALAJI_ADMIN_PASSWORD
-  = आपका password
-*/
-
 const ADMIN_SESSION_TIME =
   6 * 60 * 60 * 1000;
-
-
-/*
-  Temporary in-memory admin sessions.
-
-  NOTE:
-  Cloudflare Worker isolates are temporary.
-  This provides basic server-side session protection.
-  A permanent multi-instance session system can be added
-  later using Durable Objects or D1.
-*/
 
 const adminSessions = new Map();
 
@@ -471,6 +504,158 @@ async function ensureKYCTable(env) {
 
 
 /* =========================================================
+   BATTLE TABLE
+========================================================= */
+
+async function ensureBattleTable(env) {
+
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS battles (
+      id TEXT PRIMARY KEY,
+
+      creator_id TEXT NOT NULL,
+
+      creator_name TEXT NOT NULL,
+
+      opponent_id TEXT,
+
+      opponent_name TEXT,
+
+      entry_amount REAL NOT NULL,
+
+      winning_prize REAL NOT NULL,
+
+      commission_amount REAL NOT NULL DEFAULT 0,
+
+      status TEXT NOT NULL DEFAULT 'OPEN',
+
+      room_code TEXT,
+
+      result_player_id TEXT,
+
+      result_status TEXT,
+
+      result_screenshot TEXT DEFAULT '',
+
+      cancel_reason TEXT DEFAULT '',
+
+      created_at INTEGER NOT NULL,
+
+      joined_at INTEGER,
+
+      room_ready_at INTEGER,
+
+      result_submitted_at INTEGER
+    )
+  `)
+  .run();
+
+}
+
+
+/* =========================================================
+   BATTLE RESPONSE
+========================================================= */
+
+function battleResponse(battle) {
+
+  if (!battle) {
+    return null;
+  }
+
+  return {
+
+    id:
+      battle.id,
+
+    creator_id:
+      battle.creator_id,
+
+    creator_name:
+      battle.creator_name,
+
+    opponent_id:
+      battle.opponent_id || null,
+
+    opponent_name:
+      battle.opponent_name || null,
+
+    entry_amount:
+      Number(
+        battle.entry_amount || 0
+      ),
+
+    winning_prize:
+      Number(
+        battle.winning_prize || 0
+      ),
+
+    commission_amount:
+      Number(
+        battle.commission_amount || 0
+      ),
+
+    status:
+      battle.status,
+
+    room_code:
+      battle.room_code || null,
+
+    result_player_id:
+      battle.result_player_id || null,
+
+    result_status:
+      battle.result_status || null,
+
+    result_screenshot:
+      battle.result_screenshot || "",
+
+    cancel_reason:
+      battle.cancel_reason || "",
+
+    created_at:
+      Number(
+        battle.created_at || 0
+      ),
+
+    joined_at:
+      battle.joined_at
+        ? Number(battle.joined_at)
+        : null,
+
+    room_ready_at:
+      battle.room_ready_at
+        ? Number(battle.room_ready_at)
+        : null,
+
+    result_submitted_at:
+      battle.result_submitted_at
+        ? Number(battle.result_submitted_at)
+        : null
+
+  };
+
+}
+
+
+/* =========================================================
+   GET BATTLE
+========================================================= */
+
+async function getBattle(env, battleId) {
+
+  return env.DB.prepare(`
+    SELECT *
+    FROM battles
+    WHERE id = ?
+  `)
+  .bind(battleId)
+  .first();
+
+}
+
+
+/* =========================================================
    MAIN WORKER
 ========================================================= */
 
@@ -512,7 +697,6 @@ export default {
         const body =
           await request.json();
 
-
         const adminId =
           clean(
             body.admin_id ||
@@ -520,12 +704,10 @@ export default {
             body.username
           );
 
-
         const password =
           clean(
             body.password
           );
-
 
         if (
           !adminId ||
@@ -540,18 +722,15 @@ export default {
 
         }
 
-
         const savedAdminId =
           clean(
             env.BALAJI_ADMIN_ID
           );
 
-
         const savedPassword =
           clean(
             env.BALAJI_ADMIN_PASSWORD
           );
-
 
         if (
           !savedAdminId ||
@@ -566,7 +745,6 @@ export default {
 
         }
 
-
         if (
           adminId !== savedAdminId ||
           password !== savedPassword
@@ -580,13 +758,10 @@ export default {
 
         }
 
-
         const token =
           createAdminToken();
 
-
         saveAdminSession(token);
-
 
         return json({
 
@@ -620,7 +795,6 @@ export default {
         const token =
           getAdminToken(request);
 
-
         if (token) {
 
           adminSessions.delete(
@@ -628,7 +802,6 @@ export default {
           );
 
         }
-
 
         return json({
 
@@ -671,7 +844,6 @@ export default {
 
         }
 
-
         return json({
 
           success:
@@ -697,14 +869,11 @@ export default {
         const body =
           await request.json();
 
-
         const mobile =
           clean(body.mobile);
 
-
         const otp =
           clean(body.otp);
-
 
         if (
           !validMobile(mobile)
@@ -721,7 +890,6 @@ export default {
           }, 400);
 
         }
-
 
         if (otp) {
 
@@ -741,7 +909,6 @@ export default {
 
           }
 
-
           let customer =
             await env.DB.prepare(`
               SELECT *
@@ -750,7 +917,6 @@ export default {
             `)
             .bind(mobile)
             .first();
-
 
           if (!customer) {
 
@@ -766,7 +932,6 @@ export default {
 
           }
 
-
           if (
             !customer.referral_code
           ) {
@@ -775,7 +940,6 @@ export default {
               await generateUniqueReferralCode(
                 env
               );
-
 
             await env.DB.prepare(`
               UPDATE customers
@@ -788,7 +952,6 @@ export default {
             )
             .run();
 
-
             customer =
               await env.DB.prepare(`
                 SELECT *
@@ -799,7 +962,6 @@ export default {
               .first();
 
           }
-
 
           return json({
 
@@ -818,7 +980,6 @@ export default {
 
         }
 
-
         let existing =
           await env.DB.prepare(`
             SELECT *
@@ -827,7 +988,6 @@ export default {
           `)
           .bind(mobile)
           .first();
-
 
         if (existing) {
 
@@ -840,7 +1000,6 @@ export default {
                 env
               );
 
-
             await env.DB.prepare(`
               UPDATE customers
               SET referral_code = ?
@@ -852,7 +1011,6 @@ export default {
             )
             .run();
 
-
             existing =
               await env.DB.prepare(`
                 SELECT *
@@ -863,7 +1021,6 @@ export default {
               .first();
 
           }
-
 
           return json({
 
@@ -885,7 +1042,6 @@ export default {
 
         }
 
-
         const customerId =
           "CUS" +
           crypto.randomUUID()
@@ -893,16 +1049,13 @@ export default {
             .slice(0, 10)
             .toUpperCase();
 
-
         const referralCode =
           await generateUniqueReferralCode(
             env
           );
 
-
         const createdAt =
           Date.now();
-
 
         await env.DB.prepare(`
           INSERT INTO customers (
@@ -946,7 +1099,6 @@ export default {
         )
         .run();
 
-
         const customer =
           await env.DB.prepare(`
             SELECT *
@@ -955,7 +1107,6 @@ export default {
           `)
           .bind(customerId)
           .first();
-
 
         return json({
 
@@ -980,14 +1131,6 @@ export default {
 
       /* =====================================================
          GET CUSTOMER
-
-         SUPPORT:
-
-         /api/customer/CUSTOMER_ID
-
-         /api/customer?customer_id=CUSTOMER_ID
-
-         /api/customer?customerId=CUSTOMER_ID
       ===================================================== */
 
       if (
@@ -1001,7 +1144,6 @@ export default {
       ) {
 
         let customerId = "";
-
 
         if (
           path.startsWith(
@@ -1019,7 +1161,6 @@ export default {
 
         }
 
-
         if (!customerId) {
 
           customerId =
@@ -1033,7 +1174,6 @@ export default {
             );
 
         }
-
 
         if (!customerId) {
 
@@ -1049,7 +1189,6 @@ export default {
 
         }
 
-
         const customer =
           await env.DB.prepare(`
             SELECT *
@@ -1058,7 +1197,6 @@ export default {
           `)
           .bind(customerId)
           .first();
-
 
         if (!customer) {
 
@@ -1073,7 +1211,6 @@ export default {
           }, 404);
 
         }
-
 
         return json({
 
@@ -1102,24 +1239,20 @@ export default {
         const body =
           await request.json();
 
-
         const customerId =
           clean(
             body.customer_id
           );
-
 
         const name =
           clean(
             body.name
           );
 
-
         const email =
           clean(
             body.email
           );
-
 
         if (!customerId) {
 
@@ -1135,7 +1268,6 @@ export default {
 
         }
 
-
         const customer =
           await env.DB.prepare(`
             SELECT *
@@ -1144,7 +1276,6 @@ export default {
           `)
           .bind(customerId)
           .first();
-
 
         if (!customer) {
 
@@ -1159,7 +1290,6 @@ export default {
           }, 404);
 
         }
-
 
         await env.DB.prepare(`
           UPDATE customers
@@ -1177,7 +1307,6 @@ export default {
         )
         .run();
 
-
         const updated =
           await env.DB.prepare(`
             SELECT *
@@ -1186,7 +1315,6 @@ export default {
           `)
           .bind(customerId)
           .first();
-
 
         return json({
 
@@ -1222,7 +1350,6 @@ export default {
             )
           );
 
-
         if (!customerId) {
 
           return json({
@@ -1237,13 +1364,11 @@ export default {
 
         }
 
-
         const summary =
           await getReferralSummary(
             env,
             customerId
           );
-
 
         if (!summary) {
 
@@ -1258,7 +1383,6 @@ export default {
           }, 404);
 
         }
-
 
         return json({
 
@@ -1285,13 +1409,11 @@ export default {
         const body =
           await request.json();
 
-
         const customerId =
           clean(
             body.customer_id ||
             body.customerId
           );
-
 
         const referralCode =
           clean(
@@ -1299,7 +1421,6 @@ export default {
             body.referralCode ||
             body.ref
           );
-
 
         if (!customerId) {
 
@@ -1314,7 +1435,6 @@ export default {
           }, 400);
 
         }
-
 
         if (
           !/^\d{6}$/.test(
@@ -1334,9 +1454,7 @@ export default {
 
         }
 
-
         await ensureReferralTable(env);
-
 
         const customer =
           await env.DB.prepare(`
@@ -1346,7 +1464,6 @@ export default {
           `)
           .bind(customerId)
           .first();
-
 
         if (!customer) {
 
@@ -1362,7 +1479,6 @@ export default {
 
         }
 
-
         const referrer =
           await env.DB.prepare(`
             SELECT *
@@ -1372,7 +1488,6 @@ export default {
           `)
           .bind(referralCode)
           .first();
-
 
         if (!referrer) {
 
@@ -1387,7 +1502,6 @@ export default {
           }, 404);
 
         }
-
 
         if (
           referrer.id === customer.id
@@ -1405,7 +1519,6 @@ export default {
 
         }
 
-
         const alreadyReferred =
           await env.DB.prepare(`
             SELECT *
@@ -1415,7 +1528,6 @@ export default {
           `)
           .bind(customer.id)
           .first();
-
 
         if (alreadyReferred) {
 
@@ -1430,7 +1542,6 @@ export default {
           }, 409);
 
         }
-
 
         await env.DB.prepare(`
           INSERT INTO referral_links (
@@ -1450,7 +1561,6 @@ export default {
         )
         .run();
 
-
         await env.DB.prepare(`
           UPDATE customers
           SET referral_count =
@@ -1461,7 +1571,6 @@ export default {
           referrer.id
         )
         .run();
-
 
         return json({
 
@@ -1494,19 +1603,16 @@ export default {
         const body =
           await request.json();
 
-
         const referrerId =
           clean(
             body.referrer_id ||
             body.referrerId
           );
 
-
         const amount =
           Number(
             body.amount
           );
-
 
         if (!referrerId) {
 
@@ -1521,7 +1627,6 @@ export default {
           }, 400);
 
         }
-
 
         if (
           !Number.isFinite(amount) ||
@@ -1540,9 +1645,7 @@ export default {
 
         }
 
-
         await ensureReferralTable(env);
-
 
         const referrer =
           await env.DB.prepare(`
@@ -1552,7 +1655,6 @@ export default {
           `)
           .bind(referrerId)
           .first();
-
 
         if (!referrer) {
 
@@ -1568,7 +1670,6 @@ export default {
 
         }
 
-
         const commission =
           Number(
             (
@@ -1577,7 +1678,6 @@ export default {
               100
             ).toFixed(2)
           );
-
 
         await env.DB.prepare(`
           UPDATE customers
@@ -1591,7 +1691,6 @@ export default {
         )
         .run();
 
-
         const updated =
           await env.DB.prepare(`
             SELECT *
@@ -1600,7 +1699,6 @@ export default {
           `)
           .bind(referrerId)
           .first();
-
 
         return json({
 
@@ -1625,24 +1723,26 @@ export default {
 
 
       /* =====================================================
-         CREATE ROOM
+         BATTLE - CREATE
       ===================================================== */
 
       if (
-        path === "/api/rooms/create" &&
+        path === "/api/battles/create" &&
         request.method === "POST"
       ) {
+
+        await ensureBattleTable(env);
 
         const body =
           await request.json();
 
-
         const playerId =
           clean(
             body.player_id ||
-            body.playerId
+            body.playerId ||
+            body.customer_id ||
+            body.customerId
           );
-
 
         const playerName =
           clean(
@@ -1651,6 +1751,517 @@ export default {
             "Player"
           );
 
+        const amount =
+          Number(
+            body.amount ||
+            body.entry_amount ||
+            body.entryAmount
+          );
+
+        if (!playerId) {
+
+          return json({
+            success: false,
+            error:
+              "Player login required"
+          }, 400);
+
+        }
+
+        if (
+          !Number.isFinite(amount) ||
+          amount < MIN_BET ||
+          amount > MAX_BET
+        ) {
+
+          return json({
+            success: false,
+            error:
+              `Battle amount must be between ${MIN_BET} and ${MAX_BET} BALAJI LUDO Coin`
+          }, 400);
+
+        }
+
+        if (
+          amount % 50 !== 0
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle amount must be in multiples of 50"
+          }, 400);
+
+        }
+
+        const customer =
+          await env.DB.prepare(`
+            SELECT *
+            FROM customers
+            WHERE id = ?
+          `)
+          .bind(playerId)
+          .first();
+
+        if (!customer) {
+
+          return json({
+            success: false,
+            error:
+              "Customer not found"
+          }, 404);
+
+        }
+
+        const commission =
+          calculateBattleCommission(
+            amount
+          );
+
+        const prize =
+          calculateWinningPrize(
+            amount
+          );
+
+        const battleId =
+          "BAT" +
+          crypto.randomUUID()
+            .replace(/-/g, "")
+            .slice(0, 18)
+            .toUpperCase();
+
+        const createdAt =
+          Date.now();
+
+        await env.DB.prepare(`
+          INSERT INTO battles (
+            id,
+            creator_id,
+            creator_name,
+            opponent_id,
+            opponent_name,
+            entry_amount,
+            winning_prize,
+            commission_amount,
+            status,
+            room_code,
+            result_player_id,
+            result_status,
+            result_screenshot,
+            cancel_reason,
+            created_at,
+            joined_at,
+            room_ready_at,
+            result_submitted_at
+          )
+          VALUES (
+            ?, ?, ?, NULL, NULL, ?, ?, ?,
+            'OPEN', NULL, NULL, NULL, '', '',
+            ?, NULL, NULL, NULL
+          )
+        `)
+        .bind(
+          battleId,
+          playerId,
+          playerName ||
+            customer.name ||
+            "Player",
+          amount,
+          prize,
+          commission,
+          createdAt
+        )
+        .run();
+
+        const battle =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        return json({
+
+          success:
+            true,
+
+          message:
+            "Battle created successfully",
+
+          battle:
+            battleResponse(
+              battle
+            )
+
+        });
+
+      }
+
+
+      /* =====================================================
+         BATTLE - OPEN LIST
+      ===================================================== */
+
+      if (
+        path === "/api/battles/open" &&
+        request.method === "GET"
+      ) {
+
+        await ensureBattleTable(env);
+
+        const result =
+          await env.DB.prepare(`
+            SELECT *
+            FROM battles
+            WHERE status = 'OPEN'
+            ORDER BY created_at DESC
+          `)
+          .all();
+
+        const now =
+          Date.now();
+
+        const active = [];
+
+        for (
+          const battle of
+          result.results || []
+        ) {
+
+          if (
+            now -
+            Number(battle.created_at) >=
+            BATTLE_WAIT_MS
+          ) {
+
+            await env.DB.prepare(`
+              UPDATE battles
+              SET status = 'EXPIRED'
+              WHERE id = ?
+              AND status = 'OPEN'
+            `)
+            .bind(
+              battle.id
+            )
+            .run();
+
+            continue;
+
+          }
+
+          active.push(
+            battleResponse(
+              battle
+            )
+          );
+
+        }
+
+        return json({
+
+          success:
+            true,
+
+          count:
+            active.length,
+
+          battles:
+            active
+
+        });
+
+      }
+
+
+      /* =====================================================
+         BATTLE - GET ONE
+      ===================================================== */
+
+      if (
+        path.startsWith(
+          "/api/battles/"
+        ) &&
+        request.method === "GET"
+      ) {
+
+        const battleId =
+          clean(
+            path.replace(
+              "/api/battles/",
+              ""
+            )
+          );
+
+        if (
+          !battleId
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle ID required"
+          }, 400);
+
+        }
+
+        await ensureBattleTable(env);
+
+        const battle =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        if (!battle) {
+
+          return json({
+            success: false,
+            error:
+              "Battle not found"
+          }, 404);
+
+        }
+
+        return json({
+
+          success:
+            true,
+
+          battle:
+            battleResponse(
+              battle
+            )
+
+        });
+
+      }
+
+
+      /* =====================================================
+         BATTLE - JOIN
+      ===================================================== */
+
+      if (
+        path === "/api/battles/join" &&
+        request.method === "POST"
+      ) {
+
+        await ensureBattleTable(env);
+
+        const body =
+          await request.json();
+
+        const battleId =
+          clean(
+            body.battle_id ||
+            body.battleId
+          );
+
+        const playerId =
+          clean(
+            body.player_id ||
+            body.playerId ||
+            body.customer_id ||
+            body.customerId
+          );
+
+        const playerName =
+          clean(
+            body.player_name ||
+            body.playerName ||
+            "Player"
+          );
+
+        if (
+          !battleId ||
+          !playerId
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle and player required"
+          }, 400);
+
+        }
+
+        const battle =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        if (!battle) {
+
+          return json({
+            success: false,
+            error:
+              "Battle not found"
+          }, 404);
+
+        }
+
+        if (
+          battle.status !== "OPEN"
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "This Battle is no longer open"
+          }, 409);
+
+        }
+
+        if (
+          Number(
+            Date.now() -
+            Number(battle.created_at)
+          ) >=
+          BATTLE_WAIT_MS
+        ) {
+
+          await env.DB.prepare(`
+            UPDATE battles
+            SET status = 'EXPIRED'
+            WHERE id = ?
+            AND status = 'OPEN'
+          `)
+          .bind(
+            battleId
+          )
+          .run();
+
+          return json({
+            success: false,
+            error:
+              "⏰ Battle expired after 5 minutes"
+          }, 410);
+
+        }
+
+        if (
+          battle.creator_id === playerId
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "You cannot join your own Battle"
+          }, 409);
+
+        }
+
+        const opponent =
+          await env.DB.prepare(`
+            SELECT *
+            FROM customers
+            WHERE id = ?
+          `)
+          .bind(playerId)
+          .first();
+
+        if (!opponent) {
+
+          return json({
+            success: false,
+            error:
+              "Customer not found"
+          }, 404);
+
+        }
+
+        const joinedAt =
+          Date.now();
+
+        const update =
+          await env.DB.prepare(`
+            UPDATE battles
+            SET
+              opponent_id = ?,
+              opponent_name = ?,
+              status = 'JOINED',
+              joined_at = ?
+            WHERE id = ?
+            AND status = 'OPEN'
+            AND opponent_id IS NULL
+          `)
+          .bind(
+            playerId,
+            playerName ||
+              opponent.name ||
+              "Player",
+            joinedAt,
+            battleId
+          )
+          .run();
+
+        if (
+          !update.success ||
+          Number(
+            update.meta?.changes || 0
+          ) !== 1
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle was already joined by another player"
+          }, 409);
+
+        }
+
+        const updated =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        return json({
+
+          success:
+            true,
+
+          message:
+            "Battle joined successfully",
+
+          battle:
+            battleResponse(
+              updated
+            )
+
+        });
+
+      }
+
+
+      /* =====================================================
+         BATTLE - CREATE / SET ROOM CODE
+         
+         First player enters the 8-digit
+         room code.
+      ===================================================== */
+
+      if (
+        path === "/api/battles/room-code" &&
+        request.method === "POST"
+      ) {
+
+        await ensureBattleTable(env);
+
+        const body =
+          await request.json();
+
+        const battleId =
+          clean(
+            body.battle_id ||
+            body.battleId
+          );
+
+        const playerId =
+          clean(
+            body.player_id ||
+            body.playerId
+          );
 
         const roomCode =
           clean(
@@ -1658,54 +2269,88 @@ export default {
             body.roomCode
           );
 
-
-        if (!playerId) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Player login required"
-
-          }, 400);
-
-        }
-
-
         if (
-          !validRoomCode(
-            roomCode
-          )
+          !battleId ||
+          !playerId
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "8-digit Room Code required"
-
+              "Battle and player required"
           }, 400);
 
         }
 
+        if (
+          !validRoomCode(roomCode)
+        ) {
 
-        const existing =
+          return json({
+            success: false,
+            error:
+              "8-digit Room Code required"
+          }, 400);
+
+        }
+
+        const battle =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        if (!battle) {
+
+          return json({
+            success: false,
+            error:
+              "Battle not found"
+          }, 404);
+
+        }
+
+        if (
+          battle.creator_id !== playerId
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Only Player 1 can set the Room Code"
+          }, 403);
+
+        }
+
+        if (
+          battle.status !== "JOINED" &&
+          battle.status !== "ROOM_READY"
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle is not ready for Room Code"
+          }, 409);
+
+        }
+
+        /*
+          Check existing room code.
+        */
+
+        const existingRoom =
           await getRoom(
             env,
             roomCode
           );
 
-
-        if (existing) {
+        if (existingRoom) {
 
           if (
-            existing.status === "WAITING" &&
+            existingRoom.status === "WAITING" &&
             isExpired(
-              existing.created_at
+              existingRoom.created_at
             )
           ) {
 
@@ -1717,23 +2362,24 @@ export default {
           } else {
 
             return json({
-
-              success:
-                false,
-
+              success: false,
               error:
                 "यह Room Code पहले से मौजूद है। दूसरा code डालें।"
-
             }, 409);
 
           }
 
         }
 
-
         const createdAt =
           Date.now();
 
+        /*
+          Create actual room record.
+
+          Player 1 = Battle creator
+          Player 2 = Battle opponent
+        */
 
         await env.DB.prepare(`
           INSERT INTO rooms (
@@ -1746,340 +2392,39 @@ export default {
             created_at
           )
           VALUES (
-            ?, ?, ?, NULL, NULL, 'WAITING', ?
+            ?, ?, ?, ?, ?, 'READY', ?
           )
         `)
         .bind(
           roomCode,
-          playerId,
-          playerName,
+          battle.creator_id,
+          battle.creator_name,
+          battle.opponent_id,
+          battle.opponent_name,
           createdAt
         )
         .run();
 
+        await env.DB.prepare(`
+          UPDATE battles
+          SET
+            room_code = ?,
+            status = 'ROOM_READY',
+            room_ready_at = ?
+          WHERE id = ?
+        `)
+        .bind(
+          roomCode,
+          createdAt,
+          battleId
+        )
+        .run();
 
-        return json({
-
-          success:
-            true,
-
-          room: {
-
-            room_code:
-              roomCode,
-
-            player1_id:
-              playerId,
-
-            player1_name:
-              playerName,
-
-            player2_id:
-              null,
-
-            player2_name:
-              null,
-
-            status:
-              "WAITING",
-
-            created_at:
-              createdAt
-
-          }
-
-        });
-
-      }
-
-
-      /* =====================================================
-         GET WAITING ROOM
-      ===================================================== */
-
-      if (
-        path === "/api/rooms/waiting" &&
-        request.method === "GET"
-      ) {
-
-        const room =
-          await env.DB.prepare(`
-            SELECT
-              room_code,
-              player1_id,
-              player1_name,
-              player2_id,
-              player2_name,
-              status,
-              result_screenshot,
-              result_player_id,
-              created_at
-            FROM rooms
-            WHERE status = 'WAITING'
-            ORDER BY created_at DESC
-            LIMIT 1
-          `)
-          .first();
-
-
-        if (!room) {
-
-          return json({
-
-            success:
-              true,
-
-            room:
-              null
-
-          });
-
-        }
-
-
-        if (
-          isExpired(
-            room.created_at
-          )
-        ) {
-
-          await deleteRoom(
+        const updated =
+          await getBattle(
             env,
-            room.room_code
+            battleId
           );
-
-
-          return json({
-
-            success:
-              true,
-
-            room:
-              null
-
-          });
-
-        }
-
-
-        return json({
-
-          success:
-            true,
-
-          room
-
-        });
-
-      }
-
-
-      /* =====================================================
-         JOIN ROOM
-      ===================================================== */
-
-      if (
-        path === "/api/rooms/join" &&
-        request.method === "POST"
-      ) {
-
-        const body =
-          await request.json();
-
-
-        const playerId =
-          clean(
-            body.player_id ||
-            body.playerId
-          );
-
-
-        const playerName =
-          clean(
-            body.player_name ||
-            body.playerName ||
-            "Player"
-          );
-
-
-        const roomCode =
-          clean(
-            body.room_code ||
-            body.roomCode
-          );
-
-
-        if (!playerId) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Player login required"
-
-          }, 400);
-
-        }
-
-
-        if (
-          !validRoomCode(
-            roomCode
-          )
-        ) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "8-digit Room Code required"
-
-          }, 400);
-
-        }
-
-
-        const room =
-          await getRoom(
-            env,
-            roomCode
-          );
-
-
-        if (!room) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Room Code नहीं मिला।"
-
-          }, 404);
-
-        }
-
-
-        if (
-          room.status === "WAITING" &&
-          isExpired(
-            room.created_at
-          )
-        ) {
-
-          await deleteRoom(
-            env,
-            roomCode
-          );
-
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "⏰ यह Room 5 मिनट बाद expire हो गया।"
-
-          }, 410);
-
-        }
-
-
-        if (
-          room.player1_id === playerId
-        ) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Player 1 और Player 2 के लिए अलग mobile number इस्तेमाल करें।"
-
-          }, 409);
-
-        }
-
-
-        if (room.player2_id) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "यह Room पहले से full है।"
-
-          }, 409);
-
-        }
-
-
-        const result =
-          await env.DB.prepare(`
-            UPDATE rooms
-            SET
-              player2_id = ?,
-              player2_name = ?,
-              status = 'READY'
-            WHERE room_code = ?
-            AND player2_id IS NULL
-          `)
-          .bind(
-            playerId,
-            playerName,
-            roomCode
-          )
-          .run();
-
-
-        if (!result.success) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Player 2 join नहीं कर पाया।"
-
-          }, 500);
-
-        }
-
-
-        const updatedRoom =
-          await getRoom(
-            env,
-            roomCode
-          );
-
-
-        if (
-          !updatedRoom ||
-          updatedRoom.player2_id !== playerId
-        ) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Player 2 database में save नहीं हुआ।"
-
-          }, 500);
-
-        }
-
 
         return json({
 
@@ -2087,10 +2432,12 @@ export default {
             true,
 
           message:
-            "Player 2 joined successfully 🎉",
+            "Room Code is ready",
 
-          room:
-            updatedRoom
+          battle:
+            battleResponse(
+              updated
+            )
 
         });
 
@@ -2098,98 +2445,68 @@ export default {
 
 
       /* =====================================================
-         GET ROOM
+         BATTLE - MY BATTLES
       ===================================================== */
 
       if (
-        path.startsWith(
-          "/api/rooms/"
-        ) &&
+        path === "/api/battles/my" &&
         request.method === "GET"
       ) {
 
-        const roomCode =
-          path
-            .replace(
-              "/api/rooms/",
-              ""
+        await ensureBattleTable(env);
+
+        const playerId =
+          clean(
+            url.searchParams.get(
+              "player_id"
+            ) ||
+            url.searchParams.get(
+              "playerId"
+            ) ||
+            url.searchParams.get(
+              "customer_id"
             )
-            .trim();
+          );
 
-
-        if (
-          !validRoomCode(
-            roomCode
-          )
-        ) {
+        if (!playerId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Invalid room code"
-
+              "Player ID required"
           }, 400);
 
         }
 
-
-        const room =
-          await getRoom(
-            env,
-            roomCode
-          );
-
-
-        if (!room) {
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Room not found"
-
-          }, 404);
-
-        }
-
-
-        if (
-          room.status === "WAITING" &&
-          isExpired(
-            room.created_at
+        const result =
+          await env.DB.prepare(`
+            SELECT *
+            FROM battles
+            WHERE creator_id = ?
+            OR opponent_id = ?
+            ORDER BY created_at DESC
+            LIMIT 50
+          `)
+          .bind(
+            playerId,
+            playerId
           )
-        ) {
-
-          await deleteRoom(
-            env,
-            roomCode
-          );
-
-
-          return json({
-
-            success:
-              false,
-
-            error:
-              "Room expired"
-
-          }, 410);
-
-        }
-
+          .all();
 
         return json({
 
           success:
             true,
 
-          room
+          count:
+            result.results?.length || 0,
+
+          battles:
+            (
+              result.results || []
+            ).map(
+              battleResponse
+            )
 
         });
 
@@ -2197,38 +2514,36 @@ export default {
 
 
       /* =====================================================
-         CANCEL ROOM
+         BATTLE - CANCEL
       ===================================================== */
 
       if (
-        path === "/api/rooms/cancel" &&
+        path === "/api/battles/cancel" &&
         request.method === "POST"
       ) {
+
+        await ensureBattleTable(env);
 
         const body =
           await request.json();
 
+        const battleId =
+          clean(
+            body.battle_id ||
+            body.battleId
+          );
 
         const playerId =
           clean(
             body.player_id ||
-            body.player
+            body.playerId
           );
-
-
-        const roomCode =
-          clean(
-            body.room_code ||
-            body.roomCode
-          );
-
 
         const reason =
           clean(
             body.reason ||
             body.cancel_reason
           );
-
 
         const validReasons = [
 
@@ -2238,30 +2553,28 @@ export default {
 
           "Not Player Join",
 
-          "Opposite Error"
+          "Opposite Error",
+
+          "No Fresh ID",
+
+          "No Token Open",
+
+          "Other"
 
         ];
 
-
         if (
-          !playerId ||
-          !validRoomCode(
-            roomCode
-          )
+          !battleId ||
+          !playerId
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Player and valid Room Code required"
-
+              "Battle and player required"
           }, 400);
 
         }
-
 
         if (
           !validReasons.includes(
@@ -2270,86 +2583,100 @@ export default {
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Valid cancellation reason required"
-
           }, 400);
 
         }
 
-
-        const room =
-          await getRoom(
+        const battle =
+          await getBattle(
             env,
-            roomCode
+            battleId
           );
 
-
-        if (!room) {
+        if (!battle) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Room not found"
-
+              "Battle not found"
           }, 404);
 
         }
 
-
         if (
-          room.player1_id !== playerId &&
-          room.player2_id !== playerId
+          battle.creator_id !== playerId &&
+          battle.opponent_id !== playerId
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Not your room"
-
+              "You are not part of this Battle"
           }, 403);
 
         }
 
+        if (
+          [
+            "CANCELLED",
+            "FINAL_CANCEL",
+            "FINAL_WIN",
+            "FINAL_LOSS"
+          ].includes(
+            battle.status
+          )
+        ) {
 
-        await ensureCancellationTable(
-          env
-        );
+          return json({
+            success: false,
+            error:
+              "Battle result has already been submitted"
+          }, 409);
 
+        }
 
         await env.DB.prepare(`
-          INSERT INTO room_cancellations (
-            room_code,
-            player_id,
-            reason,
-            created_at
-          )
-          VALUES (?, ?, ?, ?)
+          UPDATE battles
+          SET
+            status = 'CANCELLED',
+            cancel_reason = ?,
+            result_player_id = ?,
+            result_status = 'CANCELLED',
+            result_submitted_at = ?
+          WHERE id = ?
         `)
         .bind(
-          roomCode,
-          playerId,
           reason,
-          Date.now()
+          playerId,
+          Date.now(),
+          battleId
         )
         .run();
 
+        if (
+          battle.room_code
+        ) {
 
-        await deleteRoom(
-          env,
-          roomCode
-        );
+          await env.DB.prepare(`
+            UPDATE rooms
+            SET status = 'CANCELLED'
+            WHERE room_code = ?
+          `)
+          .bind(
+            battle.room_code
+          )
+          .run();
 
+        }
+
+        const updated =
+          await getBattle(
+            env,
+            battleId
+          );
 
         return json({
 
@@ -2357,9 +2684,12 @@ export default {
             true,
 
           message:
-            "Room cancelled successfully",
+            "Cancellation submitted. Final decision will be according to Admin rules.",
 
-          reason
+          battle:
+            battleResponse(
+              updated
+            )
 
         });
 
@@ -2367,17 +2697,30 @@ export default {
 
 
       /* =====================================================
-         RESULT
+         BATTLE - RESULT
+         
+         I WON / I LOST
+
+         Screenshot required.
+
+         Result cannot be changed once submitted.
       ===================================================== */
 
       if (
-        path === "/api/rooms/result" &&
+        path === "/api/battles/result" &&
         request.method === "POST"
       ) {
+
+        await ensureBattleTable(env);
 
         const body =
           await request.json();
 
+        const battleId =
+          clean(
+            body.battle_id ||
+            body.battleId
+          );
 
         const playerId =
           clean(
@@ -2385,96 +2728,167 @@ export default {
             body.playerId
           );
 
-
-        const roomCode =
+        const resultStatus =
           clean(
-            body.room_code ||
-            body.roomCode
-          );
-
+            body.result_status ||
+            body.resultStatus ||
+            body.result
+          ).toUpperCase();
 
         const screenshot =
-          String(
-            body.screenshot || ""
+          clean(
+            body.screenshot ||
+            body.result_screenshot
           );
 
-
         if (
-          !playerId ||
-          !validRoomCode(
-            roomCode
-          ) ||
-          !screenshot
+          !battleId ||
+          !playerId
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Player, room and screenshot required"
-
+              "Battle and player required"
           }, 400);
 
         }
 
-
-        const room =
-          await getRoom(
-            env,
-            roomCode
-          );
-
-
-        if (!room) {
+        if (
+          ![
+            "WON",
+            "LOST"
+          ].includes(
+            resultStatus
+          )
+        ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Room not found"
+              "Result must be WON or LOST"
+          }, 400);
 
+        }
+
+        if (!screenshot) {
+
+          return json({
+            success: false,
+            error:
+              "Screenshot required"
+          }, 400);
+
+        }
+
+        const battle =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        if (!battle) {
+
+          return json({
+            success: false,
+            error:
+              "Battle not found"
           }, 404);
 
         }
 
-
         if (
-          room.player1_id !== playerId &&
-          room.player2_id !== playerId
+          battle.creator_id !== playerId &&
+          battle.opponent_id !== playerId
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Player is not part of this room"
-
+              "You are not part of this Battle"
           }, 403);
 
         }
 
+        if (
+          battle.status === "CANCELLED" ||
+          battle.status === "FINAL_CANCEL" ||
+          battle.status === "FINAL_WIN" ||
+          battle.status === "FINAL_LOSS" ||
+          battle.result_status
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Result has already been submitted and cannot be changed"
+          }, 409);
+
+        }
+
+        if (
+          battle.status !== "ROOM_READY"
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle is not ready for result"
+          }, 409);
+
+        }
+
+        /*
+          The website cannot automatically know
+          when the external Ludo King game ended.
+
+          Therefore the 15-minute server window starts
+          from Room Code Ready.
+        */
+
+        if (
+          battle.room_ready_at &&
+          Date.now() -
+          Number(battle.room_ready_at) >
+          RESULT_WINDOW_MS
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "⏰ Result submission window has expired"
+          }, 410);
+
+        }
+
+        const submittedAt =
+          Date.now();
 
         await env.DB.prepare(`
-          UPDATE rooms
+          UPDATE battles
           SET
-            result_screenshot = ?,
             result_player_id = ?,
+            result_status = ?,
+            result_screenshot = ?,
+            result_submitted_at = ?,
             status = 'RESULT_SUBMITTED'
-          WHERE room_code = ?
+          WHERE id = ?
+          AND result_status IS NULL
         `)
         .bind(
-          screenshot,
           playerId,
-          roomCode
+          resultStatus,
+          screenshot,
+          submittedAt,
+          battleId
         )
         .run();
 
+        const updated =
+          await getBattle(
+            env,
+            battleId
+          );
 
         return json({
 
@@ -2482,7 +2896,12 @@ export default {
             true,
 
           message:
-            "Screenshot submitted successfully"
+            "Result submitted successfully. Final decision is subject to Admin review.",
+
+          battle:
+            battleResponse(
+              updated
+            )
 
         });
 
@@ -2501,13 +2920,11 @@ export default {
         const body =
           await request.json();
 
-
         const customerId =
           clean(
             body.customer_id ||
             body.customerId
           );
-
 
         const fullName =
           clean(
@@ -2515,18 +2932,15 @@ export default {
             body.fullName
           );
 
-
         const mobile =
           clean(
             body.mobile
           );
 
-
         const dob =
           clean(
             body.dob
           );
-
 
         const documentType =
           clean(
@@ -2534,13 +2948,11 @@ export default {
             body.documentType
           );
 
-
         const documentNumber =
           clean(
             body.document_number ||
             body.documentNumber
           );
-
 
         const documentFileName =
           clean(
@@ -2548,77 +2960,55 @@ export default {
             body.documentFileName
           );
 
-
         const selfieFileName =
           clean(
             body.selfie_file_name ||
             body.selfieFileName
           );
 
-
         if (!customerId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer ID required"
-
           }, 400);
 
         }
-
 
         if (
           fullName.length < 2
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Full name required"
-
           }, 400);
 
         }
-
 
         if (
           !validMobile(mobile)
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Valid 10-digit mobile number required"
-
           }, 400);
 
         }
-
 
         if (!dob) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Date of birth required"
-
           }, 400);
 
         }
-
 
         const allowedDocuments = [
 
@@ -2632,7 +3022,6 @@ export default {
 
         ];
 
-
         if (
           !allowedDocuments.includes(
             documentType
@@ -2640,69 +3029,48 @@ export default {
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Valid KYC document type required"
-
           }, 400);
 
         }
-
 
         if (
           documentNumber.length < 4
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Document number required"
-
           }, 400);
 
         }
-
 
         if (!documentFileName) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "KYC document upload required"
-
           }, 400);
 
         }
-
 
         if (!selfieFileName) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Selfie upload required"
-
           }, 400);
 
         }
 
-
         await ensureKYCTable(
           env
         );
-
 
         const customer =
           await env.DB.prepare(`
@@ -2713,21 +3081,15 @@ export default {
           .bind(customerId)
           .first();
 
-
         if (!customer) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer not found"
-
           }, 404);
 
         }
-
 
         if (
           String(customer.mobile) !==
@@ -2735,17 +3097,12 @@ export default {
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Mobile number does not match customer account"
-
           }, 403);
 
         }
-
 
         const pending =
           await env.DB.prepare(`
@@ -2758,7 +3115,6 @@ export default {
           `)
           .bind(customerId)
           .first();
-
 
         if (pending) {
 
@@ -2790,10 +3146,8 @@ export default {
 
         }
 
-
         const submittedAt =
           Date.now();
-
 
         const result =
           await env.DB.prepare(`
@@ -2830,7 +3184,6 @@ export default {
           )
           .run();
 
-
         await env.DB.prepare(`
           UPDATE customers
           SET kyc_status = 'Pending'
@@ -2838,7 +3191,6 @@ export default {
         `)
         .bind(customerId)
         .run();
-
 
         return json({
 
@@ -2872,12 +3224,6 @@ export default {
 
       /* =====================================================
          ADMIN API PROTECTION
-         
-         Every /api/admin/* endpoint below requires
-         successful Admin Login.
-
-         Login/logout/session are excluded because
-         they handle authentication themselves.
       ===================================================== */
 
       if (
@@ -2921,7 +3267,6 @@ export default {
           env
         );
 
-
         const result =
           await env.DB.prepare(`
             SELECT
@@ -2941,7 +3286,6 @@ export default {
             ORDER BY submitted_at DESC
           `)
           .all();
-
 
         return json({
 
@@ -2972,7 +3316,6 @@ export default {
           env
         );
 
-
         const result =
           await env.DB.prepare(`
             SELECT
@@ -2993,7 +3336,6 @@ export default {
             ORDER BY submitted_at DESC
           `)
           .all();
-
 
         return json({
 
@@ -3023,14 +3365,12 @@ export default {
         const body =
           await request.json();
 
-
         const kycId =
           Number(
             body.kyc_id ||
             body.kycId ||
             body.id
           );
-
 
         if (
           !Number.isInteger(
@@ -3051,11 +3391,9 @@ export default {
 
         }
 
-
         await ensureKYCTable(
           env
         );
-
 
         const kyc =
           await env.DB.prepare(`
@@ -3065,7 +3403,6 @@ export default {
           `)
           .bind(kycId)
           .first();
-
 
         if (!kyc) {
 
@@ -3080,7 +3417,6 @@ export default {
           }, 404);
 
         }
-
 
         if (
           kyc.status !== "PENDING"
@@ -3098,10 +3434,8 @@ export default {
 
         }
 
-
         const reviewedAt =
           Date.now();
-
 
         await env.DB.prepare(`
           UPDATE kyc_submissions
@@ -3117,7 +3451,6 @@ export default {
         )
         .run();
 
-
         await env.DB.prepare(`
           UPDATE customers
           SET kyc_status = 'Approved'
@@ -3127,7 +3460,6 @@ export default {
           kyc.customer_id
         )
         .run();
-
 
         return json({
 
@@ -3160,7 +3492,6 @@ export default {
         const body =
           await request.json();
 
-
         const kycId =
           Number(
             body.kyc_id ||
@@ -3168,14 +3499,12 @@ export default {
             body.id
           );
 
-
         const reason =
           clean(
             body.reason ||
             body.rejection_reason ||
             "KYC rejected"
           );
-
 
         if (
           !Number.isInteger(
@@ -3196,11 +3525,9 @@ export default {
 
         }
 
-
         await ensureKYCTable(
           env
         );
-
 
         const kyc =
           await env.DB.prepare(`
@@ -3210,7 +3537,6 @@ export default {
           `)
           .bind(kycId)
           .first();
-
 
         if (!kyc) {
 
@@ -3225,7 +3551,6 @@ export default {
           }, 404);
 
         }
-
 
         if (
           kyc.status !== "PENDING"
@@ -3243,10 +3568,8 @@ export default {
 
         }
 
-
         const reviewedAt =
           Date.now();
-
 
         await env.DB.prepare(`
           UPDATE kyc_submissions
@@ -3263,7 +3586,6 @@ export default {
         )
         .run();
 
-
         await env.DB.prepare(`
           UPDATE customers
           SET kyc_status = 'Rejected'
@@ -3273,7 +3595,6 @@ export default {
           kyc.customer_id
         )
         .run();
-
 
         return json({
 
@@ -3297,6 +3618,211 @@ export default {
 
 
       /* =====================================================
+         ADMIN - BATTLE LIST
+      ===================================================== */
+
+      if (
+        path === "/api/admin/battles" &&
+        request.method === "GET"
+      ) {
+
+        await ensureBattleTable(env);
+
+        const result =
+          await env.DB.prepare(`
+            SELECT *
+            FROM battles
+            ORDER BY created_at DESC
+            LIMIT 200
+          `)
+          .all();
+
+        return json({
+
+          success:
+            true,
+
+          count:
+            result.results?.length || 0,
+
+          battles:
+            (
+              result.results || []
+            ).map(
+              battleResponse
+            )
+
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN - BATTLE FINAL DECISION
+      ===================================================== */
+
+      if (
+        path === "/api/admin/battles/decision" &&
+        request.method === "POST"
+      ) {
+
+        await ensureBattleTable(env);
+
+        const body =
+          await request.json();
+
+        const battleId =
+          clean(
+            body.battle_id ||
+            body.battleId
+          );
+
+        const decision =
+          clean(
+            body.decision ||
+            body.status
+          ).toUpperCase();
+
+        const winnerPlayerId =
+          clean(
+            body.winner_player_id ||
+            body.winnerPlayerId ||
+            body.player_id
+          );
+
+        if (
+          !battleId
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle ID required"
+          }, 400);
+
+        }
+
+        if (
+          ![
+            "FINAL_WIN",
+            "FINAL_LOSS",
+            "FINAL_CANCEL"
+          ].includes(
+            decision
+          )
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Invalid Admin decision"
+          }, 400);
+
+        }
+
+        const battle =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        if (!battle) {
+
+          return json({
+            success: false,
+            error:
+              "Battle not found"
+          }, 404);
+
+        }
+
+        if (
+          decision === "FINAL_CANCEL"
+        ) {
+
+          await env.DB.prepare(`
+            UPDATE battles
+            SET
+              status = 'FINAL_CANCEL',
+              result_status = 'CANCELLED'
+            WHERE id = ?
+          `)
+          .bind(
+            battleId
+          )
+          .run();
+
+        } else {
+
+          if (
+            !winnerPlayerId
+          ) {
+
+            return json({
+              success: false,
+              error:
+                "Winner Player ID required"
+            }, 400);
+
+          }
+
+          if (
+            winnerPlayerId !==
+              battle.creator_id &&
+            winnerPlayerId !==
+              battle.opponent_id
+          ) {
+
+            return json({
+              success: false,
+              error:
+                "Winner is not part of this Battle"
+            }, 400);
+
+          }
+
+          await env.DB.prepare(`
+            UPDATE battles
+            SET
+              status = ?,
+              result_player_id = ?,
+              result_status = 'FINAL'
+            WHERE id = ?
+          `)
+          .bind(
+            decision,
+            winnerPlayerId,
+            battleId
+          )
+          .run();
+
+        }
+
+        const updated =
+          await getBattle(
+            env,
+            battleId
+          );
+
+        return json({
+
+          success:
+            true,
+
+          message:
+            "Admin final decision saved",
+
+          battle:
+            battleResponse(
+              updated
+            )
+
+        });
+
+      }
+
+
+      /* =====================================================
          KYC PAGE
       ===================================================== */
 
@@ -3310,7 +3836,6 @@ export default {
             "/kyc/index.html",
             request.url
           );
-
 
         return env.ASSETS.fetch(
           new Request(
@@ -3337,7 +3862,6 @@ export default {
         "Worker Error:",
         error
       );
-
 
       return json({
 
