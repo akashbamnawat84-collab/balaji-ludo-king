@@ -1,1896 +1,412 @@
-/* =========================================
-   BALAJI LUDO KING
-   HOME PAGE
-========================================= */
-
-
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
-
-
-html {
-  scroll-behavior: smooth;
-}
-
 
 body {
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-
-  background:
-    radial-gradient(
-      circle at 20% 0%,
-      rgba(40,180,255,.10),
-      transparent 35%
-    ),
-    linear-gradient(
-      180deg,
-      #eaf8ff,
-      #f7fbfd
-    );
-
-  color: #182044;
-
-  padding-bottom: 95px;
-
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, #eef7ff, #ffffff);
+  color: #172033;
   min-height: 100vh;
-
+  padding-bottom: 90px;
 }
 
-
-
-/* =========================================
-   TOP HEADER
-========================================= */
-
-
-.top-header {
-
-  width: 100%;
-
-  height: 105px;
-
-  background: #050505;
-
-  border-bottom:
-    3px solid #39ff50;
-
+.topbar {
+  height: 68px;
+  background: linear-gradient(135deg, #111827, #020617);
+  border-bottom: 3px solid #16a34a;
   display: flex;
-
   align-items: center;
-
-  justify-content: space-between;
-
-  padding:
-    0 18px;
-
-  gap: 12px;
-
-  position: relative;
-
-  z-index: 100;
-
+  padding: 0 15px;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
-
-
-/* =========================================
-   HEADER LEFT
-========================================= */
-
-
-.header-left {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 15px;
-
-  min-width: 0;
-
-}
-
-
-
-/* =========================================
-   MENU
-========================================= */
-
-
-.menu-button {
-
-  width: 48px;
-
-  height: 48px;
-
-  border: none;
-
-  background: transparent;
-
-  color: #ffffff;
-
-  font-size: 42px;
-
-  line-height: 1;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 0;
-
-  cursor: pointer;
-
-}
-
-
-
-/* =========================================
-   LOGO LINK
-========================================= */
-
-
-.brand-logo-link {
-
-  text-decoration: none;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-}
-
-
-
-/* =========================================
-   ROUND LOGO
-========================================= */
-
-
-.brand-logo {
-
-  width: 78px;
-
-  height: 78px;
-
-  border-radius: 50%;
-
-  position: relative;
-
-  overflow: hidden;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  background:
-
-    radial-gradient(
-      circle at 50% 18%,
-      #38baff 0%,
-      #1677dc 28%,
-      #25208c 57%,
-      #18a64b 100%
-    );
-
-  border:
-    2px solid
-    rgba(255,255,255,.45);
-
-  box-shadow:
-
-    0 0 8px
-    rgba(0,180,255,.55),
-
-    0 0 18px
-    rgba(47,255,76,.25);
-
-}
-
-
-
-/* =========================================
-   LOGO CROWN
-========================================= */
-
-
-.logo-crown {
-
-  position: absolute;
-
-  top: 2px;
-
-  font-size: 16px;
-
-  line-height: 1;
-
-}
-
-
-
-/* =========================================
-   LOGO DICE
-========================================= */
-
-
-.logo-dice {
-
-  font-size: 25px;
-
-  line-height: 1;
-
-  margin-top: 4px;
-
-  filter:
-    drop-shadow(
-      0 2px 2px
-      rgba(0,0,0,.5)
-    );
-
-}
-
-
-
-/* =========================================
-   LOGO TEXT
-========================================= */
-
-
-.logo-text {
-
-  color: #00efff;
-
-  font-size: 10px;
-
-  font-weight: 1000;
-
-  line-height: 1;
-
-  text-align: center;
-
-  letter-spacing: .3px;
-
-  text-shadow:
-    1px 1px 2px #00154d;
-
-}
-
-
-.logo-text span {
-
-  display: block;
-
-  color: #65ff43;
-
-  font-size: 14px;
-
-  margin-top: 2px;
-
-  text-shadow:
-    1px 1px 2px #073600;
-
-}
-
-
-
-/* =========================================
-   HEADER ACTIONS
-========================================= */
-
-
-.header-actions {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: flex-end;
-
-  gap: 8px;
-
-  flex-shrink: 0;
-
-}
-
-
-
-/* =========================================
-   WALLET + REFER
-   EXACT SAME SIZE
-========================================= */
-
-
-.top-action {
-
-  width: 118px;
-
-  height: 54px;
-
-  border-radius: 30px;
-
-  background: #ffffff;
-
-  color: #111111;
-
-  text-decoration: none;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: flex-start;
-
-  gap: 7px;
-
-  padding:
-    4px 9px;
-
-  font-size: 14px;
-
-  font-weight: 900;
-
-  white-space: nowrap;
-
-  flex-shrink: 0;
-
-  box-shadow:
-    0 3px 10px
-    rgba(0,0,0,.35);
-
-}
-
-
-
-/* =========================================
-   ACTION ICON
-========================================= */
-
-
-.action-icon {
-
-  width: 44px;
-
-  height: 44px;
-
-  border-radius: 50%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  font-size: 22px;
-
-}
-
-
-
-/* =========================================
-   WALLET
-========================================= */
-
-
-.wallet-icon {
-
-  background:
-    linear-gradient(
-      145deg,
-      #12b9ed,
-      #087bc8
-    );
-
-  box-shadow:
-    inset 0 0 0 3px
-    rgba(255,255,255,.35);
-
-}
-
-
-
-/* =========================================
-   REFER
-========================================= */
-
-
-.refer-icon {
-
-  background:
-    linear-gradient(
-      145deg,
-      #ad72ff,
-      #713de0
-    );
-
-  box-shadow:
-    inset 0 0 0 3px
-    rgba(255,255,255,.35);
-
-}
-
-
-
-/* =========================================
-   MAIN
-========================================= */
-
-
-.home-container {
-
-  width: 100%;
-
-  max-width: 700px;
-
-  margin: 0 auto;
-
-  padding: 15px;
-
-
-
-}
-
-
-
-/* =========================================
-   WELCOME CARD
-========================================= */
-
-
-.welcome-card {
-
-  background: #ffffff;
-
-  border-radius: 22px;
-
-  padding: 14px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  border:
-    1px solid
-    #dce4eb;
-
-  border-left:
-    6px solid
-    #079bd2;
-
-  box-shadow:
-    0 5px 18px
-    rgba(30,70,100,.08);
-
-  margin-bottom: 16px;
-
-}
-
-
-
-.welcome-icon {
-
-  width: 48px;
-
-  height: 48px;
-
-  border-radius: 14px;
-
-  background: #fff3b8;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 25px;
-
-  flex-shrink: 0;
-
-}
-
-
-
-.welcome-card h2 {
-
-  font-size: 13px;
-
-  color: #182044;
-
-  margin-bottom: 5px;
-
-  font-weight: 900;
-
-}
-
-
-
-.welcome-card p {
-
-  font-size: 10px;
-
-  line-height: 1.5;
-
-  color: #303a59;
-
-  font-weight: 600;
-
-}
-
-
-
-/* =========================================
-   REFERRAL BANNER
-========================================= */
-
-
-.referral-banner {
-
-  min-height: 165px;
-
-  border-radius: 18px;
-
-  overflow: hidden;
-
-  position: relative;
-
-  background:
-
-    linear-gradient(
-      135deg,
-      #80df32,
-      #b0ed43
-    );
-
-  color: #0c1688;
-
-  padding: 20px;
-
-  margin-bottom: 16px;
-
-  border:
-    1px solid
-    #62bd27;
-
-  box-shadow:
-    0 7px 18px
-    rgba(70,160,30,.18);
-
-}
-
-
-
-.referral-content {
-
-  position: relative;
-
-  z-index: 2;
-
-  max-width: 72%;
-
-}
-
-
-
-.referral-title {
-
-  display: inline-block;
-
-  background:
-    rgba(255,255,255,.25);
-
-  border-radius: 20px;
-
-  padding:
-    5px 9px;
-
-  font-size: 9px;
-
-  font-weight: 900;
-
-}
-
-
-
-.referral-banner h2 {
-
-  font-size: 28px;
-
-  margin:
-    8px 0 3px;
-
-  color: #111d91;
-
-}
-
-
-
-.referral-banner p {
-
-  font-size: 10px;
-
-  line-height: 1.4;
-
-  max-width: 210px;
-
-  color: #10216f;
-
-  font-weight: 700;
-
-}
-
-
-
-.reward-row {
-
-  display: flex;
-
-  gap: 7px;
-
-  margin-top: 12px;
-
-}
-
-
-
-.reward-box {
-
-  min-width: 76px;
-
-  padding:
-    6px 9px;
-
-  border-radius: 10px;
-
-  background:
-    rgba(255,255,255,.30);
-
-  display: flex;
-
-  flex-direction: column;
-
-}
-
-
-
-.reward-box strong {
-
-  font-size: 16px;
-
-}
-
-
-
-.reward-box small {
-
-  font-size: 7px;
-
-  font-weight: 900;
-
-  margin-top: 2px;
-
-}
-
-
-
-/* =========================================
-   REFERRAL PERSON
-========================================= */
-
-
-.referral-image {
-
-  position: absolute;
-
-  right: 12px;
-
-  bottom: 0;
-
-  width: 105px;
-
-  height: 130px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 68px;
-
-}
-
-
-
-/* =========================================
-   FEATURED GAMES
-========================================= */
-
-
-.games-section {
-
-  width: 100%;
-
-}
-
-
-
-.section-heading {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin-bottom: 11px;
-
-}
-
-
-
-.section-heading h2 {
-
-  font-size: 18px;
-
-  font-weight: 900;
-
-  color: #182044;
-
-}
-
-
-
-.section-heading span {
-
-  color: #079bd2;
-
-  font-size: 10px;
-
-  font-weight: 800;
-
-}
-
-
-
-/* =========================================
-   GAMES ROW
-   TWO CARDS SAME ROW
-========================================= */
-
-
-.games-row {
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 12px;
-
-  width: 100%;
-
-}
-
-
-
-/* =========================================
-   GAME CARD
-========================================= */
-
-
-.game-card {
-
-  background: #ffffff;
-
-  border-radius: 22px;
-
-  overflow: hidden;
-
-  border:
-    1px solid
-    #dce5ed;
-
-  padding: 10px;
-
-  box-shadow:
-    0 6px 18px
-    rgba(40,70,100,.10);
-
-  min-width: 0;
-
-}
-
-
-
-/* =========================================
-   GAME IMAGE
-========================================= */
-
-
-.game-image {
-
-  height: 190px;
-
-  border-radius: 17px;
-
-  position: relative;
-
-  overflow: hidden;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  color: #ffffff;
-
-  text-align: center;
-
-}
-
-
-
-/* =========================================
-   LUDO IMAGE
-========================================= */
-
-
-.ludo-image {
-
-  background:
-
-    radial-gradient(
-      circle at 50% 35%,
-      rgba(0,245,255,.35),
-      transparent 35%
-    ),
-
-    linear-gradient(
-      145deg,
-      #063b59,
-      #006b80,
-      #063153
-    );
-
-  box-shadow:
-    inset 0 0 30px
-    rgba(0,240,255,.15);
-
-}
-
-
-
-/* =========================================
-   SUPPORT IMAGE
-========================================= */
-
-
-.support-image {
-
-  background:
-
-    radial-gradient(
-      circle at center,
-      rgba(0,210,255,.35),
-      transparent 38%
-    ),
-
-    linear-gradient(
-      145deg,
-      #092d49,
-      #061d38,
-      #04152b
-    );
-
-  box-shadow:
-    inset 0 0 30px
-    rgba(0,220,255,.15);
-
-}
-
-
-
-/* =========================================
-   LIVE BADGE
-========================================= */
-
-
-.live-badge {
-
-  position: absolute;
-
-  top: 10px;
-
-  left: 10px;
-
-  color: #22ff61;
-
-  font-size: 11px;
-
-  font-weight: 900;
-
-}
-
-
-
-.support-live {
-
-  color: #ff5365;
-
-}
-
-
-
-/* =========================================
-   LUDO LOGO
-========================================= */
-
-
-.ludo-logo {
-
-  font-size: 62px;
-
-  line-height: 1;
-
-  margin-bottom: 4px;
-
-  filter:
-    drop-shadow(
-      0 5px 5px
-      rgba(0,0,0,.45)
-    );
-
-}
-
-
-
-.ludo-image strong {
-
-  font-size: 28px;
-
-  color: #ffd21c;
-
-  text-shadow:
-    2px 2px 3px
-    rgba(0,0,0,.7);
-
-}
-
-
-
-.ludo-image small {
-
-  font-size: 20px;
-
-  font-weight: 1000;
-
-  color: #ffffff;
-
-  margin-top: 2px;
-
-}
-
-
-
-/* =========================================
-   SUPPORT LOGO
-========================================= */
-
-
-.support-logo {
-
-  width: 65px;
-
-  height: 65px;
-
-  border-radius: 18px;
-
-  background:
-    rgba(0,205,255,.20);
-
-  border:
-    2px solid
-    rgba(0,220,255,.55);
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 36px;
-
-  margin-bottom: 10px;
-
-  box-shadow:
-    0 0 20px
-    rgba(0,210,255,.30);
-
-}
-
-
-
-.support-image strong {
-
-  font-size: 22px;
-
-  letter-spacing: .5px;
-
-}
-
-
-
-/* =========================================
-   GAME CONTENT
-========================================= */
-
-
-.game-card-content {
-
-  padding:
-    9px 2px 2px;
-
-}
-
-
-
-.game-card h3 {
-
-  font-size: 13px;
-
-  color: #182044;
-
-}
-
-
-
-.game-card p {
-
-  color: #858da0;
-
-  font-size: 9px;
-
-  margin-top: 3px;
-
-  min-height: 20px;
-
-}
-
-
-
-/* =========================================
-   BUTTONS
-========================================= */
-
-
-.play-button,
-.support-button {
-
-  width: 100%;
-
+.back-btn {
+  width: 42px;
+  height: 42px;
   border: 0;
-
-  border-radius: 10px;
-
-  padding: 9px 5px;
-
-  margin-top: 6px;
-
-  font-size: 10px;
-
-  font-weight: 900;
-
+  border-radius: 50%;
+  background: #263244;
+  color: white;
+  font-size: 25px;
   cursor: pointer;
-
+  margin-right: 12px;
 }
 
-
-
-.play-button {
-
-  background:
-    linear-gradient(
-      135deg,
-      #604ce0,
-      #4b36c8
-    );
-
-  color: #ffffff;
-
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
 }
 
-
-
-.support-button {
-
-  background: #17203e;
-
-  color: #ffffff;
-
-}
-
-
-
-.play-button:active,
-.support-button:active {
-
-  transform:
-    scale(.97);
-
-}
-
-
-
-/* =========================================
-   INFO CARD
-========================================= */
-
-
-.info-card {
-
+.crown {
+  width: 43px;
+  height: 43px;
+  border-radius: 50%;
   background: #ffffff;
-
-  border-radius: 18px;
-
-  padding: 14px;
-
-  margin-top: 16px;
-
   display: flex;
-
   align-items: center;
-
-  gap: 11px;
-
-  border:
-    1px solid
-    #e0e7ee;
-
-  box-shadow:
-    0 4px 14px
-    rgba(30,50,80,.06);
-
-}
-
-
-
-.info-icon {
-
-  width: 44px;
-
-  height: 44px;
-
-  border-radius: 13px;
-
-  background: #fff2ad;
-
-  display: flex;
-
-  align-items: center;
-
   justify-content: center;
+  font-size: 25px;
+}
 
+.brand-name {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.brand-sub {
+  font-size: 10px;
+  color: #22c55e;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  margin-left: auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 10px #22c55e;
+}
+
+.room-container {
+  width: min(520px, 100%);
+  margin: auto;
+  padding: 18px 14px 25px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.loading-card {
+  text-align: center;
+  margin-top: 45px;
+}
+
+.loader {
+  font-size: 45px;
+  margin-bottom: 12px;
+}
+
+.loading-card h2 {
+  font-size: 20px;
+  margin-bottom: 7px;
+}
+
+.loading-card p {
+  color: #64748b;
+}
+
+.match-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.small-label {
+  color: #16a34a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.match-title h1 {
   font-size: 23px;
-
-  flex-shrink: 0;
-
+  margin-top: 3px;
 }
 
-
-
-.info-card h3 {
-
-  font-size: 12px;
-
-  margin-bottom: 4px;
-
+.status-badge {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 900;
 }
 
-
-
-.info-card p {
-
-  color: #817d91;
-
-  font-size: 9px;
-
-  line-height: 1.4;
-
+.players {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 18px 10px;
+  margin-bottom: 16px;
 }
 
+.player {
+  width: 42%;
+  text-align: center;
+}
 
+.avatar {
+  width: 58px;
+  height: 58px;
+  margin: auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
 
-/* =========================================
-   BOTTOM NAV
-========================================= */
+.player-label {
+  margin-top: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+}
 
+.player-name {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  word-break: break-word;
+}
+
+.vs {
+  width: 16%;
+  display: flex;
+  justify-content: center;
+}
+
+.vs span {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #111827;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.battle-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.info-box {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 13px;
+  text-align: center;
+}
+
+.info-box span {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 5px;
+}
+
+.info-box strong {
+  font-size: 18px;
+  color: #111827;
+}
+
+.room-section {
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 20px;
+}
+
+.waiting-icon,
+.ready-icon,
+.result-icon {
+  font-size: 45px;
+  margin-bottom: 8px;
+}
+
+.room-section h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.room-section p {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.refresh-note {
+  margin-top: 15px;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ready-text {
+  margin-bottom: 16px;
+}
+
+.room-code-box {
+  background: linear-gradient(135deg, #111827, #1e293b);
+  color: white;
+  border-radius: 17px;
+  padding: 17px 10px;
+  margin: 14px 0 10px;
+}
+
+.room-code-box span {
+  display: block;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 7px;
+}
+
+.room-code-box strong {
+  font-size: 31px;
+  letter-spacing: 5px;
+}
+
+.copy-btn,
+.play-btn,
+.result-btn,
+.retry-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 13px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.copy-btn {
+  background: #e0f2fe;
+  color: #0369a1;
+  margin-bottom: 10px;
+}
+
+.play-btn {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: white;
+  box-shadow: 0 6px 15px rgba(22, 163, 74, .25);
+}
+
+.play-note {
+  color: #64748b;
+  font-size: 10px;
+  margin-top: 10px;
+}
+
+.result-section {
+  margin-top: 15px;
+}
+
+.result-btn {
+  background: #7c3aed;
+  color: white;
+  margin-top: 15px;
+}
+
+.error-card {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.error-icon {
+  font-size: 45px;
+  margin-bottom: 10px;
+}
+
+.error-card h2 {
+  margin-bottom: 8px;
+}
+
+.error-card p {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.retry-btn {
+  background: #111827;
+  color: white;
+}
 
 .bottom-nav {
-
   position: fixed;
-
-  left: 20px;
-
-  right: 20px;
-
-  bottom: 16px;
-
-  height: 72px;
-
-  background:
-
-    linear-gradient(
-      135deg,
-      #70245e,
-      #7c286a
-    );
-
-  border:
-    1px solid
-    rgba(255,255,255,.25);
-
-  border-radius: 36px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-around;
-
-  z-index: 1000;
-
-  padding:
-    4px 5px;
-
-  box-shadow:
-    0 8px 25px
-    rgba(20,30,50,.28);
-
-}
-
-
-
-.nav-item {
-
-  width: 20%;
-
-  height: 62px;
-
-  color: #ffffff;
-
-  text-decoration: none;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 3px;
-
-  font-size: 22px;
-
-  border-radius: 15px;
-
-}
-
-
-
-.nav-item small {
-
-  font-size: 9px;
-
-  font-weight: 800;
-
-}
-
-
-
-.nav-item.active {
-
-  color: #ffffff;
-
-  background:
-    linear-gradient(
-      145deg,
-      #00c7df,
-      #087fbd
-    );
-
-  width: 65px;
-
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  width: min(500px, calc(100% - 20px));
   height: 65px;
-
-  border-radius: 50%;
-
-  border:
-    4px solid
-    #10162e;
-
-  box-shadow:
-    0 0 0 2px
-    #00d5e8;
-
-  transform:
-    translateY(-18px);
-
+  background: #4c1d95;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+  z-index: 30;
 }
 
-
-
-.nav-item.active small {
-
-  display: none;
-
+.bottom-nav a {
+  text-decoration: none;
+  color: white;
+  min-width: 65px;
+  text-align: center;
+  font-size: 21px;
 }
 
-
-
-.nav-item:active {
-
-  transform:
-    scale(.95);
-
+.bottom-nav small {
+  display: block;
+  font-size: 9px;
+  margin-top: 3px;
+  opacity: .9;
 }
-
-
-
-/* =========================================
-   MOBILE
-========================================= */
-
-
-@media (max-width: 600px) {
-
-
-  .top-header {
-
-    height: 100px;
-
-    padding:
-      0 9px;
-
-    gap: 5px;
-
-  }
-
-
-  .header-left {
-
-    gap: 8px;
-
-  }
-
-
-  .menu-button {
-
-    width: 38px;
-
-    height: 38px;
-
-    font-size: 34px;
-
-  }
-
-
-  .brand-logo {
-
-    width: 70px;
-
-    height: 70px;
-
-  }
-
-
-  .logo-crown {
-
-    font-size: 14px;
-
-  }
-
-
-  .logo-dice {
-
-    font-size: 22px;
-
-  }
-
-
-  .logo-text {
-
-    font-size: 9px;
-
-  }
-
-
-  .logo-text span {
-
-    font-size: 12px;
-
-  }
-
-
-  .header-actions {
-
-    gap: 5px;
-
-  }
-
-
-  /* BOTH SAME SIZE */
-
-  .top-action {
-
-    width: 101px;
-
-    height: 48px;
-
-    border-radius: 28px;
-
-    gap: 5px;
-
-    padding:
-      4px 7px;
-
-    font-size: 12px;
-
-  }
-
-
-  .action-icon {
-
-    width: 38px;
-
-    height: 38px;
-
-    font-size: 19px;
-
-  }
-
-
-  .home-container {
-
-    padding:
-      12px;
-
-  }
-
-
-  .game-image {
-
-    height: 150px;
-
-  }
-
-
-  .ludo-logo {
-
-    font-size: 48px;
-
-  }
-
-
-  .ludo-image strong {
-
-    font-size: 23px;
-
-  }
-
-
-  .ludo-image small {
-
-    font-size: 16px;
-
-  }
-
-
-  .support-logo {
-
-    width: 55px;
-
-    height: 55px;
-
-    font-size: 30px;
-
-  }
-
-
-  .support-image strong {
-
-    font-size: 18px;
-
-  }
-
-
-  .bottom-nav {
-
-    left: 12px;
-
-    right: 12px;
-
-    bottom: 12px;
-
-  }
-
-}
-
-
-
-/* =========================================
-   SMALL PHONES
-========================================= */
-
 
 @media (max-width: 390px) {
 
-
-  .top-header {
-
-    height: 94px;
-
-    padding:
-      0 6px;
-
+  .room-container {
+    padding: 14px 10px;
   }
 
-
-  .header-left {
-
-    gap: 5px;
-
+  .card {
+    padding: 16px;
   }
 
-
-  .menu-button {
-
-    width: 32px;
-
-    height: 32px;
-
-    font-size: 29px;
-
+  .match-title h1 {
+    font-size: 20px;
   }
 
-
-  .brand-logo {
-
-    width: 62px;
-
-    height: 62px;
-
+  .room-code-box strong {
+    font-size: 26px;
+    letter-spacing: 4px;
   }
 
-
-  .logo-crown {
-
+  .player-name {
     font-size: 12px;
-
   }
-
-
-  .logo-dice {
-
-    font-size: 19px;
-
-  }
-
-
-  .logo-text {
-
-    font-size: 8px;
-
-  }
-
-
-  .logo-text span {
-
-    font-size: 10px;
-
-  }
-
-
-  .header-actions {
-
-    gap: 3px;
-
-  }
-
-
-  /* EXACT SAME WIDTH + HEIGHT */
-
-  .top-action {
-
-    width: 91px;
-
-    height: 43px;
-
-    gap: 4px;
-
-    padding:
-      3px 5px;
-
-    font-size: 10px;
-
-  }
-
-
-  .action-icon {
-
-    width: 33px;
-
-    height: 33px;
-
-    font-size: 16px;
-
-  }
-
-
-  .home-container {
-
-    padding:
-      10px;
-
-  }
-
-
-  .welcome-card {
-
-    padding: 11px;
-
-  }
-
-
-  .welcome-card h2 {
-
-    font-size: 11px;
-
-  }
-
-
-  .welcome-card p {
-
-    font-size: 9px;
-
-  }
-
-
-  .referral-banner {
-
-    min-height: 145px;
-
-    padding: 15px;
-
-  }
-
-
-  .referral-banner h2 {
-
-    font-size: 23px;
-
-  }
-
-
-  .referral-image {
-
-    width: 85px;
-
-    height: 105px;
-
-    font-size: 52px;
-
-  }
-
-
-  .games-row {
-
-    gap: 8px;
-
-  }
-
-
-  .game-card {
-
-    padding: 7px;
-
-    border-radius: 18px;
-
-  }
-
-
-  .game-image {
-
-    height: 125px;
-
-    border-radius: 14px;
-
-  }
-
-
-  .ludo-logo {
-
-    font-size: 38px;
-
-  }
-
-
-  .ludo-image strong {
-
-    font-size: 19px;
-
-  }
-
-
-  .ludo-image small {
-
-    font-size: 13px;
-
-  }
-
-
-  .support-logo {
-
-    width: 45px;
-
-    height: 45px;
-
-    font-size: 24px;
-
-  }
-
-
-  .support-image strong {
-
-    font-size: 15px;
-
-  }
-
-
-  .game-card h3 {
-
-    font-size: 11px;
-
-  }
-
-
-  .game-card p {
-
-    font-size: 8px;
-
-  }
-
-
-  .play-button,
-  .support-button {
-
-    font-size: 9px;
-
-    padding: 8px 3px;
-
-  }
-
-
-  .bottom-nav {
-
-    height: 68px;
-
-    left: 9px;
-
-    right: 9px;
-
-    bottom: 9px;
-
-  }
-
-
-  .nav-item {
-
-    height: 58px;
-
-    font-size: 19px;
-
-  }
-
-
-  .nav-item small {
-
-    font-size: 8px;
-
-  }
-
-
-  .nav-item.active {
-
-    width: 62px;
-
-    height: 62px;
-
-  }
-
-}
-
-
-
-/* =========================================
-   VERY SMALL PHONES
-========================================= */
-
-
-@media (max-width: 350px) {
-
-
-  .brand-logo {
-
-    width: 57px;
-
-    height: 57px;
-
-  }
-
-
-  .logo-dice {
-
-    font-size: 17px;
-
-  }
-
-
-  .logo-text {
-
-    font-size: 7px;
-
-  }
-
-
-  .logo-text span {
-
-    font-size: 9px;
-
-  }
-
-
-  .top-action {
-
-    width: 84px;
-
-    height: 41px;
-
-    font-size: 9px;
-
-  }
-
-
-  .action-icon {
-
-    width: 31px;
-
-    height: 31px;
-
-    font-size: 15px;
-
-  }
-
 }
