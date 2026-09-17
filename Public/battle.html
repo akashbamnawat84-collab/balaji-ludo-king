@@ -3,276 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#071936">
+  <meta name="theme-color" content="#061631">
   <title>Balaji Ludo King - Battle</title>
-
   <link rel="stylesheet" href="battle.css">
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <header class="battle-header">
-    <div class="header-top">
+<header class="top-header">
 
-      <a href="home.html" class="back-btn">
-        <span>←</span>
-        <span>Back</span>
-      </a>
+  <div class="top-row">
 
-      <div class="brand">
-        <div class="crown">👑</div>
-        <div>
-          <div class="brand-name">BALAJI</div>
-          <div class="brand-sub">LUDO KING</div>
-        </div>
-      </div>
+    <a href="home.html" class="back-btn">
+      <span class="back-arrow">←</span>
+      <span>Back</span>
+    </a>
 
-      <div class="online-dot">
-        <span></span>
-      </div>
-
-    </div>
-
-    <div class="header-title">
-      <h1>⚔️ Battle Arena</h1>
-      <p>Create or join a 2-player battle</p>
-    </div>
-  </header>
-
-
-  <main class="battle-container">
-
-    <!-- WELCOME -->
-    <section class="welcome-card">
-
-      <div class="welcome-icon">🚀</div>
-
-      <div class="welcome-content">
-        <h2>Welcome to BALAJI LUDO KING</h2>
-
-        <p>
-          🙏 दोस्तों आपका विश्वास हमारी पहचान है।
-          <span>Enjoy fast and fair demo battles.</span>
-        </p>
-      </div>
-
-    </section>
-
-
-    <!-- CREATE BATTLE -->
-    <section class="create-card">
-
-      <div class="card-heading">
-        <div class="heading-icon">⚔️</div>
-
-        <div>
-          <h2>Create a Battle</h2>
-          <p>Choose your demo entry amount</p>
-        </div>
-      </div>
-
-
-      <!-- RULES -->
-      <button id="rulesBtn" class="rules-btn" type="button">
-        <span>📋</span>
-        <span>Rules</span>
-        <span class="info-icon">i</span>
-      </button>
-
-
-      <!-- AMOUNT -->
-      <div class="amount-label">
-        <label for="amountInput">Enter Amount</label>
-        <span class="coin-small">🪙</span>
-      </div>
-
-      <div class="amount-box">
-        <span class="rupee">₹</span>
-
-        <input
-          type="number"
-          id="amountInput"
-          placeholder="50, 100, 150..."
-          inputmode="numeric"
-          autocomplete="off"
-        />
-
-        <span class="amount-suffix">Demo</span>
-      </div>
-
-
-      <!-- SET BATTLE -->
-      <button id="setBattleBtn" class="set-btn" type="button">
-        <span>⚡</span>
-        <span>Set Battle</span>
-      </button>
-
-
-      <!-- MESSAGE -->
-      <div id="amountMessage" class="amount-message"></div>
-
-      <div class="demo-notice">
-        <span>⚠️</span>
-        <div>
-          <strong>Demo Mode</strong>
-          <p>Amounts shown are demo values only.</p>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- OPEN BATTLES -->
-    <section class="battle-section">
-
-      <div class="section-header">
-        <div>
-          <h2>🔥 Open Battles</h2>
-          <p>Join an available opponent</p>
-        </div>
-
-        <div class="live-badge">
-          <span></span>
-          LIVE
-        </div>
-      </div>
-
-      <div id="openBattles" class="battle-list">
-        <!-- battle.js will render open battles here -->
-      </div>
-
-    </section>
-
-
-    <!-- RUNNING BATTLES -->
-    <section class="battle-section running-section">
-
-      <div class="section-header">
-        <div>
-          <h2>🎮 My Battles</h2>
-          <p>Your active battles</p>
-        </div>
-      </div>
-
-      <div id="runningBattles" class="battle-list">
-        <!-- battle.js will render running battles here -->
-      </div>
-
-    </section>
-
-
-    <!-- DEMO INFO -->
-    <section class="info-card">
-
-      <div class="info-icon-large">🛡️</div>
-
+    <div class="logo">
+      <div class="logo-crown">👑</div>
       <div>
-        <h3>Fair Play</h3>
-        <p>
-          हर battle 2 players के लिए है।
-          Battle details और status automatically update होंगे।
-        </p>
+        <div class="logo-main">BALAJI</div>
+        <div class="logo-sub">LUDO KING</div>
       </div>
+    </div>
 
-    </section>
-
-  </main>
-
-
-  <!-- RULES MODAL -->
-  <div id="rulesModal" class="modal">
-
-    <div class="modal-overlay"></div>
-
-    <div class="modal-box">
-
-      <button id="closeRulesBtn" class="modal-close" type="button">
-        ×
-      </button>
-
-      <div class="modal-icon">📋</div>
-
-      <h2>Battle Rules</h2>
-      <p class="modal-subtitle">Please read before creating a battle</p>
-
-      <div class="rules-list">
-
-        <div class="rule-item">
-          <span>👥</span>
-          <div>
-            <strong>2 Players</strong>
-            <p>Each battle supports two players.</p>
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <span>🪙</span>
-          <div>
-            <strong>Demo Amount</strong>
-            <p>Displayed amounts are demo values only.</p>
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <span>⚡</span>
-          <div>
-            <strong>Fast Matching</strong>
-            <p>Another player can join an open battle.</p>
-          </div>
-        </div>
-
-        <div class="rule-item">
-          <span>🛡️</span>
-          <div>
-            <strong>Fair Play</strong>
-            <p>Play fairly and follow the battle rules.</p>
-          </div>
-        </div>
-
-      </div>
-
-      <button id="understandBtn" class="understand-btn" type="button">
-        Got it
-      </button>
-
+    <div class="online">
+      <span></span> Online
     </div>
 
   </div>
 
+  <div class="arena">
 
-  <!-- BOTTOM NAVIGATION -->
-  <nav class="bottom-nav">
+    <div class="arena-text">
+      <div class="swords">⚔️</div>
 
-    <a href="home.html" class="nav-item active">
-      <span class="nav-icon">🏠</span>
-      <span>Home</span>
-    </a>
+      <div>
+        <h1>Battle <b>Arena</b></h1>
+        <p>Create or join a 2-player battle</p>
+      </div>
+    </div>
 
-    <a href="refer.html" class="nav-item">
-      <span class="nav-icon">🎁</span>
-      <span>Refer</span>
-    </a>
+    <div class="ludo-art">
+      <div class="piece red">●</div>
+      <div class="piece yellow">●</div>
+      <div class="piece green">●</div>
+      <div class="piece blue">●</div>
+      <div class="dice">⚄</div>
+    </div>
 
-    <a href="wallet.html" class="nav-item">
-      <span class="nav-icon">₹</span>
-      <span>Wallet</span>
-    </a>
+  </div>
 
-    <a href="support.html" class="nav-item">
-      <span class="nav-icon">💬</span>
-      <span>Support</span>
-    </a>
-
-    <a href="profile.html" class="nav-item">
-      <span class="nav-icon">👤</span>
-      <span>Profile</span>
-    </a>
-
-  </nav>
+</header>
 
 
-  <script src="battle.js"></script>
+<main class="container">
 
-</body>
-</html>
+
+  <!-- WELCOME -->
+
+  <section class="welcome">
+
+    <div class="welcome-photo">
+      👑
+    </div>
+
+    <div>
+      <h2>Welcome to <span>BALAJI LUDO KING</span></h2>
+
+      <p>
+        🙏 दोस्तों आपका विश्वास हमारी पहचान है।
+        <strong>Enjoy fast and fair demo battles.</strong>
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- CREATE BATTLE -->
+
+  <section class="create-card">
+
+    <div class="create-head">
+
+      <div class="battle-icon">
+        ⚔️
+      </div>
+
+      <div class="create-title">
+        <h2>Create a Battle</h2>
+        <p>Choose your demo entry amount</p>
+      </div>
+
+      <button id="rulesBtn" class="rules-open">
+        📋 Rules
+      </button>
+
+    </div>
+
+
+    <div class="amount-label">
+      <span>🪙</span
