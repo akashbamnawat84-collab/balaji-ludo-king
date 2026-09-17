@@ -1,1 +1,349 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balaji Ludo King - Result</title>
+  <link rel="stylesheet" href="result.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <button class="back-btn" id="backBtn">←</button>
+
+  <div class="brand">
+    <div class="brand-logo">👑</div>
+
+    <div>
+      <div class="brand-name">BALAJI</div>
+      <div class="brand-sub">LUDO KING</div>
+    </div>
+  </div>
+
+  <div class="online-dot"></div>
+
+</header>
+
+
+<main class="result-container">
+
+  <!-- Loading -->
+
+  <section id="loadingCard" class="card loading-card">
+
+    <div class="loading-icon">⏳</div>
+
+    <h2>Loading Match...</h2>
+
+    <p>Please wait</p>
+
+  </section>
+
+
+  <!-- Main Result -->
+
+  <section id="resultCard" class="card hidden">
+
+    <div class="page-heading">
+
+      <span class="small-title">
+        MATCH RESULT
+      </span>
+
+      <h1>Submit Result</h1>
+
+      <p>
+        Select the result of your Ludo King match.
+      </p>
+
+    </div>
+
+
+    <!-- Players -->
+
+    <div class="players-box">
+
+      <div class="player-box">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <span class="player-label">
+          PLAYER 1
+        </span>
+
+        <strong id="playerOneName">
+          Player 1
+        </strong>
+
+      </div>
+
+
+      <div class="vs">
+        VS
+      </div>
+
+
+      <div class="player-box">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <span class="player-label">
+          PLAYER 2
+        </span>
+
+        <strong id="playerTwoName">
+          Player 2
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- Match Information -->
+
+    <div class="match-info">
+
+      <div>
+        <span>Entry Fee</span>
+        <strong id="entryAmount">₹0</strong>
+      </div>
+
+      <div>
+        <span>Winning Prize</span>
+        <strong id="winningAmount">₹0</strong>
+      </div>
+
+    </div>
+
+
+    <!-- Winner Selection -->
+
+    <div class="section">
+
+      <h3>🏆 Who Won?</h3>
+
+      <button
+        class="winner-option"
+        id="playerOneBtn"
+        data-player="one">
+
+        <span class="winner-avatar">
+          👤
+        </span>
+
+        <span>
+          <small>PLAYER 1</small>
+          <b id="playerOneOption">
+            Player 1
+          </b>
+        </span>
+
+        <span class="check">
+          ✓
+        </span>
+
+      </button>
+
+
+      <button
+        class="winner-option"
+        id="playerTwoBtn"
+        data-player="two">
+
+        <span class="winner-avatar">
+          👤
+        </span>
+
+        <span>
+          <small>PLAYER 2</small>
+          <b id="playerTwoOption">
+            Player 2
+          </b>
+        </span>
+
+        <span class="check">
+          ✓
+        </span>
+
+      </button>
+
+    </div>
+
+
+    <!-- Screenshot -->
+
+    <div class="section">
+
+      <h3>📸 Match Screenshot</h3>
+
+      <p class="section-note">
+        Upload a screenshot showing the completed match result.
+      </p>
+
+      <label
+        for="screenshotInput"
+        class="upload-box"
+        id="uploadBox">
+
+        <div class="upload-icon">
+          📷
+        </div>
+
+        <strong>
+          Choose Screenshot
+        </strong>
+
+        <span>
+          JPG, PNG or WEBP
+        </span>
+
+      </label>
+
+      <input
+        type="file"
+        id="screenshotInput"
+        accept="image/png,image/jpeg,image/webp"
+        hidden>
+
+      <div
+        id="previewBox"
+        class="preview-box hidden">
+
+        <img
+          id="previewImage"
+          alt="Match Screenshot">
+
+        <button
+          type="button"
+          id="removeImageBtn">
+          ✕ Remove
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- Submit -->
+
+    <button
+      id="submitResultBtn"
+      class="submit-btn"
+      disabled>
+
+      🏆 Submit Match Result
+
+    </button>
+
+
+    <div class="warning-box">
+
+      ⚠️ <span>
+        Submit only the genuine result of your completed match.
+        The final result may be reviewed before settlement.
+      </span>
+
+    </div>
+
+
+    <div
+      id="messageBox"
+      class="message-box hidden">
+    </div>
+
+  </section>
+
+
+  <!-- Already Submitted -->
+
+  <section
+    id="submittedCard"
+    class="card submitted-card hidden">
+
+    <div class="success-icon">
+      ✅
+    </div>
+
+    <h2>Result Submitted</h2>
+
+    <p>
+      Your match result has been submitted successfully.
+    </p>
+
+    <button
+      id="backBattleBtn"
+      class="primary-btn">
+
+      Go to My Battles
+
+    </button>
+
+  </section>
+
+
+  <!-- Error -->
+
+  <section
+    id="errorCard"
+    class="card error-card hidden">
+
+    <div class="error-icon">
+      ⚠️
+    </div>
+
+    <h2>Unable to Load Match</h2>
+
+    <p id="errorMessage">
+      Match information could not be loaded.
+    </p>
+
+    <button
+      id="retryBtn"
+      class="primary-btn">
+
+      Try Again
+
+    </button>
+
+  </section>
+
+</main>
+
+
+<nav class="bottom-nav">
+
+  <a href="home.html">
+    <span>🏠</span>
+    <small>Home</small>
+  </a>
+
+  <a href="refer.html">
+    <span>👥</span>
+    <small>Refer</small>
+  </a>
+
+  <a href="wallet.html">
+    <span>💰</span>
+    <small>Wallet</small>
+  </a>
+
+  <a href="support.html">
+    <span>💬</span>
+    <small>Support</small>
+  </a>
+
+</nav>
+
+
+<script src="result.js"></script>
+
+</body>
+</html>
