@@ -54,26 +54,13 @@ function isExpired(createdAt) {
 
 /* =========================================================
    LOGIN MOBILE → CUSTOMER ID
-   FIXED VERSION
-
-   Login frontend stores:
-   balajiLogin
-   balajiMobile
-
-   Battle pages send:
-   X-Balaji-Mobile
-
-   If customer already exists → use existing ID.
-   If customer does not exist → create customer.
 ========================================================= */
 
 async function getPlayerIdFromRequest(request, env) {
 
   const mobile =
     clean(
-      request.headers.get(
-        "X-Balaji-Mobile"
-      )
+      request.headers.get("X-Balaji-Mobile")
     ).replace(/\D/g, "");
 
   if (!validMobile(mobile)) {
@@ -93,12 +80,6 @@ async function getPlayerIdFromRequest(request, env) {
   if (customer?.id) {
     return clean(customer.id);
   }
-
-
-  /* =====================================================
-     CUSTOMER DOES NOT EXIST
-     CREATE CUSTOMER FOR LOGGED-IN MOBILE
-  ===================================================== */
 
   const customerId =
     "CUS" +
@@ -159,7 +140,6 @@ async function getPlayerIdFromRequest(request, env) {
 
   } catch (error) {
 
-    /* Another request may have created it first */
     customer =
       await env.DB.prepare(`
         SELECT *
@@ -192,12 +172,6 @@ function calculateBattleCommission(amount) {
   if (!Number.isFinite(value) || value <= 0) {
     return 0;
   }
-
-  /*
-    Below 250 = 10%
-    250 to 500 = flat 25
-    Above 500 = 5%
-  */
 
   if (value < 250) {
     return Number(
@@ -403,16 +377,7 @@ function customerResponse(customer) {
 async function getRoom(env, roomCode) {
 
   return env.DB.prepare(`
-    SELECT
-      room_code,
-      player1_id,
-      player1_name,
-      player2_id,
-      player2_name,
-      status,
-      result_screenshot,
-      result_player_id,
-      created_at
+    SELECT *
     FROM rooms
     WHERE room_code = ?
   `)
@@ -578,29 +543,17 @@ async function ensureKYCTable(env) {
   await env.DB.prepare(`
     CREATE TABLE IF NOT EXISTS kyc_submissions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-
       customer_id TEXT NOT NULL,
-
       full_name TEXT NOT NULL,
-
       mobile TEXT NOT NULL,
-
       dob TEXT NOT NULL,
-
       document_type TEXT NOT NULL,
-
       document_number TEXT NOT NULL,
-
       document_file_name TEXT DEFAULT '',
-
       selfie_file_name TEXT DEFAULT '',
-
       status TEXT NOT NULL DEFAULT 'PENDING',
-
       rejection_reason TEXT DEFAULT '',
-
       submitted_at INTEGER NOT NULL,
-
       reviewed_at INTEGER
     )
   `)
@@ -616,30 +569,34 @@ async function ensureBattleTable(env) {
 
   await env.DB.prepare(`
     CREATE TABLE IF NOT EXISTS battles (
-      id TEXT PRIMARY KEY,
+      id INTEGER PRIMARY KEY,
 
       creator_id TEXT NOT NULL,
+      joiner_id TEXT,
 
       creator_name TEXT NOT NULL,
-
       opponent_id TEXT,
-
       opponent_name TEXT,
 
-      entry_amount REAL NOT NULL,
+      entry_fee REAL NOT NULL DEFAULT 0,
+      entry_amount REAL NOT NULL DEFAULT 0,
 
-      winning_prize REAL NOT NULL,
+      prize_amount REAL NOT NULL DEFAULT 0,
+      winning_prize REAL NOT NULL DEFAULT 0,
 
       commission_amount REAL NOT NULL DEFAULT 0,
 
-      status TEXT NOT NULL DEFAULT 'OPEN',
-
       room_code TEXT,
 
-      result_player_id TEXT,
+      status TEXT NOT NULL DEFAULT 'OPEN',
 
+      winner_claimed_by TEXT,
+      final_winner_id TEXT,
+
+      result_player_id TEXT,
       result_status TEXT,
 
+      screenshot_url TEXT DEFAULT '',
       result_screenshot TEXT DEFAULT '',
 
       cancel_reason TEXT DEFAULT '',
@@ -647,9 +604,7 @@ async function ensureBattleTable(env) {
       created_at INTEGER NOT NULL,
 
       joined_at INTEGER,
-
       room_ready_at INTEGER,
-
       result_submitted_at INTEGER
     )
   `)
@@ -686,12 +641,16 @@ function battleResponse(battle) {
 
     entry_amount:
       Number(
-        battle.entry_amount || 0
+        battle.entry_amount ??
+        battle.entry_fee ??
+        0
       ),
 
     winning_prize:
       Number(
-        battle.winning_prize || 0
+        battle.winning_prize ??
+        battle.prize_amount ??
+        0
       ),
 
     commission_amount:
@@ -706,13 +665,17 @@ function battleResponse(battle) {
       battle.room_code || null,
 
     result_player_id:
-      battle.result_player_id || null,
+      battle.result_player_id ||
+      battle.final_winner_id ||
+      null,
 
     result_status:
       battle.result_status || null,
 
     result_screenshot:
-      battle.result_screenshot || "",
+      battle.result_screenshot ||
+      battle.screenshot_url ||
+      "",
 
     cancel_reason:
       battle.cancel_reason || "",
@@ -782,6 +745,7 @@ export default {
       url.pathname;
 
     try {
+
 
       /* =====================================================
          ADMIN LOGIN
@@ -911,7 +875,7 @@ export default {
 
 
       /* =====================================================
-         ADMIN SESSION CHECK
+         ADMIN SESSION
       ===================================================== */
 
       if (
@@ -1074,6 +1038,7 @@ export default {
 
         }
 
+
         let existing =
           await env.DB.prepare(`
             SELECT *
@@ -1135,6 +1100,7 @@ export default {
           });
 
         }
+
 
         const customerId =
           "CUS" +
@@ -1351,13 +1317,9 @@ export default {
         if (!customerId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer ID required"
-
           }, 400);
 
         }
@@ -1374,13 +1336,9 @@ export default {
         if (!customer) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer not found"
-
           }, 404);
 
         }
@@ -1394,9 +1352,7 @@ export default {
           name ||
             customer.name ||
             "Player",
-
           email,
-
           customerId
         )
         .run();
@@ -1447,13 +1403,9 @@ export default {
         if (!customerId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer ID required"
-
           }, 400);
 
         }
@@ -1467,13 +1419,9 @@ export default {
         if (!summary) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer not found"
-
           }, 404);
 
         }
@@ -1519,13 +1467,9 @@ export default {
         if (!customerId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer ID required"
-
           }, 400);
 
         }
@@ -1537,13 +1481,9 @@ export default {
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Valid 6-digit referral code required"
-
           }, 400);
 
         }
@@ -1562,13 +1502,9 @@ export default {
         if (!customer) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Customer not found"
-
           }, 404);
 
         }
@@ -1586,13 +1522,9 @@ export default {
         if (!referrer) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Referral code not found"
-
           }, 404);
 
         }
@@ -1602,13 +1534,9 @@ export default {
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "You cannot use your own referral code"
-
           }, 400);
 
         }
@@ -1626,13 +1554,9 @@ export default {
         if (alreadyReferred) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Referral already applied"
-
           }, 409);
 
         }
@@ -1711,13 +1635,9 @@ export default {
         if (!referrerId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Referrer ID required"
-
           }, 400);
 
         }
@@ -1728,13 +1648,9 @@ export default {
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Valid amount required"
-
           }, 400);
 
         }
@@ -1753,13 +1669,9 @@ export default {
         if (!referrer) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "Referrer not found"
-
           }, 404);
 
         }
@@ -1848,20 +1760,6 @@ export default {
 
         }
 
-        const playerName =
-          clean(
-            body.player_name ||
-            body.playerName ||
-            "Player"
-          );
-
-        const amount =
-          Number(
-            body.amount ||
-            body.entry_amount ||
-            body.entryAmount
-          );
-
         if (!playerId) {
 
           return json({
@@ -1871,6 +1769,41 @@ export default {
           }, 400);
 
         }
+
+        const customer =
+          await env.DB.prepare(`
+            SELECT *
+            FROM customers
+            WHERE id = ?
+            LIMIT 1
+          `)
+          .bind(playerId)
+          .first();
+
+        if (!customer) {
+
+          return json({
+            success: false,
+            error:
+              "Customer not found"
+          }, 404);
+
+        }
+
+        const playerName =
+          clean(
+            body.player_name ||
+            body.playerName ||
+            customer.name ||
+            "Player"
+          );
+
+        const amount =
+          Number(
+            body.amount ??
+            body.entry_amount ??
+            body.entryAmount
+          );
 
         if (
           !Number.isFinite(amount) ||
@@ -1898,25 +1831,6 @@ export default {
 
         }
 
-        const customer =
-          await env.DB.prepare(`
-            SELECT *
-            FROM customers
-            WHERE id = ?
-          `)
-          .bind(playerId)
-          .first();
-
-        if (!customer) {
-
-          return json({
-            success: false,
-            error:
-              "Customer not found"
-          }, 404);
-
-        }
-
         const commission =
           calculateBattleCommission(
             amount
@@ -1927,12 +1841,17 @@ export default {
             amount
           );
 
-        const battleId =
-          "BAT" +
-          crypto.randomUUID()
-            .replace(/-/g, "")
-            .slice(0, 18)
-            .toUpperCase();
+        const lastBattle =
+          await env.DB.prepare(`
+            SELECT MAX(id) AS max_id
+            FROM battles
+          `)
+          .first();
+
+        let battleId =
+          Number(
+            lastBattle?.max_id || 0
+          ) + 1;
 
         const createdAt =
           Date.now();
@@ -1941,16 +1860,22 @@ export default {
           INSERT INTO battles (
             id,
             creator_id,
+            joiner_id,
             creator_name,
             opponent_id,
             opponent_name,
+            entry_fee,
             entry_amount,
+            prize_amount,
             winning_prize,
             commission_amount,
-            status,
             room_code,
+            status,
+            winner_claimed_by,
+            final_winner_id,
             result_player_id,
             result_status,
+            screenshot_url,
             result_screenshot,
             cancel_reason,
             created_at,
@@ -1959,18 +1884,39 @@ export default {
             result_submitted_at
           )
           VALUES (
-            ?, ?, ?, NULL, NULL, ?, ?, ?,
-            'OPEN', NULL, NULL, NULL, '', '',
-            ?, NULL, NULL, NULL
+            ?,
+            ?,
+            NULL,
+            ?,
+            NULL,
+            NULL,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            NULL,
+            'OPEN',
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            '',
+            '',
+            '',
+            ?,
+            NULL,
+            NULL,
+            NULL
           )
         `)
         .bind(
           battleId,
           playerId,
-          playerName ||
-            customer.name ||
-            "Player",
+          playerName,
           amount,
+          amount,
+          prize,
           prize,
           commission,
           createdAt
@@ -2002,7 +1948,7 @@ export default {
 
 
       /* =====================================================
-         BATTLE - OPEN LIST
+         BATTLE - OPEN
       ===================================================== */
 
       if (
@@ -2075,7 +2021,7 @@ export default {
 
 
       /* =====================================================
-         BATTLE - MY BATTLES
+         BATTLE - MY
       ===================================================== */
 
       if (
@@ -2157,7 +2103,7 @@ export default {
 
 
       /* =====================================================
-         BATTLE - GET ONE
+         BATTLE - GET
       ===================================================== */
 
       if (
@@ -2175,9 +2121,7 @@ export default {
             )
           );
 
-        if (
-          !battleId
-        ) {
+        if (!battleId) {
 
           return json({
             success: false,
@@ -2307,10 +2251,8 @@ export default {
         }
 
         if (
-          Number(
-            Date.now() -
-            Number(battle.created_at)
-          ) >=
+          Date.now() -
+          Number(battle.created_at) >=
           BATTLE_WAIT_MS
         ) {
 
@@ -2334,7 +2276,8 @@ export default {
         }
 
         if (
-          battle.creator_id === playerId
+          String(battle.creator_id) ===
+          String(playerId)
         ) {
 
           return json({
@@ -2373,6 +2316,7 @@ export default {
             SET
               opponent_id = ?,
               opponent_name = ?,
+              joiner_id = ?,
               status = 'JOINED',
               joined_at = ?
             WHERE id = ?
@@ -2384,6 +2328,7 @@ export default {
             playerName ||
               opponent.name ||
               "Player",
+            playerId,
             joinedAt,
             battleId
           )
@@ -2429,7 +2374,7 @@ export default {
 
 
       /* =====================================================
-         BATTLE - SET ROOM CODE
+         BATTLE - ROOM CODE
       ===================================================== */
 
       if (
@@ -2514,7 +2459,8 @@ export default {
         }
 
         if (
-          battle.creator_id !== playerId
+          String(battle.creator_id) !==
+          String(playerId)
         ) {
 
           return json({
@@ -2680,21 +2626,13 @@ export default {
           );
 
         const validReasons = [
-
           "No Room Code",
-
           "Not Game Start",
-
           "Not Player Join",
-
           "Opposite Error",
-
           "No Fresh ID",
-
           "No Token Open",
-
           "Other"
-
         ];
 
         if (
@@ -2741,8 +2679,10 @@ export default {
         }
 
         if (
-          battle.creator_id !== playerId &&
-          battle.opponent_id !== playerId
+          String(battle.creator_id) !==
+            String(playerId) &&
+          String(battle.opponent_id) !==
+            String(playerId)
         ) {
 
           return json({
@@ -2938,8 +2878,10 @@ export default {
         }
 
         if (
-          battle.creator_id !== playerId &&
-          battle.opponent_id !== playerId
+          String(battle.creator_id) !==
+            String(playerId) &&
+          String(battle.opponent_id) !==
+            String(playerId)
         ) {
 
           return json({
@@ -2996,25 +2938,43 @@ export default {
         const submittedAt =
           Date.now();
 
-        await env.DB.prepare(`
-          UPDATE battles
-          SET
-            result_player_id = ?,
-            result_status = ?,
-            result_screenshot = ?,
-            result_submitted_at = ?,
-            status = 'RESULT_SUBMITTED'
-          WHERE id = ?
-          AND result_status IS NULL
-        `)
-        .bind(
-          playerId,
-          resultStatus,
-          screenshot,
-          submittedAt,
-          battleId
-        )
-        .run();
+        const update =
+          await env.DB.prepare(`
+            UPDATE battles
+            SET
+              result_player_id = ?,
+              result_status = ?,
+              result_screenshot = ?,
+              screenshot_url = ?,
+              result_submitted_at = ?,
+              status = 'RESULT_SUBMITTED'
+            WHERE id = ?
+            AND result_status IS NULL
+          `)
+          .bind(
+            playerId,
+            resultStatus,
+            screenshot,
+            screenshot,
+            submittedAt,
+            battleId
+          )
+          .run();
+
+        if (
+          !update.success ||
+          Number(
+            update.meta?.changes || 0
+          ) !== 1
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Result could not be submitted"
+          }, 409);
+
+        }
 
         const updated =
           await getBattle(
@@ -3143,15 +3103,10 @@ export default {
         }
 
         const allowedDocuments = [
-
           "aadhaar",
-
           "pan",
-
           "voter",
-
           "driving-license"
-
         ];
 
         if (
@@ -3200,9 +3155,7 @@ export default {
 
         }
 
-        await ensureKYCTable(
-          env
-        );
+        await ensureKYCTable(env);
 
         const customer =
           await env.DB.prepare(`
@@ -3355,39 +3308,60 @@ export default {
 
 
       /* =====================================================
-         ADMIN API PROTECTION
+         GET CUSTOMER KYC STATUS
       ===================================================== */
 
       if (
-        path.startsWith(
-          "/api/admin/"
-        ) &&
-        path !== "/api/admin/login" &&
-        path !== "/api/admin/logout" &&
-        path !== "/api/admin/session"
+        path.startsWith("/api/kyc/") &&
+        path !== "/api/kyc/submit" &&
+        request.method === "GET"
       ) {
 
-        if (
-          !requireAdmin(request)
-        ) {
+        const customerId =
+          clean(
+            path.replace(
+              "/api/kyc/",
+              ""
+            )
+          );
+
+        if (!customerId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Admin authentication required"
-
-          }, 401);
+              "Customer ID required"
+          }, 400);
 
         }
+
+        await ensureKYCTable(env);
+
+        const kyc =
+          await env.DB.prepare(`
+            SELECT *
+            FROM kyc_submissions
+            WHERE customer_id = ?
+            ORDER BY id DESC
+            LIMIT 1
+          `)
+          .bind(customerId)
+          .first();
+
+        return json({
+
+          success: true,
+
+          kyc:
+            kyc || null
+
+        });
 
       }
 
 
       /* =====================================================
-         ADMIN - PENDING KYC
+         ADMIN - KYC PENDING
       ===================================================== */
 
       if (
@@ -3395,24 +3369,21 @@ export default {
         request.method === "GET"
       ) {
 
-        await ensureKYCTable(
-          env
-        );
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
+
+        await ensureKYCTable(env);
 
         const result =
           await env.DB.prepare(`
-            SELECT
-              id,
-              customer_id,
-              full_name,
-              mobile,
-              dob,
-              document_type,
-              document_number,
-              document_file_name,
-              selfie_file_name,
-              status,
-              submitted_at
+            SELECT *
             FROM kyc_submissions
             WHERE status = 'PENDING'
             ORDER BY submitted_at DESC
@@ -3427,7 +3398,7 @@ export default {
           count:
             result.results?.length || 0,
 
-          kyc:
+          kycs:
             result.results || []
 
         });
@@ -3444,28 +3415,24 @@ export default {
         request.method === "GET"
       ) {
 
-        await ensureKYCTable(
-          env
-        );
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
+
+        await ensureKYCTable(env);
 
         const result =
           await env.DB.prepare(`
-            SELECT
-              id,
-              customer_id,
-              full_name,
-              mobile,
-              dob,
-              document_type,
-              document_number,
-              document_file_name,
-              selfie_file_name,
-              status,
-              rejection_reason,
-              submitted_at,
-              reviewed_at
+            SELECT *
             FROM kyc_submissions
             ORDER BY submitted_at DESC
+            LIMIT 500
           `)
           .all();
 
@@ -3477,7 +3444,7 @@ export default {
           count:
             result.results?.length || 0,
 
-          kyc:
+          kycs:
             result.results || []
 
         });
@@ -3486,7 +3453,7 @@ export default {
 
 
       /* =====================================================
-         ADMIN - APPROVE KYC
+         ADMIN - KYC APPROVE
       ===================================================== */
 
       if (
@@ -3494,38 +3461,37 @@ export default {
         request.method === "POST"
       ) {
 
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
+
+        await ensureKYCTable(env);
+
         const body =
           await request.json();
 
         const kycId =
-          Number(
+          clean(
             body.kyc_id ||
             body.kycId ||
             body.id
           );
 
-        if (
-          !Number.isInteger(
-            kycId
-          ) ||
-          kycId <= 0
-        ) {
+        if (!kycId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Valid KYC ID required"
-
+              "KYC ID required"
           }, 400);
 
         }
-
-        await ensureKYCTable(
-          env
-        );
 
         const kyc =
           await env.DB.prepare(`
@@ -3539,29 +3505,22 @@ export default {
         if (!kyc) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "KYC submission not found"
-
           }, 404);
 
         }
 
         if (
-          kyc.status !== "PENDING"
+          String(kyc.status).toUpperCase() !==
+          "PENDING"
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "KYC is already reviewed"
-
+              "This KYC has already been reviewed"
           }, 409);
 
         }
@@ -3576,6 +3535,7 @@ export default {
             rejection_reason = '',
             reviewed_at = ?
           WHERE id = ?
+          AND status = 'PENDING'
         `)
         .bind(
           reviewedAt,
@@ -3593,6 +3553,15 @@ export default {
         )
         .run();
 
+        const updated =
+          await env.DB.prepare(`
+            SELECT *
+            FROM kyc_submissions
+            WHERE id = ?
+          `)
+          .bind(kycId)
+          .first();
+
         return json({
 
           success:
@@ -3601,11 +3570,8 @@ export default {
           message:
             "KYC approved successfully",
 
-          kyc_id:
-            kycId,
-
-          status:
-            "APPROVED"
+          kyc:
+            updated
 
         });
 
@@ -3613,7 +3579,7 @@ export default {
 
 
       /* =====================================================
-         ADMIN - REJECT KYC
+         ADMIN - KYC REJECT
       ===================================================== */
 
       if (
@@ -3621,11 +3587,23 @@ export default {
         request.method === "POST"
       ) {
 
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
+
+        await ensureKYCTable(env);
+
         const body =
           await request.json();
 
         const kycId =
-          Number(
+          clean(
             body.kyc_id ||
             body.kycId ||
             body.id
@@ -3635,31 +3613,18 @@ export default {
           clean(
             body.reason ||
             body.rejection_reason ||
-            "KYC rejected"
+            "KYC rejected by Admin"
           );
 
-        if (
-          !Number.isInteger(
-            kycId
-          ) ||
-          kycId <= 0
-        ) {
+        if (!kycId) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "Valid KYC ID required"
-
+              "KYC ID required"
           }, 400);
 
         }
-
-        await ensureKYCTable(
-          env
-        );
 
         const kyc =
           await env.DB.prepare(`
@@ -3673,29 +3638,22 @@ export default {
         if (!kyc) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
               "KYC submission not found"
-
           }, 404);
 
         }
 
         if (
-          kyc.status !== "PENDING"
+          String(kyc.status).toUpperCase() !==
+          "PENDING"
         ) {
 
           return json({
-
-            success:
-              false,
-
+            success: false,
             error:
-              "KYC is already reviewed"
-
+              "This KYC has already been reviewed"
           }, 409);
 
         }
@@ -3710,6 +3668,7 @@ export default {
             rejection_reason = ?,
             reviewed_at = ?
           WHERE id = ?
+          AND status = 'PENDING'
         `)
         .bind(
           reason,
@@ -3728,6 +3687,15 @@ export default {
         )
         .run();
 
+        const updated =
+          await env.DB.prepare(`
+            SELECT *
+            FROM kyc_submissions
+            WHERE id = ?
+          `)
+          .bind(kycId)
+          .first();
+
         return json({
 
           success:
@@ -3736,13 +3704,8 @@ export default {
           message:
             "KYC rejected successfully",
 
-          kyc_id:
-            kycId,
-
-          status:
-            "REJECTED",
-
-          reason
+          kyc:
+            updated
 
         });
 
@@ -3750,7 +3713,7 @@ export default {
 
 
       /* =====================================================
-         ADMIN - BATTLE LIST
+         ADMIN - BATTLES
       ===================================================== */
 
       if (
@@ -3758,16 +3721,50 @@ export default {
         request.method === "GET"
       ) {
 
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
+
         await ensureBattleTable(env);
 
-        const result =
-          await env.DB.prepare(`
-            SELECT *
-            FROM battles
-            ORDER BY created_at DESC
-            LIMIT 200
-          `)
-          .all();
+        const status =
+          clean(
+            url.searchParams.get("status")
+          ).toUpperCase();
+
+        let result;
+
+        if (status) {
+
+          result =
+            await env.DB.prepare(`
+              SELECT *
+              FROM battles
+              WHERE status = ?
+              ORDER BY created_at DESC
+              LIMIT 500
+            `)
+            .bind(status)
+            .all();
+
+        } else {
+
+          result =
+            await env.DB.prepare(`
+              SELECT *
+              FROM battles
+              ORDER BY created_at DESC
+              LIMIT 500
+            `)
+            .all();
+
+        }
 
         return json({
 
@@ -3790,13 +3787,23 @@ export default {
 
 
       /* =====================================================
-         ADMIN - BATTLE FINAL DECISION
+         ADMIN - BATTLE DECISION
       ===================================================== */
 
       if (
         path === "/api/admin/battles/decision" &&
         request.method === "POST"
       ) {
+
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
 
         await ensureBattleTable(env);
 
@@ -3812,19 +3819,24 @@ export default {
         const decision =
           clean(
             body.decision ||
+            body.result ||
             body.status
           ).toUpperCase();
 
-        const winnerPlayerId =
+        const winnerId =
           clean(
-            body.winner_player_id ||
-            body.winnerPlayerId ||
-            body.player_id
+            body.winner_id ||
+            body.winnerId ||
+            body.result_player_id
           );
 
-        if (
-          !battleId
-        ) {
+        const reason =
+          clean(
+            body.reason ||
+            body.cancel_reason
+          );
+
+        if (!battleId) {
 
           return json({
             success: false,
@@ -3836,6 +3848,9 @@ export default {
 
         if (
           ![
+            "WIN",
+            "LOSS",
+            "CANCEL",
             "FINAL_WIN",
             "FINAL_LOSS",
             "FINAL_CANCEL"
@@ -3847,7 +3862,7 @@ export default {
           return json({
             success: false,
             error:
-              "Invalid Admin decision"
+              "Valid Admin decision required"
           }, 400);
 
         }
@@ -3869,6 +3884,30 @@ export default {
         }
 
         if (
+          [
+            "FINAL_WIN",
+            "FINAL_LOSS",
+            "FINAL_CANCEL"
+          ].includes(
+            battle.status
+          )
+        ) {
+
+          return json({
+            success: false,
+            error:
+              "Battle has already received a final decision"
+          }, 409);
+
+        }
+
+
+        /* =================================================
+           FINAL CANCEL
+        ================================================= */
+
+        if (
+          decision === "CANCEL" ||
           decision === "FINAL_CANCEL"
         ) {
 
@@ -3876,57 +3915,167 @@ export default {
             UPDATE battles
             SET
               status = 'FINAL_CANCEL',
-              result_status = 'CANCELLED'
+              result_status = 'CANCELLED',
+              cancel_reason = ?,
+              result_submitted_at = ?
             WHERE id = ?
           `)
           .bind(
+            reason ||
+              "Cancelled by Admin",
+            Date.now(),
             battleId
           )
           .run();
 
+          if (
+            battle.room_code
+          ) {
+
+            await env.DB.prepare(`
+              UPDATE rooms
+              SET status = 'CANCELLED'
+              WHERE room_code = ?
+            `)
+            .bind(
+              battle.room_code
+            )
+            .run();
+
+          }
+
         } else {
 
-          if (
-            !winnerPlayerId
-          ) {
+          if (!winnerId) {
 
             return json({
               success: false,
               error:
-                "Winner Player ID required"
+                "Winner player ID required"
             }, 400);
 
           }
 
-          if (
-            winnerPlayerId !==
-              battle.creator_id &&
-            winnerPlayerId !==
+          const isCreator =
+            String(
+              battle.creator_id
+            ) ===
+            String(
+              winnerId
+            );
+
+          const isOpponent =
+            String(
               battle.opponent_id
+            ) ===
+            String(
+              winnerId
+            );
+
+          if (
+            !isCreator &&
+            !isOpponent
           ) {
 
             return json({
               success: false,
               error:
-                "Winner is not part of this Battle"
+                "Winner must be a player from this Battle"
             }, 400);
 
           }
+
+          const finalStatus =
+            decision === "FINAL_LOSS"
+              ? "FINAL_LOSS"
+              : "FINAL_WIN";
 
           await env.DB.prepare(`
             UPDATE battles
             SET
               status = ?,
               result_player_id = ?,
-              result_status = 'FINAL'
+              result_status = 'WON',
+              final_winner_id = ?,
+              winner_claimed_by = ?,
+              result_submitted_at = ?
             WHERE id = ?
           `)
           .bind(
-            decision,
-            winnerPlayerId,
+            finalStatus,
+            winnerId,
+            winnerId,
+            winnerId,
+            Date.now(),
             battleId
           )
           .run();
+
+          const prize =
+            Number(
+              battle.winning_prize ||
+              battle.prize_amount ||
+              0
+            );
+
+          if (prize > 0) {
+
+            const winner =
+              await env.DB.prepare(`
+                SELECT *
+                FROM customers
+                WHERE id = ?
+              `)
+              .bind(
+                winnerId
+              )
+              .first();
+
+            if (winner) {
+
+              await env.DB.prepare(`
+                UPDATE customers
+                SET
+                  wallet_balance =
+                    COALESCE(wallet_balance, 0) + ?,
+                  coin_won =
+                    COALESCE(coin_won, 0) + ?,
+                  battle_played =
+                    COALESCE(battle_played, 0) + 1
+                WHERE id = ?
+              `)
+              .bind(
+                prize,
+                prize,
+                winnerId
+              )
+              .run();
+
+            }
+
+          }
+
+          const loserId =
+            String(winnerId) ===
+            String(battle.creator_id)
+              ? battle.opponent_id
+              : battle.creator_id;
+
+          if (loserId) {
+
+            await env.DB.prepare(`
+              UPDATE customers
+              SET
+                battle_played =
+                  COALESCE(battle_played, 0) + 1
+              WHERE id = ?
+            `)
+            .bind(
+              loserId
+            )
+            .run();
+
+          }
 
         }
 
@@ -3942,11 +4091,130 @@ export default {
             true,
 
           message:
-            "Admin final decision saved",
+            "Admin battle decision saved successfully",
 
           battle:
             battleResponse(
               updated
+            )
+
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN - CUSTOMER LIST
+      ===================================================== */
+
+      if (
+        path === "/api/admin/customers" &&
+        request.method === "GET"
+      ) {
+
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
+
+        const result =
+          await env.DB.prepare(`
+            SELECT *
+            FROM customers
+            ORDER BY created_at DESC
+            LIMIT 500
+          `)
+          .all();
+
+        return json({
+
+          success:
+            true,
+
+          count:
+            result.results?.length || 0,
+
+          customers:
+            (
+              result.results || []
+            ).map(
+              customerResponse
+            )
+
+        });
+
+      }
+
+
+      /* =====================================================
+         ADMIN - CUSTOMER ONE
+      ===================================================== */
+
+      if (
+        path.startsWith("/api/admin/customer/") &&
+        request.method === "GET"
+      ) {
+
+        if (!requireAdmin(request)) {
+
+          return json({
+            success: false,
+            error:
+              "Admin authentication required"
+          }, 401);
+
+        }
+
+        const customerId =
+          clean(
+            path.replace(
+              "/api/admin/customer/",
+              ""
+            )
+          );
+
+        if (!customerId) {
+
+          return json({
+            success: false,
+            error:
+              "Customer ID required"
+          }, 400);
+
+        }
+
+        const customer =
+          await env.DB.prepare(`
+            SELECT *
+            FROM customers
+            WHERE id = ?
+          `)
+          .bind(customerId)
+          .first();
+
+        if (!customer) {
+
+          return json({
+            success: false,
+            error:
+              "Customer not found"
+          }, 404);
+
+        }
+
+        return json({
+
+          success:
+            true,
+
+          customer:
+            customerResponse(
+              customer
             )
 
         });
@@ -3980,11 +4248,30 @@ export default {
 
 
       /* =====================================================
-         STATIC WEBSITE FILES
+         STATIC ASSETS
       ===================================================== */
 
-      return env.ASSETS.fetch(
-        request
+      if (
+        env.ASSETS
+      ) {
+
+        return env.ASSETS.fetch(
+          request
+        );
+
+      }
+
+
+      return new Response(
+        "Balaji Ludo King Worker is running.",
+        {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            "Content-Type":
+              "text/plain; charset=UTF-8"
+          }
+        }
       );
 
 
@@ -4002,7 +4289,7 @@ export default {
 
         error:
           error?.message ||
-          "Server Error"
+          "Internal Server Error"
 
       }, 500);
 
