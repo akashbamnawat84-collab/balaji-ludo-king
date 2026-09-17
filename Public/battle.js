@@ -1,19 +1,17 @@
-// =========================================================
-// BALAJI LUDO KING
-// BATTLE FRONTEND
-// Connected with Cloudflare Worker API
-// =========================================================
+// ==========================================
+// BALAJI LUDO KING - BATTLE SYSTEM
+// CLOUDflare API VERSION
+// DEMO COINS ONLY
+// ==========================================
 
 const API_BASE = "";
 
 const MIN_BET = 50;
 const MAX_BET = 10000;
-const BATTLE_WAIT_MS = 5 * 60 * 1000;
 
-
-// =========================================================
+// ------------------------------------------
 // ELEMENTS
-// =========================================================
+// ------------------------------------------
 
 const amountInput =
   document.getElementById("amountInput");
@@ -24,10 +22,10 @@ const setBattleBtn =
 const amountMessage =
   document.getElementById("amountMessage");
 
-const openBattles =
+const openBattlesContainer =
   document.getElementById("openBattles");
 
-const runningBattles =
+const runningBattlesContainer =
   document.getElementById("runningBattles");
 
 const rulesBtn =
@@ -43,223 +41,82 @@ const understandBtn =
   document.getElementById("understandBtn");
 
 
-// =========================================================
-// LOGIN TOKEN
-// =========================================================
-
-function getToken() {
-
-  return (
-    localStorage.getItem("balajiToken") ||
-    localStorage.getItem("token") ||
-    localStorage.getItem("authToken") ||
-    ""
-  );
-
-}
-
-
-// =========================================================
-// CUSTOMER ID
-// =========================================================
-
-function getCustomerId() {
-
-  return (
-    localStorage.getItem("balajiCustomerId") ||
-    localStorage.getItem("customerId") ||
-    localStorage.getItem("userId") ||
-    ""
-  );
-
-}
-
-
-// =========================================================
-// MOBILE NUMBER
-// IMPORTANT: LOGIN STORES balajiMobile
-// =========================================================
-
-function getMobile() {
-
-  const mobile =
-    localStorage.getItem("balajiMobile") ||
-    localStorage.getItem("mobileNumber") ||
-    localStorage.getItem("mobile") ||
-    "";
-
-  return String(mobile)
-    .replace(/\D/g, "")
-    .slice(-10);
-
-}
-
-
-// =========================================================
-// PLAYER NAME
-// =========================================================
+// ------------------------------------------
+// PLAYER
+// ------------------------------------------
 
 function getPlayerName() {
 
   return (
     localStorage.getItem("balajiPlayerName") ||
     localStorage.getItem("playerName") ||
-    localStorage.getItem("customerName") ||
     "Customer"
   );
 
 }
 
 
-// =========================================================
-// LOGIN CHECK
-// =========================================================
+// ------------------------------------------
+// CUSTOMER ID
+// ------------------------------------------
 
-function isPlayerLoggedIn() {
-
-  const login =
-    localStorage.getItem("balajiLogin");
-
-  const mobile =
-    getMobile();
+function getCustomerId() {
 
   return (
-    login === "true" &&
-    mobile.length === 10
+    localStorage.getItem("balajiCustomerId") ||
+    localStorage.getItem("customerId") ||
+    localStorage.getItem("balaji_customer_id") ||
+    ""
   );
 
 }
 
 
-// =========================================================
-// MONEY
-// =========================================================
+// ------------------------------------------
+// MOBILE
+// ------------------------------------------
 
-function money(value) {
+function getMobile() {
 
-  const number =
-    Number(value || 0);
-
-  return number.toLocaleString(
-    "en-IN",
-    {
-      maximumFractionDigits: 2
-    }
+  return (
+    localStorage.getItem("balajiMobile") ||
+    localStorage.getItem("mobile") ||
+    localStorage.getItem("customerMobile") ||
+    ""
   );
 
 }
 
 
-// =========================================================
-// ESCAPE HTML
-// =========================================================
+// ------------------------------------------
+// API HELPER
+// ------------------------------------------
 
-function escapeHtml(value) {
-
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-// =========================================================
-// MESSAGE
-// =========================================================
-
-function showMessage(
-  message,
-  success = false
-) {
-
-  if (!amountMessage) {
-    return;
-  }
-
-  amountMessage.textContent =
-    message;
-
-  amountMessage.style.color =
-    success
-      ? "#15803d"
-      : "#dc2626";
-
-}
-
-
-// =========================================================
-// API
-// =========================================================
-
-async function api(
-  path,
+async function apiRequest(
+  url,
   options = {}
 ) {
 
   const headers = {
-
-    "Content-Type":
-      "application/json",
-
+    "Content-Type": "application/json",
+    "X-Balaji-Mobile": getMobile(),
     ...(options.headers || {})
-
   };
-
-
-  // -------------------------------------------------------
-  // TOKEN
-  // -------------------------------------------------------
-
-  const token =
-    getToken();
-
-  if (token) {
-
-    headers.Authorization =
-      "Bearer " + token;
-
-  }
-
-
-  // -------------------------------------------------------
-  // MOBILE
-  // Worker uses this to find customer ID
-  // -------------------------------------------------------
-
-  const mobile =
-    getMobile();
-
-  if (mobile) {
-
-    headers["X-Balaji-Mobile"] =
-      mobile;
-
-  }
-
-
-  // -------------------------------------------------------
-  // REQUEST
-  // -------------------------------------------------------
 
   const response =
     await fetch(
-      API_BASE + path,
+      API_BASE + url,
       {
         ...options,
         headers
       }
     );
 
-
   let data = {};
 
   try {
 
-    data =
-      await response.json();
+    data = await response.json();
 
   } catch (error) {
 
@@ -267,48 +124,126 @@ async function api(
 
   }
 
-
   if (!response.ok) {
 
     throw new Error(
-      data.error ||
       data.message ||
-      "Something went wrong."
+      data.error ||
+      "Server request failed"
     );
 
   }
-
 
   return data;
 
 }
 
 
-// =========================================================
+// ------------------------------------------
+// NORMALIZE BATTLE
+// ------------------------------------------
+
+function normalizeBattle(battle) {
+
+  if (!battle) return null;
+
+  const entry =
+    Number(
+      battle.entry_amount ??
+      battle.entry_fee ??
+      battle.entry ??
+      0
+    );
+
+  const prize =
+    Number(
+      battle.winning_prize ??
+      battle.prize_amount ??
+      battle.prize ??
+      Math.round(entry * 1.9)
+    );
+
+  const player1 =
+    battle.creator_name ||
+    battle.player1 ||
+    battle.creatorName ||
+    "Player 1";
+
+  const player2 =
+    battle.opponent_name ||
+    battle.player2 ||
+    battle.opponentName ||
+    "";
+
+  const roomCode =
+    battle.room_code ||
+    battle.roomCode ||
+    "";
+
+  const status =
+    String(
+      battle.status ||
+      "OPEN"
+    ).toUpperCase();
+
+  return {
+
+    id:
+      battle.id,
+
+    player1:
+      player1,
+
+    player2:
+      player2,
+
+    entry:
+      entry,
+
+    prize:
+      prize,
+
+    roomCode:
+      roomCode,
+
+    status:
+      status,
+
+    creatorId:
+      battle.creator_id ||
+      "",
+
+    opponentId:
+      battle.opponent_id ||
+      battle.joiner_id ||
+      "",
+
+    resultStatus:
+      battle.result_status ||
+      "",
+
+    createdAt:
+      battle.created_at ||
+      battle.createdAt ||
+      Date.now(),
+
+    raw:
+      battle
+
+  };
+
+}
+
+
+// ------------------------------------------
 // CREATE BATTLE
-// =========================================================
+// ------------------------------------------
 
 if (setBattleBtn) {
 
   setBattleBtn.addEventListener(
     "click",
     async function () {
-
-
-      // ---------------------------------------------------
-      // LOGIN
-      // ---------------------------------------------------
-
-      if (!isPlayerLoggedIn()) {
-
-        showMessage(
-          "❌ Player login required."
-        );
-
-        return;
-
-      }
-
 
       const amount =
         Number(
@@ -317,60 +252,44 @@ if (setBattleBtn) {
             : 0
         );
 
-
-      // ---------------------------------------------------
-      // AMOUNT REQUIRED
-      // ---------------------------------------------------
-
       if (!amount) {
 
         showMessage(
-          "❌ Please enter battle amount."
+          "कृपया Battle Amount डालें।",
+          true
         );
 
         return;
 
       }
-
-
-      // ---------------------------------------------------
-      // MINIMUM
-      // ---------------------------------------------------
 
       if (amount < MIN_BET) {
 
         showMessage(
-          "❌ Minimum Battle is 50 BALAJI LUDO Coin."
+          "Minimum Battle 50 Demo Coins है।",
+          true
         );
 
         return;
 
       }
-
-
-      // ---------------------------------------------------
-      // MAXIMUM
-      // ---------------------------------------------------
 
       if (amount > MAX_BET) {
 
         showMessage(
-          "❌ Maximum Battle is 10000 BALAJI LUDO Coin."
+          "Maximum Battle 10,000 Demo Coins है।",
+          true
         );
 
         return;
 
       }
-
-
-      // ---------------------------------------------------
-      // MULTIPLE OF 50
-      // ---------------------------------------------------
 
       if (amount % 50 !== 0) {
 
         showMessage(
-          "❌ Amount must be in multiples of 50."
+          "Amount 50, 100, 150, 200... में होना चाहिए।",
+          true
         );
 
         return;
@@ -378,67 +297,37 @@ if (setBattleBtn) {
       }
 
 
-      // ---------------------------------------------------
-      // BUTTON
-      // ---------------------------------------------------
-
-      setBattleBtn.disabled =
-        true;
+      setBattleBtn.disabled = true;
 
       setBattleBtn.textContent =
-        "Creating...";
+        "Creating Battle...";
 
 
       try {
 
-
-        const mobile =
-          getMobile();
-
-        const customerId =
-          getCustomerId();
-
-        const playerName =
-          getPlayerName();
-
-
-        // -------------------------------------------------
-        // CREATE REQUEST
-        // -------------------------------------------------
-
         const data =
-          await api(
+          await apiRequest(
             "/api/battles/create",
             {
-
               method: "POST",
 
               body:
                 JSON.stringify({
 
-                  amount:
+                  customer_id:
+                    getCustomerId(),
+
+                  creator_id:
+                    getCustomerId(),
+
+                  creator_name:
+                    getPlayerName(),
+
+                  entry_amount:
                     amount,
 
-                  player_id:
-                    customerId,
-
-                  playerId:
-                    customerId,
-
-                  customer_id:
-                    customerId,
-
-                  customerId:
-                    customerId,
-
-                  mobile:
-                    mobile,
-
-                  name:
-                    playerName,
-
-                  player_name:
-                    playerName
+                  entry_fee:
+                    amount
 
                 })
 
@@ -446,82 +335,58 @@ if (setBattleBtn) {
           );
 
 
-        // -------------------------------------------------
-        // CLEAR AMOUNT
-        // -------------------------------------------------
-
-        if (amountInput) {
-
-          amountInput.value =
-            "";
-
-        }
-
-
-        // -------------------------------------------------
-        // SUCCESS
-        // -------------------------------------------------
-
-        showMessage(
-          "✅ Battle created successfully.",
-          true
-        );
-
-
-        // -------------------------------------------------
-        // SAVE BATTLE
-        // -------------------------------------------------
-
         const battle =
-          data.battle ||
-          data.data ||
-          data;
+          normalizeBattle(
+            data.battle ||
+            data
+          );
 
 
-        if (
-          battle &&
-          battle.id
-        ) {
+        if (battle) {
 
           localStorage.setItem(
-            "balajiSelectedBattle",
+            "balajiCurrentBattle",
             JSON.stringify(battle)
           );
 
-          localStorage.setItem(
-            "balajiBattleId",
-            battle.id
-          );
+        }
+
+
+        if (amountInput) {
+
+          amountInput.value = "";
 
         }
 
 
-        // -------------------------------------------------
-        // REFRESH
-        // -------------------------------------------------
+        showMessage(
+          `${amount} Demo Coins की Battle successfully create हो गई।`
+        );
 
-        await loadOpenBattles();
 
-        await loadMyBattles();
+        await loadBattles();
 
 
       } catch (error) {
 
-        showMessage(
-          "❌ " +
-          error.message
+        console.error(
+          "CREATE BATTLE ERROR:",
+          error
         );
 
-
-      } finally {
-
-        setBattleBtn.disabled =
-          false;
-
-        setBattleBtn.textContent =
-          "Set Battle";
+        showMessage(
+          error.message ||
+          "Battle create नहीं हो सकी।",
+          true
+        );
 
       }
+
+
+      setBattleBtn.disabled = false;
+
+      setBattleBtn.textContent =
+        "Set Battle";
 
     }
   );
@@ -529,280 +394,242 @@ if (setBattleBtn) {
 }
 
 
-// =========================================================
-// LOAD OPEN BATTLES
-// =========================================================
+// ------------------------------------------
+// LOAD OPEN + RUNNING BATTLES
+// ------------------------------------------
 
-async function loadOpenBattles() {
-
-  if (!openBattles) {
-    return;
-  }
-
-
-  openBattles.innerHTML = `
-
-    <div class="empty-battle">
-
-      <div class="empty-icon">
-        ⏳
-      </div>
-
-      <h3>
-        Loading Battles...
-      </h3>
-
-      <p>
-        Please wait.
-      </p>
-
-    </div>
-
-  `;
-
+async function loadBattles() {
 
   try {
 
-    const data =
-      await api(
+    const openData =
+      await apiRequest(
         "/api/battles/open"
       );
 
 
-    const battles =
-      Array.isArray(data)
-        ? data
-        : (
-            data.battles ||
-            data.data ||
-            []
-          );
+    const openList =
+      Array.isArray(
+        openData.battles
+      )
+        ? openData.battles
+        : Array.isArray(openData)
+          ? openData
+          : [];
+
+
+    const normalizedOpen =
+      openList
+        .map(normalizeBattle)
+        .filter(Boolean);
 
 
     renderOpenBattles(
-      battles
+      normalizedOpen
     );
 
 
   } catch (error) {
 
-    openBattles.innerHTML = `
+    console.error(
+      "OPEN BATTLES ERROR:",
+      error
+    );
 
-      <div class="empty-battle">
+    renderOpenBattles([]);
 
-        <div class="empty-icon">
-          ⚠️
-        </div>
+  }
 
-        <h3>
-          Unable to Load Battles
-        </h3>
 
-        <p>
-          ${escapeHtml(
-            error.message
-          )}
-        </p>
+  try {
 
-      </div>
+    const myData =
+      await apiRequest(
+        "/api/battles/my?customer_id=" +
+        encodeURIComponent(
+          getCustomerId()
+        )
+      );
 
-    `;
+
+    const myList =
+      Array.isArray(
+        myData.battles
+      )
+        ? myData.battles
+        : Array.isArray(myData)
+          ? myData
+          : [];
+
+
+    const normalizedRunning =
+      myList
+        .map(normalizeBattle)
+        .filter(function (battle) {
+
+          return (
+            battle.status === "JOINED" ||
+            battle.status === "READY" ||
+            battle.status === "RUNNING" ||
+            battle.status === "RESULT_SUBMITTED"
+          );
+
+        });
+
+
+    renderRunningBattles(
+      normalizedRunning
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "MY BATTLES ERROR:",
+      error
+    );
+
+    renderRunningBattles([]);
 
   }
 
 }
 
 
-// =========================================================
+// ------------------------------------------
 // RENDER OPEN BATTLES
-// =========================================================
+// ------------------------------------------
 
 function renderOpenBattles(
-  battles
+  battles = []
 ) {
 
-  if (!openBattles) {
+  if (!openBattlesContainer)
     return;
-  }
 
 
-  if (!battles.length) {
+  openBattlesContainer.innerHTML =
+    "";
 
-    openBattles.innerHTML = `
 
+  if (
+    !battles.length
+  ) {
+
+    openBattlesContainer.innerHTML = `
       <div class="empty-battle">
-
-        <div class="empty-icon">
-          🎮
-        </div>
-
-        <h3>
-          No Open Battles
-        </h3>
-
-        <p>
-          Create a Battle and wait for another player.
-        </p>
-
+        अभी कोई Open Battle नहीं है।
       </div>
-
     `;
 
     return;
 
   }
-
-
-  let html = "";
 
 
   battles.forEach(
     function (battle) {
 
-
-      const id =
-        battle.id ||
-        "";
-
-
-      const playerName =
-        battle.creator_name ||
-        battle.playerName ||
-        battle.name ||
-        "Customer";
-
-
-      const entry =
-        Number(
-          battle.entry_amount ||
-          battle.entry ||
-          0
+      const card =
+        document.createElement(
+          "div"
         );
 
 
-      const prize =
-        Number(
-          battle.winning_prize ||
-          battle.prize ||
-          0
-        );
+      card.className =
+        "battle-card";
 
 
-      const createdAt =
-        Number(
-          battle.created_at ||
-          battle.createdAt ||
-          Date.now()
-        );
+      card.innerHTML = `
 
+        <div class="battle-title">
+          Challenge From
+        </div>
 
-      const timeLeft =
-        getTimeLeft(
-          createdAt
-        );
+        <div class="challenger-name">
+          ${escapeHTML(
+            battle.player1
+          )}
+        </div>
 
+        <div class="battle-info">
 
-      html += `
+          <div>
+            <span>ENTRY FEE</span>
 
-        <div class="battle-card">
-
-          <div class="battle-header">
-
-            <span class="live-badge">
-              ● LIVE
-            </span>
-
-            <span class="battle-time">
-              ⏱ ${timeLeft}
-            </span>
-
+            <strong>
+              ${battle.entry}
+              Demo Coins
+            </strong>
           </div>
 
+          <div>
+            <span>PRIZE</span>
 
-          <div class="challenge-title">
-            Challenge From
-          </div>
-
-
-          <div class="player-name">
-            👤 ${escapeHtml(
-              playerName
-            )}
-          </div>
-
-
-          <div class="battle-details">
-
-            <div>
-
-              <span>
-                Entry
-              </span>
-
-              <strong>
-                ${money(entry)}
-                BALAJI LUDO Coin
-              </strong>
-
-            </div>
-
-
-            <div>
-
-              <span>
-                Winning Prize
-              </span>
-
-              <strong>
-                ${money(prize)}
-                BALAJI LUDO Coin
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            class="play-battle-btn"
-            onclick="joinBattle('${escapeHtml(id)}')"
-          >
-            ▶ Play
-          </button>
-
-
-          <div class="demo-label">
-            Play in Ludo King App
+            <strong>
+              ${battle.prize}
+              Demo Coins
+            </strong>
           </div>
 
         </div>
 
+        <button
+          type="button"
+          class="play-battle-btn"
+          data-battle-id="${escapeHTML(
+            battle.id
+          )}"
+        >
+          Play
+        </button>
+
       `;
+
+
+      const playButton =
+        card.querySelector(
+          ".play-battle-btn"
+        );
+
+
+      if (playButton) {
+
+        playButton.addEventListener(
+          "click",
+          function () {
+
+            joinBattle(
+              battle.id
+            );
+
+          }
+        );
+
+      }
+
+
+      openBattlesContainer
+        .appendChild(card);
 
     }
   );
 
-
-  openBattles.innerHTML =
-    html;
-
 }
 
 
-// =========================================================
+// ------------------------------------------
 // JOIN BATTLE
-// =========================================================
+// ------------------------------------------
 
 async function joinBattle(
   battleId
 ) {
 
-
   if (!battleId) {
 
     alert(
-      "Battle ID missing."
+      "Battle ID नहीं मिला।"
     );
 
     return;
@@ -810,28 +637,18 @@ async function joinBattle(
   }
 
 
-  // -------------------------------------------------------
-  // LOGIN
-  // -------------------------------------------------------
+  const customerId =
+    getCustomerId();
 
-  if (!isPlayerLoggedIn()) {
+
+  if (!customerId) {
 
     alert(
-      "❌ Player login required."
+      "पहले Login करें।"
     );
 
-    return;
-
-  }
-
-
-  const confirmed =
-    confirm(
-      "Do you want to join this Battle?"
-    );
-
-
-  if (!confirmed) {
+    window.location.href =
+      "login/";
 
     return;
 
@@ -840,18 +657,8 @@ async function joinBattle(
 
   try {
 
-    const mobile =
-      getMobile();
-
-    const customerId =
-      getCustomerId();
-
-    const playerName =
-      getPlayerName();
-
-
     const data =
-      await api(
+      await apiRequest(
         "/api/battles/join",
         {
 
@@ -860,32 +667,20 @@ async function joinBattle(
           body:
             JSON.stringify({
 
-              battleId:
-                battleId,
-
               battle_id:
                 battleId,
-
-              player_id:
-                customerId,
-
-              playerId:
-                customerId,
 
               customer_id:
                 customerId,
 
-              customerId:
+              opponent_id:
                 customerId,
 
-              mobile:
-                mobile,
+              opponent_name:
+                getPlayerName(),
 
-              name:
-                playerName,
-
-              player_name:
-                playerName
+              joiner_id:
+                customerId
 
             })
 
@@ -894,27 +689,40 @@ async function joinBattle(
 
 
     const battle =
-      data.battle ||
-      data.data ||
-      data;
-
-
-    if (battle) {
-
-      localStorage.setItem(
-        "balajiSelectedBattle",
-        JSON.stringify(battle)
+      normalizeBattle(
+        data.battle ||
+        data
       );
 
 
-      localStorage.setItem(
-        "balajiBattleId",
-        battle.id ||
-        battleId
+    if (!battle) {
+
+      throw new Error(
+        "Battle data नहीं मिला।"
       );
 
     }
 
+
+    localStorage.setItem(
+      "balajiCurrentBattle",
+      JSON.stringify(battle)
+    );
+
+
+    if (battle.roomCode) {
+
+      localStorage.setItem(
+        "balajiRoomCode",
+        battle.roomCode
+      );
+
+    }
+
+
+    // --------------------------------------
+    // OPEN BATTLE ROOM
+    // --------------------------------------
 
     window.location.href =
       "room.html";
@@ -922,322 +730,200 @@ async function joinBattle(
 
   } catch (error) {
 
-    alert(
-      "❌ " +
-      error.message
-    );
-
-
-    await loadOpenBattles();
-
-  }
-
-}
-
-
-// =========================================================
-// LOAD MY BATTLES
-// =========================================================
-
-async function loadMyBattles() {
-
-  if (!runningBattles) {
-    return;
-  }
-
-
-  try {
-
-    const data =
-      await api(
-        "/api/battles/my"
-      );
-
-
-    const battles =
-      Array.isArray(data)
-        ? data
-        : (
-            data.battles ||
-            data.data ||
-            []
-          );
-
-
-    renderRunningBattles(
-      battles
-    );
-
-
-  } catch (error) {
-
-    console.log(
-      "My battles error:",
+    console.error(
+      "JOIN BATTLE ERROR:",
       error
     );
 
 
-    runningBattles.innerHTML =
-      "";
+    alert(
+      error.message ||
+      "Battle join नहीं हो सकी।"
+    );
+
+
+    await loadBattles();
 
   }
 
 }
 
 
-// =========================================================
+// ------------------------------------------
 // RENDER RUNNING BATTLES
-// =========================================================
+// ------------------------------------------
 
 function renderRunningBattles(
-  battles
+  battles = []
 ) {
 
-  if (!runningBattles) {
+  if (!runningBattlesContainer)
     return;
-  }
 
 
-  const running =
-    battles.filter(
-      function (battle) {
-
-        const status =
-          String(
-            battle.status ||
-            ""
-          ).toUpperCase();
+  runningBattlesContainer.innerHTML =
+    "";
 
 
-        return (
+  if (!battles.length) {
 
-          status === "OPEN" ||
-
-          status === "JOINED" ||
-
-          status === "ROOM_READY" ||
-
-          status === "RUNNING" ||
-
-          status ===
-            "RESULT_SUBMITTED"
-
-        );
-
-      }
-    );
-
-
-  if (!running.length) {
-
-    runningBattles.innerHTML =
-      "";
+    runningBattlesContainer.innerHTML = `
+      <div class="empty-battle">
+        अभी कोई Running Battle नहीं है।
+      </div>
+    `;
 
     return;
 
   }
 
 
-  let html = "";
-
-
-  running.forEach(
+  battles.forEach(
     function (battle) {
 
-
-      const creator =
-        battle.creator_name ||
-        "Player 1";
-
-
-      const opponent =
-        battle.opponent_name ||
-        "Waiting for Player";
-
-
-      const entry =
-        Number(
-          battle.entry_amount ||
-          0
+      const card =
+        document.createElement(
+          "div"
         );
 
 
-      const prize =
-        Number(
-          battle.winning_prize ||
-          0
-        );
+      card.className =
+        "battle-card running";
 
 
-      const status =
-        battle.status ||
-        "WAITING";
+      const room =
+        battle.roomCode
+          ? battle.roomCode
+          : "Waiting";
 
 
-      const roomCode =
-        battle.room_code ||
-        "Waiting";
+      card.innerHTML = `
 
+        <div class="battle-title">
+          Running Battle
+        </div>
 
-      html += `
+        <div class="players">
 
-        <div class="battle-card running-card">
+          <strong>
+            ${escapeHTML(
+              battle.player1
+            )}
+          </strong>
 
-          <div class="battle-header">
+          <span>
+            VS
+          </span>
 
-            <span class="running-badge">
-              ${escapeHtml(
-                status
-              )}
+          <strong>
+            ${escapeHTML(
+              battle.player2 ||
+              "Waiting"
+            )}
+          </strong>
+
+        </div>
+
+        <div class="battle-info">
+
+          <div>
+
+            <span>
+              ENTRY FEE
             </span>
 
-          </div>
-
-
-          <div class="challenge-title">
-            Match
-          </div>
-
-
-          <div class="player-name">
-            👤 ${escapeHtml(
-              creator
-            )}
-          </div>
-
-
-          <div class="player-name">
-            👤 ${escapeHtml(
-              opponent
-            )}
-          </div>
-
-
-          <div class="battle-details">
-
-            <div>
-
-              <span>
-                Entry
-              </span>
-
-              <strong>
-                ${money(entry)}
-                BALAJI LUDO Coin
-              </strong>
-
-            </div>
-
-
-            <div>
-
-              <span>
-                Winning Prize
-              </span>
-
-              <strong>
-                ${money(prize)}
-                BALAJI LUDO Coin
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <div class="room-running">
-
-            Room Code:
-
             <strong>
-              ${escapeHtml(
-                roomCode
-              )}
+              ${battle.entry}
+              Demo Coins
             </strong>
 
           </div>
 
+          <div>
 
-          <div class="result-status">
-
-            Status:
+            <span>
+              PRIZE
+            </span>
 
             <strong>
-              ${escapeHtml(
-                status
-              )}
+              ${battle.prize}
+              Demo Coins
             </strong>
 
           </div>
 
         </div>
 
+        <div class="room-small">
+
+          Room Code:
+          <strong>
+            ${escapeHTML(room)}
+          </strong>
+
+        </div>
+
+        <div class="room-status">
+
+          Status:
+          <strong>
+            ${escapeHTML(
+              battle.status
+            )}
+          </strong>
+
+        </div>
+
       `;
+
+
+      runningBattlesContainer
+        .appendChild(card);
 
     }
   );
 
-
-  runningBattles.innerHTML =
-    html;
-
 }
 
 
-// =========================================================
-// 5 MINUTE TIMER
-// =========================================================
+// ------------------------------------------
+// MESSAGE
+// ------------------------------------------
 
-function getTimeLeft(
-  createdAt
+function showMessage(
+  message,
+  isError = false
 ) {
 
-  const remaining =
-    Math.max(
-      0,
+  if (!amountMessage) {
 
-      BATTLE_WAIT_MS -
-      (
-        Date.now() -
-        Number(createdAt)
-      )
-    );
+    if (isError)
+      console.error(message);
+
+    return;
+
+  }
 
 
-  const totalSeconds =
-    Math.floor(
-      remaining / 1000
-    );
+  amountMessage.textContent =
+    message;
 
 
-  const minutes =
-    Math.floor(
-      totalSeconds / 60
-    );
-
-
-  const seconds =
-    totalSeconds % 60;
-
-
-  return (
-
-    String(minutes)
-      .padStart(2, "0") +
-
-    ":" +
-
-    String(seconds)
-      .padStart(2, "0")
-
+  amountMessage.classList.toggle(
+    "error",
+    isError
   );
+
+
+  amountMessage.style.display =
+    "block";
 
 }
 
 
-// =========================================================
+// ------------------------------------------
 // RULES MODAL
-// =========================================================
+// ------------------------------------------
 
 if (
   rulesBtn &&
@@ -1315,30 +1001,65 @@ if (rulesModal) {
 }
 
 
-// =========================================================
+// ------------------------------------------
+// ESCAPE HTML
+// ------------------------------------------
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+// ------------------------------------------
 // AUTO REFRESH
-// =========================================================
+// ------------------------------------------
 
-loadOpenBattles();
-
-loadMyBattles();
-
+// हर 5 सेकंड में server से
+// latest battle status लिया जाएगा.
 
 setInterval(
   function () {
 
-    loadOpenBattles();
-
-    loadMyBattles();
+    loadBattles();
 
   },
   5000
 );
 
 
-// =========================================================
-// GLOBAL
-// =========================================================
+// ------------------------------------------
+// START
+// ------------------------------------------
 
-window.joinBattle =
-  joinBattle;
+loadBattles();
