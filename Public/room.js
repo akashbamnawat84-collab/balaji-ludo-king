@@ -2,110 +2,236 @@
    BALAJI LUDO KING
    ROOM / BATTLE PAGE
    FINAL VERSION
-   Compatible with new room.html + Battle API
 ========================================================= */
 
 const API_BASE = "";
 const REFRESH_TIME = 5000;
 
+
 /* =========================================================
    ELEMENTS
 ========================================================= */
 
-const entryFee = document.getElementById("entryFee");
-const winningPrize = document.getElementById("winningPrize");
-const battleStatus = document.getElementById("battleStatus");
+const entryFee =
+  document.getElementById("entryFee");
 
-const player1Name = document.getElementById("player1Name");
-const player1Status = document.getElementById("player1Status");
+const winningPrize =
+  document.getElementById("winningPrize");
 
-const player2Name = document.getElementById("player2Name");
-const player2Status = document.getElementById("player2Status");
+const battleStatus =
+  document.getElementById("battleStatus");
 
-const roomCodeInput = document.getElementById("roomCodeInput");
-const setRoomCodeBtn = document.getElementById("setRoomCodeBtn");
-const roomCodeMessage = document.getElementById("roomCodeMessage");
+const player1Name =
+  document.getElementById("player1Name");
 
-const currentRoomCode = document.getElementById("currentRoomCode");
-const copyRoomCodeBtn = document.getElementById("copyRoomCodeBtn");
+const player1Status =
+  document.getElementById("player1Status");
 
-const waitingCard = document.getElementById("waitingCard");
-const waitingText = document.getElementById("waitingText");
+const player2Name =
+  document.getElementById("player2Name");
 
-const openLudoBtn = document.getElementById("openLudoBtn");
+const player2Status =
+  document.getElementById("player2Status");
 
-const wonBtn = document.getElementById("wonBtn");
-const lostBtn = document.getElementById("lostBtn");
+const roomCodeInput =
+  document.getElementById("roomCodeInput");
 
-const cancelBtn = document.getElementById("cancelBtn");
-const cancelSection = document.getElementById("cancelSection");
-const cancelReason = document.getElementById("cancelReason");
-const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+const setRoomCodeBtn =
+  document.getElementById("setRoomCodeBtn");
+
+const roomCodeMessage =
+  document.getElementById("roomCodeMessage");
+
+const currentRoomCode =
+  document.getElementById("currentRoomCode");
+
+const copyRoomCodeBtn =
+  document.getElementById("copyRoomCodeBtn");
+
+const waitingCard =
+  document.getElementById("waitingCard");
+
+const waitingText =
+  document.getElementById("waitingText");
+
+const openLudoBtn =
+  document.getElementById("openLudoBtn");
+
+const wonBtn =
+  document.getElementById("wonBtn");
+
+const lostBtn =
+  document.getElementById("lostBtn");
+
+const cancelBtn =
+  document.getElementById("cancelBtn");
+
+const cancelSection =
+  document.getElementById("cancelSection");
+
+const cancelReason =
+  document.getElementById("cancelReason");
+
+const confirmCancelBtn =
+  document.getElementById("confirmCancelBtn");
 
 
 /* =========================================================
-   LOGIN / USER DATA
+   USER / LOGIN
 ========================================================= */
 
 function getMobile() {
+
   const keys = [
     "balajiMobile",
-    "mobile",
-    "customerMobile"
+    "customerMobile",
+    "mobile"
   ];
 
+
   for (const key of keys) {
-    const value = localStorage.getItem(key);
+
+    const value =
+      localStorage.getItem(key);
+
 
     if (value) {
-      const mobile = String(value).replace(/\D/g, "").slice(-10);
+
+      const mobile =
+        String(value)
+          .replace(/\D/g, "")
+          .slice(-10);
+
 
       if (mobile.length === 10) {
+
         return mobile;
+
       }
+
     }
+
   }
 
+
   return "";
+
 }
 
 
 function getCustomerId() {
+
   const keys = [
     "balajiCustomerId",
     "customerId",
-    "balaji_customer_id",
-    "userId",
-    "customer_id"
+    "balaji_customer_id"
   ];
 
+
   for (const key of keys) {
-    const value = localStorage.getItem(key);
+
+    const value =
+      localStorage.getItem(key);
+
 
     if (value) {
+
       return String(value);
+
     }
+
   }
 
+
+  const mobile =
+    getMobile();
+
+
+  if (mobile) {
+
+    return mobile;
+
+  }
+
+
   return "";
+
 }
 
 
+/* =========================================================
+   LOGIN CHECK
+========================================================= */
+
 function checkLogin() {
 
-  const loggedIn = localStorage.getItem("balajiLogin");
-  const mobile = getMobile();
+  const mobile =
+    getMobile();
 
-  if (loggedIn !== "true" || mobile.length !== 10) {
 
-    alert("Please login first.");
+  /*
+    Login.js अब ये दोनों values save करता है:
+    balajiLogin = true
+    balajiMobile = 10 digit mobile
+  */
 
-    window.location.href = "/login/";
+  const loggedIn =
+    localStorage.getItem(
+      "balajiLogin"
+    );
 
-    return false;
+
+  if (
+    loggedIn === "true" &&
+    mobile.length === 10
+  ) {
+
+    return true;
+
   }
 
-  return true;
+
+  /*
+    अगर mobile मौजूद है लेकिन login flag
+    किसी वजह से missing है तो session recover करें.
+  */
+
+  if (mobile.length === 10) {
+
+    localStorage.setItem(
+      "balajiLogin",
+      "true"
+    );
+
+
+    localStorage.setItem(
+      "balajiCustomerId",
+      mobile
+    );
+
+
+    localStorage.setItem(
+      "customerId",
+      mobile
+    );
+
+
+    return true;
+
+  }
+
+
+  alert(
+    "Please login first."
+  );
+
+
+  window.location.href =
+    "/login/";
+
+
+  return false;
+
 }
 
 
@@ -115,20 +241,30 @@ function checkLogin() {
 
 function getBattleId() {
 
-  /* First priority */
-  const savedId = localStorage.getItem("balajiBattleId");
+  const savedId =
+    localStorage.getItem(
+      "balajiBattleId"
+    );
+
 
   if (savedId) {
+
     return String(savedId);
+
   }
 
 
-  /* Current battle saved by battle.js */
+  /* Current battle */
+
   try {
 
-    const current = JSON.parse(
-      localStorage.getItem("balajiCurrentBattle") || "null"
-    );
+    const current =
+      JSON.parse(
+        localStorage.getItem(
+          "balajiCurrentBattle"
+        ) || "null"
+      );
+
 
     if (current) {
 
@@ -137,6 +273,7 @@ function getBattleId() {
         current.battle_id ||
         current.battleId;
 
+
       if (id) {
 
         localStorage.setItem(
@@ -144,14 +281,17 @@ function getBattleId() {
           String(id)
         );
 
+
         return String(id);
+
       }
+
     }
 
   } catch (error) {
 
     console.log(
-      "Current battle read error:",
+      "Current battle error:",
       error
     );
 
@@ -159,11 +299,16 @@ function getBattleId() {
 
 
   /* Selected battle */
+
   try {
 
-    const selected = JSON.parse(
-      localStorage.getItem("balajiSelectedBattle") || "null"
-    );
+    const selected =
+      JSON.parse(
+        localStorage.getItem(
+          "balajiSelectedBattle"
+        ) || "null"
+      );
+
 
     if (selected) {
 
@@ -172,6 +317,7 @@ function getBattleId() {
         selected.battle_id ||
         selected.battleId;
 
+
       if (id) {
 
         localStorage.setItem(
@@ -179,14 +325,17 @@ function getBattleId() {
           String(id)
         );
 
+
         return String(id);
+
       }
+
     }
 
   } catch (error) {
 
     console.log(
-      "Selected battle read error:",
+      "Selected battle error:",
       error
     );
 
@@ -194,6 +343,7 @@ function getBattleId() {
 
 
   return "";
+
 }
 
 
@@ -201,44 +351,67 @@ function getBattleId() {
    API
 ========================================================= */
 
-async function api(path, options = {}) {
+async function api(
+  path,
+  options = {}
+) {
 
-  const mobile = getMobile();
-  const customerId = getCustomerId();
+  const mobile =
+    getMobile();
+
+
+  const customerId =
+    getCustomerId();
+
 
   const headers = {
-    "Content-Type": "application/json",
-    "X-Balaji-Mobile": mobile
+
+    "Content-Type":
+      "application/json",
+
+    "X-Balaji-Mobile":
+      mobile
+
   };
 
+
   if (options.headers) {
+
     Object.assign(
       headers,
       options.headers
     );
+
   }
 
 
-  const response = await fetch(
-    API_BASE + path,
-    {
-      ...options,
-      headers
-    }
-  );
+  const response =
+    await fetch(
+      API_BASE + path,
+      {
+        ...options,
+        headers
+      }
+    );
 
 
   let data;
 
+
   try {
 
-    data = await response.json();
+    data =
+      await response.json();
 
   } catch {
 
     data = {
+
       success: false,
-      message: "Invalid server response."
+
+      message:
+        "Invalid server response."
+
     };
 
   }
@@ -247,15 +420,18 @@ async function api(path, options = {}) {
   if (!response.ok) {
 
     throw new Error(
+
       data.message ||
       data.error ||
       "Request failed."
+
     );
 
   }
 
 
   return data;
+
 }
 
 
@@ -265,98 +441,194 @@ async function api(path, options = {}) {
 
 function money(value) {
 
-  const number = Number(value || 0);
+  const number =
+    Number(value || 0);
+
 
   return number
     .toFixed(2)
-    .replace(/\.00$/, "");
+    .replace(
+      /\.00$/,
+      ""
+    );
+
 }
 
 
 function formatStatus(status) {
 
   if (!status) {
+
     return "Waiting";
+
   }
 
-  const value = String(status)
-    .replace(/_/g, " ")
-    .toLowerCase();
+
+  const value =
+    String(status)
+      .replace(
+        /_/g,
+        " "
+      )
+      .toLowerCase();
+
 
   return value.replace(
     /\b\w/g,
-    char => char.toUpperCase()
+    char =>
+      char.toUpperCase()
   );
+
 }
 
 
 function show(element) {
 
   if (element) {
-    element.classList.remove("hidden");
+
+    element.classList.remove(
+      "hidden"
+    );
+
   }
+
 }
 
 
 function hide(element) {
 
   if (element) {
-    element.classList.add("hidden");
+
+    element.classList.add(
+      "hidden"
+    );
+
   }
+
 }
 
 
-function showMessage(text, success = false) {
+function message(
+  text,
+  success = false
+) {
 
   if (!roomCodeMessage) {
+
     return;
+
   }
 
-  roomCodeMessage.textContent = text;
+
+  roomCodeMessage.textContent =
+    text;
+
 
   roomCodeMessage.style.color =
     success
       ? "#22c55e"
       : "#ef4444";
+
 }
 
 
 /* =========================================================
-   DISPLAY ROOM CODE
+   BATTLE FIELD HELPERS
 ========================================================= */
 
-function displayRoomCode(code) {
+function getEntry(battle) {
 
-  const clean = String(code || "")
-    .replace(/\D/g, "")
-    .slice(0, 8);
+  return (
+
+    battle.entry_amount ??
+    battle.entry_fee ??
+    battle.entry ??
+    battle.amount ??
+    battle.entryAmount ??
+    0
+
+  );
+
+}
 
 
-  if (currentRoomCode) {
+function getPrize(battle) {
 
-    currentRoomCode.textContent =
-      clean || "Waiting for Room Code";
+  return (
 
-  }
+    battle.winning_prize ??
+    battle.prize_amount ??
+    battle.prize ??
+    battle.winningPrize ??
+    0
+
+  );
+
+}
 
 
-  if (roomCodeInput) {
+function getPlayer1(battle) {
 
-    roomCodeInput.value = clean;
+  return (
 
-  }
+    battle.creator_name ??
+    battle.player1_name ??
+    battle.player1Name ??
+    battle.creatorName ??
+    battle.player1?.name ??
+    battle.player_1?.name ??
+    "Player 1"
+
+  );
+
+}
+
+
+function getPlayer2(battle) {
+
+  return (
+
+    battle.opponent_name ??
+    battle.player2_name ??
+    battle.player2Name ??
+    battle.joiner_name ??
+    battle.player2?.name ??
+    battle.player_2?.name ??
+    "Player 2"
+
+  );
+
+}
+
+
+function player2Joined(battle) {
+
+  return Boolean(
+
+    battle.opponent_id ||
+    battle.joiner_id ||
+    battle.opponent_name ||
+    battle.joiner_name ||
+    battle.player2 ||
+    battle.player_2 ||
+    battle.player2_name ||
+    battle.player2Name
+
+  );
 
 }
 
 
 /* =========================================================
-   SAVE CURRENT BATTLE
+   SAVE BATTLE
 ========================================================= */
 
 function saveBattle(battle) {
 
   if (!battle) {
+
     return;
+
   }
 
 
@@ -396,78 +668,35 @@ function saveBattle(battle) {
 
 
 /* =========================================================
-   GET VALUE FROM DIFFERENT API FIELD NAMES
+   ROOM CODE
 ========================================================= */
 
-function getEntryAmount(battle) {
+function displayRoomCode(code) {
 
-  return (
-    battle.entry_amount ??
-    battle.entry_fee ??
-    battle.entry ??
-    battle.amount ??
-    battle.entryAmount ??
-    0
-  );
-
-}
+  const clean =
+    String(code || "")
+      .replace(
+        /\D/g,
+        ""
+      )
+      .slice(0, 8);
 
 
-function getWinningPrize(battle) {
+  if (currentRoomCode) {
 
-  return (
-    battle.winning_prize ??
-    battle.prize_amount ??
-    battle.prize ??
-    battle.winningPrize ??
-    0
-  );
+    currentRoomCode.textContent =
+      clean ||
+      "Waiting for Room Code";
 
-}
+  }
 
 
-function getPlayer1(battle) {
+  if (roomCodeInput) {
 
-  return (
-    battle.creator_name ??
-    battle.player1_name ??
-    battle.player1Name ??
-    battle.player1?.name ??
-    battle.player_1?.name ??
-    battle.creatorName ??
-    "Player 1"
-  );
+    roomCodeInput.value =
+      clean;
 
-}
-
-
-function getPlayer2(battle) {
-
-  return (
-    battle.opponent_name ??
-    battle.player2_name ??
-    battle.player2Name ??
-    battle.player2?.name ??
-    battle.player_2?.name ??
-    battle.joiner_name ??
-    "Player 2"
-  );
-
-}
-
-
-function hasPlayer2(battle) {
-
-  return Boolean(
-    battle.opponent_id ||
-    battle.joiner_id ||
-    battle.opponent_name ||
-    battle.joiner_name ||
-    battle.player2 ||
-    battle.player_2 ||
-    battle.player2_name ||
-    battle.player2Name
-  );
+  }
 
 }
 
@@ -479,7 +708,9 @@ function hasPlayer2(battle) {
 function renderBattle(data) {
 
   if (!data) {
+
     return;
+
   }
 
 
@@ -490,44 +721,45 @@ function renderBattle(data) {
 
 
   if (!battle) {
+
     return;
+
   }
 
 
   saveBattle(battle);
 
 
-  /* -------------------------
-     ENTRY / PRIZE
-  ------------------------- */
-
-  const entry = getEntryAmount(battle);
-  const prize = getWinningPrize(battle);
-
+  /* Entry */
 
   if (entryFee) {
 
     entryFee.textContent =
-      money(entry);
+      money(
+        getEntry(battle)
+      );
 
   }
 
+
+  /* Prize */
 
   if (winningPrize) {
 
     winningPrize.textContent =
-      money(prize);
+      money(
+        getPrize(battle)
+      );
 
   }
 
 
-  /* -------------------------
-     STATUS
-  ------------------------- */
+  /* Status */
 
   const status =
-    String(battle.status || "")
-      .toUpperCase();
+    String(
+      battle.status || ""
+    ).toUpperCase();
 
 
   if (battleStatus) {
@@ -538,9 +770,7 @@ function renderBattle(data) {
   }
 
 
-  /* -------------------------
-     PLAYER 1
-  ------------------------- */
+  /* Player 1 */
 
   if (player1Name) {
 
@@ -558,15 +788,13 @@ function renderBattle(data) {
   }
 
 
-  /* -------------------------
-     PLAYER 2
-  ------------------------- */
+  /* Player 2 */
 
-  const player2Exists =
-    hasPlayer2(battle);
+  const joined =
+    player2Joined(battle);
 
 
-  if (player2Exists) {
+  if (joined) {
 
     if (player2Name) {
 
@@ -574,6 +802,7 @@ function renderBattle(data) {
         getPlayer2(battle);
 
     }
+
 
     if (player2Status) {
 
@@ -591,6 +820,7 @@ function renderBattle(data) {
 
     }
 
+
     if (player2Status) {
 
       player2Status.textContent =
@@ -601,9 +831,7 @@ function renderBattle(data) {
   }
 
 
-  /* -------------------------
-     ROOM CODE
-  ------------------------- */
+  /* Room Code */
 
   const code =
     battle.room_code ??
@@ -617,6 +845,7 @@ function renderBattle(data) {
 
     hide(waitingCard);
 
+
     if (waitingText) {
 
       waitingText.textContent =
@@ -628,12 +857,14 @@ function renderBattle(data) {
 
     displayRoomCode("");
 
+
     show(waitingCard);
+
 
     if (waitingText) {
 
       waitingText.textContent =
-        player2Exists
+        joined
           ? "Both players have joined. Enter the 8-digit Room Code."
           : "Waiting for Player 2.";
 
@@ -642,30 +873,11 @@ function renderBattle(data) {
   }
 
 
-  /* -------------------------
-     RESULT / BATTLE STATE
-  ------------------------- */
+  /* Cancel section */
 
   const finalStatus =
     status.toLowerCase();
 
-
-  if (
-    finalStatus === "completed" ||
-    finalStatus === "won" ||
-    finalStatus === "lost" ||
-    finalStatus === "cancelled" ||
-    finalStatus === "canceled"
-  ) {
-
-    hide(waitingCard);
-
-  }
-
-
-  /* -------------------------
-     CANCEL
-  ------------------------- */
 
   if (
     finalStatus === "cancelled" ||
@@ -682,20 +894,27 @@ function renderBattle(data) {
   }
 
 
-  /* -------------------------
-     BUTTON STATES
-  ------------------------- */
+  /* Ludo button */
 
-  if (player2Exists && code) {
+  if (
+    joined &&
+    code
+  ) {
 
     if (openLudoBtn) {
-      openLudoBtn.disabled = false;
+
+      openLudoBtn.disabled =
+        false;
+
     }
 
   } else {
 
     if (openLudoBtn) {
-      openLudoBtn.disabled = true;
+
+      openLudoBtn.disabled =
+        true;
+
     }
 
   }
@@ -710,7 +929,9 @@ function renderBattle(data) {
 async function loadBattle() {
 
   if (!checkLogin()) {
+
     return;
+
   }
 
 
@@ -728,6 +949,7 @@ async function loadBattle() {
     }
 
     return;
+
   }
 
 
@@ -736,7 +958,9 @@ async function loadBattle() {
     const data =
       await api(
         "/api/battles/" +
-        encodeURIComponent(battleId)
+        encodeURIComponent(
+          battleId
+        )
       );
 
 
@@ -769,7 +993,9 @@ async function loadBattle() {
 async function setRoomCode() {
 
   if (!checkLogin()) {
+
     return;
+
   }
 
 
@@ -779,35 +1005,41 @@ async function setRoomCode() {
 
   if (!battleId) {
 
-    showMessage(
+    message(
       "Battle ID not found."
     );
 
     return;
+
   }
 
 
   const code =
     roomCodeInput
       ? roomCodeInput.value
-          .replace(/\D/g, "")
+          .replace(
+            /\D/g,
+            ""
+          )
           .slice(0, 8)
       : "";
 
 
   if (code.length !== 8) {
 
-    showMessage(
+    message(
       "Please enter exactly 8 digit room code."
     );
 
     return;
+
   }
 
 
   if (setRoomCodeBtn) {
 
-    setRoomCodeBtn.disabled = true;
+    setRoomCodeBtn.disabled =
+      true;
 
     setRoomCodeBtn.textContent =
       "Saving...";
@@ -819,15 +1051,23 @@ async function setRoomCode() {
 
     const body = {
 
-      /* New API */
-      battle_id: battleId,
-      room_code: code,
-      customer_id: getCustomerId(),
-      mobile: getMobile(),
+      battle_id:
+        battleId,
 
-      /* Compatibility */
-      battleId: battleId,
-      roomCode: code
+      battleId:
+        battleId,
+
+      room_code:
+        code,
+
+      roomCode:
+        code,
+
+      customer_id:
+        getCustomerId(),
+
+      mobile:
+        getMobile()
 
     };
 
@@ -837,7 +1077,10 @@ async function setRoomCode() {
         "/api/battles/room-code",
         {
           method: "POST",
-          body: JSON.stringify(body)
+
+          body:
+            JSON.stringify(body)
+
         }
       );
 
@@ -849,10 +1092,12 @@ async function setRoomCode() {
       code;
 
 
-    displayRoomCode(returnedCode);
+    displayRoomCode(
+      returnedCode
+    );
 
 
-    showMessage(
+    message(
       "Room code saved successfully.",
       true
     );
@@ -863,10 +1108,9 @@ async function setRoomCode() {
 
     await loadBattle();
 
-
   } catch (error) {
 
-    showMessage(
+    message(
       error.message ||
       "Unable to save room code."
     );
@@ -905,26 +1149,29 @@ async function copyRoomCode() {
     code === "Waiting for Room Code"
   ) {
 
-    showMessage(
+    message(
       "Room code is not available."
     );
 
     return;
+
   }
 
 
   try {
 
-    await navigator.clipboard.writeText(code);
+    await navigator.clipboard
+      .writeText(code);
 
-    showMessage(
+
+    message(
       "Room code copied successfully.",
       true
     );
 
-  } catch (error) {
+  } catch {
 
-    showMessage(
+    message(
       "Copy failed. Please copy manually."
     );
 
@@ -934,7 +1181,7 @@ async function copyRoomCode() {
 
 
 /* =========================================================
-   OPEN LUDO KING APP
+   OPEN LUDO KING
 ========================================================= */
 
 function openLudoKing() {
@@ -955,35 +1202,40 @@ function openLudoKing() {
     );
 
     return;
+
   }
 
 
-  /* Copy code first */
   try {
 
-    navigator.clipboard.writeText(code);
+    navigator.clipboard
+      .writeText(code);
 
-  } catch (error) {}
+  } catch {}
 
 
   alert(
+
     "Room Code " +
     code +
     " copy हो गया है.\n\n" +
     "अब Ludo King App खोलकर इसी Room Code से game खेलें."
+
   );
 
 }
 
 
 /* =========================================================
-   SUBMIT RESULT
+   RESULT
 ========================================================= */
 
 async function submitResult(result) {
 
   if (!checkLogin()) {
+
     return;
+
   }
 
 
@@ -998,19 +1250,24 @@ async function submitResult(result) {
     );
 
     return;
+
   }
 
 
   const confirmed =
     confirm(
+
       result === "won"
         ? "क्या आप confirm करते हैं कि आप WIN हुए हैं?"
         : "क्या आप confirm करते हैं कि आप LOSE हुए हैं?"
+
     );
 
 
   if (!confirmed) {
+
     return;
+
   }
 
 
@@ -1018,8 +1275,11 @@ async function submitResult(result) {
 
     const body = {
 
-      battle_id: battleId,
-      battleId: battleId,
+      battle_id:
+        battleId,
+
+      battleId:
+        battleId,
 
       customer_id:
         getCustomerId(),
@@ -1027,9 +1287,11 @@ async function submitResult(result) {
       mobile:
         getMobile(),
 
-      result: result,
+      result:
+        result,
 
-      result_status: result
+      result_status:
+        result
 
     };
 
@@ -1038,7 +1300,10 @@ async function submitResult(result) {
       "/api/battles/result",
       {
         method: "POST",
-        body: JSON.stringify(body)
+
+        body:
+          JSON.stringify(body)
+
       }
     );
 
@@ -1049,7 +1314,6 @@ async function submitResult(result) {
 
 
     await loadBattle();
-
 
   } catch (error) {
 
@@ -1064,13 +1328,15 @@ async function submitResult(result) {
 
 
 /* =========================================================
-   CANCEL MATCH
+   CANCEL
 ========================================================= */
 
 async function cancelMatch() {
 
   if (!checkLogin()) {
+
     return;
+
   }
 
 
@@ -1085,6 +1351,7 @@ async function cancelMatch() {
     );
 
     return;
+
   }
 
 
@@ -1101,10 +1368,13 @@ async function cancelMatch() {
     );
 
     if (cancelReason) {
+
       cancelReason.focus();
+
     }
 
     return;
+
   }
 
 
@@ -1115,7 +1385,9 @@ async function cancelMatch() {
 
 
   if (!confirmed) {
+
     return;
+
   }
 
 
@@ -1134,8 +1406,11 @@ async function cancelMatch() {
 
     const body = {
 
-      battle_id: battleId,
-      battleId: battleId,
+      battle_id:
+        battleId,
+
+      battleId:
+        battleId,
 
       customer_id:
         getCustomerId(),
@@ -1143,9 +1418,11 @@ async function cancelMatch() {
       mobile:
         getMobile(),
 
-      reason: reason,
+      reason:
+        reason,
 
-      cancel_reason: reason
+      cancel_reason:
+        reason
 
     };
 
@@ -1154,7 +1431,10 @@ async function cancelMatch() {
       "/api/battles/cancel",
       {
         method: "POST",
-        body: JSON.stringify(body)
+
+        body:
+          JSON.stringify(body)
+
       }
     );
 
@@ -1165,7 +1445,6 @@ async function cancelMatch() {
 
 
     await loadBattle();
-
 
   } catch (error) {
 
@@ -1192,7 +1471,7 @@ async function cancelMatch() {
 
 
 /* =========================================================
-   ROOM CODE INPUT
+   INPUT
 ========================================================= */
 
 if (roomCodeInput) {
@@ -1203,7 +1482,10 @@ if (roomCodeInput) {
 
       this.value =
         this.value
-          .replace(/\D/g, "")
+          .replace(
+            /\D/g,
+            ""
+          )
           .slice(0, 8);
 
     }
@@ -1213,7 +1495,7 @@ if (roomCodeInput) {
 
 
 /* =========================================================
-   BUTTON EVENTS
+   BUTTONS
 ========================================================= */
 
 if (setRoomCodeBtn) {
@@ -1251,7 +1533,9 @@ if (wonBtn) {
   wonBtn.addEventListener(
     "click",
     function () {
+
       submitResult("won");
+
     }
   );
 
@@ -1263,7 +1547,9 @@ if (lostBtn) {
   lostBtn.addEventListener(
     "click",
     function () {
+
       submitResult("lost");
+
     }
   );
 
@@ -1276,19 +1562,24 @@ if (cancelBtn) {
     "click",
     function () {
 
-      if (cancelSection) {
+      if (!cancelSection) {
 
-        if (
-          cancelSection.classList.contains("hidden")
-        ) {
+        return;
 
-          show(cancelSection);
+      }
 
-        } else {
 
-          hide(cancelSection);
+      if (
+        cancelSection.classList.contains(
+          "hidden"
+        )
+      ) {
 
-        }
+        show(cancelSection);
+
+      } else {
+
+        hide(cancelSection);
 
       }
 
@@ -1315,6 +1606,7 @@ if (confirmCancelBtn) {
 if (checkLogin()) {
 
   loadBattle();
+
 
   setInterval(
     loadBattle,
