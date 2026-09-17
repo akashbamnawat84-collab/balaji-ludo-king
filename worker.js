@@ -1,7 +1,8 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization"
+  "Access-Control-Allow-Headers":
+    "Content-Type, Authorization, X-Balaji-Mobile"
 };
 
 const ROOM_WAIT_MS = 5 * 60 * 1000;
@@ -52,6 +53,39 @@ function isExpired(createdAt) {
 
 
 /* =========================================================
+   LOGIN MOBILE → CUSTOMER ID
+========================================================= */
+
+async function getPlayerIdFromRequest(request, env) {
+
+  const mobile =
+    clean(
+      request.headers.get(
+        "X-Balaji-Mobile"
+      )
+    );
+
+  if (!validMobile(mobile)) {
+    return "";
+  }
+
+  const customer =
+    await env.DB.prepare(`
+      SELECT id
+      FROM customers
+      WHERE mobile = ?
+      LIMIT 1
+    `)
+    .bind(mobile)
+    .first();
+
+  return customer?.id
+    ? clean(customer.id)
+    : "";
+}
+
+
+/* =========================================================
    BATTLE COMMISSION
 ========================================================= */
 
@@ -87,16 +121,10 @@ function calculateBattleCommission(amount) {
 
 function calculateWinningPrize(amount) {
 
-  const entry =
-    Number(amount);
+  const entry = Number(amount);
 
   const commission =
     calculateBattleCommission(entry);
-
-  /*
-    Two-player total = entry x 2
-    Prize after commission
-  */
 
   return Number(
     (entry * 2 - commission).toFixed(2)
@@ -126,11 +154,9 @@ function getAdminToken(request) {
   if (
     authorization.startsWith("Bearer ")
   ) {
-
     return clean(
       authorization.slice(7)
     );
-
   }
 
   return "";
@@ -159,7 +185,6 @@ function saveAdminSession(token) {
     token,
     Date.now()
   );
-
 }
 
 
@@ -196,7 +221,6 @@ function requireAdmin(request) {
     getAdminToken(request);
 
   return validAdminSession(token);
-
 }
 
 
@@ -272,9 +296,7 @@ function customerResponse(customer) {
 
     created_at:
       customer.created_at
-
   };
-
 }
 
 
@@ -300,7 +322,6 @@ async function getRoom(env, roomCode) {
   `)
   .bind(roomCode)
   .first();
-
 }
 
 
@@ -311,7 +332,6 @@ async function deleteRoom(env, roomCode) {
   )
   .bind(roomCode)
   .run();
-
 }
 
 
@@ -332,7 +352,6 @@ async function ensureReferralTable(env) {
     )
   `)
   .run();
-
 }
 
 
@@ -367,17 +386,13 @@ async function generateUniqueReferralCode(env) {
       .first();
 
     if (!existing) {
-
       return code;
-
     }
-
   }
 
   throw new Error(
     "Unable to generate unique referral code"
   );
-
 }
 
 
@@ -402,9 +417,7 @@ async function getReferralSummary(
     .first();
 
   if (!customer) {
-
     return null;
-
   }
 
   const referrals =
@@ -437,9 +450,7 @@ async function getReferralSummary(
 
     commission_percent:
       REFERRAL_PERCENT
-
   };
-
 }
 
 
@@ -459,7 +470,6 @@ async function ensureCancellationTable(env) {
     )
   `)
   .run();
-
 }
 
 
@@ -499,7 +509,6 @@ async function ensureKYCTable(env) {
     )
   `)
   .run();
-
 }
 
 
@@ -549,7 +558,6 @@ async function ensureBattleTable(env) {
     )
   `)
   .run();
-
 }
 
 
@@ -632,9 +640,7 @@ function battleResponse(battle) {
       battle.result_submitted_at
         ? Number(battle.result_submitted_at)
         : null
-
   };
-
 }
 
 
@@ -651,7 +657,6 @@ async function getBattle(env, battleId) {
   `)
   .bind(battleId)
   .first();
-
 }
 
 
@@ -674,16 +679,13 @@ export default {
 
     }
 
-
     const url =
       new URL(request.url);
 
     const path =
       url.pathname;
 
-
     try {
-
 
       /* =====================================================
          ADMIN LOGIN
@@ -796,11 +798,7 @@ export default {
           getAdminToken(request);
 
         if (token) {
-
-          adminSessions.delete(
-            token
-          );
-
+          adminSessions.delete(token);
         }
 
         return json({
@@ -1736,13 +1734,32 @@ export default {
         const body =
           await request.json();
 
-        const playerId =
+        let playerId =
           clean(
             body.player_id ||
             body.playerId ||
             body.customer_id ||
             body.customerId
           );
+
+        /*
+          Login currently stores:
+          balajiLogin
+          balajiMobile
+
+          So if player_id is not sent,
+          identify player from mobile header.
+        */
+
+        if (!playerId) {
+
+          playerId =
+            await getPlayerIdFromRequest(
+              request,
+              env
+            );
+
+        }
 
         const playerName =
           clean(
@@ -1945,7 +1962,6 @@ export default {
             .run();
 
             continue;
-
           }
 
           active.push(
@@ -1953,7 +1969,6 @@ export default {
               battle
             )
           );
-
         }
 
         return json({
@@ -1966,6 +1981,92 @@ export default {
 
           battles:
             active
+
+        });
+
+      }
+
+
+      /* =====================================================
+         BATTLE - MY BATTLES
+
+         IMPORTANT:
+         This route MUST come before
+         /api/battles/:id
+      ===================================================== */
+
+      if (
+        path === "/api/battles/my" &&
+        request.method === "GET"
+      ) {
+
+        await ensureBattleTable(env);
+
+        let playerId =
+          clean(
+            url.searchParams.get(
+              "player_id"
+            ) ||
+            url.searchParams.get(
+              "playerId"
+            ) ||
+            url.searchParams.get(
+              "customer_id"
+            ) ||
+            url.searchParams.get(
+              "customerId"
+            )
+          );
+
+        if (!playerId) {
+
+          playerId =
+            await getPlayerIdFromRequest(
+              request,
+              env
+            );
+
+        }
+
+        if (!playerId) {
+
+          return json({
+            success: false,
+            error:
+              "Player login required"
+          }, 400);
+
+        }
+
+        const result =
+          await env.DB.prepare(`
+            SELECT *
+            FROM battles
+            WHERE creator_id = ?
+            OR opponent_id = ?
+            ORDER BY created_at DESC
+            LIMIT 50
+          `)
+          .bind(
+            playerId,
+            playerId
+          )
+          .all();
+
+        return json({
+
+          success:
+            true,
+
+          count:
+            result.results?.length || 0,
+
+          battles:
+            (
+              result.results || []
+            ).map(
+              battleResponse
+            )
 
         });
 
@@ -2056,13 +2157,23 @@ export default {
             body.battleId
           );
 
-        const playerId =
+        let playerId =
           clean(
             body.player_id ||
             body.playerId ||
             body.customer_id ||
             body.customerId
           );
+
+        if (!playerId) {
+
+          playerId =
+            await getPlayerIdFromRequest(
+              request,
+              env
+            );
+
+        }
 
         const playerName =
           clean(
@@ -2235,10 +2346,7 @@ export default {
 
 
       /* =====================================================
-         BATTLE - CREATE / SET ROOM CODE
-         
-         First player enters the 8-digit
-         room code.
+         BATTLE - SET ROOM CODE
       ===================================================== */
 
       if (
@@ -2257,11 +2365,23 @@ export default {
             body.battleId
           );
 
-        const playerId =
+        let playerId =
           clean(
             body.player_id ||
-            body.playerId
+            body.playerId ||
+            body.customer_id ||
+            body.customerId
           );
+
+        if (!playerId) {
+
+          playerId =
+            await getPlayerIdFromRequest(
+              request,
+              env
+            );
+
+        }
 
         const roomCode =
           clean(
@@ -2335,10 +2455,6 @@ export default {
 
         }
 
-        /*
-          Check existing room code.
-        */
-
         const existingRoom =
           await getRoom(
             env,
@@ -2368,18 +2484,10 @@ export default {
             }, 409);
 
           }
-
         }
 
         const createdAt =
           Date.now();
-
-        /*
-          Create actual room record.
-
-          Player 1 = Battle creator
-          Player 2 = Battle opponent
-        */
 
         await env.DB.prepare(`
           INSERT INTO rooms (
@@ -2445,75 +2553,6 @@ export default {
 
 
       /* =====================================================
-         BATTLE - MY BATTLES
-      ===================================================== */
-
-      if (
-        path === "/api/battles/my" &&
-        request.method === "GET"
-      ) {
-
-        await ensureBattleTable(env);
-
-        const playerId =
-          clean(
-            url.searchParams.get(
-              "player_id"
-            ) ||
-            url.searchParams.get(
-              "playerId"
-            ) ||
-            url.searchParams.get(
-              "customer_id"
-            )
-          );
-
-        if (!playerId) {
-
-          return json({
-            success: false,
-            error:
-              "Player ID required"
-          }, 400);
-
-        }
-
-        const result =
-          await env.DB.prepare(`
-            SELECT *
-            FROM battles
-            WHERE creator_id = ?
-            OR opponent_id = ?
-            ORDER BY created_at DESC
-            LIMIT 50
-          `)
-          .bind(
-            playerId,
-            playerId
-          )
-          .all();
-
-        return json({
-
-          success:
-            true,
-
-          count:
-            result.results?.length || 0,
-
-          battles:
-            (
-              result.results || []
-            ).map(
-              battleResponse
-            )
-
-        });
-
-      }
-
-
-      /* =====================================================
          BATTLE - CANCEL
       ===================================================== */
 
@@ -2533,11 +2572,23 @@ export default {
             body.battleId
           );
 
-        const playerId =
+        let playerId =
           clean(
             body.player_id ||
-            body.playerId
+            body.playerId ||
+            body.customer_id ||
+            body.customerId
           );
+
+        if (!playerId) {
+
+          playerId =
+            await getPlayerIdFromRequest(
+              request,
+              env
+            );
+
+        }
 
         const reason =
           clean(
@@ -2698,12 +2749,6 @@ export default {
 
       /* =====================================================
          BATTLE - RESULT
-         
-         I WON / I LOST
-
-         Screenshot required.
-
-         Result cannot be changed once submitted.
       ===================================================== */
 
       if (
@@ -2722,11 +2767,23 @@ export default {
             body.battleId
           );
 
-        const playerId =
+        let playerId =
           clean(
             body.player_id ||
-            body.playerId
+            body.playerId ||
+            body.customer_id ||
+            body.customerId
           );
+
+        if (!playerId) {
+
+          playerId =
+            await getPlayerIdFromRequest(
+              request,
+              env
+            );
+
+        }
 
         const resultStatus =
           clean(
@@ -2837,14 +2894,6 @@ export default {
           }, 409);
 
         }
-
-        /*
-          The website cannot automatically know
-          when the external Ludo King game ended.
-
-          Therefore the 15-minute server window starts
-          from Room Code Ready.
-        */
 
         if (
           battle.room_ready_at &&
