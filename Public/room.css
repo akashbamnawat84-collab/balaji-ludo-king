@@ -2,6 +2,11 @@
    BALAJI LUDO KING - ROOM
    ===================================== */
 
+/* STATE CONTROL */
+.hidden {
+  display: none !important;
+}
+
 * {
   margin: 0;
   padding: 0;
