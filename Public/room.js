@@ -42,9 +42,7 @@ function getMobile() {
   const value = getStorage(MOBILE_KEYS);
   const digits = String(value).replace(/\D/g, "");
 
-  return digits.length >= 10
-    ? digits.slice(-10)
-    : "";
+  return digits.length >= 10 ? digits.slice(-10) : "";
 }
 
 
@@ -61,9 +59,8 @@ function getBattleId() {
     params.get("battleId");
 
   if (queryId) {
-    return queryId;
+    return String(queryId);
   }
-
 
   const directId =
     localStorage.getItem("balajiBattleId");
@@ -74,15 +71,20 @@ function getBattleId() {
       const parsed = JSON.parse(directId);
 
       if (parsed && typeof parsed === "object") {
-        if (parsed.id) return String(parsed.id);
-        if (parsed.battle_id) return String(parsed.battle_id);
+        return String(
+          parsed.id ||
+          parsed.battle_id ||
+          parsed.battleId ||
+          ""
+        );
       }
 
-    } catch (_) {
-      return directId;
+      return String(parsed);
+
+    } catch {
+      return String(directId);
     }
   }
-
 
   const selected =
     localStorage.getItem("balajiSelectedBattle");
@@ -94,7 +96,6 @@ function getBattleId() {
       const parsed = JSON.parse(selected);
 
       if (parsed && typeof parsed === "object") {
-
         return String(
           parsed.id ||
           parsed.battle_id ||
@@ -105,9 +106,8 @@ function getBattleId() {
 
       return String(parsed);
 
-    } catch (_) {
-
-      return selected;
+    } catch {
+      return String(selected);
     }
   }
 
@@ -119,7 +119,7 @@ function getBattleId() {
    API
 ========================= */
 
-function api(path, options = {}) {
+async function api(path, options = {}) {
 
   const headers = {
     "Content-Type": "application/json",
@@ -137,44 +137,65 @@ function api(path, options = {}) {
     headers["X-Balaji-Mobile"] = mobile;
   }
 
-  return fetch(API_BASE + path, {
-    ...options,
-    headers
-  }).then(async response => {
-
-    const text = await response.text();
-
-    let data = {};
-
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      data = { raw: text };
+  const response = await fetch(
+    API_BASE + path,
+    {
+      ...options,
+      headers
     }
+  );
 
-    if (!response.ok) {
-      throw new Error(
-        data.error ||
-        data.message ||
-        `Request failed (${response.status})`
-      );
-    }
+  const text = await response.text();
 
-    return data;
-  });
+  let data = {};
+
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      data.message ||
+      `Request failed (${response.status})`
+    );
+  }
+
+  return data;
 }
 
 
 /* =========================
-   HELPERS
+   UI HELPERS
 ========================= */
 
 function show(id) {
-  document.getElementById(id)?.classList.remove("hidden");
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.classList.remove("hidden");
+  }
 }
 
 function hide(id) {
-  document.getElementById(id)?.classList.add("hidden");
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.classList.add("hidden");
+  }
+}
+
+function hideAllStates() {
+
+  hide("loadingCard");
+  hide("matchCard");
+  hide("errorCard");
+
+  hide("waitingSection");
+  hide("readySection");
+  hide("resultSection");
 }
 
 function money(value) {
@@ -193,8 +214,7 @@ function money(value) {
 
 function showError(message) {
 
-  hide("loadingCard");
-  hide("matchCard");
+  hideAllStates();
 
   show("errorCard");
 
@@ -215,17 +235,19 @@ async function loadBattle() {
 
   battleId = getBattleId();
 
-  console.log("Balaji Room Battle ID:", battleId);
+  console.log(
+    "Balaji Room Battle ID:",
+    battleId
+  );
 
   if (!battleId) {
 
     showError(
-      "Battle ID नहीं मिला। Battle page से Join Battle करके दोबारा खोलें।"
+      "Battle ID नहीं मिला। Battle page से Battle खोलें।"
     );
 
     return;
   }
-
 
   try {
 
@@ -265,127 +287,170 @@ async function loadBattle() {
 
 
 /* =========================
-   RENDER
+   NORMALIZE STATUS
+========================= */
+
+function getBattleStatus(battle) {
+
+  const raw = String(
+    battle.status ||
+    battle.match_status ||
+    battle.battle_status ||
+    ""
+  )
+    .trim()
+    .toUpperCase();
+
+  return raw;
+}
+
+
+/* =========================
+   RENDER BATTLE
 ========================= */
 
 function renderBattle(battle) {
 
-  hide("loadingCard");
-  hide("errorCard");
+  /*
+    पहले सभी states बंद।
+    इससे Waiting + Ready + Error
+    एक साथ दिखाई नहीं देंगे।
+  */
+
+  hideAllStates();
 
   show("matchCard");
 
 
+  /* =========================
+     PLAYERS
+  ========================= */
+
   const creatorName =
     battle.creator_name ||
     battle.creatorName ||
+    battle.player1 ||
+    battle.player_one_name ||
     "Player 1";
+
 
   const opponentName =
     battle.opponent_name ||
     battle.opponentName ||
     battle.joiner_name ||
-    "Waiting...";
+    battle.player2 ||
+    battle.player_two_name ||
+    "";
 
 
-  document.getElementById(
-    "playerOneName"
-  ).textContent = creatorName;
+  const playerOne =
+    document.getElementById(
+      "playerOneName"
+    );
+
+  if (playerOne) {
+    playerOne.textContent = creatorName;
+  }
 
 
-  document.getElementById(
-    "playerTwoName"
-  ).textContent = opponentName;
+  const playerTwo =
+    document.getElementById(
+      "playerTwoName"
+    );
 
+  if (playerTwo) {
 
-  document.getElementById(
-    "entryAmount"
-  ).textContent = money(
-    battle.entry_fee ??
-    battle.entry_amount ??
-    battle.entryAmount
-  );
-
-
-  document.getElementById(
-    "winningAmount"
-  ).textContent = money(
-    battle.winning_prize ??
-    battle.prize_amount ??
-    battle.winningPrize
-  );
-
-
-  const status =
-    String(
-      battle.status || "OPEN"
-    ).toUpperCase();
-
-
-  const statusBadge =
-    document.getElementById("statusBadge");
-
-  statusBadge.textContent = status;
-
-
-  hide("waitingSection");
-  hide("readySection");
-  hide("resultSection");
-
-
-  /* =========================
-     OPEN
-  ========================= */
-
-  if (status === "OPEN") {
-
-    show("waitingSection");
-
-    statusBadge.textContent =
-      "WAITING";
-
-    return;
+    playerTwo.textContent =
+      opponentName || "Waiting...";
   }
 
 
   /* =========================
-     JOINED / READY / RUNNING
+     MONEY
   ========================= */
 
-  if (
-    status === "JOINED" ||
-    status === "ROOM_READY" ||
-    status === "RUNNING"
-  ) {
+  const entryAmount =
+    document.getElementById(
+      "entryAmount"
+    );
 
-    const roomCode =
-      battle.room_code ||
-      battle.roomCode ||
-      "";
+  if (entryAmount) {
+
+    entryAmount.textContent =
+      money(
+        battle.entry_fee ??
+        battle.entry_amount ??
+        battle.entryAmount ??
+        battle.entry ??
+        0
+      );
+  }
 
 
-    if (roomCode) {
+  const winningAmount =
+    document.getElementById(
+      "winningAmount"
+    );
 
-      document.getElementById(
-        "roomCode"
-      ).textContent = roomCode;
+  if (winningAmount) {
 
-      show("readySection");
+    winningAmount.textContent =
+      money(
+        battle.winning_prize ??
+        battle.prize_amount ??
+        battle.winningPrize ??
+        battle.prize ??
+        0
+      );
+  }
 
-      statusBadge.textContent =
-        status === "RUNNING"
-          ? "RUNNING"
-          : "READY";
 
-    } else {
+  /* =========================
+     STATUS
+  ========================= */
 
-      show("waitingSection");
+  const status =
+    getBattleStatus(battle);
 
-      statusBadge.textContent =
-        "WAITING ROOM";
-    }
+  const statusBadge =
+    document.getElementById(
+      "statusBadge"
+    );
 
-    return;
+
+  /*
+    अगर backend status खाली है,
+    तो players देखकर state समझेंगे.
+  */
+
+  const hasOpponent =
+    Boolean(
+      opponentName &&
+      opponentName !== "Waiting..." &&
+      opponentName !== "Customer"
+    );
+
+
+  /* =========================
+     ROOM CODE
+  ========================= */
+
+  const roomCode =
+    battle.room_code ||
+    battle.roomCode ||
+    battle.room ||
+    "";
+
+
+  const roomCodeElement =
+    document.getElementById(
+      "roomCode"
+    );
+
+  if (roomCodeElement) {
+
+    roomCodeElement.textContent =
+      roomCode || "--------";
   }
 
 
@@ -393,39 +458,108 @@ function renderBattle(battle) {
      RESULT SUBMITTED
   ========================= */
 
-  if (status === "RESULT_SUBMITTED") {
+  if (
+    status === "RESULT_SUBMITTED" ||
+    status === "RESULT" ||
+    status === "FINISHED" ||
+    status === "COMPLETED"
+  ) {
 
-    const roomCode =
-      battle.room_code ||
-      battle.roomCode ||
-      "";
-
-
-    if (roomCode) {
-
-      document.getElementById(
-        "roomCode"
-      ).textContent = roomCode;
+    if (statusBadge) {
+      statusBadge.textContent =
+        "RESULT";
     }
 
+    if (roomCode) {
+      show("readySection");
+    }
 
-    show("readySection");
     show("resultSection");
-
-    statusBadge.textContent =
-      "RESULT";
 
     return;
   }
 
 
   /* =========================
-     OTHER
+     READY / RUNNING
   ========================= */
 
-  showError(
-    `यह battle अभी ${status} स्थिति में है।`
+  if (
+    status === "READY" ||
+    status === "ROOM_READY" ||
+    status === "MATCH_READY" ||
+    status === "RUNNING" ||
+    status === "JOINED"
+  ) {
+
+    if (roomCode) {
+
+      show("readySection");
+
+      if (statusBadge) {
+        statusBadge.textContent =
+          status === "RUNNING"
+            ? "RUNNING"
+            : "READY";
+      }
+
+    } else {
+
+      show("waitingSection");
+
+      if (statusBadge) {
+        statusBadge.textContent =
+          "WAITING";
+      }
+    }
+
+    return;
+  }
+
+
+  /* =========================
+     OPEN / WAITING
+  ========================= */
+
+  if (
+    status === "" ||
+    status === "OPEN" ||
+    status === "WAITING" ||
+    status === "WAITING_ROOM"
+  ) {
+
+    show("waitingSection");
+
+    if (statusBadge) {
+      statusBadge.textContent =
+        "WAITING";
+    }
+
+    return;
+  }
+
+
+  /* =========================
+     UNKNOWN
+  ========================= */
+
+  /*
+    Unknown status को Match Not Found
+    नहीं बनाएँगे।
+  */
+
+  console.warn(
+    "Unknown battle status:",
+    status,
+    battle
   );
+
+  show("waitingSection");
+
+  if (statusBadge) {
+    statusBadge.textContent =
+      "WAITING";
+  }
 }
 
 
@@ -435,25 +569,41 @@ function renderBattle(battle) {
 
 async function copyRoomCode() {
 
-  const code =
+  const element =
     document.getElementById(
       "roomCode"
-    ).textContent.trim();
+    );
 
+  if (!element) return;
 
-  if (!code || code === "--------") {
+  const code =
+    element.textContent.trim();
+
+  if (
+    !code ||
+    code === "--------"
+  ) {
+
+    alert(
+      "Room Code अभी available नहीं है।"
+    );
+
     return;
   }
 
 
   try {
 
-    await navigator.clipboard.writeText(code);
+    await navigator.clipboard.writeText(
+      code
+    );
 
     const button =
       document.getElementById(
         "copyRoomBtn"
       );
+
+    if (!button) return;
 
     const oldText =
       button.textContent;
@@ -461,12 +611,8 @@ async function copyRoomCode() {
     button.textContent =
       "✅ Room Code Copied";
 
-
     setTimeout(() => {
-
-      button.textContent =
-        oldText;
-
+      button.textContent = oldText;
     }, 1800);
 
   } catch {
@@ -484,13 +630,20 @@ async function copyRoomCode() {
 
 function openLudoKing() {
 
-  const code =
+  const element =
     document.getElementById(
       "roomCode"
-    ).textContent.trim();
+    );
 
+  if (!element) return;
 
-  if (!code || code === "--------") {
+  const code =
+    element.textContent.trim();
+
+  if (
+    !code ||
+    code === "--------"
+  ) {
 
     alert(
       "Room Code अभी available नहीं है।"
@@ -503,11 +656,6 @@ function openLudoKing() {
   alert(
     `Ludo King खोलें और Room Code ${code} डालकर match खेलें।`
   );
-
-  /*
-    Mobile पर user manually
-    Ludo King app खोल सकता है.
-  */
 }
 
 
@@ -526,15 +674,15 @@ function openResultPage() {
     return;
   }
 
-
   localStorage.setItem(
     "balajiBattleId",
     battleId
   );
 
-
   window.location.href =
-    `result.html?id=${encodeURIComponent(battleId)}`;
+    `result.html?id=${encodeURIComponent(
+      battleId
+    )}`;
 }
 
 
@@ -584,6 +732,8 @@ document
     () => {
 
       hide("errorCard");
+      hide("matchCard");
+
       show("loadingCard");
 
       loadBattle();
@@ -595,6 +745,10 @@ document
    START
 ========================= */
 
+hideAllStates();
+
+show("loadingCard");
+
 loadBattle();
 
 
@@ -602,11 +756,14 @@ loadBattle();
    AUTO REFRESH
 ========================= */
 
-refreshTimer =
-  setInterval(() => {
+if (refreshTimer) {
+  clearInterval(refreshTimer);
+}
 
-    if (!document.hidden) {
-      loadBattle();
-    }
+refreshTimer = setInterval(() => {
 
-  }, 5000);
+  if (!document.hidden) {
+    loadBattle();
+  }
+
+}, 5000);
