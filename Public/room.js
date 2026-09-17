@@ -1,517 +1,714 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* =========================================================
+   BALAJI LUDO KING
+   ROOM / BATTLE RESULT SYSTEM
+========================================================= */
+
+const API_BASE = "";
+
+const battleId =
+  localStorage.getItem("balajiBattleId") ||
+  localStorage.getItem("balajiSelectedBattle");
+
+const $ = (id) => document.getElementById(id);
+
+let battle = null;
+let refreshTimer = null;
+
+
+/* =========================================================
+   COMMON
+========================================================= */
+
+function getToken() {
+  return (
+    localStorage.getItem("balajiToken") ||
+    localStorage.getItem("token") ||
+    localStorage.getItem("authToken") ||
+    ""
+  );
 }
 
-html,
-body {
-  width: 100%;
-  min-height: 100%;
+function showMessage(message, success = false) {
+  const box = $("roomCodeMessage");
+
+  if (!box) return;
+
+  box.textContent = message;
+  box.style.color = success ? "#86efac" : "#fca5a5";
 }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(124, 58, 237, .25), transparent 35%),
-    linear-gradient(180deg, #100b18 0%, #191025 45%, #0d0913 100%);
-  color: #ffffff;
-  padding-bottom: 90px;
-}
-
-/* =========================
-   HEADER
-========================= */
-
-.room-header {
-  background: rgba(20, 12, 31, .96);
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
-  padding: 14px 15px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.back-btn {
-  text-decoration: none;
-  color: #fff;
-  background: rgba(255, 255, 255, .10);
-  border: 1px solid rgba(255, 255, 255, .08);
-  padding: 9px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.brand {
-  min-width: 0;
-}
-
-.brand h1 {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: .2px;
-}
-
-.brand p {
-  margin-top: 3px;
-  color: #b9aec7;
-  font-size: 10px;
-}
-
-/* =========================
-   MAIN
-========================= */
-
-.room-container {
-  width: 100%;
-  max-width: 520px;
-  margin: auto;
-  padding: 15px;
-}
-
-.game-title {
-  margin-bottom: 13px;
-}
-
-.game-title h2 {
-  font-size: 21px;
-  font-weight: 800;
-}
-
-.game-title p {
-  margin-top: 4px;
-  color: #aaa0b5;
-  font-size: 11px;
-}
-
-/* =========================
-   APP NOTICE
-========================= */
-
-.app-notice {
-  background: linear-gradient(135deg, #39205b, #25143c);
-  border: 1px solid rgba(185, 137, 255, .22);
-  border-radius: 16px;
-  padding: 14px;
-  margin-bottom: 14px;
-}
-
-.app-notice strong {
-  display: block;
-  font-size: 13px;
-}
-
-.app-notice p {
-  margin-top: 6px;
-  color: #cfc3dc;
-  font-size: 11px;
-  line-height: 1.55;
-}
-
-/* =========================
-   CARD
-========================= */
-
-.card {
-  background: rgba(255, 255, 255, .055);
-  border: 1px solid rgba(255, 255, 255, .08);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, .20);
-}
-
-.card-title {
-  font-size: 15px;
-  font-weight: 800;
-  margin-bottom: 14px;
-}
-
-/* =========================
-   BATTLE INFORMATION
-========================= */
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 9px;
-}
-
-.info-box {
-  background: rgba(0, 0, 0, .18);
-  border-radius: 12px;
-  padding: 11px 8px;
-  text-align: center;
-}
-
-.info-box small {
-  display: block;
-  color: #9f94aa;
-  font-size: 9px;
-  margin-bottom: 5px;
-}
-
-.info-box strong {
-  display: block;
-  color: #fff;
-  font-size: 13px;
-}
-
-/* =========================
-   PLAYERS
-========================= */
-
-.players {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 9px;
-}
-
-.player-box {
-  background: rgba(0, 0, 0, .18);
-  border-radius: 13px;
-  padding: 12px 9px;
-  text-align: center;
-  min-width: 0;
-}
-
-.player-icon {
-  font-size: 23px;
-  margin-bottom: 5px;
-}
-
-.player-name {
-  display: block;
-  font-size: 12px;
-  font-weight: 800;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.player-status {
-  display: block;
-  margin-top: 4px;
-  color: #aaa0b5;
-  font-size: 9px;
-}
-
-.vs {
-  font-size: 11px;
-  color: #a99caf;
-  font-weight: 800;
-}
-
-/* =========================
-   ROOM CODE
-========================= */
-
-.room-code-card {
-  background:
-    linear-gradient(135deg, rgba(109, 40, 217, .25), rgba(67, 32, 107, .18));
-}
-
-.room-code-label {
-  color: #aaa0b5;
-  font-size: 10px;
-  margin-bottom: 8px;
-}
-
-.room-code-input-row {
-  display: flex;
-  gap: 8px;
-}
-
-#roomCodeInput {
-  flex: 1;
-  min-width: 0;
-  height: 46px;
-  border: 1px solid rgba(255, 255, 255, .13);
-  border-radius: 11px;
-  background: rgba(0, 0, 0, .22);
-  color: #fff;
-  outline: none;
-  padding: 0 12px;
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  text-align: center;
-}
-
-#roomCodeInput::placeholder {
-  color: #777080;
-  letter-spacing: 1px;
-}
-
-#roomCodeInput:focus {
-  border-color: #8b5cf6;
-}
-
-#setRoomCodeBtn {
-  height: 46px;
-  border: none;
-  border-radius: 11px;
-  padding: 0 14px;
-  background: linear-gradient(135deg, #7c3aed, #5b21b6);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-#setRoomCodeBtn:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-.room-code-message {
-  min-height: 15px;
-  margin-top: 7px;
-  text-align: center;
-  font-size: 10px;
-  color: #cfc3dc;
-}
-
-.current-code {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, .08);
-  text-align: center;
-}
-
-.current-code small {
-  display: block;
-  color: #9990a3;
-  font-size: 9px;
-  margin-bottom: 6px;
-}
-
-#roomCode {
-  display: block;
-  font-size: 27px;
-  font-weight: 900;
-  letter-spacing: 5px;
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-#copyCodeBtn {
-  border: 1px solid rgba(255, 255, 255, .12);
-  background: rgba(255, 255, 255, .08);
-  color: #fff;
-  border-radius: 9px;
-  padding: 9px 15px;
-  font-size: 10px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-/* =========================
-   WAITING CARD
-========================= */
-
-.waiting-card {
-  text-align: center;
-  background: rgba(255, 255, 255, .045);
-}
-
-.waiting-icon {
-  font-size: 30px;
-  margin-bottom: 7px;
-}
-
-.waiting-card h3 {
-  font-size: 15px;
-}
-
-.waiting-card p {
-  margin-top: 5px;
-  color: #aaa0b5;
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-/* =========================
-   APP PLAY CARD
-========================= */
-
-.app-play-card {
-  background: linear-gradient(135deg, #241238, #351c50);
-  border: 1px solid rgba(168, 85, 247, .25);
-}
-
-.app-play-card h3 {
-  font-size: 16px;
-}
-
-.app-play-card p {
-  margin-top: 6px;
-  color: #c6bacf;
-  font-size: 10px;
-  line-height: 1.55;
-}
-
-.ludo-app-note {
-  margin-top: 11px;
-  padding: 10px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, .18);
-  color: #e5dbea;
-  font-size: 10px;
-  text-align: center;
-}
-
-/* =========================
-   RESULT
-========================= */
-
-.result-card h3 {
-  font-size: 16px;
-  margin-bottom: 6px;
-}
-
-.result-card > p {
-  color: #aaa0b5;
-  font-size: 10px;
-  line-height: 1.5;
-  margin-bottom: 13px;
-}
-
-.result-buttons {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.result-btn {
-  min-height: 44px;
-  border: none;
-  border-radius: 11px;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.won-btn {
-  background: linear-gradient(135deg, #16a34a, #15803d);
-}
-
-.lost-btn {
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-}
-
-.cancel-result-btn {
-  background: linear-gradient(135deg, #6b7280, #374151);
-}
-
-.result-btn:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-/* =========================
-   CANCEL
-========================= */
-
-.cancel-match-btn {
-  width: 100%;
-  height: 45px;
-  border: 1px solid rgba(239, 68, 68, .28);
-  border-radius: 11px;
-  background: rgba(127, 29, 29, .18);
-  color: #fca5a5;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.cancel-match-btn:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-}
-
-/* =========================
-   BOTTOM NAV
-========================= */
-
-.bottom-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 70px;
-  background: rgba(18, 11, 27, .98);
-  border-top: 1px solid rgba(255, 255, 255, .09);
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  z-index: 100;
-  backdrop-filter: blur(12px);
-}
-
-.nav-item {
-  text-decoration: none;
-  color: #8f8598;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 19px;
-}
-
-.nav-item small {
-  font-size: 9px;
-}
-
-.nav-item.active {
-  color: #a78bfa;
-}
-
-/* =========================
-   HIDDEN
-========================= */
-
-.hidden {
-  display: none !important;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 380px) {
-
-  .room-container {
-    padding: 12px;
+async function api(url, options = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+
+  const token = getToken();
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
 
-  .info-grid {
-    gap: 6px;
+  const response = await fetch(API_BASE + url, {
+    ...options,
+    headers
+  });
+
+  let data = {};
+
+  try {
+    data = await response.json();
+  } catch (e) {
+    data = {};
   }
 
-  .info-box {
-    padding: 10px 5px;
+  if (!response.ok) {
+    throw new Error(data.error || data.message || "Something went wrong");
   }
 
-  .info-box strong {
-    font-size: 12px;
+  return data;
+}
+
+
+/* =========================================================
+   BATTLE LOAD
+========================================================= */
+
+async function loadBattle() {
+  if (!battleId) {
+    alert("Battle not found.");
+    window.location.href = "battle.html";
+    return;
   }
 
-  #setRoomCodeBtn {
-    padding: 0 10px;
-  }
+  try {
+    const data = await api(
+      `/api/battles/${encodeURIComponent(battleId)}`
+    );
 
-  .result-buttons {
-    gap: 6px;
-  }
+    battle = data.battle || data;
 
-  .result-btn {
-    font-size: 9px;
+    renderBattle();
+
+  } catch (error) {
+    console.error(error);
+    showMessage(error.message || "Battle load failed.");
   }
 }
+
+
+/* =========================================================
+   RENDER BATTLE
+========================================================= */
+
+function renderBattle() {
+  if (!battle) return;
+
+  /* ---------- Amount ---------- */
+
+  if ($("entryAmount")) {
+    $("entryAmount").textContent =
+      `${Number(battle.entry_amount || 0).toFixed(2)} BALAJI LUDO Coin`;
+  }
+
+  if ($("winningPrize")) {
+    $("winningPrize").textContent =
+      `${Number(battle.winning_prize || 0).toFixed(2)} BALAJI LUDO Coin`;
+  }
+
+  if ($("roomStatus")) {
+    $("roomStatus").textContent =
+      formatStatus(battle.status);
+  }
+
+
+  /* ---------- Players ---------- */
+
+  if ($("player1Name")) {
+    $("player1Name").textContent =
+      battle.creator_name || "Player 1";
+  }
+
+  if ($("player2Name")) {
+    $("player2Name").textContent =
+      battle.opponent_name || "Waiting...";
+  }
+
+  if ($("player1Status")) {
+    $("player1Status").textContent =
+      "Player 1";
+  }
+
+  if ($("player2Status")) {
+    $("player2Status").textContent =
+      battle.opponent_id ? "Joined" : "Waiting";
+  }
+
+
+  /* ---------- Room Code ---------- */
+
+  const code = battle.room_code || "";
+
+  if ($("roomCode")) {
+    $("roomCode").textContent =
+      code || "WAITING";
+  }
+
+  if ($("roomCodeInput")) {
+    $("roomCodeInput").value = "";
+  }
+
+
+  /* ---------- UI State ---------- */
+
+  const status = String(battle.status || "").toUpperCase();
+
+  const hasOpponent = !!battle.opponent_id;
+  const hasRoomCode = !!battle.room_code;
+
+  const isCancelled =
+    status === "CANCELLED" ||
+    status === "CANCELED";
+
+  const resultSubmitted =
+    !!battle.result_status ||
+    !!battle.result_submitted_at;
+
+  /* Waiting card */
+
+  if ($("waitingCard")) {
+    $("waitingCard").classList.toggle(
+      "hidden",
+      hasOpponent && hasRoomCode
+    );
+  }
+
+
+  /* App play card */
+
+  if ($("appPlayCard")) {
+    $("appPlayCard").classList.toggle(
+      "hidden",
+      !hasOpponent || !hasRoomCode || isCancelled
+    );
+  }
+
+
+  /* Result card */
+
+  if ($("resultCard")) {
+    $("resultCard").classList.toggle(
+      "hidden",
+      !hasOpponent ||
+      !hasRoomCode ||
+      isCancelled ||
+      resultSubmitted
+    );
+  }
+
+
+  /* Cancel Match */
+
+  if ($("cancelBtn")) {
+    $("cancelBtn").disabled =
+      hasRoomCode ||
+      isCancelled ||
+      resultSubmitted;
+  }
+
+
+  /* Room Code input */
+
+  if ($("roomCodeInput")) {
+    $("roomCodeInput").disabled =
+      hasRoomCode ||
+      !isCreator() ||
+      isCancelled ||
+      resultSubmitted;
+  }
+
+  if ($("setRoomCodeBtn")) {
+    $("setRoomCodeBtn").disabled =
+      hasRoomCode ||
+      !isCreator() ||
+      isCancelled ||
+      resultSubmitted;
+  }
+
+
+  /* Result buttons */
+
+  setResultButtonsDisabled(
+    resultSubmitted || isCancelled
+  );
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function formatStatus(status) {
+  const value = String(status || "").toUpperCase();
+
+  const map = {
+    OPEN: "Open",
+    JOINED: "Opponent Joined",
+    WAITING: "Waiting",
+    ROOM_READY: "Room Ready",
+    PLAYING: "Playing",
+    RESULT_PENDING: "Result Pending",
+    WON: "Won",
+    LOST: "Lost",
+    CANCELLED: "Cancelled",
+    CANCELED: "Cancelled",
+    COMPLETED: "Completed"
+  };
+
+  return map[value] || status || "Unknown";
+}
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+function getCurrentUserId() {
+  return (
+    localStorage.getItem("balajiUserId") ||
+    localStorage.getItem("userId") ||
+    localStorage.getItem("customerId") ||
+    ""
+  );
+}
+
+function isCreator() {
+  const currentUserId = getCurrentUserId();
+
+  if (!currentUserId || !battle) {
+    return false;
+  }
+
+  return String(currentUserId) === String(battle.creator_id);
+}
+
+
+/* =========================================================
+   SET ROOM CODE
+========================================================= */
+
+async function setRoomCode() {
+  if (!battleId) return;
+
+  const input = $("roomCodeInput");
+
+  if (!input) return;
+
+  const code = input.value.trim();
+
+  if (!/^\d{8}$/.test(code)) {
+    showMessage(
+      "Room Code exactly 8 digits का होना चाहिए।"
+    );
+    return;
+  }
+
+  const button = $("setRoomCodeBtn");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Saving...";
+  }
+
+  try {
+    await api("/api/battles/room-code", {
+      method: "POST",
+      body: JSON.stringify({
+        battleId,
+        roomCode: code
+      })
+    });
+
+    showMessage(
+      "Room Code successfully set.",
+      true
+    );
+
+    await loadBattle();
+
+  } catch (error) {
+    console.error(error);
+
+    showMessage(
+      error.message || "Room Code save failed."
+    );
+
+  } finally {
+    if (button && !battle?.room_code) {
+      button.disabled = false;
+      button.textContent = "Set";
+    }
+  }
+}
+
+
+/* =========================================================
+   COPY ROOM CODE
+========================================================= */
+
+async function copyRoomCode() {
+  const code =
+    battle?.room_code ||
+    ($("roomCode") ? $("roomCode").textContent : "");
+
+  if (!code || code === "WAITING") {
+    alert("Room Code अभी available नहीं है.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(code);
+
+    if ($("copyCodeBtn")) {
+      $("copyCodeBtn").textContent = "Copied ✓";
+
+      setTimeout(() => {
+        if ($("copyCodeBtn")) {
+          $("copyCodeBtn").textContent = "Copy Code";
+        }
+      }, 1500);
+    }
+
+  } catch (error) {
+    alert("Room Code: " + code);
+  }
+}
+
+
+/* =========================================================
+   RESULT BUTTONS
+========================================================= */
+
+function setResultButtonsDisabled(disabled) {
+  const buttons = [
+    $("wonBtn"),
+    $("lostBtn"),
+    $("cancelResultBtn")
+  ];
+
+  buttons.forEach((button) => {
+    if (button) {
+      button.disabled = disabled;
+    }
+  });
+}
+
+
+/* =========================================================
+   SUBMIT RESULT
+========================================================= */
+
+async function submitResult(result) {
+  if (!battleId) return;
+
+  if (!battle?.room_code) {
+    alert("पहले Room Code आने के बाद Ludo King App में game खेलें.");
+    return;
+  }
+
+  if (battle.result_status) {
+    alert("Result पहले ही submit हो चुका है.");
+    return;
+  }
+
+  let screenshot = "";
+
+  if (result === "WON") {
+    screenshot = prompt(
+      "Win screenshot का link डालें:"
+    );
+
+    if (screenshot === null) {
+      return;
+    }
+
+    screenshot = screenshot.trim();
+
+    if (!screenshot) {
+      alert(
+        "Win result के लिए screenshot जरूरी है."
+      );
+      return;
+    }
+  }
+
+  let confirmText = "";
+
+  if (result === "WON") {
+    confirmText =
+      "क्या आप I WON result submit करना चाहते हैं?\n\nResult submit होने के बाद इसे बदला नहीं जा सकेगा.";
+  }
+
+  if (result === "LOST") {
+    confirmText =
+      "क्या आप I LOST result submit करना चाहते हैं?\n\nResult submit होने के बाद इसे बदला नहीं जा सकेगा.";
+  }
+
+  if (!confirm(confirmText)) {
+    return;
+  }
+
+  setResultButtonsDisabled(true);
+
+  try {
+    await api("/api/battles/result", {
+      method: "POST",
+      body: JSON.stringify({
+        battleId,
+        result,
+        screenshot
+      })
+    });
+
+    alert(
+      result === "WON"
+        ? "I WON result submit हो गया."
+        : "I LOST result submit हो गया."
+    );
+
+    await loadBattle();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      error.message || "Result submit failed."
+    );
+
+    setResultButtonsDisabled(false);
+  }
+}
+
+
+/* =========================================================
+   CANCEL RESULT
+========================================================= */
+
+async function submitCancelResult() {
+  if (!battleId) return;
+
+  const reason = prompt(
+    "Cancel का reason लिखें:"
+  );
+
+  if (reason === null) {
+    return;
+  }
+
+  const cleanReason = reason.trim();
+
+  if (!cleanReason) {
+    alert("Cancel reason जरूरी है.");
+    return;
+  }
+
+  const confirmCancel = confirm(
+    "क्या आप Battle Cancel करना चाहते हैं?\n\nCancel submit होने के बाद बाद में game शुरू करने पर Admin responsibility नहीं लेगा."
+  );
+
+  if (!confirmCancel) {
+    return;
+  }
+
+  setResultButtonsDisabled(true);
+
+  try {
+    await api("/api/battles/cancel", {
+      method: "POST",
+      body: JSON.stringify({
+        battleId,
+        reason: cleanReason
+      })
+    });
+
+    alert(
+      "Cancel request submit हो गई."
+    );
+
+    await loadBattle();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      error.message || "Cancel failed."
+    );
+
+    setResultButtonsDisabled(false);
+  }
+}
+
+
+/* =========================================================
+   CANCEL MATCH
+========================================================= */
+
+async function cancelMatch() {
+  if (!battleId) return;
+
+  const reason = prompt(
+    "Cancel Match का reason लिखें:\n\nExample:\nNo player join\nNo room code\nOpponent error"
+  );
+
+  if (reason === null) {
+    return;
+  }
+
+  const cleanReason = reason.trim();
+
+  if (!cleanReason) {
+    alert("Cancel reason जरूरी है.");
+    return;
+  }
+
+  if (!confirm(
+    "क्या आप इस Battle को Cancel करना चाहते हैं?"
+  )) {
+    return;
+  }
+
+  const button = $("cancelBtn");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Cancelling...";
+  }
+
+  try {
+    await api("/api/battles/cancel", {
+      method: "POST",
+      body: JSON.stringify({
+        battleId,
+        reason: cleanReason
+      })
+    });
+
+    alert("Battle Cancel request submit हो गई.");
+
+    await loadBattle();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      error.message || "Cancel failed."
+    );
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Cancel Match";
+    }
+  }
+}
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function goBack() {
+  window.location.href = "battle.html";
+}
+
+
+/* =========================================================
+   AUTO REFRESH
+========================================================= */
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+
+  refreshTimer = setInterval(() => {
+    loadBattle();
+  }, 5000);
+}
+
+function stopAutoRefresh() {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  $("backBtn")?.addEventListener(
+    "click",
+    (event) => {
+      event.preventDefault();
+      goBack();
+    }
+  );
+
+  $("setRoomCodeBtn")?.addEventListener(
+    "click",
+    setRoomCode
+  );
+
+  $("copyCodeBtn")?.addEventListener(
+    "click",
+    copyRoomCode
+  );
+
+  $("wonBtn")?.addEventListener(
+    "click",
+    () => submitResult("WON")
+  );
+
+  $("lostBtn")?.addEventListener(
+    "click",
+    () => submitResult("LOST")
+  );
+
+  $("cancelResultBtn")?.addEventListener(
+    "click",
+    submitCancelResult
+  );
+
+  $("cancelBtn")?.addEventListener(
+    "click",
+    cancelMatch
+  );
+
+
+  /* Only numbers in Room Code */
+
+  $("roomCodeInput")?.addEventListener(
+    "input",
+    (event) => {
+      event.target.value =
+        event.target.value
+          .replace(/\D/g, "")
+          .slice(0, 8);
+    }
+  );
+
+
+  loadBattle();
+  startAutoRefresh();
+});
+
+
+/* =========================================================
+   CLEANUP
+========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  stopAutoRefresh
+);
