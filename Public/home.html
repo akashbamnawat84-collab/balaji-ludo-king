@@ -1,498 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <meta
-    name="theme-color"
-    content="#050505">
-
-  <title>Balaji Ludo King</title>
-
-  <link
-    rel="stylesheet"
-    href="home.css">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balaji Ludo King - Match Room</title>
+  <link rel="stylesheet" href="room.css">
 </head>
-
 
 <body>
 
+  <header class="topbar">
+    <button class="back-btn" id="backBtn">←</button>
 
-  <!-- =========================================
-       TOP HEADER
-  ========================================== -->
-
-  <header class="top-header">
-
-
-    <!-- LEFT -->
-
-    <div class="header-left">
-
-
-      <!-- MENU -->
-
-      <button
-        class="menu-button"
-        type="button">
-
-        ☰
-
-      </button>
-
-
-      <!-- LOGO -->
-
-      <a
-        href="home.html"
-        class="brand-logo-link">
-
-        <div class="brand-logo">
-
-          <div class="logo-crown">
-            👑
-          </div>
-
-          <div class="logo-dice">
-            🎲
-          </div>
-
-          <div class="logo-text">
-
-            BALAJI
-
-            <span>
-              LUDO
-            </span>
-
-          </div>
-
-        </div>
-
-      </a>
-
-
+    <div class="brand">
+      <div class="crown">👑</div>
+      <div>
+        <div class="brand-name">BALAJI</div>
+        <div class="brand-sub">LUDO KING</div>
+      </div>
     </div>
 
-
-    <!-- RIGHT -->
-
-    <div class="header-actions">
-
-
-      <!-- WALLET -->
-
-      <a
-        href="wallet.html"
-        class="top-action">
-
-        <span class="action-icon wallet-icon">
-          💼
-        </span>
-
-        <span id="walletBalance">
-          ₹0.00
-        </span>
-
-      </a>
-
-
-      <!-- REFER -->
-
-      <a
-        href="refer.html"
-        class="top-action">
-
-        <span class="action-icon refer-icon">
-          🎁
-        </span>
-
-        <span>
-          ₹54.00
-        </span>
-
-      </a>
-
-
-    </div>
-
-
+    <div class="status-dot"></div>
   </header>
 
+  <main class="room-container">
 
+    <!-- Loading -->
+    <div id="loadingCard" class="card loading-card">
+      <div class="loader">⏳</div>
+      <h2>Loading Match...</h2>
+      <p>Please wait</p>
+    </div>
 
-  <!-- =========================================
-       MAIN CONTENT
-  ========================================== -->
+    <!-- Match Card -->
+    <section id="matchCard" class="card hidden">
 
-  <main class="home-container">
-
-
-    <!-- WELCOME -->
-
-    <section class="welcome-card">
-
-
-      <div class="welcome-icon">
-        🥰
-      </div>
-
-
-      <div>
-
-        <h2>
-          WELCOME TO BALAJI LUDO KING
-        </h2>
-
-        <p>
-          ❤️ BALAJI LUDO FAMILY में आपका स्वागत है।
-          दोस्तों किसी भाई की दिक्कत आ रही हो तो
-          आईडी में एक बार रिफ्रेश मार ले।
-        </p>
-
-      </div>
-
-
-    </section>
-
-
-
-    <!-- =========================================
-         REFER BANNER
-    ========================================== -->
-
-    <section class="referral-banner">
-
-
-      <div class="referral-content">
-
-
-        <span class="referral-title">
-          REFER & EARN
-        </span>
-
-
-        <h2>
-          Earn More
-        </h2>
-
-
-        <p>
-          Invite your friends and get extra rewards.
-        </p>
-
-
-        <div class="reward-row">
-
-
-          <div class="reward-box">
-
-            <strong>
-              5%
-            </strong>
-
-            <small>
-              COMMISSION
-            </small>
-
-          </div>
-
-
-          <div class="reward-box">
-
-            <strong>
-              3%
-            </strong>
-
-            <small>
-              REFERRAL
-            </small>
-
-          </div>
-
-
+      <div class="match-title">
+        <div>
+          <span class="small-label">BATTLE MATCH</span>
+          <h1>Player Match</h1>
         </div>
 
-
+        <span id="statusBadge" class="status-badge">WAITING</span>
       </div>
 
+      <div class="players">
 
-      <div class="referral-image">
-        👩🏻
-      </div>
-
-
-    </section>
-
-
-
-    <!-- =========================================
-         FEATURED GAMES
-    ========================================== -->
-
-    <section class="games-section">
-
-
-      <div class="section-heading">
-
-        <h2>
-          🎮 Featured Games
-        </h2>
-
-        <span>
-          View All
-        </span>
-
-      </div>
-
-
-
-      <div class="games-row">
-
-
-        <!-- LUDO -->
-
-        <div class="game-card">
-
-
-          <div class="game-image ludo-image">
-
-            <span class="live-badge">
-              ● LIVE
-            </span>
-
-            <div class="ludo-logo">
-              🎲
-            </div>
-
-            <strong>
-              LUDO
-            </strong>
-
-            <small>
-              CLASSIC
-            </small>
-
-          </div>
-
-
-          <div class="game-card-content">
-
-
-            <h3>
-              Ludo Classic
-            </h3>
-
-
-            <p>
-              2 Player Battle
-            </p>
-
-
-            <button
-              type="button"
-              class="play-button"
-              id="playNowBtn">
-
-              Play Now
-
-            </button>
-
-
-          </div>
-
-
+        <div class="player player-one">
+          <div class="avatar">👤</div>
+          <div class="player-label">PLAYER 1</div>
+          <div id="playerOneName" class="player-name">Player 1</div>
         </div>
 
-
-
-        <!-- SUPPORT -->
-
-        <div class="game-card">
-
-
-          <div class="game-image support-image">
-
-            <span class="live-badge support-live">
-              ● LIVE
-            </span>
-
-            <div class="support-logo">
-              💬
-            </div>
-
-            <strong>
-              SUPPORT
-            </strong>
-
-          </div>
-
-
-          <div class="game-card-content">
-
-
-            <h3>
-              Support
-            </h3>
-
-
-            <p>
-              Need Help?
-            </p>
-
-
-            <button
-              type="button"
-              class="support-button"
-              id="supportBtn">
-
-              Support
-
-            </button>
-
-
-          </div>
-
-
+        <div class="vs">
+          <span>VS</span>
         </div>
 
+        <div class="player player-two">
+          <div class="avatar">👤</div>
+          <div class="player-label">PLAYER 2</div>
+          <div id="playerTwoName" class="player-name">Waiting...</div>
+        </div>
 
       </div>
 
+      <div class="battle-info">
 
-    </section>
+        <div class="info-box">
+          <span>Entry Fee</span>
+          <strong id="entryAmount">₹0</strong>
+        </div>
 
+        <div class="info-box">
+          <span>Winning Prize</span>
+          <strong id="winningAmount">₹0</strong>
+        </div>
 
-
-    <!-- INFO -->
-
-    <section class="info-card">
-
-
-      <div class="info-icon">
-        🏆
       </div>
 
+      <!-- Waiting -->
+      <div id="waitingSection" class="room-section">
 
-      <div>
+        <div class="waiting-icon">⏳</div>
 
-        <h3>
-          Play. Battle. Win.
-        </h3>
+        <h2>Waiting for Player 2</h2>
 
         <p>
-          Enjoy exciting 2 Player Ludo battles
-          with Balaji Ludo King.
+          Share your battle details with your opponent.
+          The match will become ready after both players join.
         </p>
+
+        <div class="refresh-note">
+          🔄 Match status refreshes automatically
+        </div>
 
       </div>
 
+      <!-- Room Ready -->
+      <div id="readySection" class="room-section hidden">
+
+        <div class="ready-icon">🎮</div>
+
+        <h2>Match Ready!</h2>
+
+        <p class="ready-text">
+          Both players have joined. Use the room code below
+          to play the match in the Ludo King app.
+        </p>
+
+        <div class="room-code-box">
+          <span>ROOM CODE</span>
+          <strong id="roomCode">--------</strong>
+        </div>
+
+        <button id="copyRoomBtn" class="copy-btn">
+          📋 Copy Room Code
+        </button>
+
+        <button id="playLudoBtn" class="play-btn">
+          🎲 Play in Ludo King
+        </button>
+
+        <div class="play-note">
+          Open the Ludo King app and enter the room code.
+        </div>
+
+      </div>
+
+      <!-- Result -->
+      <div id="resultSection" class="room-section hidden">
+
+        <div class="result-icon">🏆</div>
+
+        <h2>Match Finished?</h2>
+
+        <p>
+          After completing the game in Ludo King,
+          submit your result with your screenshot.
+        </p>
+
+        <button id="resultBtn" class="result-btn">
+          Submit Match Result
+        </button>
+
+      </div>
 
     </section>
 
+    <!-- Error -->
+    <div id="errorCard" class="card error-card hidden">
+      <div class="error-icon">⚠️</div>
+      <h2>Match Not Found</h2>
+      <p id="errorMessage">
+        We could not load this battle.
+      </p>
+
+      <button id="retryBtn" class="retry-btn">
+        Try Again
+      </button>
+    </div>
 
   </main>
 
-
-
-  <!-- =========================================
-       BOTTOM NAVIGATION
-  ========================================== -->
-
   <nav class="bottom-nav">
 
-
-    <a
-      href="wallet.html"
-      class="nav-item">
-
-      <span>
-        💼
-      </span>
-
-      <small>
-        Wallet
-      </small>
-
+    <a href="home.html">
+      <span>🏠</span>
+      <small>Home</small>
     </a>
 
-
-    <a
-      href="refer.html"
-      class="nav-item">
-
-      <span>
-        🎁
-      </span>
-
-      <small>
-        Refer
-      </small>
-
+    <a href="refer.html">
+      <span>👥</span>
+      <small>Refer</small>
     </a>
 
-
-    <a
-      href="home.html"
-      class="nav-item active">
-
-      <span>
-        🏠
-      </span>
-
-      <small>
-        Home
-      </small>
-
+    <a href="wallet.html">
+      <span>💰</span>
+      <small>Wallet</small>
     </a>
 
-
-    <a
-      href="support.html"
-      class="nav-item">
-
-      <span>
-        🎧
-      </span>
-
-      <small>
-        Support
-      </small>
-
+    <a href="support.html">
+      <span>💬</span>
+      <small>Support</small>
     </a>
-
-
-    <a
-      href="profile.html"
-      class="nav-item">
-
-      <span>
-        👤
-      </span>
-
-      <small>
-        Profile
-      </small>
-
-    </a>
-
 
   </nav>
 
-
-
-  <!-- HOME JAVASCRIPT -->
-
-  <script src="home.js"></script>
-
+  <script src="room.js"></script>
 
 </body>
-
 </html>
