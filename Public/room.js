@@ -1,804 +1,517 @@
-// =========================================================
-// BALAJI LUDO KING
-// ROOM FRONTEND
-// =========================================================
-
-const API_BASE = "";
-
-const backBtn = document.getElementById("backBtn");
-const copyCodeBtn = document.getElementById("copyCodeBtn");
-const cancelBtn = document.getElementById("cancelBtn");
-const startGameBtn = document.getElementById("startGameBtn");
-
-const roomCodeElement = document.getElementById("roomCode");
-const roomStatus = document.getElementById("roomStatus");
-
-const player1Name = document.getElementById("player1Name");
-const player2Name = document.getElementById("player2Name");
-
-const player1Status = document.getElementById("player1Status");
-const player2Status = document.getElementById("player2Status");
-
-const waitingCard = document.getElementById("waitingCard");
-
-
-// =========================================================
-// HELPERS
-// =========================================================
-
-function getToken() {
-  return (
-    localStorage.getItem("balajiToken") ||
-    localStorage.getItem("token") ||
-    localStorage.getItem("authToken") ||
-    ""
-  );
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-function getCustomerId() {
-  return (
-    localStorage.getItem("balajiCustomerId") ||
-    localStorage.getItem("customerId") ||
-    localStorage.getItem("userId") ||
-    ""
-  );
+html,
+body {
+  width: 100%;
+  min-height: 100%;
 }
 
-function getPlayerName() {
-  return (
-    localStorage.getItem("balajiPlayerName") ||
-    localStorage.getItem("playerName") ||
-    localStorage.getItem("customerName") ||
-    "Customer"
-  );
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, .25), transparent 35%),
+    linear-gradient(180deg, #100b18 0%, #191025 45%, #0d0913 100%);
+  color: #ffffff;
+  padding-bottom: 90px;
 }
 
-function escapeHtml(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+/* =========================
+   HEADER
+========================= */
+
+.room-header {
+  background: rgba(20, 12, 31, .96);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  padding: 14px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-async function api(path, options = {}) {
-
-  const headers = {
-    "Content-Type": "application/json",
-    ...(options.headers || {})
-  };
-
-  const token = getToken();
-
-  if (token) {
-    headers.Authorization =
-      "Bearer " + token;
-  }
-
-  const response =
-    await fetch(
-      API_BASE + path,
-      {
-        ...options,
-        headers
-      }
-    );
-
-  let data = {};
-
-  try {
-    data = await response.json();
-  } catch (error) {
-    data = {};
-  }
-
-  if (!response.ok) {
-    throw new Error(
-      data.error ||
-      data.message ||
-      "Something went wrong."
-    );
-  }
-
-  return data;
+.back-btn {
+  text-decoration: none;
+  color: #fff;
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .08);
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-
-// =========================================================
-// SELECTED BATTLE
-// =========================================================
-
-function getSelectedBattle() {
-
-  try {
-
-    const saved =
-      localStorage.getItem(
-        "balajiSelectedBattle"
-      );
-
-    if (!saved) {
-      return null;
-    }
-
-    return JSON.parse(saved);
-
-  } catch (error) {
-
-    console.log(
-      "Battle storage error:",
-      error
-    );
-
-    return null;
-  }
+.brand {
+  min-width: 0;
 }
 
-const selectedBattle =
-  getSelectedBattle();
-
-let battleId =
-  localStorage.getItem(
-    "balajiBattleId"
-  );
-
-if (
-  !battleId &&
-  selectedBattle &&
-  selectedBattle.id
-) {
-
-  battleId =
-    selectedBattle.id;
-
+.brand h1 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: .2px;
 }
 
-
-// =========================================================
-// LOAD BATTLE
-// =========================================================
-
-async function loadBattle() {
-
-  if (!battleId) {
-
-    showError(
-      "Battle information not found."
-    );
-
-    return;
-  }
-
-  try {
-
-    const data =
-      await api(
-        "/api/battles/" +
-        encodeURIComponent(
-          battleId
-        )
-      );
-
-    const battle =
-      data.battle ||
-      data.data ||
-      data;
-
-    if (!battle) {
-
-      showError(
-        "Battle not found."
-      );
-
-      return;
-    }
-
-    localStorage.setItem(
-      "balajiSelectedBattle",
-      JSON.stringify(battle)
-    );
-
-    renderBattle(battle);
-
-  } catch (error) {
-
-    console.log(
-      "Battle load error:",
-      error
-    );
-
-    showError(
-      error.message
-    );
-
-  }
+.brand p {
+  margin-top: 3px;
+  color: #b9aec7;
+  font-size: 10px;
 }
 
-
-// =========================================================
-// RENDER BATTLE
-// =========================================================
-
-function renderBattle(battle) {
-
-  const creator =
-    battle.creator_name ||
-    battle.playerName ||
-    "Player 1";
-
-  const opponent =
-    battle.opponent_name ||
-    "";
-
-  const status =
-    String(
-      battle.status ||
-      "OPEN"
-    ).toUpperCase();
-
-  const code =
-    battle.room_code ||
-    "";
-
-  if (player1Name) {
-    player1Name.textContent =
-      creator;
-  }
-
-  if (player2Name) {
-
-    player2Name.textContent =
-      opponent ||
-      "Waiting for Player 2";
-
-  }
-
-  if (roomStatus) {
-
-    roomStatus.textContent =
-      formatStatus(status);
-
-  }
-
-  if (roomCodeElement) {
-
-    roomCodeElement.textContent =
-      code ||
-      "Waiting for Room Code";
-
-  }
-
-  if (player1Status) {
-    player1Status.textContent =
-      "Ready";
-  }
-
-  if (player2Status) {
-
-    player2Status.textContent =
-      opponent
-        ? "Joined"
-        : "Waiting...";
-
-  }
-
-
-  // -------------------------------------------------------
-  // OPEN
-  // -------------------------------------------------------
-
-  if (status === "OPEN") {
-
-    if (waitingCard) {
-
-      waitingCard.style.display =
-        "block";
-
-      waitingCard.innerHTML = `
-        <div class="loading-circle"></div>
-        <h3>Waiting for Player 2</h3>
-        <p>Another player can join this Battle.</p>
-      `;
-
-    }
-
-    if (startGameBtn) {
-
-      startGameBtn.disabled =
-        true;
-
-      startGameBtn.textContent =
-        "🎮 Waiting for Player 2";
-
-    }
-
-    return;
-  }
-
-
-  // -------------------------------------------------------
-  // JOINED
-  // -------------------------------------------------------
-
-  if (
-    status === "JOINED" ||
-    status === "RUNNING"
-  ) {
-
-    if (waitingCard) {
-
-      waitingCard.style.display =
-        "block";
-
-      waitingCard.innerHTML = `
-        <div class="loading-circle"></div>
-        <h3>Waiting for Room Code</h3>
-        <p>Play ludo in the Ludo King App after the room code is ready.</p>
-      `;
-
-    }
-
-    if (startGameBtn) {
-
-      startGameBtn.disabled =
-        true;
-
-      startGameBtn.textContent =
-        "⏳ Waiting for Room Code";
-
-    }
-
-    return;
-  }
-
-
-  // -------------------------------------------------------
-  // ROOM READY
-  // -------------------------------------------------------
-
-  if (
-    status === "ROOM_READY"
-  ) {
-
-    if (waitingCard) {
-
-      waitingCard.style.display =
-        "block";
-
-      waitingCard.innerHTML = `
-        <div class="loading-circle"></div>
-        <h3>Room Code Ready</h3>
-        <p>Copy the room code and play in the Ludo King App.</p>
-      `;
-
-    }
-
-    if (copyCodeBtn) {
-
-      copyCodeBtn.style.display =
-        "block";
-
-      copyCodeBtn.textContent =
-        "📋 Copy Room Code";
-
-    }
-
-    if (startGameBtn) {
-
-      startGameBtn.disabled =
-        false;
-
-      startGameBtn.textContent =
-        "🎮 Open Battle Result";
-
-    }
-
-    return;
-  }
-
-
-  // -------------------------------------------------------
-  // RESULT SUBMITTED
-  // -------------------------------------------------------
-
-  if (
-    status ===
-    "RESULT_SUBMITTED"
-  ) {
-
-    if (waitingCard) {
-
-      waitingCard.innerHTML = `
-        <div class="loading-circle"></div>
-        <h3>Result Submitted</h3>
-        <p>Your result has been sent to Admin.</p>
-      `;
-
-    }
-
-    if (startGameBtn) {
-
-      startGameBtn.disabled =
-        true;
-
-      startGameBtn.textContent =
-        "✅ Result Submitted";
-
-    }
-
-    return;
-  }
-
-
-  // -------------------------------------------------------
-  // FINAL / CANCELLED
-  // -------------------------------------------------------
-
-  if (
-    status === "FINAL_WIN" ||
-    status === "FINAL_LOSS" ||
-    status === "CANCELLED"
-  ) {
-
-    if (waitingCard) {
-
-      waitingCard.innerHTML = `
-        <h3>Battle Closed</h3>
-        <p>Status: ${escapeHtml(
-          formatStatus(status)
-        )}</p>
-      `;
-
-    }
-
-    if (startGameBtn) {
-
-      startGameBtn.disabled =
-        true;
-
-    }
-
-  }
-
+/* =========================
+   MAIN
+========================= */
+
+.room-container {
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+  padding: 15px;
 }
 
-
-// =========================================================
-// STATUS TEXT
-// =========================================================
-
-function formatStatus(status) {
-
-  const map = {
-
-    OPEN:
-      "Waiting for Player",
-
-    JOINED:
-      "Players Joined",
-
-    RUNNING:
-      "Battle Running",
-
-    ROOM_READY:
-      "Room Code Ready",
-
-    RESULT_SUBMITTED:
-      "Result Submitted",
-
-    FINAL_WIN:
-      "Final Win",
-
-    FINAL_LOSS:
-      "Final Loss",
-
-    CANCELLED:
-      "Cancelled"
-
-  };
-
-  return (
-    map[status] ||
-    status
-  );
+.game-title {
+  margin-bottom: 13px;
 }
 
+.game-title h2 {
+  font-size: 21px;
+  font-weight: 800;
+}
 
-// =========================================================
-// ERROR
-// =========================================================
+.game-title p {
+  margin-top: 4px;
+  color: #aaa0b5;
+  font-size: 11px;
+}
 
-function showError(message) {
+/* =========================
+   APP NOTICE
+========================= */
 
-  if (waitingCard) {
+.app-notice {
+  background: linear-gradient(135deg, #39205b, #25143c);
+  border: 1px solid rgba(185, 137, 255, .22);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
 
-    waitingCard.style.display =
-      "block";
+.app-notice strong {
+  display: block;
+  font-size: 13px;
+}
 
-    waitingCard.innerHTML = `
-      <div class="empty-icon">⚠️</div>
-      <h3>Battle Error</h3>
-      <p>${escapeHtml(message)}</p>
-    `;
+.app-notice p {
+  margin-top: 6px;
+  color: #cfc3dc;
+  font-size: 11px;
+  line-height: 1.55;
+}
 
+/* =========================
+   CARD
+========================= */
+
+.card {
+  background: rgba(255, 255, 255, .055);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .20);
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+
+/* =========================
+   BATTLE INFORMATION
+========================= */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.info-box {
+  background: rgba(0, 0, 0, .18);
+  border-radius: 12px;
+  padding: 11px 8px;
+  text-align: center;
+}
+
+.info-box small {
+  display: block;
+  color: #9f94aa;
+  font-size: 9px;
+  margin-bottom: 5px;
+}
+
+.info-box strong {
+  display: block;
+  color: #fff;
+  font-size: 13px;
+}
+
+/* =========================
+   PLAYERS
+========================= */
+
+.players {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 9px;
+}
+
+.player-box {
+  background: rgba(0, 0, 0, .18);
+  border-radius: 13px;
+  padding: 12px 9px;
+  text-align: center;
+  min-width: 0;
+}
+
+.player-icon {
+  font-size: 23px;
+  margin-bottom: 5px;
+}
+
+.player-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.player-status {
+  display: block;
+  margin-top: 4px;
+  color: #aaa0b5;
+  font-size: 9px;
+}
+
+.vs {
+  font-size: 11px;
+  color: #a99caf;
+  font-weight: 800;
+}
+
+/* =========================
+   ROOM CODE
+========================= */
+
+.room-code-card {
+  background:
+    linear-gradient(135deg, rgba(109, 40, 217, .25), rgba(67, 32, 107, .18));
+}
+
+.room-code-label {
+  color: #aaa0b5;
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+
+.room-code-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+#roomCodeInput {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 11px;
+  background: rgba(0, 0, 0, .22);
+  color: #fff;
+  outline: none;
+  padding: 0 12px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+#roomCodeInput::placeholder {
+  color: #777080;
+  letter-spacing: 1px;
+}
+
+#roomCodeInput:focus {
+  border-color: #8b5cf6;
+}
+
+#setRoomCodeBtn {
+  height: 46px;
+  border: none;
+  border-radius: 11px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#setRoomCodeBtn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.room-code-message {
+  min-height: 15px;
+  margin-top: 7px;
+  text-align: center;
+  font-size: 10px;
+  color: #cfc3dc;
+}
+
+.current-code {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  text-align: center;
+}
+
+.current-code small {
+  display: block;
+  color: #9990a3;
+  font-size: 9px;
+  margin-bottom: 6px;
+}
+
+#roomCode {
+  display: block;
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+#copyCodeBtn {
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  border-radius: 9px;
+  padding: 9px 15px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* =========================
+   WAITING CARD
+========================= */
+
+.waiting-card {
+  text-align: center;
+  background: rgba(255, 255, 255, .045);
+}
+
+.waiting-icon {
+  font-size: 30px;
+  margin-bottom: 7px;
+}
+
+.waiting-card h3 {
+  font-size: 15px;
+}
+
+.waiting-card p {
+  margin-top: 5px;
+  color: #aaa0b5;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* =========================
+   APP PLAY CARD
+========================= */
+
+.app-play-card {
+  background: linear-gradient(135deg, #241238, #351c50);
+  border: 1px solid rgba(168, 85, 247, .25);
+}
+
+.app-play-card h3 {
+  font-size: 16px;
+}
+
+.app-play-card p {
+  margin-top: 6px;
+  color: #c6bacf;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.ludo-app-note {
+  margin-top: 11px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .18);
+  color: #e5dbea;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* =========================
+   RESULT
+========================= */
+
+.result-card h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.result-card > p {
+  color: #aaa0b5;
+  font-size: 10px;
+  line-height: 1.5;
+  margin-bottom: 13px;
+}
+
+.result-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.result-btn {
+  min-height: 44px;
+  border: none;
+  border-radius: 11px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.won-btn {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.lost-btn {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+.cancel-result-btn {
+  background: linear-gradient(135deg, #6b7280, #374151);
+}
+
+.result-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* =========================
+   CANCEL
+========================= */
+
+.cancel-match-btn {
+  width: 100%;
+  height: 45px;
+  border: 1px solid rgba(239, 68, 68, .28);
+  border-radius: 11px;
+  background: rgba(127, 29, 29, .18);
+  color: #fca5a5;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.cancel-match-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* =========================
+   BOTTOM NAV
+========================= */
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70px;
+  background: rgba(18, 11, 27, .98);
+  border-top: 1px solid rgba(255, 255, 255, .09);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #8f8598;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 19px;
+}
+
+.nav-item small {
+  font-size: 9px;
+}
+
+.nav-item.active {
+  color: #a78bfa;
+}
+
+/* =========================
+   HIDDEN
+========================= */
+
+.hidden {
+  display: none !important;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 380px) {
+
+  .room-container {
+    padding: 12px;
   }
 
-  if (startGameBtn) {
-
-    startGameBtn.disabled =
-      true;
-
+  .info-grid {
+    gap: 6px;
   }
 
+  .info-box {
+    padding: 10px 5px;
+  }
+
+  .info-box strong {
+    font-size: 12px;
+  }
+
+  #setRoomCodeBtn {
+    padding: 0 10px;
+  }
+
+  .result-buttons {
+    gap: 6px;
+  }
+
+  .result-btn {
+    font-size: 9px;
+  }
 }
-
-
-// =========================================================
-// COPY ROOM CODE
-// =========================================================
-
-if (copyCodeBtn) {
-
-  copyCodeBtn.addEventListener(
-    "click",
-    async function () {
-
-      const code =
-        roomCodeElement
-          ? roomCodeElement.textContent.trim()
-          : "";
-
-      if (
-        !code ||
-        code === "Waiting for Room Code" ||
-        code === "00000000"
-      ) {
-
-        alert(
-          "Room Code is not ready yet."
-        );
-
-        return;
-      }
-
-      try {
-
-        await navigator.clipboard.writeText(
-          code
-        );
-
-        copyCodeBtn.textContent =
-          "✅ Room Code Copied";
-
-        setTimeout(
-          function () {
-
-            copyCodeBtn.textContent =
-              "📋 Copy Room Code";
-
-          },
-          1500
-        );
-
-      } catch (error) {
-
-        alert(
-          "Room Code: " +
-          code
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// OPEN RESULT PAGE
-// =========================================================
-
-if (startGameBtn) {
-
-  startGameBtn.addEventListener(
-    "click",
-    function () {
-
-      const status =
-        roomStatus
-          ? String(
-              roomStatus.textContent
-            ).toUpperCase()
-          : "";
-
-      if (
-        status !==
-        "ROOM CODE READY"
-      ) {
-
-        alert(
-          "Room Code is not ready yet."
-        );
-
-        return;
-      }
-
-      /*
-       * Actual Ludo gameplay is NOT inside
-       * this website.
-       *
-       * Players play in Ludo King App.
-       *
-       * Result page will be connected
-       * in the next step.
-       */
-
-      alert(
-        "🎮 Play the game in Ludo King App.\n\n" +
-        "After the game, return here and submit your result."
-      );
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// CANCEL BATTLE
-// =========================================================
-
-if (cancelBtn) {
-
-  cancelBtn.addEventListener(
-    "click",
-    async function () {
-
-      if (!battleId) {
-
-        alert(
-          "Battle information not found."
-        );
-
-        return;
-      }
-
-      const reason =
-        prompt(
-          "Enter cancellation reason:\n\n" +
-          "1. No Room Code\n" +
-          "2. Not Game Start\n" +
-          "3. Not Player Join\n" +
-          "4. Opposite Error"
-        );
-
-      if (!reason) {
-        return;
-      }
-
-      let cancelReason =
-        reason.trim();
-
-      if (
-        cancelReason === "1"
-      ) {
-        cancelReason =
-          "No Room Code";
-      }
-
-      if (
-        cancelReason === "2"
-      ) {
-        cancelReason =
-          "Not Game Start";
-      }
-
-      if (
-        cancelReason === "3"
-      ) {
-        cancelReason =
-          "Not Player Join";
-      }
-
-      if (
-        cancelReason === "4"
-      ) {
-        cancelReason =
-          "Opposite Error";
-      }
-
-      const confirmed =
-        confirm(
-          "Cancel this Battle?\n\nReason: " +
-          cancelReason
-        );
-
-      if (!confirmed) {
-        return;
-      }
-
-      cancelBtn.disabled =
-        true;
-
-      cancelBtn.textContent =
-        "Cancelling...";
-
-      try {
-
-        await api(
-          "/api/battles/cancel",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              battleId:
-                battleId,
-              reason:
-                cancelReason
-            })
-          }
-        );
-
-        alert(
-          "✅ Battle cancellation submitted."
-        );
-
-        await loadBattle();
-
-      } catch (error) {
-
-        alert(
-          "❌ " +
-          error.message
-        );
-
-      } finally {
-
-        cancelBtn.disabled =
-          false;
-
-        cancelBtn.textContent =
-          "Cancel Match";
-
-      }
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// BACK BUTTON
-// =========================================================
-
-if (backBtn) {
-
-  backBtn.addEventListener(
-    "click",
-    function () {
-
-      window.location.href =
-        "battle.html";
-
-    }
-  );
-
-}
-
-
-// =========================================================
-// AUTO REFRESH
-// =========================================================
-
-loadBattle();
-
-setInterval(
-  function () {
-
-    loadBattle();
-
-  },
-  5000
-);
