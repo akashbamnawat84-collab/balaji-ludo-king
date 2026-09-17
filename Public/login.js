@@ -1,7 +1,8 @@
-/* =========================
+/* =========================================================
    BALAJI LUDO KING
-   LOGIN + OTP
-========================= */
+   LOGIN + DEMO OTP
+   FINAL VERSION
+========================================================= */
 
 const mobileSection =
   document.getElementById("mobileSection");
@@ -33,11 +34,12 @@ const loginMessage =
 
 let generatedOtp = "";
 let countdown = 60;
+let countdownTimer = null;
 
 
-/* =========================
+/* =========================================================
    MESSAGE
-========================= */
+========================================================= */
 
 function showMessage(message) {
 
@@ -48,9 +50,26 @@ function showMessage(message) {
 }
 
 
-/* =========================
+/* =========================================================
+   MOBILE
+========================================================= */
+
+function getMobile() {
+
+  if (!mobileInput) {
+    return "";
+  }
+
+  return mobileInput.value
+    .replace(/\D/g, "")
+    .slice(-10);
+
+}
+
+
+/* =========================================================
    GENERATE DEMO OTP
-========================= */
+========================================================= */
 
 function generateOtp() {
 
@@ -61,14 +80,14 @@ function generateOtp() {
 }
 
 
-/* =========================
+/* =========================================================
    SEND OTP
-========================= */
+========================================================= */
 
 function sendOtp() {
 
-  const mobile =
-    mobileInput.value.replace(/\D/g, "");
+  const mobile = getMobile();
+
 
   if (mobile.length !== 10) {
 
@@ -82,28 +101,70 @@ function sendOtp() {
 
   generatedOtp = generateOtp();
 
-  console.log("Demo OTP:", generatedOtp);
+
+  /*
+    Demo OTP.
+    अभी कोई real SMS service connected नहीं है.
+  */
+
+  console.log(
+    "BALAJI LUDO KING Demo OTP:",
+    generatedOtp
+  );
 
 
-  mobileSection.classList.add("hidden");
+  /* Mobile save */
+  localStorage.setItem(
+    "balajiMobile",
+    mobile
+  );
 
-  otpSection.classList.remove("hidden");
 
-  showMessage("");
+  /* Show OTP section */
+
+  if (mobileSection) {
+    mobileSection.classList.add("hidden");
+  }
+
+  if (otpSection) {
+    otpSection.classList.remove("hidden");
+  }
+
+
+  /*
+    Demo में OTP screen पर message में दिखा रहे हैं
+    ताकि mobile से test किया जा सके.
+  */
+
+  showMessage(
+    "Demo OTP: " + generatedOtp
+  );
+
+
+  if (otpInput) {
+    otpInput.value = "";
+    otpInput.focus();
+  }
+
 
   startCountdown();
 
 }
 
 
-/* =========================
+/* =========================================================
    VERIFY OTP
-========================= */
+========================================================= */
 
 function verifyOtp() {
 
   const otp =
-    otpInput.value.replace(/\D/g, "");
+    otpInput
+      ? otpInput.value
+          .replace(/\D/g, "")
+          .slice(0, 6)
+      : "";
+
 
   if (otp.length !== 6) {
 
@@ -125,18 +186,45 @@ function verifyOtp() {
   }
 
 
-  /* =========================
+  /* =======================================================
      LOGIN SUCCESS
-  ========================= */
+  ======================================================= */
+
+  const mobile = getMobile();
+
 
   localStorage.setItem(
     "balajiLogin",
     "true"
   );
 
+
   localStorage.setItem(
     "balajiMobile",
-    mobileInput.value
+    mobile
+  );
+
+
+  /*
+    Customer ID अभी mobile पर आधारित रख रहे हैं.
+    इससे Battle / Room pages को user पहचानने में मदद मिलेगी.
+  */
+
+  localStorage.setItem(
+    "balajiCustomerId",
+    mobile
+  );
+
+
+  localStorage.setItem(
+    "customerId",
+    mobile
+  );
+
+
+  localStorage.setItem(
+    "customerMobile",
+    mobile
   );
 
 
@@ -145,53 +233,106 @@ function verifyOtp() {
   );
 
 
-  /* =========================
-     OPEN HOME
-  ========================= */
+  if (verifyOtpBtn) {
+    verifyOtpBtn.disabled = true;
+  }
+
+
+  /* Stop countdown */
+
+  if (countdownTimer) {
+
+    clearInterval(
+      countdownTimer
+    );
+
+    countdownTimer = null;
+
+  }
+
+
+  /* Go Home */
 
   setTimeout(function () {
 
     window.location.href =
       "/home.html";
 
-  }, 300);
+  }, 500);
 
 }
 
 
-/* =========================
+/* =========================================================
    COUNTDOWN
-========================= */
+========================================================= */
 
 function startCountdown() {
 
   countdown = 60;
 
-  resendOtpBtn.disabled = true;
 
-  resendText.textContent =
-    "Resend available in 60s";
+  if (countdownTimer) {
+
+    clearInterval(
+      countdownTimer
+    );
+
+  }
 
 
-  const timer =
+  if (resendOtpBtn) {
+    resendOtpBtn.disabled = true;
+  }
+
+
+  if (resendText) {
+
+    resendText.textContent =
+      "Resend available in 60s";
+
+  }
+
+
+  countdownTimer =
     setInterval(function () {
 
       countdown--;
 
-      resendText.textContent =
-        "Resend available in " +
-        countdown +
-        "s";
+
+      if (resendText) {
+
+        resendText.textContent =
+          "Resend available in " +
+          countdown +
+          "s";
+
+      }
 
 
       if (countdown <= 0) {
 
-        clearInterval(timer);
+        clearInterval(
+          countdownTimer
+        );
 
-        resendText.textContent =
-          "You can resend OTP";
+        countdownTimer = null;
 
-        resendOtpBtn.disabled = false;
+
+        if (resendText) {
+
+          resendText.textContent =
+            "You can resend OTP";
+
+        }
+
+
+        if (resendOtpBtn) {
+
+          resendOtpBtn.disabled =
+            false;
+
+        }
 
       }
 
@@ -200,10 +341,169 @@ function startCountdown() {
 }
 
 
-/* =========================
+/* =========================================================
    RESEND OTP
-========================= */
+========================================================= */
 
 function resendOtp() {
 
- 
+  const mobile = getMobile();
+
+
+  if (mobile.length !== 10) {
+
+    showMessage(
+      "Please enter your mobile number again."
+    );
+
+    return;
+  }
+
+
+  generatedOtp =
+    generateOtp();
+
+
+  console.log(
+    "BALAJI LUDO KING Demo OTP:",
+    generatedOtp
+  );
+
+
+  showMessage(
+    "New Demo OTP: " + generatedOtp
+  );
+
+
+  if (otpInput) {
+
+    otpInput.value = "";
+
+    otpInput.focus();
+
+  }
+
+
+  startCountdown();
+
+}
+
+
+/* =========================================================
+   OTP INPUT
+========================================================= */
+
+if (otpInput) {
+
+  otpInput.addEventListener(
+    "input",
+    function () {
+
+      this.value =
+        this.value
+          .replace(/\D/g, "")
+          .slice(0, 6);
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MOBILE INPUT
+========================================================= */
+
+if (mobileInput) {
+
+  mobileInput.addEventListener(
+    "input",
+    function () {
+
+      this.value =
+        this.value
+          .replace(/\D/g, "")
+          .slice(0, 10);
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+if (sendOtpBtn) {
+
+  sendOtpBtn.addEventListener(
+    "click",
+    sendOtp
+  );
+
+}
+
+
+if (verifyOtpBtn) {
+
+  verifyOtpBtn.addEventListener(
+    "click",
+    verifyOtp
+  );
+
+}
+
+
+if (resendOtpBtn) {
+
+  resendOtpBtn.addEventListener(
+    "click",
+    resendOtp
+  );
+
+}
+
+
+/* =========================================================
+   ENTER KEY
+========================================================= */
+
+if (mobileInput) {
+
+  mobileInput.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key === "Enter"
+      ) {
+
+        sendOtp();
+
+      }
+
+    }
+  );
+
+}
+
+
+if (otpInput) {
+
+  otpInput.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key === "Enter"
+      ) {
+
+        verifyOtp();
+
+      }
+
+    }
+  );
+
+}
