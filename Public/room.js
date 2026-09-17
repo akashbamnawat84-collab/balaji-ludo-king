@@ -1,3 +1,7 @@
+/* =====================================
+   BALAJI LUDO KING - ROOM JS
+   ===================================== */
+
 const API_BASE = "";
 
 const TOKEN_KEYS = [
@@ -13,6 +17,7 @@ const MOBILE_KEYS = [
 ];
 
 let battleId = "";
+let currentBattle = null;
 let refreshTimer = null;
 
 
@@ -21,8 +26,11 @@ let refreshTimer = null;
    ===================================== */
 
 function getStorage(keys) {
+
   for (const key of keys) {
-    const value = localStorage.getItem(key);
+
+    const value =
+      localStorage.getItem(key);
 
     if (value) {
       return value;
@@ -39,9 +47,12 @@ function getToken() {
 
 
 function getMobile() {
-  const value = getStorage(MOBILE_KEYS);
 
-  const digits = String(value).replace(/\D/g, "");
+  const value =
+    getStorage(MOBILE_KEYS);
+
+  const digits =
+    String(value).replace(/\D/g, "");
 
   return digits.length >= 10
     ? digits.slice(-10)
@@ -55,9 +66,10 @@ function getMobile() {
 
 function getBattleId() {
 
-  const params = new URLSearchParams(
-    window.location.search
-  );
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
 
   const queryId =
     params.get("id") ||
@@ -68,15 +80,17 @@ function getBattleId() {
   }
 
 
-  const savedId =
-    localStorage.getItem("balajiBattleId");
+  const saved =
+    localStorage.getItem(
+      "balajiBattleId"
+    );
 
-  if (savedId) {
+  if (saved) {
 
     try {
 
       const parsed =
-        JSON.parse(savedId);
+        JSON.parse(saved);
 
       if (
         parsed &&
@@ -93,7 +107,7 @@ function getBattleId() {
 
     } catch (_) {
 
-      return String(savedId);
+      return String(saved);
     }
   }
 
@@ -157,6 +171,8 @@ function getBattleId() {
         );
       }
 
+      return String(parsed);
+
     } catch (_) {
 
       return String(current);
@@ -180,8 +196,11 @@ async function api(path, options = {}) {
   };
 
 
-  const token = getToken();
-  const mobile = getMobile();
+  const token =
+    getToken();
+
+  const mobile =
+    getMobile();
 
 
   if (token) {
@@ -243,48 +262,8 @@ async function api(path, options = {}) {
 
 
 /* =====================================
-   UI HELPERS
+   HELPERS
    ===================================== */
-
-function show(id) {
-
-  const element =
-    document.getElementById(id);
-
-  if (element) {
-
-    element.classList.remove(
-      "hidden"
-    );
-  }
-}
-
-
-function hide(id) {
-
-  const element =
-    document.getElementById(id);
-
-  if (element) {
-
-    element.classList.add(
-      "hidden"
-    );
-  }
-}
-
-
-function hideAllStates() {
-
-  hide("loadingCard");
-  hide("matchCard");
-  hide("errorCard");
-
-  hide("waitingSection");
-  hide("readySection");
-  hide("resultSection");
-}
-
 
 function money(value) {
 
@@ -300,27 +279,426 @@ function money(value) {
 }
 
 
+function getElement(id) {
+  return document.getElementById(id);
+}
+
+
 /* =====================================
-   ERROR
+   GET PLAYER 1
    ===================================== */
 
-function showError(message) {
+function getPlayer1Name(battle) {
 
-  hideAllStates();
+  return (
+    battle.creator_name ||
+    battle.creatorName ||
+    battle.player1_name ||
+    battle.player1Name ||
+    battle.player_one_name ||
+    battle.player1 ||
+    "Player 1"
+  );
+}
 
-  show("errorCard");
+
+/* =====================================
+   GET PLAYER 2
+   ===================================== */
+
+function getPlayer2Name(battle) {
+
+  const names = [
+
+    battle.opponent_name,
+    battle.opponentName,
+
+    battle.joiner_name,
+    battle.joinerName,
+
+    battle.player2_name,
+    battle.player2Name,
+
+    battle.player_two_name,
+
+    battle.player2,
+
+    battle.second_player_name,
+
+    battle.joined_by_name,
+    battle.joinedByName
+  ];
 
 
-  const box =
-    document.getElementById(
-      "errorMessage"
+  for (const name of names) {
+
+    if (
+      name !== undefined &&
+      name !== null
+    ) {
+
+      const value =
+        String(name).trim();
+
+
+      if (
+        value &&
+        value.toLowerCase() !== "waiting"
+      ) {
+
+        return value;
+      }
+    }
+  }
+
+
+  return "";
+}
+
+
+/* =====================================
+   PLAYER 2 DETECTION
+   ===================================== */
+
+function player2Joined(battle) {
+
+  const name =
+    getPlayer2Name(battle);
+
+
+  if (name) {
+    return true;
+  }
+
+
+  const ids = [
+
+    battle.opponent_id,
+    battle.opponentId,
+
+    battle.joiner_id,
+    battle.joinerId,
+
+    battle.player2_id,
+    battle.player2Id,
+
+    battle.player_two_id,
+
+    battle.second_player_id,
+
+    battle.joined_by
+  ];
+
+
+  return ids.some(
+    value =>
+      value !== undefined &&
+      value !== null &&
+      String(value).trim() !== ""
+  );
+}
+
+
+/* =====================================
+   ROOM CODE
+   ===================================== */
+
+function getRoomCode(battle) {
+
+  const codes = [
+
+    battle.room_code,
+    battle.roomCode,
+
+    battle.ludo_room_code,
+    battle.ludoRoomCode,
+
+    battle.game_room_code,
+    battle.gameRoomCode,
+
+    battle.room,
+
+    battle.code
+  ];
+
+
+  for (const code of codes) {
+
+    if (
+      code !== undefined &&
+      code !== null
+    ) {
+
+      const value =
+        String(code).trim();
+
+
+      if (value) {
+        return value;
+      }
+    }
+  }
+
+
+  return "";
+}
+
+
+/* =====================================
+   STATUS
+   ===================================== */
+
+function getStatus(battle) {
+
+  return String(
+    battle.status ||
+    battle.match_status ||
+    battle.battle_status ||
+    "WAITING"
+  )
+    .trim()
+    .toUpperCase();
+}
+
+
+/* =====================================
+   RENDER BATTLE
+   ===================================== */
+
+function renderBattle(battle) {
+
+  currentBattle =
+    battle;
+
+
+  /* ---------------------------------
+     ENTRY FEE
+     --------------------------------- */
+
+  const entry =
+    battle.entry_fee ??
+    battle.entry_amount ??
+    battle.entryAmount ??
+    battle.entry ??
+    0;
+
+
+  const entryElement =
+    getElement("entryFee");
+
+
+  if (entryElement) {
+
+    entryElement.textContent =
+      money(entry);
+  }
+
+
+  /* ---------------------------------
+     WINNING PRIZE
+     --------------------------------- */
+
+  const prize =
+    battle.winning_prize ??
+    battle.prize_amount ??
+    battle.winningPrize ??
+    battle.prize ??
+    0;
+
+
+  const prizeElement =
+    getElement("winningPrize");
+
+
+  if (prizeElement) {
+
+    prizeElement.textContent =
+      money(prize);
+  }
+
+
+  /* ---------------------------------
+     PLAYERS
+     --------------------------------- */
+
+  const player1 =
+    getPlayer1Name(battle);
+
+
+  const player2 =
+    getPlayer2Name(battle);
+
+
+  const player1Element =
+    getElement("player1Name");
+
+
+  const player2Element =
+    getElement("player2Name");
+
+
+  const player1Status =
+    getElement("player1Status");
+
+
+  const player2Status =
+    getElement("player2Status");
+
+
+  if (player1Element) {
+
+    player1Element.textContent =
+      player1;
+  }
+
+
+  if (player1Status) {
+
+    player1Status.textContent =
+      "Joined";
+  }
+
+
+  if (player2Element) {
+
+    player2Element.textContent =
+      player2 ||
+      "Waiting";
+  }
+
+
+  if (player2Status) {
+
+    player2Status.textContent =
+      player2
+        ? "Joined"
+        : "Waiting";
+  }
+
+
+  /* ---------------------------------
+     ROOM CODE
+     --------------------------------- */
+
+  const roomCode =
+    getRoomCode(battle);
+
+
+  const roomCodeElement =
+    getElement(
+      "currentRoomCode"
     );
 
 
-  if (box) {
+  if (roomCodeElement) {
 
-    box.textContent =
-      message;
+    roomCodeElement.textContent =
+      roomCode ||
+      "Waiting for Room Code";
+  }
+
+
+  /* ---------------------------------
+     STATUS
+     --------------------------------- */
+
+  const status =
+    getStatus(battle);
+
+
+  const joined =
+    player2Joined(battle);
+
+
+  const statusElement =
+    getElement(
+      "battleStatus"
+    );
+
+
+  /*
+    IMPORTANT:
+    Player 2 मौजूद है तो
+    MATCH READY दिखाएँगे,
+    भले API status अभी WAITING हो।
+  */
+
+  if (joined) {
+
+    if (statusElement) {
+
+      statusElement.textContent =
+        roomCode
+          ? "Ready"
+          : "Match Ready";
+    }
+
+
+    const waitingCard =
+      getElement(
+        "waitingCard"
+      );
+
+
+    if (waitingCard) {
+
+      waitingCard.style.display =
+        "none";
+    }
+
+
+    if (roomCode) {
+
+      const ludoCard =
+        document.querySelector(
+          ".ludo-app-card"
+        );
+
+      if (ludoCard) {
+
+        ludoCard.style.display =
+          "";
+      }
+    }
+
+    return;
+  }
+
+
+  /* ---------------------------------
+     WAITING
+     --------------------------------- */
+
+  if (statusElement) {
+
+    statusElement.textContent =
+      "Waiting";
+  }
+
+
+  const waitingCard =
+    getElement(
+      "waitingCard"
+    );
+
+
+  if (waitingCard) {
+
+    waitingCard.style.display =
+      "";
+  }
+
+
+  const waitingText =
+    getElement(
+      "waitingText"
+    );
+
+
+  if (waitingText) {
+
+    waitingText.textContent =
+      "Waiting for Player 2";
   }
 }
 
@@ -343,8 +721,8 @@ async function loadBattle() {
 
   if (!battleId) {
 
-    showError(
-      "Battle ID नहीं मिला। Battle page से Battle खोलें।"
+    alert(
+      "कृपया पहले Battle page से Battle खोलें।"
     );
 
     return;
@@ -362,7 +740,7 @@ async function loadBattle() {
 
 
     console.log(
-      "BALAJI BATTLE DATA:",
+      "BALAJI ROOM DATA:",
       data
     );
 
@@ -378,11 +756,9 @@ async function loadBattle() {
       !battle.id
     ) {
 
-      showError(
+      throw new Error(
         "Battle information नहीं मिली।"
       );
-
-      return;
     }
 
 
@@ -390,479 +766,155 @@ async function loadBattle() {
       battle
     );
 
+
   } catch (error) {
 
     console.error(
-      "Room load error:",
+      "ROOM ERROR:",
       error
     );
 
 
-    showError(
-      error.message ||
-      "Battle information load नहीं हो सकी।"
-    );
-  }
-}
-
-
-/* =====================================
-   STATUS
-   ===================================== */
-
-function getStatus(battle) {
-
-  return String(
-    battle.status ||
-    battle.match_status ||
-    battle.battle_status ||
-    ""
-  )
-    .trim()
-    .toUpperCase();
-}
-
-
-/* =====================================
-   PLAYER 2 DETECTION
-   ===================================== */
-
-function getPlayer2Name(battle) {
-
-  const possibleNames = [
-
-    battle.opponent_name,
-
-    battle.opponentName,
-
-    battle.joiner_name,
-
-    battle.joinerName,
-
-    battle.player2,
-
-    battle.player_2,
-
-    battle.player_two_name,
-
-    battle.playerTwoName,
-
-    battle.player2_name,
-
-    battle.second_player_name,
-
-    battle.joined_by_name,
-
-    battle.joinedByName
-
-  ];
-
-
-  for (
-    const name of possibleNames
-  ) {
-
-    if (
-      name !== undefined &&
-      name !== null &&
-      String(name).trim() !== ""
-    ) {
-
-      const value =
-        String(name).trim();
-
-
-      if (
-        value.toLowerCase() !==
-        "waiting"
-      ) {
-
-        return value;
-      }
-    }
-  }
-
-
-  return "";
-}
-
-
-/* =====================================
-   PLAYER 2 ID DETECTION
-   ===================================== */
-
-function hasPlayer2(battle) {
-
-  const player2Name =
-    getPlayer2Name(
-      battle
-    );
-
-
-  if (player2Name) {
-    return true;
-  }
-
-
-  const possibleIds = [
-
-    battle.opponent_id,
-
-    battle.opponentId,
-
-    battle.joiner_id,
-
-    battle.joinerId,
-
-    battle.player2_id,
-
-    battle.player_2_id,
-
-    battle.player_two_id,
-
-    battle.second_player_id,
-
-    battle.joined_by
-
-  ];
-
-
-  for (
-    const id of possibleIds
-  ) {
-
-    if (
-      id !== undefined &&
-      id !== null &&
-      String(id).trim() !== ""
-    ) {
-
-      return true;
-    }
-  }
-
-
-  return false;
-}
-
-
-/* =====================================
-   ROOM CODE
-   ===================================== */
-
-function getRoomCode(battle) {
-
-  const possibleCodes = [
-
-    battle.room_code,
-
-    battle.roomCode,
-
-    battle.room,
-
-    battle.ludo_room_code,
-
-    battle.ludoRoomCode,
-
-    battle.game_room_code,
-
-    battle.gameRoomCode,
-
-    battle.code
-
-  ];
-
-
-  for (
-    const code of possibleCodes
-  ) {
-
-    if (
-      code !== undefined &&
-      code !== null &&
-      String(code).trim() !== ""
-    ) {
-
-      return String(code).trim();
-    }
-  }
-
-
-  return "";
-}
-
-
-/* =====================================
-   RENDER
-   ===================================== */
-
-function renderBattle(battle) {
-
-  hideAllStates();
-
-  show("matchCard");
-
-
-  /* ---------------------------------
-     PLAYER 1
-     --------------------------------- */
-
-  const playerOneName =
-    battle.creator_name ||
-    battle.creatorName ||
-    battle.player1 ||
-    battle.player_one_name ||
-    "Player 1";
-
-
-  const playerOne =
-    document.getElementById(
-      "playerOneName"
-    );
-
-
-  if (playerOne) {
-
-    playerOne.textContent =
-      playerOneName;
-  }
-
-
-  /* ---------------------------------
-     PLAYER 2
-     --------------------------------- */
-
-  const player2Name =
-    getPlayer2Name(
-      battle
-    );
-
-
-  const playerTwo =
-    document.getElementById(
-      "playerTwoName"
-    );
-
-
-  if (playerTwo) {
-
-    playerTwo.textContent =
-      player2Name ||
-      "Waiting...";
-  }
-
-
-  /* ---------------------------------
-     ENTRY FEE
-     --------------------------------- */
-
-  const entryAmount =
-    document.getElementById(
-      "entryAmount"
-    );
-
-
-  if (entryAmount) {
-
-    entryAmount.textContent =
-      money(
-        battle.entry_fee ??
-        battle.entry_amount ??
-        battle.entryAmount ??
-        battle.entry ??
-        0
-      );
-  }
-
-
-  /* ---------------------------------
-     WINNING PRIZE
-     --------------------------------- */
-
-  const winningAmount =
-    document.getElementById(
-      "winningAmount"
-    );
-
-
-  if (winningAmount) {
-
-    winningAmount.textContent =
-      money(
-        battle.winning_prize ??
-        battle.prize_amount ??
-        battle.winningPrize ??
-        battle.prize ??
-        0
-      );
-  }
-
-
-  /* ---------------------------------
-     STATUS
-     --------------------------------- */
-
-  const status =
-    getStatus(
-      battle
-    );
-
-
-  const statusBadge =
-    document.getElementById(
-      "statusBadge"
-    );
-
-
-  /* ---------------------------------
-     ROOM CODE
-     --------------------------------- */
-
-  const roomCode =
-    getRoomCode(
-      battle
-    );
-
-
-  const roomCodeElement =
-    document.getElementById(
-      "roomCode"
-    );
-
-
-  if (roomCodeElement) {
-
-    roomCodeElement.textContent =
-      roomCode ||
-      "--------";
-  }
-
-
-  /* ---------------------------------
-     PLAYER 2 FOUND?
-     --------------------------------- */
-
-  const player2Joined =
-    hasPlayer2(
-      battle
-    );
-
-
-  /*
-    IMPORTANT:
-
-    अगर Player 2 मौजूद है तो
-    backend status WAITING/OPEN होने
-    के बावजूद MATCH READY दिखाएँगे।
-  */
-
-  if (player2Joined) {
-
-    /* MATCH READY */
-
-    if (statusBadge) {
-
-      statusBadge.textContent =
-        roomCode
-          ? "READY"
-          : "MATCH READY";
-    }
-
-
     /*
-      Room Code available है
-      तो Ready section दिखाएँ।
+      Login error को साफ message
+      के साथ दिखाएँ।
     */
 
-    if (roomCode) {
+    if (
+      error.message &&
+      (
+        error.message
+          .toLowerCase()
+          .includes("login") ||
 
-      show("readySection");
+        error.message
+          .toLowerCase()
+          .includes("unauthorized") ||
 
-      hide("waitingSection");
+        error.message
+          .toLowerCase()
+          .includes("token")
+      )
+    ) {
 
-    } else {
+      alert(
+        "कृपया पहले Login करें।"
+      );
 
-      /*
-        Player 2 आ गया है लेकिन
-        अभी Room Code नहीं आया।
-      */
-
-      hide("readySection");
-
-      show("waitingSection");
-
-
-      const waitingTitle =
-        document.querySelector(
-          "#waitingSection h2"
-        );
-
-
-      if (waitingTitle) {
-
-        waitingTitle.textContent =
-          "Match Ready";
-      }
-
-
-      const waitingText =
-        document.querySelector(
-          "#waitingSection .waiting-text"
-        );
-
-
-      if (waitingText) {
-
-        waitingText.textContent =
-          "Player 2 joined. Room Code का इंतज़ार करें।";
-      }
+      return;
     }
 
+
+    console.error(
+      "Battle load failed:",
+      error.message
+    );
+  }
+}
+
+
+/* =====================================
+   SET ROOM CODE
+   ===================================== */
+
+async function setRoomCode() {
+
+  const input =
+    getElement(
+      "roomCodeInput"
+    );
+
+
+  const message =
+    getElement(
+      "roomCodeMessage"
+    );
+
+
+  if (!input) {
+    return;
+  }
+
+
+  const code =
+    input.value
+      .replace(/\D/g, "")
+      .slice(0, 8);
+
+
+  input.value =
+    code;
+
+
+  if (code.length !== 8) {
+
+    if (message) {
+
+      message.textContent =
+        "कृपया 8-digit Room Code डालें।";
+    }
 
     return;
   }
 
 
-  /* ---------------------------------
-     NO PLAYER 2
-     --------------------------------- */
+  /*
+    पहले local UI update।
+  */
 
-  hide("readySection");
-  hide("resultSection");
-
-  show("waitingSection");
-
-
-  if (statusBadge) {
-
-    statusBadge.textContent =
-      "WAITING";
-  }
-
-
-  const waitingTitle =
-    document.querySelector(
-      "#waitingSection h2"
+  const current =
+    getElement(
+      "currentRoomCode"
     );
 
 
-  if (waitingTitle) {
+  if (current) {
 
-    waitingTitle.textContent =
-      "Waiting for Player 2";
+    current.textContent =
+      code;
   }
 
 
-  const waitingText =
-    document.querySelector(
-      "#waitingSection .waiting-text"
+  if (message) {
+
+    message.textContent =
+      "✅ Room Code set हो गया।";
+  }
+
+
+  /*
+    Backend endpoint उपलब्ध होने पर
+    server पर भी save करने की कोशिश।
+  */
+
+  try {
+
+    await api(
+      `/api/battles/${encodeURIComponent(
+        battleId
+      )}/room-code`,
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          battle_id: battleId,
+          room_code: code
+        })
+      }
     );
 
 
-  if (waitingText) {
+  } catch (error) {
 
-    waitingText.textContent =
-      "Another player can join this Battle.";
+    /*
+      अगर endpoint अभी backend में नहीं है,
+      तो UI फिर भी code दिखाएगा।
+    */
+
+    console.warn(
+      "Room code server save:",
+      error.message
+    );
   }
 }
 
@@ -874,8 +926,8 @@ function renderBattle(battle) {
 async function copyRoomCode() {
 
   const element =
-    document.getElementById(
-      "roomCode"
+    getElement(
+      "currentRoomCode"
     );
 
 
@@ -890,11 +942,11 @@ async function copyRoomCode() {
 
   if (
     !code ||
-    code === "--------"
+    code === "Waiting for Room Code"
   ) {
 
     alert(
-      "Room Code अभी available नहीं है।"
+      "पहले Room Code set करें।"
     );
 
     return;
@@ -909,25 +961,25 @@ async function copyRoomCode() {
 
 
     const button =
-      document.getElementById(
-        "copyRoomBtn"
+      getElement(
+        "copyRoomCodeBtn"
       );
 
 
     if (button) {
 
-      const oldText =
+      const old =
         button.textContent;
 
 
       button.textContent =
-        "✅ Room Code Copied";
+        "✅ Copied";
 
 
       setTimeout(() => {
 
         button.textContent =
-          oldText;
+          old;
 
       }, 1800);
     }
@@ -943,57 +995,47 @@ async function copyRoomCode() {
 
 
 /* =====================================
-   PLAY LUDO KING
+   OPEN LUDO KING
    ===================================== */
 
 function openLudoKing() {
 
   const element =
-    document.getElementById(
-      "roomCode"
+    getElement(
+      "currentRoomCode"
     );
 
 
-  if (!element) {
-    return;
-  }
-
-
   const code =
-    element.textContent.trim();
+    element
+      ? element.textContent.trim()
+      : "";
 
 
   if (
     !code ||
-    code === "--------"
+    code === "Waiting for Room Code"
   ) {
 
     alert(
-      "Room Code अभी available नहीं है।"
+      "पहले Room Code उपलब्ध होना चाहिए।"
     );
 
     return;
   }
 
 
-  /*
-    Ludo King app को automatic
-    control नहीं किया जा सकता।
-    User manually app खोलकर
-    Room Code enter करेगा।
-  */
-
   alert(
-    `Ludo King खोलें और Room Code ${code} enter करके match खेलें।`
+    `Ludo King App खोलें और Room Code ${code} enter करें।`
   );
 }
 
 
 /* =====================================
-   RESULT PAGE
+   RESULT
    ===================================== */
 
-function openResultPage() {
+function submitResult(result) {
 
   if (!battleId) {
 
@@ -1011,103 +1053,211 @@ function openResultPage() {
   );
 
 
+  localStorage.setItem(
+    "balajiBattleResult",
+    result
+  );
+
+
   window.location.href =
     `result.html?id=${encodeURIComponent(
       battleId
+    )}&result=${encodeURIComponent(
+      result
     )}`;
 }
 
 
 /* =====================================
-   BACK BUTTON
+   CANCEL
    ===================================== */
 
-document
-  .getElementById(
-    "backBtn"
-  )
-  ?.addEventListener(
-    "click",
-    () => {
+function showCancelSection() {
 
-      window.location.href =
-        "battle.html";
-    }
+  const section =
+    getElement(
+      "cancelSection"
+    );
+
+
+  if (section) {
+
+    section.style.display =
+      "";
+  }
+}
+
+
+function confirmCancel() {
+
+  const reason =
+    getElement(
+      "cancelReason"
+    );
+
+
+  const text =
+    reason
+      ? reason.value.trim()
+      : "";
+
+
+  if (!text) {
+
+    alert(
+      "Cancel reason डालें।"
+    );
+
+    return;
+  }
+
+
+  alert(
+    "Cancel request तैयार है।"
   );
+}
 
 
 /* =====================================
-   COPY BUTTON
+   EVENTS
    ===================================== */
 
-document
-  .getElementById(
-    "copyRoomBtn"
-  )
-  ?.addEventListener(
+const backBtn =
+  document.querySelector(
+    ".back-btn"
+  );
+
+
+if (backBtn) {
+
+  backBtn.addEventListener(
+    "click",
+    function(event) {
+
+      /*
+        Normal battle.html link
+        को काम करने दें।
+      */
+
+    }
+  );
+}
+
+
+const setRoomCodeBtn =
+  getElement(
+    "setRoomCodeBtn"
+  );
+
+
+if (setRoomCodeBtn) {
+
+  setRoomCodeBtn.addEventListener(
+    "click",
+    setRoomCode
+  );
+}
+
+
+const copyRoomCodeBtn =
+  getElement(
+    "copyRoomCodeBtn"
+  );
+
+
+if (copyRoomCodeBtn) {
+
+  copyRoomCodeBtn.addEventListener(
     "click",
     copyRoomCode
   );
+}
 
 
-/* =====================================
-   PLAY BUTTON
-   ===================================== */
+const openLudoBtn =
+  getElement(
+    "openLudoBtn"
+  );
 
-document
-  .getElementById(
-    "playLudoBtn"
-  )
-  ?.addEventListener(
+
+if (openLudoBtn) {
+
+  openLudoBtn.addEventListener(
     "click",
     openLudoKing
   );
+}
 
 
-/* =====================================
-   RESULT BUTTON
-   ===================================== */
-
-document
-  .getElementById(
-    "resultBtn"
-  )
-  ?.addEventListener(
-    "click",
-    openResultPage
+const wonBtn =
+  getElement(
+    "wonBtn"
   );
 
 
-/* =====================================
-   RETRY
-   ===================================== */
+if (wonBtn) {
 
-document
-  .getElementById(
-    "retryBtn"
-  )
-  ?.addEventListener(
+  wonBtn.addEventListener(
     "click",
-    () => {
+    function() {
 
-      hide("errorCard");
-
-      hide("matchCard");
-
-      show("loadingCard");
-
-      loadBattle();
+      submitResult("WON");
     }
   );
+}
+
+
+const lostBtn =
+  getElement(
+    "lostBtn"
+  );
+
+
+if (lostBtn) {
+
+  lostBtn.addEventListener(
+    "click",
+    function() {
+
+      submitResult("LOST");
+    }
+  );
+}
+
+
+const cancelBtn =
+  getElement(
+    "cancelBtn"
+  );
+
+
+if (cancelBtn) {
+
+  cancelBtn.addEventListener(
+    "click",
+    showCancelSection
+  );
+}
+
+
+const confirmCancelBtn =
+  getElement(
+    "confirmCancelBtn"
+  );
+
+
+if (confirmCancelBtn) {
+
+  confirmCancelBtn.addEventListener(
+    "click",
+    confirmCancel
+  );
+}
 
 
 /* =====================================
    START
    ===================================== */
-
-hideAllStates();
-
-show("loadingCard");
 
 loadBattle();
 
@@ -1126,9 +1276,12 @@ if (refreshTimer) {
 
 refreshTimer =
   setInterval(
-    () => {
+    function() {
 
-      if (!document.hidden) {
+      if (
+        !document.hidden &&
+        battleId
+      ) {
 
         loadBattle();
       }
