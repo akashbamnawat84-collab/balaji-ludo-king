@@ -1,412 +1,980 @@
+/* =========================================================
+   BALAJI LUDO KING
+   BATTLE PAGE - NEW DESIGN
+========================================================= */
+
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: linear-gradient(180deg, #eef7ff, #ffffff);
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
+  background: #f3f6fb;
   color: #172033;
+
   min-height: 100vh;
-  padding-bottom: 90px;
+
+  padding-bottom: 92px;
 }
 
-.topbar {
-  height: 68px;
-  background: linear-gradient(135deg, #111827, #020617);
-  border-bottom: 3px solid #16a34a;
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.battle-header {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(0, 210, 130, 0.18), transparent 30%),
+    linear-gradient(145deg, #07142f, #102a5c 65%, #071936);
+
+  color: white;
+  padding: 16px 18px 28px;
+
+  border-bottom: 4px solid #00d084;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.battle-header::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+
+  right: -80px;
+  top: -100px;
+
+  border-radius: 50%;
+  border: 30px solid rgba(255,255,255,0.04);
+}
+
+.header-top {
   display: flex;
   align-items: center;
-  padding: 0 15px;
-  color: white;
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  justify-content: space-between;
+
+  min-height: 46px;
 }
 
 .back-btn {
-  width: 42px;
-  height: 42px;
-  border: 0;
-  border-radius: 50%;
-  background: #263244;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
   color: white;
-  font-size: 25px;
-  cursor: pointer;
-  margin-right: 12px;
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  min-width: 70px;
+}
+
+.back-btn span:first-child {
+  font-size: 22px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
+
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .crown {
-  width: 43px;
-  height: 43px;
-  border-radius: 50%;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 25px;
+  font-size: 28px;
 }
 
 .brand-name {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 .brand-sub {
-  font-size: 10px;
-  color: #22c55e;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: 800;
   letter-spacing: 1px;
 }
 
-.status-dot {
-  margin-left: auto;
-  width: 10px;
-  height: 10px;
+.online-dot {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 10px #22c55e;
+  background: rgba(255,255,255,0.09);
 }
 
-.room-container {
-  width: min(520px, 100%);
-  margin: auto;
-  padding: 18px 14px 25px;
+.online-dot span {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+  background: #00e58a;
+
+  box-shadow: 0 0 0 5px rgba(0,229,138,0.12);
 }
 
-.card {
+.header-title {
+  margin-top: 22px;
+}
+
+.header-title h1 {
+  font-size: 27px;
+  line-height: 1.15;
+
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.header-title p {
+  margin-top: 7px;
+
+  color: #b9c7df;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.battle-container {
+  width: min(100%, 760px);
+  margin: 0 auto;
+
+  padding: 18px 15px 25px;
+}
+
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome-card {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+
   background: white;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e5e7eb;
-}
 
-.hidden {
-  display: none !important;
-}
+  border: 1px solid #e3e9f2;
+  border-radius: 22px;
 
-.loading-card {
-  text-align: center;
-  margin-top: 45px;
-}
+  padding: 18px;
 
-.loader {
-  font-size: 45px;
-  margin-bottom: 12px;
-}
+  box-shadow: 0 7px 24px rgba(20, 38, 70, 0.07);
 
-.loading-card h2 {
-  font-size: 20px;
-  margin-bottom: 7px;
-}
-
-.loading-card p {
-  color: #64748b;
-}
-
-.match-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.small-label {
-  color: #16a34a;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-.match-title h1 {
-  font-size: 23px;
-  margin-top: 3px;
-}
-
-.status-badge {
-  background: #fff7ed;
-  color: #ea580c;
-  border: 1px solid #fed7aa;
-  padding: 7px 10px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.players {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f8fafc;
-  border-radius: 18px;
-  padding: 18px 10px;
   margin-bottom: 16px;
 }
 
-.player {
-  width: 42%;
-  text-align: center;
-}
+.welcome-icon {
+  width: 46px;
+  height: 46px;
 
-.avatar {
-  width: 58px;
-  height: 58px;
-  margin: auto;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  flex-shrink: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
-  border: 3px solid white;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+
+  background: #eefaf5;
+  border-radius: 15px;
+
+  font-size: 24px;
 }
 
-.player-label {
-  margin-top: 8px;
-  font-size: 10px;
-  font-weight: 800;
-  color: #64748b;
+.welcome-content h2 {
+  font-size: 19px;
+  line-height: 1.25;
+
+  color: #182235;
 }
 
-.player-name {
-  margin-top: 4px;
+.welcome-content p {
+  margin-top: 6px;
+
   font-size: 14px;
-  font-weight: 800;
-  word-break: break-word;
-}
-
-.vs {
-  width: 16%;
-  display: flex;
-  justify-content: center;
-}
-
-.vs span {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #111827;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.battle-info {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.info-box {
-  background: #f8fafc;
-  border-radius: 14px;
-  padding: 13px;
-  text-align: center;
-}
-
-.info-box span {
-  display: block;
-  font-size: 11px;
-  color: #64748b;
-  margin-bottom: 5px;
-}
-
-.info-box strong {
-  font-size: 18px;
-  color: #111827;
-}
-
-.room-section {
-  text-align: center;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 20px;
-}
-
-.waiting-icon,
-.ready-icon,
-.result-icon {
-  font-size: 45px;
-  margin-bottom: 8px;
-}
-
-.room-section h2 {
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.room-section p {
-  color: #64748b;
-  font-size: 13px;
   line-height: 1.55;
+
+  color: #5c6778;
 }
 
-.refresh-note {
-  margin-top: 15px;
-  background: #eff6ff;
-  color: #2563eb;
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.ready-text {
-  margin-bottom: 16px;
-}
-
-.room-code-box {
-  background: linear-gradient(135deg, #111827, #1e293b);
-  color: white;
-  border-radius: 17px;
-  padding: 17px 10px;
-  margin: 14px 0 10px;
-}
-
-.room-code-box span {
+.welcome-content p span {
   display: block;
-  color: #94a3b8;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  margin-bottom: 7px;
+  margin-top: 2px;
 }
 
-.room-code-box strong {
-  font-size: 31px;
-  letter-spacing: 5px;
-}
 
-.copy-btn,
-.play-btn,
-.result-btn,
-.retry-btn {
-  width: 100%;
-  border: 0;
-  border-radius: 13px;
-  padding: 14px;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-}
+/* =========================================================
+   CREATE CARD
+========================================================= */
 
-.copy-btn {
-  background: #e0f2fe;
-  color: #0369a1;
-  margin-bottom: 10px;
-}
+.create-card {
+  background: white;
 
-.play-btn {
-  background: linear-gradient(135deg, #16a34a, #15803d);
-  color: white;
-  box-shadow: 0 6px 15px rgba(22, 163, 74, .25);
-}
+  border: 1px solid #e0e7f0;
+  border-radius: 24px;
 
-.play-note {
-  color: #64748b;
-  font-size: 10px;
-  margin-top: 10px;
-}
+  padding: 21px 18px;
 
-.result-section {
-  margin-top: 15px;
-}
+  box-shadow: 0 9px 28px rgba(20, 38, 70, 0.08);
 
-.result-btn {
-  background: #7c3aed;
-  color: white;
-  margin-top: 15px;
-}
-
-.error-card {
-  text-align: center;
-  margin-top: 40px;
-}
-
-.error-icon {
-  font-size: 45px;
-  margin-bottom: 10px;
-}
-
-.error-card h2 {
-  margin-bottom: 8px;
-}
-
-.error-card p {
-  color: #64748b;
-  font-size: 13px;
   margin-bottom: 18px;
 }
 
-.retry-btn {
-  background: #111827;
-  color: white;
-}
-
-.bottom-nav {
-  position: fixed;
-  left: 50%;
-  bottom: 10px;
-  transform: translateX(-50%);
-  width: min(500px, calc(100% - 20px));
-  height: 65px;
-  background: #4c1d95;
-  border-radius: 20px;
+.card-heading {
   display: flex;
-  justify-content: space-around;
   align-items: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,.18);
-  z-index: 30;
+  gap: 13px;
+
+  margin-bottom: 18px;
 }
 
-.bottom-nav a {
-  text-decoration: none;
+.heading-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+
+  background: linear-gradient(145deg, #eafbf4, #d9f8ec);
+
+  font-size: 25px;
+}
+
+.card-heading h2 {
+  font-size: 22px;
+  font-weight: 850;
+  color: #182235;
+}
+
+.card-heading p {
+  margin-top: 3px;
+
+  color: #6c7687;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   RULES
+========================================================= */
+
+.rules-btn {
+  width: 100%;
+
+  border: 0;
+  border-radius: 15px;
+
+  background: #f0f2f5;
+
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  color: #202838;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.rules-btn:active {
+  transform: scale(0.98);
+}
+
+.info-icon {
+  width: 19px;
+  height: 19px;
+
+  border: 2px solid #293345;
+  border-radius: 50%;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   AMOUNT
+========================================================= */
+
+.amount-label {
+  margin-top: 19px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.amount-label label {
+  font-size: 16px;
+  font-weight: 750;
+
+  color: #293345;
+}
+
+.coin-small {
+  font-size: 22px;
+}
+
+.amount-box {
+  margin-top: 8px;
+
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+
+  border: 2px solid #dfe5ed;
+  border-radius: 17px;
+
+  background: #fff;
+
+  padding: 0 14px;
+
+  transition: 0.2s;
+}
+
+.amount-box:focus-within {
+  border-color: #00c979;
+  box-shadow: 0 0 0 4px rgba(0,201,121,0.09);
+}
+
+.rupee {
+  font-size: 22px;
+  font-weight: 800;
+
+  color: #00a965;
+
+  margin-right: 9px;
+}
+
+.amount-box input {
+  width: 100%;
+
+  height: 100%;
+
+  border: 0;
+  outline: none;
+
+  background: transparent;
+
+  font-size: 18px;
+  font-weight: 650;
+
+  color: #202a3a;
+}
+
+.amount-box input::placeholder {
+  color: #9aa3af;
+  font-weight: 500;
+}
+
+.amount-suffix {
+  font-size: 12px;
+  font-weight: 800;
+
+  padding: 6px 9px;
+
+  border-radius: 8px;
+
+  background: #eefaf5;
+  color: #009c60;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   SET BUTTON
+========================================================= */
+
+.set-btn {
+  width: 100%;
+
+  height: 56px;
+
+  margin-top: 12px;
+
+  border: 0;
+  border-radius: 17px;
+
+  background: linear-gradient(135deg, #00d084, #00a967);
+
   color: white;
-  min-width: 65px;
+
+  font-size: 17px;
+  font-weight: 850;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  cursor: pointer;
+
+  box-shadow: 0 7px 18px rgba(0, 180, 105, 0.20);
+
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.set-btn:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 3px 10px rgba(0, 180, 105, 0.16);
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.amount-message {
+  margin-top: 11px;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #168457;
+
+  font-weight: 650;
+}
+
+
+/* =========================================================
+   DEMO NOTICE
+========================================================= */
+
+.demo-notice {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 14px;
+
+  padding: 12px 13px;
+
+  border-radius: 14px;
+
+  background: #fff8e6;
+  border: 1px solid #f4e4b8;
+
+  color: #6e5b27;
+}
+
+.demo-notice > span {
+  font-size: 20px;
+}
+
+.demo-notice strong {
+  font-size: 14px;
+}
+
+.demo-notice p {
+  margin-top: 2px;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   BATTLE SECTIONS
+========================================================= */
+
+.battle-section {
+  margin-top: 18px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 11px;
+
+  padding: 0 3px;
+}
+
+.section-header h2 {
+  font-size: 19px;
+  font-weight: 850;
+
+  color: #182235;
+}
+
+.section-header p {
+  margin-top: 3px;
+
+  font-size: 12px;
+  color: #788294;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 9px;
+
+  border-radius: 9px;
+
+  background: #eafaf3;
+  color: #009b5f;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.live-badge span {
+  width: 6px;
+  height: 6px;
+
+  background: #00c979;
+  border-radius: 50%;
+}
+
+
+/* =========================================================
+   BATTLE CARD
+   Existing battle.js classes preserved
+========================================================= */
+
+.battle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.battle-card {
+  background: white;
+
+  border: 1px solid #e1e7ef;
+  border-radius: 18px;
+
+  padding: 16px;
+
+  box-shadow: 0 5px 17px rgba(25, 40, 65, 0.06);
+}
+
+.battle-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.battle-card h3 {
+  font-size: 16px;
+  color: #1d2738;
+}
+
+.battle-card p {
+  font-size: 13px;
+  color: #6d7788;
+
+  margin-top: 4px;
+}
+
+.play-battle-btn {
+  border: 0;
+
+  min-height: 42px;
+
+  padding: 0 17px;
+
+  border-radius: 12px;
+
+  background: #071936;
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.play-battle-btn:active {
+  transform: scale(0.97);
+}
+
+
+/* =========================================================
+   INFO CARD
+========================================================= */
+
+.info-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+
+  margin-top: 20px;
+
+  padding: 16px;
+
+  background: #eef7ff;
+
+  border: 1px solid #dbeaf7;
+
+  border-radius: 18px;
+}
+
+.info-icon-large {
+  font-size: 24px;
+}
+
+.info-card h3 {
+  font-size: 15px;
+}
+
+.info-card p {
+  margin-top: 4px;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  color: #647286;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1000;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 18px;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(5, 15, 35, 0.68);
+
+  backdrop-filter: blur(4px);
+}
+
+.modal-box {
+  position: relative;
+  z-index: 2;
+
+  width: min(100%, 430px);
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 25px 20px 20px;
+
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+
+  animation: modalIn 0.2s ease-out;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-close {
+  position: absolute;
+
+  right: 14px;
+  top: 12px;
+
+  width: 34px;
+  height: 34px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #f0f2f5;
+
+  font-size: 25px;
+  line-height: 1;
+
+  color: #495366;
+
+  cursor: pointer;
+}
+
+.modal-icon {
+  font-size: 34px;
+
   text-align: center;
+
+  margin-top: 3px;
+}
+
+.modal-box h2 {
+  text-align: center;
+
+  margin-top: 8px;
+
+  font-size: 23px;
+}
+
+.modal-subtitle {
+  text-align: center;
+
+  margin-top: 4px;
+
+  color: #7b8595;
+
+  font-size: 13px;
+}
+
+.rules-list {
+  margin-top: 18px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rule-item {
+  display: flex;
+  gap: 11px;
+
+  padding: 12px;
+
+  background: #f7f9fc;
+
+  border-radius: 14px;
+}
+
+.rule-item > span {
   font-size: 21px;
 }
 
-.bottom-nav small {
-  display: block;
-  font-size: 9px;
-  margin-top: 3px;
-  opacity: .9;
+.rule-item strong {
+  font-size: 14px;
 }
 
-@media (max-width: 390px) {
+.rule-item p {
+  margin-top: 3px;
 
-  .room-container {
-    padding: 14px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+
+  color: #707b8c;
+}
+
+.understand-btn {
+  width: 100%;
+
+  height: 50px;
+
+  margin-top: 17px;
+
+  border: 0;
+  border-radius: 14px;
+
+  background: #071936;
+  color: white;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   BOTTOM NAVIGATION
+========================================================= */
+
+.bottom-nav {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: 900;
+
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  background: rgba(255,255,255,0.96);
+
+  border-top: 1px solid #e1e6ee;
+
+  box-shadow: 0 -5px 20px rgba(20, 35, 60, 0.08);
+
+  padding: 5px 5px calc(5px + env(safe-area-inset-bottom));
+}
+
+.nav-item {
+  min-width: 58px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  color: #707988;
+
+  text-decoration: none;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  transition: 0.2s;
+}
+
+.nav-icon {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  font-size: 18px;
+}
+
+.nav-item.active {
+  color: #00a966;
+}
+
+.nav-item.active .nav-icon {
+  background: #e9faf3;
+}
+
+.nav-item:active {
+  transform: scale(0.94);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+  .battle-header {
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
-  .card {
-    padding: 16px;
+  .header-title h1 {
+    font-size: 24px;
   }
 
-  .match-title h1 {
+  .battle-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .create-card {
+    padding: 18px 15px;
+  }
+
+  .card-heading h2 {
     font-size: 20px;
   }
 
-  .room-code-box strong {
-    font-size: 26px;
-    letter-spacing: 4px;
+  .welcome-card {
+    padding: 16px;
   }
 
-  .player-name {
-    font-size: 12px;
+  .welcome-content h2 {
+    font-size: 17px;
   }
+
+  .battle-details {
+    align-items: flex-start;
+  }
+
+  .play-battle-btn {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+}
+
+
+/* =========================================================
+   LARGE SCREEN
+========================================================= */
+
+@media (min-width: 700px) {
+
+  .battle-container {
+    padding-top: 24px;
+  }
+
+  .battle-header {
+    padding-left: max(20px, calc((100% - 760px) / 2));
+    padding-right: max(20px, calc((100% - 760px) / 2));
+  }
+
 }
