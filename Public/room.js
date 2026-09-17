@@ -6,12 +6,6 @@ const TOKEN_KEYS = [
   "authToken"
 ];
 
-const CUSTOMER_ID_KEYS = [
-  "balajiCustomerId",
-  "customerId",
-  "userId"
-];
-
 const MOBILE_KEYS = [
   "balajiMobile",
   "mobileNumber",
@@ -22,37 +16,48 @@ let battleId = "";
 let refreshTimer = null;
 
 
-/* =========================
+/* =====================================
    STORAGE
-========================= */
+   ===================================== */
 
 function getStorage(keys) {
   for (const key of keys) {
     const value = localStorage.getItem(key);
-    if (value) return value;
+
+    if (value) {
+      return value;
+    }
   }
+
   return "";
 }
+
 
 function getToken() {
   return getStorage(TOKEN_KEYS);
 }
 
+
 function getMobile() {
   const value = getStorage(MOBILE_KEYS);
+
   const digits = String(value).replace(/\D/g, "");
 
-  return digits.length >= 10 ? digits.slice(-10) : "";
+  return digits.length >= 10
+    ? digits.slice(-10)
+    : "";
 }
 
 
-/* =========================
+/* =====================================
    BATTLE ID
-========================= */
+   ===================================== */
 
 function getBattleId() {
 
-  const params = new URLSearchParams(location.search);
+  const params = new URLSearchParams(
+    window.location.search
+  );
 
   const queryId =
     params.get("id") ||
@@ -62,15 +67,22 @@ function getBattleId() {
     return String(queryId);
   }
 
-  const directId =
+
+  const savedId =
     localStorage.getItem("balajiBattleId");
 
-  if (directId) {
+  if (savedId) {
 
     try {
-      const parsed = JSON.parse(directId);
 
-      if (parsed && typeof parsed === "object") {
+      const parsed =
+        JSON.parse(savedId);
+
+      if (
+        parsed &&
+        typeof parsed === "object"
+      ) {
+
         return String(
           parsed.id ||
           parsed.battle_id ||
@@ -79,23 +91,30 @@ function getBattleId() {
         );
       }
 
-      return String(parsed);
+    } catch (_) {
 
-    } catch {
-      return String(directId);
+      return String(savedId);
     }
   }
 
+
   const selected =
-    localStorage.getItem("balajiSelectedBattle");
+    localStorage.getItem(
+      "balajiSelectedBattle"
+    );
 
   if (selected) {
 
     try {
 
-      const parsed = JSON.parse(selected);
+      const parsed =
+        JSON.parse(selected);
 
-      if (parsed && typeof parsed === "object") {
+      if (
+        parsed &&
+        typeof parsed === "object"
+      ) {
+
         return String(
           parsed.id ||
           parsed.battle_id ||
@@ -106,18 +125,52 @@ function getBattleId() {
 
       return String(parsed);
 
-    } catch {
+    } catch (_) {
+
       return String(selected);
     }
   }
+
+
+  const current =
+    localStorage.getItem(
+      "balajiCurrentBattle"
+    );
+
+  if (current) {
+
+    try {
+
+      const parsed =
+        JSON.parse(current);
+
+      if (
+        parsed &&
+        typeof parsed === "object"
+      ) {
+
+        return String(
+          parsed.id ||
+          parsed.battle_id ||
+          parsed.battleId ||
+          ""
+        );
+      }
+
+    } catch (_) {
+
+      return String(current);
+    }
+  }
+
 
   return "";
 }
 
 
-/* =========================
+/* =====================================
    API
-========================= */
+   ===================================== */
 
 async function api(path, options = {}) {
 
@@ -126,36 +179,57 @@ async function api(path, options = {}) {
     ...(options.headers || {})
   };
 
+
   const token = getToken();
   const mobile = getMobile();
 
+
   if (token) {
-    headers.Authorization = `Bearer ${token}`;
+
+    headers.Authorization =
+      `Bearer ${token}`;
   }
+
 
   if (mobile) {
-    headers["X-Balaji-Mobile"] = mobile;
+
+    headers["X-Balaji-Mobile"] =
+      mobile;
   }
 
-  const response = await fetch(
-    API_BASE + path,
-    {
-      ...options,
-      headers
-    }
-  );
 
-  const text = await response.text();
+  const response =
+    await fetch(
+      API_BASE + path,
+      {
+        ...options,
+        headers
+      }
+    );
+
+
+  const text =
+    await response.text();
+
 
   let data = {};
 
+
   try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
+
+    data =
+      text
+        ? JSON.parse(text)
+        : {};
+
+  } catch (_) {
+
     data = {};
   }
 
+
   if (!response.ok) {
+
     throw new Error(
       data.error ||
       data.message ||
@@ -163,29 +237,42 @@ async function api(path, options = {}) {
     );
   }
 
+
   return data;
 }
 
 
-/* =========================
+/* =====================================
    UI HELPERS
-========================= */
+   ===================================== */
 
 function show(id) {
-  const element = document.getElementById(id);
+
+  const element =
+    document.getElementById(id);
 
   if (element) {
-    element.classList.remove("hidden");
+
+    element.classList.remove(
+      "hidden"
+    );
   }
 }
+
 
 function hide(id) {
-  const element = document.getElementById(id);
+
+  const element =
+    document.getElementById(id);
 
   if (element) {
-    element.classList.add("hidden");
+
+    element.classList.add(
+      "hidden"
+    );
   }
 }
+
 
 function hideAllStates() {
 
@@ -198,19 +285,24 @@ function hideAllStates() {
   hide("resultSection");
 }
 
+
 function money(value) {
 
-  const number = Number(value || 0);
+  const number =
+    Number(value || 0);
 
-  return `₹${number.toLocaleString("en-IN", {
-    maximumFractionDigits: 2
-  })}`;
+  return `₹${number.toLocaleString(
+    "en-IN",
+    {
+      maximumFractionDigits: 2
+    }
+  )}`;
 }
 
 
-/* =========================
+/* =====================================
    ERROR
-========================= */
+   ===================================== */
 
 function showError(message) {
 
@@ -218,27 +310,36 @@ function showError(message) {
 
   show("errorCard");
 
-  const messageBox =
-    document.getElementById("errorMessage");
 
-  if (messageBox) {
-    messageBox.textContent = message;
+  const box =
+    document.getElementById(
+      "errorMessage"
+    );
+
+
+  if (box) {
+
+    box.textContent =
+      message;
   }
 }
 
 
-/* =========================
+/* =====================================
    LOAD BATTLE
-========================= */
+   ===================================== */
 
 async function loadBattle() {
 
-  battleId = getBattleId();
+  battleId =
+    getBattleId();
+
 
   console.log(
-    "Balaji Room Battle ID:",
+    "BALAJI ROOM BATTLE ID:",
     battleId
   );
+
 
   if (!battleId) {
 
@@ -249,18 +350,33 @@ async function loadBattle() {
     return;
   }
 
+
   try {
 
-    const data = await api(
-      `/api/battles/${encodeURIComponent(battleId)}`
+    const data =
+      await api(
+        `/api/battles/${encodeURIComponent(
+          battleId
+        )}`
+      );
+
+
+    console.log(
+      "BALAJI BATTLE DATA:",
+      data
     );
+
 
     const battle =
       data.battle ||
       data.data ||
       data;
 
-    if (!battle || !battle.id) {
+
+    if (
+      !battle ||
+      !battle.id
+    ) {
 
       showError(
         "Battle information नहीं मिली।"
@@ -269,7 +385,10 @@ async function loadBattle() {
       return;
     }
 
-    renderBattle(battle);
+
+    renderBattle(
+      battle
+    );
 
   } catch (error) {
 
@@ -277,6 +396,7 @@ async function loadBattle() {
       "Room load error:",
       error
     );
+
 
     showError(
       error.message ||
@@ -286,13 +406,13 @@ async function loadBattle() {
 }
 
 
-/* =========================
-   NORMALIZE STATUS
-========================= */
+/* =====================================
+   STATUS
+   ===================================== */
 
-function getBattleStatus(battle) {
+function getStatus(battle) {
 
-  const raw = String(
+  return String(
     battle.status ||
     battle.match_status ||
     battle.battle_status ||
@@ -300,33 +420,194 @@ function getBattleStatus(battle) {
   )
     .trim()
     .toUpperCase();
-
-  return raw;
 }
 
 
-/* =========================
-   RENDER BATTLE
-========================= */
+/* =====================================
+   PLAYER 2 DETECTION
+   ===================================== */
+
+function getPlayer2Name(battle) {
+
+  const possibleNames = [
+
+    battle.opponent_name,
+
+    battle.opponentName,
+
+    battle.joiner_name,
+
+    battle.joinerName,
+
+    battle.player2,
+
+    battle.player_2,
+
+    battle.player_two_name,
+
+    battle.playerTwoName,
+
+    battle.player2_name,
+
+    battle.second_player_name,
+
+    battle.joined_by_name,
+
+    battle.joinedByName
+
+  ];
+
+
+  for (
+    const name of possibleNames
+  ) {
+
+    if (
+      name !== undefined &&
+      name !== null &&
+      String(name).trim() !== ""
+    ) {
+
+      const value =
+        String(name).trim();
+
+
+      if (
+        value.toLowerCase() !==
+        "waiting"
+      ) {
+
+        return value;
+      }
+    }
+  }
+
+
+  return "";
+}
+
+
+/* =====================================
+   PLAYER 2 ID DETECTION
+   ===================================== */
+
+function hasPlayer2(battle) {
+
+  const player2Name =
+    getPlayer2Name(
+      battle
+    );
+
+
+  if (player2Name) {
+    return true;
+  }
+
+
+  const possibleIds = [
+
+    battle.opponent_id,
+
+    battle.opponentId,
+
+    battle.joiner_id,
+
+    battle.joinerId,
+
+    battle.player2_id,
+
+    battle.player_2_id,
+
+    battle.player_two_id,
+
+    battle.second_player_id,
+
+    battle.joined_by
+
+  ];
+
+
+  for (
+    const id of possibleIds
+  ) {
+
+    if (
+      id !== undefined &&
+      id !== null &&
+      String(id).trim() !== ""
+    ) {
+
+      return true;
+    }
+  }
+
+
+  return false;
+}
+
+
+/* =====================================
+   ROOM CODE
+   ===================================== */
+
+function getRoomCode(battle) {
+
+  const possibleCodes = [
+
+    battle.room_code,
+
+    battle.roomCode,
+
+    battle.room,
+
+    battle.ludo_room_code,
+
+    battle.ludoRoomCode,
+
+    battle.game_room_code,
+
+    battle.gameRoomCode,
+
+    battle.code
+
+  ];
+
+
+  for (
+    const code of possibleCodes
+  ) {
+
+    if (
+      code !== undefined &&
+      code !== null &&
+      String(code).trim() !== ""
+    ) {
+
+      return String(code).trim();
+    }
+  }
+
+
+  return "";
+}
+
+
+/* =====================================
+   RENDER
+   ===================================== */
 
 function renderBattle(battle) {
-
-  /*
-    पहले सभी states बंद।
-    इससे Waiting + Ready + Error
-    एक साथ दिखाई नहीं देंगे।
-  */
 
   hideAllStates();
 
   show("matchCard");
 
 
-  /* =========================
-     PLAYERS
-  ========================= */
+  /* ---------------------------------
+     PLAYER 1
+     --------------------------------- */
 
-  const creatorName =
+  const playerOneName =
     battle.creator_name ||
     battle.creatorName ||
     battle.player1 ||
@@ -334,23 +615,27 @@ function renderBattle(battle) {
     "Player 1";
 
 
-  const opponentName =
-    battle.opponent_name ||
-    battle.opponentName ||
-    battle.joiner_name ||
-    battle.player2 ||
-    battle.player_two_name ||
-    "";
-
-
   const playerOne =
     document.getElementById(
       "playerOneName"
     );
 
+
   if (playerOne) {
-    playerOne.textContent = creatorName;
+
+    playerOne.textContent =
+      playerOneName;
   }
+
+
+  /* ---------------------------------
+     PLAYER 2
+     --------------------------------- */
+
+  const player2Name =
+    getPlayer2Name(
+      battle
+    );
 
 
   const playerTwo =
@@ -358,21 +643,24 @@ function renderBattle(battle) {
       "playerTwoName"
     );
 
+
   if (playerTwo) {
 
     playerTwo.textContent =
-      opponentName || "Waiting...";
+      player2Name ||
+      "Waiting...";
   }
 
 
-  /* =========================
-     MONEY
-  ========================= */
+  /* ---------------------------------
+     ENTRY FEE
+     --------------------------------- */
 
   const entryAmount =
     document.getElementById(
       "entryAmount"
     );
+
 
   if (entryAmount) {
 
@@ -387,10 +675,15 @@ function renderBattle(battle) {
   }
 
 
+  /* ---------------------------------
+     WINNING PRIZE
+     --------------------------------- */
+
   const winningAmount =
     document.getElementById(
       "winningAmount"
     );
+
 
   if (winningAmount) {
 
@@ -405,12 +698,15 @@ function renderBattle(battle) {
   }
 
 
-  /* =========================
+  /* ---------------------------------
      STATUS
-  ========================= */
+     --------------------------------- */
 
   const status =
-    getBattleStatus(battle);
+    getStatus(
+      battle
+    );
+
 
   const statusBadge =
     document.getElementById(
@@ -418,28 +714,14 @@ function renderBattle(battle) {
     );
 
 
-  /*
-    अगर backend status खाली है,
-    तो players देखकर state समझेंगे.
-  */
-
-  const hasOpponent =
-    Boolean(
-      opponentName &&
-      opponentName !== "Waiting..." &&
-      opponentName !== "Customer"
-    );
-
-
-  /* =========================
+  /* ---------------------------------
      ROOM CODE
-  ========================= */
+     --------------------------------- */
 
   const roomCode =
-    battle.room_code ||
-    battle.roomCode ||
-    battle.room ||
-    "";
+    getRoomCode(
+      battle
+    );
 
 
   const roomCodeElement =
@@ -447,125 +729,147 @@ function renderBattle(battle) {
       "roomCode"
     );
 
+
   if (roomCodeElement) {
 
     roomCodeElement.textContent =
-      roomCode || "--------";
+      roomCode ||
+      "--------";
   }
 
 
-  /* =========================
-     RESULT SUBMITTED
-  ========================= */
+  /* ---------------------------------
+     PLAYER 2 FOUND?
+     --------------------------------- */
 
-  if (
-    status === "RESULT_SUBMITTED" ||
-    status === "RESULT" ||
-    status === "FINISHED" ||
-    status === "COMPLETED"
-  ) {
+  const player2Joined =
+    hasPlayer2(
+      battle
+    );
+
+
+  /*
+    IMPORTANT:
+
+    अगर Player 2 मौजूद है तो
+    backend status WAITING/OPEN होने
+    के बावजूद MATCH READY दिखाएँगे।
+  */
+
+  if (player2Joined) {
+
+    /* MATCH READY */
 
     if (statusBadge) {
+
       statusBadge.textContent =
-        "RESULT";
+        roomCode
+          ? "READY"
+          : "MATCH READY";
     }
 
-    if (roomCode) {
-      show("readySection");
-    }
 
-    show("resultSection");
-
-    return;
-  }
-
-
-  /* =========================
-     READY / RUNNING
-  ========================= */
-
-  if (
-    status === "READY" ||
-    status === "ROOM_READY" ||
-    status === "MATCH_READY" ||
-    status === "RUNNING" ||
-    status === "JOINED"
-  ) {
+    /*
+      Room Code available है
+      तो Ready section दिखाएँ।
+    */
 
     if (roomCode) {
 
       show("readySection");
 
-      if (statusBadge) {
-        statusBadge.textContent =
-          status === "RUNNING"
-            ? "RUNNING"
-            : "READY";
-      }
+      hide("waitingSection");
 
     } else {
 
+      /*
+        Player 2 आ गया है लेकिन
+        अभी Room Code नहीं आया।
+      */
+
+      hide("readySection");
+
       show("waitingSection");
 
-      if (statusBadge) {
-        statusBadge.textContent =
-          "WAITING";
+
+      const waitingTitle =
+        document.querySelector(
+          "#waitingSection h2"
+        );
+
+
+      if (waitingTitle) {
+
+        waitingTitle.textContent =
+          "Match Ready";
+      }
+
+
+      const waitingText =
+        document.querySelector(
+          "#waitingSection .waiting-text"
+        );
+
+
+      if (waitingText) {
+
+        waitingText.textContent =
+          "Player 2 joined. Room Code का इंतज़ार करें।";
       }
     }
 
-    return;
-  }
-
-
-  /* =========================
-     OPEN / WAITING
-  ========================= */
-
-  if (
-    status === "" ||
-    status === "OPEN" ||
-    status === "WAITING" ||
-    status === "WAITING_ROOM"
-  ) {
-
-    show("waitingSection");
-
-    if (statusBadge) {
-      statusBadge.textContent =
-        "WAITING";
-    }
 
     return;
   }
 
 
-  /* =========================
-     UNKNOWN
-  ========================= */
+  /* ---------------------------------
+     NO PLAYER 2
+     --------------------------------- */
 
-  /*
-    Unknown status को Match Not Found
-    नहीं बनाएँगे।
-  */
-
-  console.warn(
-    "Unknown battle status:",
-    status,
-    battle
-  );
+  hide("readySection");
+  hide("resultSection");
 
   show("waitingSection");
 
+
   if (statusBadge) {
+
     statusBadge.textContent =
       "WAITING";
+  }
+
+
+  const waitingTitle =
+    document.querySelector(
+      "#waitingSection h2"
+    );
+
+
+  if (waitingTitle) {
+
+    waitingTitle.textContent =
+      "Waiting for Player 2";
+  }
+
+
+  const waitingText =
+    document.querySelector(
+      "#waitingSection .waiting-text"
+    );
+
+
+  if (waitingText) {
+
+    waitingText.textContent =
+      "Another player can join this Battle.";
   }
 }
 
 
-/* =========================
+/* =====================================
    COPY ROOM CODE
-========================= */
+   ===================================== */
 
 async function copyRoomCode() {
 
@@ -574,10 +878,15 @@ async function copyRoomCode() {
       "roomCode"
     );
 
-  if (!element) return;
+
+  if (!element) {
+    return;
+  }
+
 
   const code =
     element.textContent.trim();
+
 
   if (
     !code ||
@@ -598,24 +907,33 @@ async function copyRoomCode() {
       code
     );
 
+
     const button =
       document.getElementById(
         "copyRoomBtn"
       );
 
-    if (!button) return;
 
-    const oldText =
-      button.textContent;
+    if (button) {
 
-    button.textContent =
-      "✅ Room Code Copied";
+      const oldText =
+        button.textContent;
 
-    setTimeout(() => {
-      button.textContent = oldText;
-    }, 1800);
 
-  } catch {
+      button.textContent =
+        "✅ Room Code Copied";
+
+
+      setTimeout(() => {
+
+        button.textContent =
+          oldText;
+
+      }, 1800);
+    }
+
+
+  } catch (_) {
 
     alert(
       `Room Code: ${code}`
@@ -624,9 +942,9 @@ async function copyRoomCode() {
 }
 
 
-/* =========================
-   LUDO KING
-========================= */
+/* =====================================
+   PLAY LUDO KING
+   ===================================== */
 
 function openLudoKing() {
 
@@ -635,10 +953,15 @@ function openLudoKing() {
       "roomCode"
     );
 
-  if (!element) return;
+
+  if (!element) {
+    return;
+  }
+
 
   const code =
     element.textContent.trim();
+
 
   if (
     !code ||
@@ -653,15 +976,22 @@ function openLudoKing() {
   }
 
 
+  /*
+    Ludo King app को automatic
+    control नहीं किया जा सकता।
+    User manually app खोलकर
+    Room Code enter करेगा।
+  */
+
   alert(
-    `Ludo King खोलें और Room Code ${code} डालकर match खेलें।`
+    `Ludo King खोलें और Room Code ${code} enter करके match खेलें।`
   );
 }
 
 
-/* =========================
-   RESULT
-========================= */
+/* =====================================
+   RESULT PAGE
+   ===================================== */
 
 function openResultPage() {
 
@@ -674,10 +1004,12 @@ function openResultPage() {
     return;
   }
 
+
   localStorage.setItem(
     "balajiBattleId",
     battleId
   );
+
 
   window.location.href =
     `result.html?id=${encodeURIComponent(
@@ -686,52 +1018,80 @@ function openResultPage() {
 }
 
 
-/* =========================
-   EVENTS
-========================= */
+/* =====================================
+   BACK BUTTON
+   ===================================== */
 
 document
-  .getElementById("backBtn")
+  .getElementById(
+    "backBtn"
+  )
   ?.addEventListener(
     "click",
     () => {
+
       window.location.href =
         "battle.html";
     }
   );
 
 
+/* =====================================
+   COPY BUTTON
+   ===================================== */
+
 document
-  .getElementById("copyRoomBtn")
+  .getElementById(
+    "copyRoomBtn"
+  )
   ?.addEventListener(
     "click",
     copyRoomCode
   );
 
 
+/* =====================================
+   PLAY BUTTON
+   ===================================== */
+
 document
-  .getElementById("playLudoBtn")
+  .getElementById(
+    "playLudoBtn"
+  )
   ?.addEventListener(
     "click",
     openLudoKing
   );
 
 
+/* =====================================
+   RESULT BUTTON
+   ===================================== */
+
 document
-  .getElementById("resultBtn")
+  .getElementById(
+    "resultBtn"
+  )
   ?.addEventListener(
     "click",
     openResultPage
   );
 
 
+/* =====================================
+   RETRY
+   ===================================== */
+
 document
-  .getElementById("retryBtn")
+  .getElementById(
+    "retryBtn"
+  )
   ?.addEventListener(
     "click",
     () => {
 
       hide("errorCard");
+
       hide("matchCard");
 
       show("loadingCard");
@@ -741,9 +1101,9 @@ document
   );
 
 
-/* =========================
+/* =====================================
    START
-========================= */
+   ===================================== */
 
 hideAllStates();
 
@@ -752,18 +1112,27 @@ show("loadingCard");
 loadBattle();
 
 
-/* =========================
+/* =====================================
    AUTO REFRESH
-========================= */
+   ===================================== */
 
 if (refreshTimer) {
-  clearInterval(refreshTimer);
+
+  clearInterval(
+    refreshTimer
+  );
 }
 
-refreshTimer = setInterval(() => {
 
-  if (!document.hidden) {
-    loadBattle();
-  }
+refreshTimer =
+  setInterval(
+    () => {
 
-}, 5000);
+      if (!document.hidden) {
+
+        loadBattle();
+      }
+
+    },
+    5000
+  );
