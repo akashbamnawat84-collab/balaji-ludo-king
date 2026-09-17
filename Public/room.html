@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <title>BALAJI LUDO KING - Room</title>
+  <title>Balaji Ludo King - Battle Room</title>
 
-  <link rel="stylesheet" href="room.css">
-  <link rel="stylesheet" href="rules.css">
+  <link
+    rel="stylesheet"
+    href="room.css"
+  >
 </head>
 
 <body>
 
-  <!-- HEADER -->
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
 
-  <header class="topbar">
+  <header class="room-header">
 
     <button
       id="backBtn"
@@ -26,423 +32,406 @@
     </button>
 
     <div class="brand">
-      <h1>BALAJI LUDO KING</h1>
-      <p>Official Gaming</p>
-    </div>
 
-    <!-- RULES BUTTON LINK -->
-    <a href="rules.html?v=1" class="rules-header-btn" style="text-decoration: none;">
-      <button type="button" class="back-btn" style="background-color: #ffcc00; color: #000; font-weight: bold;">
-        📜 Rules
-      </button>
-    </a>
+      <h1>
+        BALAJI LUDO KING
+      </h1>
+
+      <p>
+        Battle Room
+      </p>
+
+    </div>
 
   </header>
 
 
-  <!-- MAIN -->
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
 
-  <main class="room-page">
+  <main class="room-container">
 
-    <section class="room-card">
 
-      <div class="match-title">
-        🎮 Match Room
+    <!-- GAME TITLE -->
+
+    <section class="game-title-card">
+
+      <div class="game-icon">
+        🎲
       </div>
 
+      <div>
 
-      <!-- MATCH DETAILS -->
-
-      <div class="fee-grid">
-
-        <div class="fee-box">
-
-          <span>Entry Fee</span>
-
-          <strong id="entryFee">
-            50 Demo Coins
-          </strong>
-
-        </div>
-
-
-        <div class="fee-box">
-
-          <span>Winning Prize</span>
-
-          <strong id="winningPrize">
-            95 Demo Coins
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <!-- PLAYER 1 / ROOM CREATOR -->
-
-      <div
-        id="creatorState"
-        class="room-state"
-        style="display:none;"
-      >
-
-        <div class="room-icon">
-          🔐
-        </div>
-
+        <span class="live-badge">
+          ● LIVE
+        </span>
 
         <h2>
-          Create Room in Ludo King
+          Ludo Classic
         </h2>
 
-
-        <p class="hindi-text">
-          Ludo King app में room बनाकर
-          Room Code यहाँ डालें।
+        <p>
+          2 Player Battle
         </p>
-
-
-        <div class="room-code-input-box">
-
-          <label for="roomCodeInput">
-            Room Code
-          </label>
-
-
-          <input
-            type="text"
-            id="roomCodeInput"
-            placeholder="8-Digit Room Code"
-            maxlength="8"
-            inputmode="numeric"
-            autocomplete="off"
-          />
-
-
-          <button
-            type="button"
-            id="submitRoomCodeBtn"
-            class="primary-btn"
-          >
-            Submit Room Code
-          </button>
-
-        </div>
-
-
-        <div
-          id="roomCodeMessage"
-          class="message"
-        ></div>
-
-
-        <div class="status-box">
-
-          <span>
-            Match Status
-          </span>
-
-          <strong id="matchStatus">
-            WAITING
-          </strong>
-
-        </div>
-
-
-        <div class="waiting-time">
-
-          <span>
-            Room Time
-          </span>
-
-          <strong id="waitingSeconds">
-            05:00
-          </strong>
-
-        </div>
-
-
-        <button
-          type="button"
-          id="cancelBtn"
-          class="cancel-btn"
-        >
-          🚫 Cancel Match
-        </button>
-
-      </div>
-
-
-      <!-- PLAYER 2 WAITING -->
-
-      <div
-        id="player2WaitingState"
-        class="room-state"
-        style="display:none;"
-      >
-
-        <div class="room-icon">
-          ⏳
-        </div>
-
-
-        <h2>
-          Waiting for Room Code
-        </h2>
-
-
-        <p class="hindi-text">
-          Player 1 Room Code दे रहा है।
-        </p>
-
-
-        <p class="waiting-info">
-          Player 1 के Room Code डालने के बाद
-          यहाँ Room Code दिखाई देगा।
-        </p>
-
-
-        <div class="status-box">
-
-          <span>
-            Match Status
-          </span>
-
-          <strong id="player2Status">
-            WAITING
-          </strong>
-
-        </div>
-
-
-        <div class="waiting-time">
-
-          <span>
-            Waiting
-          </span>
-
-          <strong id="player2WaitingSeconds">
-            05:00
-          </strong>
-
-        </div>
-
-
-        <button
-          type="button"
-          id="player2CancelBtn"
-          class="cancel-btn"
-        >
-          🚫 Cancel Match
-        </button>
-
-      </div>
-
-
-      <!-- ROOM CODE READY -->
-
-      <div
-        id="roomCodeState"
-        class="room-state"
-        style="display:none;"
-      >
-
-        <div class="room-icon">
-          🎮
-        </div>
-
-
-        <h2>
-          Room Code Ready
-        </h2>
-
-
-        <p class="hindi-text">
-          Ludo King में यह Room Code डालें
-        </p>
-
-
-        <div class="code-display">
-
-          <span>
-            ROOM CODE
-          </span>
-
-
-          <strong id="roomCode">
-            --------
-          </strong>
-
-        </div>
-
-
-        <button
-          type="button"
-          id="copyCodeBtn"
-          class="primary-btn"
-        >
-          📋 Copy Room Code
-        </button>
-
-
-        <div class="status-box">
-
-          <span>
-            Match Status
-          </span>
-
-
-          <strong id="readyStatus">
-            ROOM READY
-          </strong>
-
-        </div>
-
-
-        <!-- THREE BUTTONS -->
-
-        <div class="result-buttons">
-
-          <button
-            type="button"
-            id="wonBtn"
-            class="result-btn won-btn"
-          >
-            🏆 I Won
-          </button>
-
-
-          <button
-            type="button"
-            id="lostBtn"
-            class="result-btn lost-btn"
-          >
-            ❌ I Lost
-          </button>
-
-
-          <button
-            type="button"
-            id="cancelReadyBtn"
-            class="cancel-btn"
-          >
-            🚫 Cancel Match
-          </button>
-
-        </div>
-
-
-        <!-- WIN SECTION -->
-
-        <div
-          id="winSection"
-          class="result-section"
-          style="display:none;"
-        >
-
-          <h3>
-            🏆 Win Result
-          </h3>
-
-
-          <p>
-            जीतने के बाद अपना Win Screenshot
-            upload करें।
-          </p>
-
-
-          <label
-            for="resultScreenshot"
-            class="upload-label"
-          >
-            📸 Select Win Screenshot
-          </label>
-
-
-          <input
-            type="file"
-            id="resultScreenshot"
-            accept="image/*"
-          />
-
-
-          <div
-            id="selectedFileName"
-            class="file-name"
-          >
-            No screenshot selected
-          </div>
-
-
-          <button
-            type="button"
-            id="submitResultBtn"
-            class="result-btn won-btn"
-          >
-            Submit Win Result
-          </button>
-
-
-          <div
-            id="resultMessage"
-            class="message"
-          ></div>
-
-        </div>
-
-
-        <p class="app-note">
-          Room Code copy करें और Ludo King app में
-          डालकर match खेलें।
-        </p>
-
-      </div>
-
-
-      <!-- DEMO NOTICE -->
-
-      <div class="demo-notice">
-
-        ⚠️ Demo Mode — Demo Coins only.
-        Match result is manually verified.
 
       </div>
 
     </section>
 
+
+    <!-- NOTICE -->
+
+    <div class="demo-notice">
+
+      🎮 Play the actual Ludo game in the
+      <strong>Ludo King App</strong>.
+
+      <br>
+
+      This website is used for Battle,
+      Room Code and Result management.
+
+    </div>
+
+
+    <!-- =================================================
+         BATTLE INFORMATION
+    ================================================== -->
+
+    <section class="room-card">
+
+      <h3>
+        Battle Information
+      </h3>
+
+      <div class="info-row">
+
+        <span>
+          Entry Fee
+        </span>
+
+        <strong id="entryAmount">
+          —
+        </strong>
+
+      </div>
+
+      <div class="info-row">
+
+        <span>
+          Winning Prize
+        </span>
+
+        <strong id="winningPrize">
+          —
+        </strong>
+
+      </div>
+
+      <div class="info-row">
+
+        <span>
+          Battle Status
+        </span>
+
+        <strong id="roomStatus">
+          Loading...
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         PLAYERS
+    ================================================== -->
+
+    <section class="players-card">
+
+      <h3>
+        Players
+      </h3>
+
+
+      <div class="player-box">
+
+        <div class="player-avatar red-avatar">
+          🔴
+        </div>
+
+        <div class="player-details">
+
+          <strong id="player1Name">
+            Player 1
+          </strong>
+
+          <span id="player1Status">
+            Ready
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="vs">
+        VS
+      </div>
+
+
+      <div class="player-box">
+
+        <div class="player-avatar blue-avatar">
+          🔵
+        </div>
+
+        <div class="player-details">
+
+          <strong id="player2Name">
+            Waiting for Player 2
+          </strong>
+
+          <span id="player2Status">
+            Waiting...
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         ROOM CODE
+    ================================================== -->
+
+    <section class="room-card">
+
+      <h3>
+        Room Code
+      </h3>
+
+      <p class="room-help">
+        First player enters the 8-digit
+        Room Code received from the
+        Ludo King App.
+      </p>
+
+
+      <div class="room-code-input-box">
+
+        <input
+          id="roomCodeInput"
+          type="text"
+          inputmode="numeric"
+          maxlength="8"
+          placeholder="Enter 8-digit Room Code"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <button
+        id="setRoomCodeBtn"
+        class="copy-btn"
+        type="button"
+      >
+        🔐 Set Room Code
+      </button>
+
+
+      <div
+        id="roomCodeMessage"
+        class="room-code-message"
+      ></div>
+
+
+      <div class="room-code-display">
+
+        <span>
+          Current Room Code
+        </span>
+
+        <strong id="roomCode">
+          Waiting for Room Code
+        </strong>
+
+      </div>
+
+
+      <button
+        id="copyCodeBtn"
+        class="copy-btn"
+        type="button"
+      >
+        📋 Copy Room Code
+      </button>
+
+    </section>
+
+
+    <!-- =================================================
+         WAITING
+    ================================================== -->
+
+    <section
+      class="waiting-card"
+      id="waitingCard"
+    >
+
+      <div class="loading-circle"></div>
+
+      <h3>
+        Waiting for Player 2
+      </h3>
+
+      <p>
+        Another player can join this Battle.
+      </p>
+
+    </section>
+
+
+    <!-- =================================================
+         PLAY IN APP
+    ================================================== -->
+
+    <section
+      class="app-play-card"
+      id="appPlayCard"
+    >
+
+      <div class="app-play-icon">
+        🎮
+      </div>
+
+      <h3>
+        Play in Ludo King App
+      </h3>
+
+      <p>
+        Copy the Room Code, open the
+        Ludo King App and play your match.
+      </p>
+
+    </section>
+
+
+    <!-- =================================================
+         RESULT BUTTONS
+    ================================================== -->
+
+    <section
+      class="result-card"
+      id="resultCard"
+    >
+
+      <h3>
+        Battle Result
+      </h3>
+
+      <p>
+        After completing the game in
+        Ludo King App, submit your result.
+      </p>
+
+
+      <div class="result-buttons">
+
+        <button
+          id="wonBtn"
+          type="button"
+          class="won-btn"
+        >
+          🏆 I Won
+        </button>
+
+
+        <button
+          id="lostBtn"
+          type="button"
+          class="lost-btn"
+        >
+          ❌ I Lost
+        </button>
+
+
+        <button
+          id="cancelResultBtn"
+          type="button"
+          class="cancel-result-btn"
+        >
+          ⚠️ Cancel
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- OLD CANCEL -->
+
+    <button
+      id="cancelBtn"
+      class="cancel-btn"
+      type="button"
+    >
+      Cancel Match
+    </button>
+
   </main>
 
 
-  <!-- BOTTOM NAV -->
+  <!-- =====================================================
+       BOTTOM NAV
+  ====================================================== -->
 
   <nav class="bottom-nav">
 
-    <a href="home.html">
-      <span>⌂</span>
+    <a
+      href="home.html"
+      class="nav-item"
+    >
+      <span>🏠</span>
       <small>Home</small>
     </a>
 
 
-    <a href="refer.html">
+    <a
+      href="refer.html"
+      class="nav-item"
+    >
       <span>🎁</span>
       <small>Refer</small>
     </a>
 
 
-    <a href="wallet.html">
-      <span>💰</span>
+    <a
+      href="wallet.html"
+      class="nav-item"
+    >
+      <span>₹</span>
       <small>Wallet</small>
     </a>
 
 
-    <a href="support.html">
+    <a
+      href="support.html"
+      class="nav-item"
+    >
       <span>💬</span>
       <small>Support</small>
     </a>
 
 
-    <a href="profile.html">
+    <a
+      href="profile.html"
+      class="nav-item"
+    >
       <span>👤</span>
       <small>Profile</small>
     </a>
@@ -450,8 +439,11 @@
   </nav>
 
 
+  <!-- =====================================================
+       SCRIPT
+  ====================================================== -->
+
   <script src="room.js"></script>
 
 </body>
-
 </html>
