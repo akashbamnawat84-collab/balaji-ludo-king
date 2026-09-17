@@ -1,126 +1,106 @@
 /* =========================================================
    BALAJI LUDO KING
    ROOM / BATTLE PAGE
-   Login-compatible version
-   Login.js को बदलने की जरूरत नहीं है.
+   FINAL VERSION
+   Compatible with new room.html + Battle API
 ========================================================= */
 
 const API_BASE = "";
-
 const REFRESH_TIME = 5000;
-
 
 /* =========================================================
    ELEMENTS
 ========================================================= */
 
-const backBtn =
-  document.getElementById("backBtn");
+const entryFee = document.getElementById("entryFee");
+const winningPrize = document.getElementById("winningPrize");
+const battleStatus = document.getElementById("battleStatus");
 
-const entryAmount =
-  document.getElementById("entryAmount");
+const player1Name = document.getElementById("player1Name");
+const player1Status = document.getElementById("player1Status");
 
-const winningPrize =
-  document.getElementById("winningPrize");
+const player2Name = document.getElementById("player2Name");
+const player2Status = document.getElementById("player2Status");
 
-const roomStatus =
-  document.getElementById("roomStatus");
+const roomCodeInput = document.getElementById("roomCodeInput");
+const setRoomCodeBtn = document.getElementById("setRoomCodeBtn");
+const roomCodeMessage = document.getElementById("roomCodeMessage");
 
-const player1Name =
-  document.getElementById("player1Name");
+const currentRoomCode = document.getElementById("currentRoomCode");
+const copyRoomCodeBtn = document.getElementById("copyRoomCodeBtn");
 
-const player1Status =
-  document.getElementById("player1Status");
+const waitingCard = document.getElementById("waitingCard");
+const waitingText = document.getElementById("waitingText");
 
-const player2Name =
-  document.getElementById("player2Name");
+const openLudoBtn = document.getElementById("openLudoBtn");
 
-const player2Status =
-  document.getElementById("player2Status");
+const wonBtn = document.getElementById("wonBtn");
+const lostBtn = document.getElementById("lostBtn");
 
-const roomCodeInput =
-  document.getElementById("roomCodeInput");
-
-const setRoomCodeBtn =
-  document.getElementById("setRoomCodeBtn");
-
-const roomCodeMessage =
-  document.getElementById("roomCodeMessage");
-
-const roomCode =
-  document.getElementById("roomCode");
-
-const copyCodeBtn =
-  document.getElementById("copyCodeBtn");
-
-const waitingCard =
-  document.getElementById("waitingCard");
-
-const appPlayCard =
-  document.getElementById("appPlayCard");
-
-const resultCard =
-  document.getElementById("resultCard");
-
-const wonBtn =
-  document.getElementById("wonBtn");
-
-const lostBtn =
-  document.getElementById("lostBtn");
-
-const cancelResultBtn =
-  document.getElementById("cancelResultBtn");
-
-const cancelBtn =
-  document.getElementById("cancelBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const cancelSection = document.getElementById("cancelSection");
+const cancelReason = document.getElementById("cancelReason");
+const confirmCancelBtn = document.getElementById("confirmCancelBtn");
 
 
 /* =========================================================
-   CURRENT LOGIN
-   Existing login.js stores:
-
-   balajiLogin
-   balajiMobile
-
-   इसलिए token/userId की जरूरत नहीं.
+   LOGIN / USER DATA
 ========================================================= */
 
 function getMobile() {
+  const keys = [
+    "balajiMobile",
+    "mobile",
+    "customerMobile"
+  ];
 
-  const mobile =
-    localStorage.getItem("balajiMobile");
+  for (const key of keys) {
+    const value = localStorage.getItem(key);
 
-  if (!mobile) {
-    return "";
+    if (value) {
+      const mobile = String(value).replace(/\D/g, "").slice(-10);
+
+      if (mobile.length === 10) {
+        return mobile;
+      }
+    }
   }
 
-  return mobile
-    .replace(/\D/g, "")
-    .slice(-10);
+  return "";
 }
 
 
-/* =========================================================
-   LOGIN CHECK
-========================================================= */
+function getCustomerId() {
+  const keys = [
+    "balajiCustomerId",
+    "customerId",
+    "balaji_customer_id",
+    "userId",
+    "customer_id"
+  ];
+
+  for (const key of keys) {
+    const value = localStorage.getItem(key);
+
+    if (value) {
+      return String(value);
+    }
+  }
+
+  return "";
+}
+
 
 function checkLogin() {
 
-  const loggedIn =
-    localStorage.getItem("balajiLogin");
+  const loggedIn = localStorage.getItem("balajiLogin");
+  const mobile = getMobile();
 
-  const mobile =
-    getMobile();
-
-  if (
-    loggedIn !== "true" ||
-    mobile.length !== 10
-  ) {
+  if (loggedIn !== "true" || mobile.length !== 10) {
 
     alert("Please login first.");
 
-    window.location.href =
-      "/login/";
+    window.location.href = "/login/";
 
     return false;
   }
@@ -130,42 +110,77 @@ function checkLogin() {
 
 
 /* =========================================================
-   GET BATTLE ID
+   BATTLE ID
 ========================================================= */
 
 function getBattleId() {
 
-  const savedId =
-    localStorage.getItem(
-      "balajiBattleId"
-    );
+  /* First priority */
+  const savedId = localStorage.getItem("balajiBattleId");
 
   if (savedId) {
-    return savedId;
+    return String(savedId);
   }
 
 
+  /* Current battle saved by battle.js */
   try {
 
-    const selected =
-      JSON.parse(
-        localStorage.getItem(
-          "balajiSelectedBattle"
-        ) || "null"
-      );
+    const current = JSON.parse(
+      localStorage.getItem("balajiCurrentBattle") || "null"
+    );
 
-    if (
-      selected &&
-      (
-        selected.id ||
-        selected.battleId
-      )
-    ) {
+    if (current) {
 
-      return (
+      const id =
+        current.id ||
+        current.battle_id ||
+        current.battleId;
+
+      if (id) {
+
+        localStorage.setItem(
+          "balajiBattleId",
+          String(id)
+        );
+
+        return String(id);
+      }
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Current battle read error:",
+      error
+    );
+
+  }
+
+
+  /* Selected battle */
+  try {
+
+    const selected = JSON.parse(
+      localStorage.getItem("balajiSelectedBattle") || "null"
+    );
+
+    if (selected) {
+
+      const id =
         selected.id ||
-        selected.battleId
-      );
+        selected.battle_id ||
+        selected.battleId;
+
+      if (id) {
+
+        localStorage.setItem(
+          "balajiBattleId",
+          String(id)
+        );
+
+        return String(id);
+      }
     }
 
   } catch (error) {
@@ -177,66 +192,53 @@ function getBattleId() {
 
   }
 
+
   return "";
 }
 
 
 /* =========================================================
-   COMMON API
+   API
 ========================================================= */
 
-async function api(
-  path,
-  options = {}
-) {
+async function api(path, options = {}) {
 
-  const mobile =
-    getMobile();
+  const mobile = getMobile();
+  const customerId = getCustomerId();
 
   const headers = {
-
-    "Content-Type":
-      "application/json",
-
-    "X-Balaji-Mobile":
-      mobile
-
+    "Content-Type": "application/json",
+    "X-Balaji-Mobile": mobile
   };
 
-
   if (options.headers) {
-
     Object.assign(
       headers,
       options.headers
     );
-
   }
 
 
-  const response =
-    await fetch(
-      API_BASE + path,
-      {
-        ...options,
-        headers
-      }
-    );
+  const response = await fetch(
+    API_BASE + path,
+    {
+      ...options,
+      headers
+    }
+  );
 
 
-  let data = null;
+  let data;
 
   try {
 
-    data =
-      await response.json();
+    data = await response.json();
 
   } catch {
 
     data = {
       success: false,
-      message:
-        "Invalid server response."
+      message: "Invalid server response."
     };
 
   }
@@ -258,20 +260,59 @@ async function api(
 
 
 /* =========================================================
-   MESSAGE
+   HELPERS
 ========================================================= */
 
-function message(
-  text,
-  success = false
-) {
+function money(value) {
+
+  const number = Number(value || 0);
+
+  return number
+    .toFixed(2)
+    .replace(/\.00$/, "");
+}
+
+
+function formatStatus(status) {
+
+  if (!status) {
+    return "Waiting";
+  }
+
+  const value = String(status)
+    .replace(/_/g, " ")
+    .toLowerCase();
+
+  return value.replace(
+    /\b\w/g,
+    char => char.toUpperCase()
+  );
+}
+
+
+function show(element) {
+
+  if (element) {
+    element.classList.remove("hidden");
+  }
+}
+
+
+function hide(element) {
+
+  if (element) {
+    element.classList.add("hidden");
+  }
+}
+
+
+function showMessage(text, success = false) {
 
   if (!roomCodeMessage) {
     return;
   }
 
-  roomCodeMessage.textContent =
-    text;
+  roomCodeMessage.textContent = text;
 
   roomCodeMessage.style.color =
     success
@@ -281,55 +322,151 @@ function message(
 
 
 /* =========================================================
-   HIDE / SHOW
+   DISPLAY ROOM CODE
 ========================================================= */
 
-function show(element) {
+function displayRoomCode(code) {
 
-  if (element) {
-    element.classList.remove("hidden");
+  const clean = String(code || "")
+    .replace(/\D/g, "")
+    .slice(0, 8);
+
+
+  if (currentRoomCode) {
+
+    currentRoomCode.textContent =
+      clean || "Waiting for Room Code";
+
   }
 
-}
 
+  if (roomCodeInput) {
 
-function hide(element) {
+    roomCodeInput.value = clean;
 
-  if (element) {
-    element.classList.add("hidden");
   }
 
 }
 
 
 /* =========================================================
-   FORMAT MONEY
+   SAVE CURRENT BATTLE
 ========================================================= */
 
-function money(value) {
+function saveBattle(battle) {
 
-  const number =
-    Number(value || 0);
-
-  return number
-    .toFixed(2)
-    .replace(/\.00$/, "");
-}
-
-
-/* =========================================================
-   SAVE BATTLE ID
-========================================================= */
-
-function saveBattleId(id) {
-
-  if (!id) {
+  if (!battle) {
     return;
   }
 
-  localStorage.setItem(
-    "balajiBattleId",
-    String(id)
+
+  const id =
+    battle.id ||
+    battle.battle_id ||
+    battle.battleId;
+
+
+  if (id) {
+
+    localStorage.setItem(
+      "balajiBattleId",
+      String(id)
+    );
+
+  }
+
+
+  try {
+
+    localStorage.setItem(
+      "balajiCurrentBattle",
+      JSON.stringify(battle)
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Battle save error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   GET VALUE FROM DIFFERENT API FIELD NAMES
+========================================================= */
+
+function getEntryAmount(battle) {
+
+  return (
+    battle.entry_amount ??
+    battle.entry_fee ??
+    battle.entry ??
+    battle.amount ??
+    battle.entryAmount ??
+    0
+  );
+
+}
+
+
+function getWinningPrize(battle) {
+
+  return (
+    battle.winning_prize ??
+    battle.prize_amount ??
+    battle.prize ??
+    battle.winningPrize ??
+    0
+  );
+
+}
+
+
+function getPlayer1(battle) {
+
+  return (
+    battle.creator_name ??
+    battle.player1_name ??
+    battle.player1Name ??
+    battle.player1?.name ??
+    battle.player_1?.name ??
+    battle.creatorName ??
+    "Player 1"
+  );
+
+}
+
+
+function getPlayer2(battle) {
+
+  return (
+    battle.opponent_name ??
+    battle.player2_name ??
+    battle.player2Name ??
+    battle.player2?.name ??
+    battle.player_2?.name ??
+    battle.joiner_name ??
+    "Player 2"
+  );
+
+}
+
+
+function hasPlayer2(battle) {
+
+  return Boolean(
+    battle.opponent_id ||
+    battle.joiner_id ||
+    battle.opponent_name ||
+    battle.joiner_name ||
+    battle.player2 ||
+    battle.player_2 ||
+    battle.player2_name ||
+    battle.player2Name
   );
 
 }
@@ -340,6 +477,11 @@ function saveBattleId(id) {
 ========================================================= */
 
 function renderBattle(data) {
+
+  if (!data) {
+    return;
+  }
+
 
   const battle =
     data.battle ||
@@ -352,220 +494,209 @@ function renderBattle(data) {
   }
 
 
-  const id =
-    battle.id ||
-    battle.battleId;
-
-  if (id) {
-    saveBattleId(id);
-  }
+  saveBattle(battle);
 
 
-  /* ENTRY */
+  /* -------------------------
+     ENTRY / PRIZE
+  ------------------------- */
 
-  if (entryAmount) {
+  const entry = getEntryAmount(battle);
+  const prize = getWinningPrize(battle);
 
-    entryAmount.textContent =
-      money(
-        battle.amount ||
-        battle.entry_fee ||
-        battle.entryAmount ||
-        0
-      );
+
+  if (entryFee) {
+
+    entryFee.textContent =
+      money(entry);
 
   }
 
-
-  /* PRIZE */
 
   if (winningPrize) {
 
     winningPrize.textContent =
-      money(
-        battle.prize ||
-        battle.winning_prize ||
-        battle.winningPrize ||
-        0
-      );
+      money(prize);
 
   }
 
 
-  /* STATUS */
+  /* -------------------------
+     STATUS
+  ------------------------- */
 
-  if (roomStatus) {
-
-    roomStatus.textContent =
-      formatStatus(
-        battle.status
-      );
-
-  }
+  const status =
+    String(battle.status || "")
+      .toUpperCase();
 
 
-  /* PLAYERS */
+  if (battleStatus) {
 
-  const players =
-    battle.players ||
-    [];
-
-
-  if (
-    battle.player1 ||
-    battle.player_1
-  ) {
-
-    const p1 =
-      battle.player1 ||
-      battle.player_1;
-
-    if (player1Name) {
-
-      player1Name.textContent =
-        p1.name ||
-        p1.mobile ||
-        "Player 1";
-
-    }
+    battleStatus.textContent =
+      formatStatus(status);
 
   }
 
 
-  if (
-    battle.player2 ||
-    battle.player_2
-  ) {
+  /* -------------------------
+     PLAYER 1
+  ------------------------- */
 
-    const p2 =
-      battle.player2 ||
-      battle.player_2;
+  if (player1Name) {
 
-    if (player2Name) {
-
-      player2Name.textContent =
-        p2.name ||
-        p2.mobile ||
-        "Player 2";
-
-    }
+    player1Name.textContent =
+      getPlayer1(battle);
 
   }
 
-
-  if (players.length) {
-
-    const p1 =
-      players[0];
-
-    const p2 =
-      players[1];
-
-
-    if (
-      p1 &&
-      player1Name
-    ) {
-
-      player1Name.textContent =
-        p1.name ||
-        p1.mobile ||
-        "Player 1";
-
-    }
-
-
-    if (
-      p2 &&
-      player2Name
-    ) {
-
-      player2Name.textContent =
-        p2.name ||
-        p2.mobile ||
-        "Player 2";
-
-    }
-
-  }
-
-
-  /* PLAYER STATUS */
 
   if (player1Status) {
 
     player1Status.textContent =
-      battle.player1Status ||
-      battle.player_1_status ||
       "Joined";
 
   }
 
 
-  if (player2Status) {
+  /* -------------------------
+     PLAYER 2
+  ------------------------- */
 
-    player2Status.textContent =
-      battle.player2Status ||
-      battle.player_2_status ||
-      (
-        battle.player2 ||
-        battle.player_2
-          ? "Joined"
-          : "Waiting"
-      );
+  const player2Exists =
+    hasPlayer2(battle);
+
+
+  if (player2Exists) {
+
+    if (player2Name) {
+
+      player2Name.textContent =
+        getPlayer2(battle);
+
+    }
+
+    if (player2Status) {
+
+      player2Status.textContent =
+        "Joined";
+
+    }
+
+  } else {
+
+    if (player2Name) {
+
+      player2Name.textContent =
+        "Waiting for Player 2";
+
+    }
+
+    if (player2Status) {
+
+      player2Status.textContent =
+        "Waiting";
+
+    }
 
   }
 
 
-  /* ROOM CODE */
+  /* -------------------------
+     ROOM CODE
+  ------------------------- */
 
   const code =
-    battle.roomCode ||
-    battle.room_code ||
+    battle.room_code ??
+    battle.roomCode ??
     "";
+
 
   if (code) {
 
     displayRoomCode(code);
 
     hide(waitingCard);
-    show(appPlayCard);
-    show(resultCard);
+
+    if (waitingText) {
+
+      waitingText.textContent =
+        "Room code is ready.";
+
+    }
 
   } else {
 
+    displayRoomCode("");
+
     show(waitingCard);
+
+    if (waitingText) {
+
+      waitingText.textContent =
+        player2Exists
+          ? "Both players have joined. Enter the 8-digit Room Code."
+          : "Waiting for Player 2.";
+
+    }
 
   }
 
 
-  /* BATTLE STATUS */
+  /* -------------------------
+     RESULT / BATTLE STATE
+  ------------------------- */
 
-  const status =
-    String(
-      battle.status || ""
-    ).toLowerCase();
+  const finalStatus =
+    status.toLowerCase();
 
 
   if (
-    status === "cancelled" ||
-    status === "canceled"
+    finalStatus === "completed" ||
+    finalStatus === "won" ||
+    finalStatus === "lost" ||
+    finalStatus === "cancelled" ||
+    finalStatus === "canceled"
   ) {
 
     hide(waitingCard);
-    hide(appPlayCard);
-    hide(resultCard);
 
   }
 
+
+  /* -------------------------
+     CANCEL
+  ------------------------- */
 
   if (
-    status === "completed" ||
-    status === "won" ||
-    status === "lost" ||
-    status === "cancel"
+    finalStatus === "cancelled" ||
+    finalStatus === "canceled" ||
+    finalStatus === "completed"
   ) {
 
-    show(resultCard);
+    hide(cancelSection);
+
+  } else {
+
+    show(cancelSection);
+
+  }
+
+
+  /* -------------------------
+     BUTTON STATES
+  ------------------------- */
+
+  if (player2Exists && code) {
+
+    if (openLudoBtn) {
+      openLudoBtn.disabled = false;
+    }
+
+  } else {
+
+    if (openLudoBtn) {
+      openLudoBtn.disabled = true;
+    }
 
   }
 
@@ -573,55 +704,58 @@ function renderBattle(data) {
 
 
 /* =========================================================
-   STATUS TEXT
+   LOAD BATTLE
 ========================================================= */
 
-function formatStatus(status) {
+async function loadBattle() {
 
-  if (!status) {
-    return "Waiting";
+  if (!checkLogin()) {
+    return;
   }
 
-  const value =
-    String(status)
-      .replace(/_/g, " ")
-      .toLowerCase();
+
+  const battleId =
+    getBattleId();
 
 
-  return value
-    .replace(
-      /\b\w/g,
-      function(char) {
-        return char.toUpperCase();
-      }
+  if (!battleId) {
+
+    if (battleStatus) {
+
+      battleStatus.textContent =
+        "Battle Not Found";
+
+    }
+
+    return;
+  }
+
+
+  try {
+
+    const data =
+      await api(
+        "/api/battles/" +
+        encodeURIComponent(battleId)
+      );
+
+
+    renderBattle(data);
+
+  } catch (error) {
+
+    console.log(
+      "Battle load error:",
+      error
     );
-}
 
 
-/* =========================================================
-   DISPLAY ROOM CODE
-========================================================= */
+    if (battleStatus) {
 
-function displayRoomCode(code) {
+      battleStatus.textContent =
+        "Unable to Load";
 
-  const clean =
-    String(code)
-      .replace(/\D/g, "")
-      .slice(0, 8);
-
-
-  if (roomCode) {
-
-    roomCode.textContent =
-      clean || "--------";
-
-  }
-
-
-  if (roomCodeInput) {
-
-    roomCodeInput.value =
-      clean;
+    }
 
   }
 
@@ -645,7 +779,7 @@ async function setRoomCode() {
 
   if (!battleId) {
 
-    message(
+    showMessage(
       "Battle ID not found."
     );
 
@@ -657,13 +791,13 @@ async function setRoomCode() {
     roomCodeInput
       ? roomCodeInput.value
           .replace(/\D/g, "")
-          .trim()
+          .slice(0, 8)
       : "";
 
 
   if (code.length !== 8) {
 
-    message(
+    showMessage(
       "Please enter exactly 8 digit room code."
     );
 
@@ -673,8 +807,7 @@ async function setRoomCode() {
 
   if (setRoomCodeBtn) {
 
-    setRoomCodeBtn.disabled =
-      true;
+    setRoomCodeBtn.disabled = true;
 
     setRoomCodeBtn.textContent =
       "Saving...";
@@ -684,49 +817,48 @@ async function setRoomCode() {
 
   try {
 
+    const body = {
+
+      /* New API */
+      battle_id: battleId,
+      room_code: code,
+      customer_id: getCustomerId(),
+      mobile: getMobile(),
+
+      /* Compatibility */
+      battleId: battleId,
+      roomCode: code
+
+    };
+
+
     const data =
       await api(
         "/api/battles/room-code",
         {
           method: "POST",
-
-          body: JSON.stringify({
-
-            battleId:
-              battleId,
-
-            roomCode:
-              code,
-
-            mobile:
-              getMobile()
-
-          })
-
+          body: JSON.stringify(body)
         }
       );
 
 
     const returnedCode =
-      data.roomCode ||
       data.room_code ||
+      data.roomCode ||
+      data.battle?.room_code ||
       code;
 
 
-    displayRoomCode(
-      returnedCode
-    );
+    displayRoomCode(returnedCode);
 
 
-    message(
+    showMessage(
       "Room code saved successfully.",
       true
     );
 
 
     hide(waitingCard);
-    show(appPlayCard);
-    show(resultCard);
 
 
     await loadBattle();
@@ -734,7 +866,7 @@ async function setRoomCode() {
 
   } catch (error) {
 
-    message(
+    showMessage(
       error.message ||
       "Unable to save room code."
     );
@@ -747,7 +879,7 @@ async function setRoomCode() {
         false;
 
       setRoomCodeBtn.textContent =
-        "Set Room Code";
+        "🔐 Set Room Code";
 
     }
 
@@ -763,15 +895,19 @@ async function setRoomCode() {
 async function copyRoomCode() {
 
   const code =
-    roomCode
-      ? roomCode.textContent.trim()
+    currentRoomCode
+      ? currentRoomCode.textContent.trim()
       : "";
 
 
   if (
     !code ||
-    code === "--------"
+    code === "Waiting for Room Code"
   ) {
+
+    showMessage(
+      "Room code is not available."
+    );
 
     return;
   }
@@ -779,18 +915,16 @@ async function copyRoomCode() {
 
   try {
 
-    await navigator.clipboard.writeText(
-      code
-    );
+    await navigator.clipboard.writeText(code);
 
-    message(
-      "Room code copied.",
+    showMessage(
+      "Room code copied successfully.",
       true
     );
 
-  } catch {
+  } catch (error) {
 
-    message(
+    showMessage(
       "Copy failed. Please copy manually."
     );
 
@@ -800,12 +934,53 @@ async function copyRoomCode() {
 
 
 /* =========================================================
+   OPEN LUDO KING APP
+========================================================= */
+
+function openLudoKing() {
+
+  const code =
+    currentRoomCode
+      ? currentRoomCode.textContent.trim()
+      : "";
+
+
+  if (
+    !code ||
+    code === "Waiting for Room Code"
+  ) {
+
+    alert(
+      "पहले 8-digit Room Code डालें।"
+    );
+
+    return;
+  }
+
+
+  /* Copy code first */
+  try {
+
+    navigator.clipboard.writeText(code);
+
+  } catch (error) {}
+
+
+  alert(
+    "Room Code " +
+    code +
+    " copy हो गया है.\n\n" +
+    "अब Ludo King App खोलकर इसी Room Code से game खेलें."
+  );
+
+}
+
+
+/* =========================================================
    SUBMIT RESULT
 ========================================================= */
 
-async function submitResult(
-  result
-) {
+async function submitResult(result) {
 
   if (!checkLogin()) {
     return;
@@ -828,7 +1003,9 @@ async function submitResult(
 
   const confirmed =
     confirm(
-      "Once result is submitted, it cannot be changed. Continue?"
+      result === "won"
+        ? "क्या आप confirm करते हैं कि आप WIN हुए हैं?"
+        : "क्या आप confirm करते हैं कि आप LOSE हुए हैं?"
     );
 
 
@@ -839,24 +1016,29 @@ async function submitResult(
 
   try {
 
+    const body = {
+
+      battle_id: battleId,
+      battleId: battleId,
+
+      customer_id:
+        getCustomerId(),
+
+      mobile:
+        getMobile(),
+
+      result: result,
+
+      result_status: result
+
+    };
+
+
     await api(
       "/api/battles/result",
       {
         method: "POST",
-
-        body: JSON.stringify({
-
-          battleId:
-            battleId,
-
-          result:
-            result,
-
-          mobile:
-            getMobile()
-
-        })
-
+        body: JSON.stringify(body)
       }
     );
 
@@ -874,86 +1056,6 @@ async function submitResult(
     alert(
       error.message ||
       "Unable to submit result."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   CANCEL RESULT
-========================================================= */
-
-async function submitCancelResult() {
-
-  if (!checkLogin()) {
-    return;
-  }
-
-
-  const battleId =
-    getBattleId();
-
-
-  if (!battleId) {
-
-    alert(
-      "Battle ID not found."
-    );
-
-    return;
-  }
-
-
-  const confirmed =
-    confirm(
-      "Cancel result submit करना है? Once submitted, it cannot be changed."
-    );
-
-
-  if (!confirmed) {
-    return;
-  }
-
-
-  try {
-
-    await api(
-      "/api/battles/result",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-
-          battleId:
-            battleId,
-
-          result:
-            "cancel",
-
-          mobile:
-            getMobile()
-
-        })
-
-      }
-    );
-
-
-    alert(
-      "Cancel result submitted."
-    );
-
-
-    await loadBattle();
-
-
-  } catch (error) {
-
-    alert(
-      error.message ||
-      "Unable to cancel battle."
     );
 
   }
@@ -987,36 +1089,72 @@ async function cancelMatch() {
 
 
   const reason =
-    prompt(
-      "Cancel reason enter करें:"
-    );
+    cancelReason
+      ? cancelReason.value.trim()
+      : "";
 
 
   if (!reason) {
+
+    alert(
+      "Please enter cancel reason."
+    );
+
+    if (cancelReason) {
+      cancelReason.focus();
+    }
+
     return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "क्या आप यह Battle cancel करना चाहते हैं?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (confirmCancelBtn) {
+
+    confirmCancelBtn.disabled =
+      true;
+
+    confirmCancelBtn.textContent =
+      "Cancelling...";
+
   }
 
 
   try {
 
+    const body = {
+
+      battle_id: battleId,
+      battleId: battleId,
+
+      customer_id:
+        getCustomerId(),
+
+      mobile:
+        getMobile(),
+
+      reason: reason,
+
+      cancel_reason: reason
+
+    };
+
+
     await api(
       "/api/battles/cancel",
       {
         method: "POST",
-
-        body: JSON.stringify({
-
-          battleId:
-            battleId,
-
-          reason:
-            reason,
-
-          mobile:
-            getMobile()
-
-        })
-
+        body: JSON.stringify(body)
       }
     );
 
@@ -1036,62 +1174,15 @@ async function cancelMatch() {
       "Unable to cancel battle."
     );
 
-  }
+  } finally {
 
-}
+    if (confirmCancelBtn) {
 
+      confirmCancelBtn.disabled =
+        false;
 
-/* =========================================================
-   LOAD BATTLE
-========================================================= */
-
-async function loadBattle() {
-
-  if (!checkLogin()) {
-    return;
-  }
-
-
-  const battleId =
-    getBattleId();
-
-
-  if (!battleId) {
-
-    if (roomStatus) {
-      roomStatus.textContent =
-        "Battle not found";
-    }
-
-    return;
-  }
-
-
-  try {
-
-    const data =
-      await api(
-        "/api/battles/" +
-        encodeURIComponent(
-          battleId
-        )
-      );
-
-
-    renderBattle(data);
-
-
-  } catch (error) {
-
-    console.log(
-      "Battle load error:",
-      error
-    );
-
-    if (roomStatus) {
-
-      roomStatus.textContent =
-        "Unable to load";
+      confirmCancelBtn.textContent =
+        "Confirm Cancel";
 
     }
 
@@ -1101,19 +1192,19 @@ async function loadBattle() {
 
 
 /* =========================================================
-   BACK
+   ROOM CODE INPUT
 ========================================================= */
 
-if (backBtn) {
+if (roomCodeInput) {
 
-  backBtn.addEventListener(
-    "click",
-    function(event) {
+  roomCodeInput.addEventListener(
+    "input",
+    function () {
 
-      event.preventDefault();
-
-      window.location.href =
-        "/battle.html";
+      this.value =
+        this.value
+          .replace(/\D/g, "")
+          .slice(0, 8);
 
     }
   );
@@ -1135,11 +1226,21 @@ if (setRoomCodeBtn) {
 }
 
 
-if (copyCodeBtn) {
+if (copyRoomCodeBtn) {
 
-  copyCodeBtn.addEventListener(
+  copyRoomCodeBtn.addEventListener(
     "click",
     copyRoomCode
+  );
+
+}
+
+
+if (openLudoBtn) {
+
+  openLudoBtn.addEventListener(
+    "click",
+    openLudoKing
   );
 
 }
@@ -1149,10 +1250,8 @@ if (wonBtn) {
 
   wonBtn.addEventListener(
     "click",
-    function() {
-
+    function () {
       submitResult("won");
-
     }
   );
 
@@ -1163,21 +1262,9 @@ if (lostBtn) {
 
   lostBtn.addEventListener(
     "click",
-    function() {
-
+    function () {
       submitResult("lost");
-
     }
-  );
-
-}
-
-
-if (cancelResultBtn) {
-
-  cancelResultBtn.addEventListener(
-    "click",
-    submitCancelResult
   );
 
 }
@@ -1187,28 +1274,35 @@ if (cancelBtn) {
 
   cancelBtn.addEventListener(
     "click",
-    cancelMatch
+    function () {
+
+      if (cancelSection) {
+
+        if (
+          cancelSection.classList.contains("hidden")
+        ) {
+
+          show(cancelSection);
+
+        } else {
+
+          hide(cancelSection);
+
+        }
+
+      }
+
+    }
   );
 
 }
 
 
-/* =========================================================
-   ROOM CODE INPUT
-========================================================= */
+if (confirmCancelBtn) {
 
-if (roomCodeInput) {
-
-  roomCodeInput.addEventListener(
-    "input",
-    function() {
-
-      this.value =
-        this.value
-          .replace(/\D/g, "")
-          .slice(0, 8);
-
-    }
+  confirmCancelBtn.addEventListener(
+    "click",
+    cancelMatch
   );
 
 }
