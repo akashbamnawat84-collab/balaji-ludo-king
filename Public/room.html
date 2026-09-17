@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -13,23 +16,26 @@
     rel="stylesheet"
     href="room.css"
   >
+
 </head>
+
 
 <body>
 
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
 
-  <header class="room-header">
+  <!-- ================================= -->
+  <!-- HEADER -->
+  <!-- ================================= -->
 
-    <button
-      id="backBtn"
+  <header class="battle-header">
+
+    <a
+      href="battle.html"
       class="back-btn"
-      type="button"
     >
       ← BACK
-    </button>
+    </a>
+
 
     <div class="brand">
 
@@ -38,7 +44,7 @@
       </h1>
 
       <p>
-        Battle Room
+        Official Gaming
       </p>
 
     </div>
@@ -46,97 +52,124 @@
   </header>
 
 
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
+
+  <!-- ================================= -->
+  <!-- MAIN -->
+  <!-- ================================= -->
 
   <main class="room-container">
 
 
-    <!-- GAME TITLE -->
+    <!-- ================================= -->
+    <!-- ROOM HEADER -->
+    <!-- ================================= -->
 
-    <section class="game-title-card">
+    <section class="room-header-card">
+
+      <div class="live-row">
+
+        <span class="live-dot">
+          ●
+        </span>
+
+        <span>
+          LIVE
+        </span>
+
+      </div>
+
 
       <div class="game-icon">
         🎲
       </div>
 
-      <div>
 
-        <span class="live-badge">
-          ● LIVE
-        </span>
+      <h2>
+        Battle Room
+      </h2>
 
-        <h2>
-          Ludo Classic
-        </h2>
 
-        <p>
-          2 Player Battle
-        </p>
+      <p>
+        Ludo Classic
+      </p>
 
-      </div>
+
+      <strong>
+        2 Player Battle
+      </strong>
 
     </section>
 
 
-    <!-- NOTICE -->
 
-    <div class="demo-notice">
+    <!-- ================================= -->
+    <!-- INFO -->
+    <!-- ================================= -->
 
-      🎮 Play the actual Ludo game in the
-      <strong>Ludo King App</strong>.
+    <section class="info-card">
 
-      <br>
-
-      This website is used for Battle,
-      Room Code and Result management.
-
-    </div>
+      <p>
+        🎮 Play the actual Ludo game
+        in the Ludo King App.
+      </p>
 
 
-    <!-- =================================================
-         BATTLE INFORMATION
-    ================================================== -->
+      <p>
+        This website is used for
+        Battle, Room Code and Result
+        management.
+      </p>
 
-    <section class="room-card">
+    </section>
+
+
+
+    <!-- ================================= -->
+    <!-- BATTLE INFORMATION -->
+    <!-- ================================= -->
+
+    <section class="battle-card">
+
 
       <h3>
         Battle Information
       </h3>
 
-      <div class="info-row">
+
+      <div class="detail-row">
 
         <span>
           Entry Fee
         </span>
 
-        <strong id="entryAmount">
-          —
+        <strong id="entryFee">
+          0
         </strong>
 
       </div>
 
-      <div class="info-row">
+
+      <div class="detail-row prize-row">
 
         <span>
           Winning Prize
         </span>
 
         <strong id="winningPrize">
-          —
+          0
         </strong>
 
       </div>
 
-      <div class="info-row">
+
+      <div class="detail-row">
 
         <span>
           Battle Status
         </span>
 
-        <strong id="roomStatus">
-          Loading...
+        <strong id="battleStatus">
+          Waiting
         </strong>
 
       </div>
@@ -144,119 +177,148 @@
     </section>
 
 
-    <!-- =================================================
-         PLAYERS
-    ================================================== -->
+
+    <!-- ================================= -->
+    <!-- PLAYERS -->
+    <!-- ================================= -->
 
     <section class="players-card">
+
 
       <h3>
         Players
       </h3>
 
 
-      <div class="player-box">
+      <div class="players-area">
 
-        <div class="player-avatar red-avatar">
-          🔴
-        </div>
 
-        <div class="player-details">
+        <!-- PLAYER 1 -->
 
-          <strong id="player1Name">
+        <div class="player-box player-one">
+
+          <div class="player-avatar">
+            🔴
+          </div>
+
+
+          <strong>
             Player 1
           </strong>
 
-          <span id="player1Status">
-            Ready
+
+          <span id="player1Name">
+            Waiting
+          </span>
+
+
+          <small id="player1Status">
+            Waiting
+          </small>
+
+        </div>
+
+
+
+        <!-- VS -->
+
+        <div class="vs-box">
+
+          <span>
+            VS
           </span>
 
         </div>
 
-      </div>
 
 
-      <div class="vs">
-        VS
-      </div>
+        <!-- PLAYER 2 -->
+
+        <div class="player-box player-two">
+
+          <div class="player-avatar">
+            🔵
+          </div>
 
 
-      <div class="player-box">
-
-        <div class="player-avatar blue-avatar">
-          🔵
-        </div>
-
-        <div class="player-details">
-
-          <strong id="player2Name">
-            Waiting for Player 2
+          <strong>
+            Player 2
           </strong>
 
-          <span id="player2Status">
-            Waiting...
+
+          <span id="player2Name">
+            Waiting
           </span>
 
+
+          <small id="player2Status">
+            Waiting
+          </small>
+
         </div>
+
 
       </div>
 
     </section>
 
 
-    <!-- =================================================
-         ROOM CODE
-    ================================================== -->
 
-    <section class="room-card">
+    <!-- ================================= -->
+    <!-- ROOM CODE -->
+    <!-- ================================= -->
+
+    <section class="room-code-card">
+
 
       <h3>
         Room Code
       </h3>
 
-      <p class="room-help">
+
+      <p>
         First player enters the 8-digit
         Room Code received from the
         Ludo King App.
       </p>
 
 
-      <div class="room-code-input-box">
+      <div class="room-input-area">
 
         <input
-          id="roomCodeInput"
           type="text"
-          inputmode="numeric"
-          maxlength="8"
+          id="roomCodeInput"
           placeholder="Enter 8-digit Room Code"
+          maxlength="8"
+          inputmode="numeric"
           autocomplete="off"
         >
+
+
+        <button
+          type="button"
+          id="setRoomCodeBtn"
+        >
+          🔐 Set Room Code
+        </button>
 
       </div>
 
 
-      <button
-        id="setRoomCodeBtn"
-        class="copy-btn"
-        type="button"
-      >
-        🔐 Set Room Code
-      </button>
-
-
       <div
         id="roomCodeMessage"
-        class="room-code-message"
+        class="room-message"
       ></div>
 
 
-      <div class="room-code-display">
+      <div class="current-room">
 
         <span>
           Current Room Code
         </span>
 
-        <strong id="roomCode">
+
+        <strong id="currentRoomCode">
           Waiting for Room Code
         </strong>
 
@@ -264,9 +326,9 @@
 
 
       <button
-        id="copyCodeBtn"
-        class="copy-btn"
         type="button"
+        id="copyRoomCodeBtn"
+        class="copy-btn"
       >
         📋 Copy Room Code
       </button>
@@ -274,20 +336,25 @@
     </section>
 
 
-    <!-- =================================================
-         WAITING
-    ================================================== -->
+
+    <!-- ================================= -->
+    <!-- WAITING MESSAGE -->
+    <!-- ================================= -->
 
     <section
-      class="waiting-card"
       id="waitingCard"
+      class="waiting-card"
     >
 
-      <div class="loading-circle"></div>
+      <div>
+        ⏳
+      </div>
 
-      <h3>
+
+      <strong id="waitingText">
         Waiting for Player 2
-      </h3>
+      </strong>
+
 
       <p>
         Another player can join this Battle.
@@ -296,43 +363,52 @@
     </section>
 
 
-    <!-- =================================================
-         PLAY IN APP
-    ================================================== -->
 
-    <section
-      class="app-play-card"
-      id="appPlayCard"
-    >
+    <!-- ================================= -->
+    <!-- PLAY IN LUDO KING -->
+    <!-- ================================= -->
 
-      <div class="app-play-icon">
+    <section class="ludo-app-card">
+
+
+      <div class="ludo-icon">
         🎮
       </div>
+
 
       <h3>
         Play in Ludo King App
       </h3>
+
 
       <p>
         Copy the Room Code, open the
         Ludo King App and play your match.
       </p>
 
+
+      <button
+        type="button"
+        id="openLudoBtn"
+      >
+        🎮 Play in Ludo King App
+      </button>
+
     </section>
 
 
-    <!-- =================================================
-         RESULT BUTTONS
-    ================================================== -->
 
-    <section
-      class="result-card"
-      id="resultCard"
-    >
+    <!-- ================================= -->
+    <!-- BATTLE RESULT -->
+    <!-- ================================= -->
+
+    <section class="result-card">
+
 
       <h3>
         Battle Result
       </h3>
+
 
       <p>
         After completing the game in
@@ -342,9 +418,10 @@
 
       <div class="result-buttons">
 
+
         <button
-          id="wonBtn"
           type="button"
+          id="wonBtn"
           class="won-btn"
         >
           🏆 I Won
@@ -352,8 +429,8 @@
 
 
         <button
-          id="lostBtn"
           type="button"
+          id="lostBtn"
           class="lost-btn"
         >
           ❌ I Lost
@@ -361,9 +438,9 @@
 
 
         <button
-          id="cancelResultBtn"
           type="button"
-          class="cancel-result-btn"
+          id="cancelBtn"
+          class="cancel-btn"
         >
           ⚠️ Cancel
         </button>
@@ -373,77 +450,147 @@
     </section>
 
 
-    <!-- OLD CANCEL -->
 
-    <button
-      id="cancelBtn"
-      class="cancel-btn"
-      type="button"
+    <!-- ================================= -->
+    <!-- CANCEL -->
+    <!-- ================================= -->
+
+    <section
+      id="cancelSection"
+      class="cancel-section"
+      style="display:none;"
     >
-      Cancel Match
-    </button>
+
+      <h3>
+        Cancel Match
+      </h3>
+
+
+      <textarea
+        id="cancelReason"
+        placeholder="Cancel reason..."
+        maxlength="200"
+      ></textarea>
+
+
+      <button
+        type="button"
+        id="confirmCancelBtn"
+      >
+        Confirm Cancel
+      </button>
+
+    </section>
+
 
   </main>
 
 
-  <!-- =====================================================
-       BOTTOM NAV
-  ====================================================== -->
+
+  <!-- ================================= -->
+  <!-- BOTTOM NAVIGATION -->
+  <!-- ================================= -->
 
   <nav class="bottom-nav">
+
 
     <a
       href="home.html"
       class="nav-item"
     >
-      <span>🏠</span>
-      <small>Home</small>
+
+      <span>
+        🏠
+      </span>
+
+      <small>
+        Home
+      </small>
+
     </a>
+
 
 
     <a
       href="refer.html"
       class="nav-item"
     >
-      <span>🎁</span>
-      <small>Refer</small>
+
+      <span>
+        🎁
+      </span>
+
+      <small>
+        Refer
+      </small>
+
     </a>
+
 
 
     <a
       href="wallet.html"
       class="nav-item"
     >
-      <span>₹</span>
-      <small>Wallet</small>
+
+      <span>
+        ₹
+      </span>
+
+      <small>
+        Wallet
+      </small>
+
     </a>
+
 
 
     <a
       href="support.html"
       class="nav-item"
     >
-      <span>💬</span>
-      <small>Support</small>
+
+      <span>
+        💬
+      </span>
+
+      <small>
+        Support
+      </small>
+
     </a>
+
 
 
     <a
       href="profile.html"
       class="nav-item"
     >
-      <span>👤</span>
-      <small>Profile</small>
+
+      <span>
+        👤
+      </span>
+
+      <small>
+        Profile
+      </small>
+
     </a>
+
 
   </nav>
 
 
-  <!-- =====================================================
-       SCRIPT
-  ====================================================== -->
 
-  <script src="room.js"></script>
+  <!-- ================================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ================================= -->
+
+  <script
+    src="room.js"
+  ></script>
+
 
 </body>
+
 </html>
