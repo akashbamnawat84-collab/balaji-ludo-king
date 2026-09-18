@@ -7,6 +7,35 @@
   <title>Balaji Ludo King - Login</title>
 
   <link rel="stylesheet" href="login.css">
+
+  <!-- =====================================================
+       MSG91 OTP WIDGET
+  ====================================================== -->
+
+  <script>
+    const configuration = {
+      widgetId: "366972756179303139373432",
+
+      tokenAuth: "BalajiLudoOTP",
+
+      exposeMethods: true,
+
+      success: function (data) {
+        console.log("MSG91 Widget Success:", data);
+      },
+
+      failure: function (error) {
+        console.error("MSG91 Widget Error:", error);
+      }
+    };
+  </script>
+
+  <script
+    type="text/javascript"
+    onload="initSendOTP(configuration)"
+    src="https://verify.msg91.com/otp-provider.js">
+  </script>
+
 </head>
 
 <body>
@@ -70,14 +99,16 @@
           id="otpInput"
           type="text"
           inputmode="numeric"
-          maxlength="6"
+          maxlength="4"
           placeholder="Enter OTP"
           autocomplete="one-time-code"
         >
 
         <div class="otp-info">
           <span>Encrypted</span>
-          <span id="resendText">Resend available in 60s</span>
+          <span id="resendText">
+            Resend available in 60s
+          </span>
         </div>
 
         <button
