@@ -18,31 +18,21 @@
       widgetId: "366972756179303139373432",
 
       /*
-        MSG91 Client Side Integration Token
-        यहाँ MSG91 से मिला token paste करें.
+        IMPORTANT:
+        यहाँ MSG91 OTP WIDGET का Client-Side Token डालें.
+        यह MSG91 Server Auth Key नहीं है.
       */
       tokenAuth: "YOUR_MSG91_WIDGET_TOKEN",
 
       exposeMethods: true,
 
       success: function (data) {
-
-        console.log(
-          "MSG91 Widget Success:",
-          data
-        );
-
+        console.log("MSG91 Widget Success:", data);
       },
 
       failure: function (error) {
-
-        console.error(
-          "MSG91 Widget Error:",
-          error
-        );
-
+        console.error("MSG91 Widget Error:", error);
       }
-
     };
   </script>
 
@@ -72,8 +62,7 @@
         Enter your mobile number to get started
       </p>
 
-
-      <!-- MOBILE LOGIN -->
+      <!-- MOBILE -->
 
       <div id="mobileSection">
 
@@ -86,6 +75,7 @@
           type="tel"
           inputmode="numeric"
           maxlength="10"
+          pattern="[6-9][0-9]{9}"
           placeholder="98765 43210"
           autocomplete="tel"
         >
@@ -97,7 +87,6 @@
         </button>
 
       </div>
-
 
       <!-- OTP -->
 
@@ -117,15 +106,16 @@
           id="otpInput"
           type="text"
           inputmode="numeric"
-          maxlength="6"
-          placeholder="Enter 6-digit OTP"
+          maxlength="4"
+          pattern="[0-9]{4}"
+          placeholder="Enter 4-digit OTP"
           autocomplete="one-time-code"
         >
 
         <div class="otp-info">
 
           <span>
-            Encrypted
+            🔒 Secure Verification
           </span>
 
           <span id="resendText">
@@ -143,25 +133,23 @@
         <button
           type="button"
           id="resendOtpBtn"
-          class="secondary-btn">
+          class="secondary-btn"
+          disabled>
           Resend OTP
         </button>
 
       </div>
-
 
       <p
         id="loginMessage"
         class="login-message">
       </p>
 
-
       <div class="security-text">
-        🔒 Protected by end-to-end security protocol
+        🔒 Protected by secure OTP verification
       </div>
 
     </div>
-
 
     <div class="login-footer">
 
@@ -180,7 +168,6 @@
     </div>
 
   </main>
-
 
   <script src="login.js"></script>
 
