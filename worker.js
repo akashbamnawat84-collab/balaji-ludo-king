@@ -812,6 +812,16 @@ async function verifyMSG91AccessToken(
 
   }
 
+  console.log(
+    "MSG91 HTTP STATUS:",
+    response.status
+  );
+
+  console.log(
+    "MSG91 VERIFY RESPONSE:",
+    JSON.stringify(data)
+  );
+
   if (!response.ok) {
 
     return {
@@ -819,14 +829,61 @@ async function verifyMSG91AccessToken(
       error:
         data?.message ||
         data?.error ||
+        data?.msg ||
         "MSG91 access token verification failed"
     };
 
   }
 
   /*
-   * MSG91 Widget returns success only
-   * after the OTP has been verified.
+   * Reject an explicitly failed/invalid/unverified
+   * verification response.
+   */
+  const statusValues = [
+    data?.type,
+    data?.status,
+    data?.message,
+    data?.msg,
+    data?.data?.type,
+    data?.data?.status,
+    data?.data?.message,
+    data?.data?.msg
+  ]
+    .filter(
+      value =>
+        value !== undefined &&
+        value !== null
+    )
+    .map(
+      value =>
+        String(value).toLowerCase()
+    );
+
+  const failureFound =
+    statusValues.some(
+      value =>
+        value.includes("fail") ||
+        value.includes("invalid") ||
+        value.includes("error") ||
+        value.includes("unauthor") ||
+        value.includes("reject") ||
+        value.includes("expired") ||
+        value.includes("unverified")
+    );
+
+  if (failureFound) {
+
+    return {
+      success: false,
+      error:
+        "Invalid or expired OTP verification"
+    };
+
+  }
+
+  /*
+   * MSG91 Widget access token is generated
+   * after successful OTP verification.
    */
   return {
     success: true,
@@ -1034,7 +1091,7 @@ export default {
       /* =====================================================
          CUSTOMER LOGIN
          MSG91 OTP WIDGET
-===================================================== */
+      ===================================================== */
 
       if (
         path === "/api/login" &&
@@ -1060,10 +1117,6 @@ export default {
           );
 
 
-        /* =================================================
-           CHECK MOBILE
-        ================================================= */
-
         if (
           !validMobile(mobile)
         ) {
@@ -1081,10 +1134,6 @@ export default {
         }
 
 
-        /* =================================================
-           CHECK MSG91 ACCESS TOKEN
-        ================================================= */
-
         if (!accessToken) {
 
           return json({
@@ -1099,10 +1148,6 @@ export default {
 
         }
 
-
-        /* =================================================
-           VERIFY OTP WITH MSG91
-        ================================================= */
 
         const verification =
           await verifyMSG91AccessToken(
@@ -1128,11 +1173,6 @@ export default {
         }
 
 
-        /* =================================================
-           OTP VERIFIED
-           NOW LOAD CUSTOMER
-        ================================================= */
-
         let customer =
           await env.DB.prepare(`
             SELECT *
@@ -1143,10 +1183,6 @@ export default {
           .bind(mobile)
           .first();
 
-
-        /* =================================================
-           EXISTING CUSTOMER
-        ================================================= */
 
         if (customer) {
 
@@ -1204,11 +1240,6 @@ export default {
 
         }
 
-
-        /* =================================================
-           NEW CUSTOMER
-           CREATE ONLY AFTER OTP SUCCESS
-        ================================================= */
 
         const customerId =
           "CUS" +
@@ -4017,10 +4048,6 @@ export default {
 
         }
 
-
-        /* =================================================
-           FINAL CANCEL
-        ================================================= */
 
         if (
           decision === "CANCEL" ||
