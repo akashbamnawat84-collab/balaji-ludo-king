@@ -14,19 +14,36 @@
 
   <script>
     const configuration = {
+
       widgetId: "366972756179303139373432",
 
-      tokenAuth: "BalajiLudoOTP",
+      /*
+        IMPORTANT:
+        यहाँ MSG91 OTP Widget का CLIENT TOKEN डालना है.
+        यह आपका Cloudflare MSG91_AUTHKEY नहीं है.
+      */
+      tokenAuth: "YOUR_MSG91_WIDGET_TOKEN",
 
       exposeMethods: true,
 
       success: function (data) {
-        console.log("MSG91 Widget Success:", data);
+
+        console.log(
+          "MSG91 Widget Success:",
+          data
+        );
+
       },
 
       failure: function (error) {
-        console.error("MSG91 Widget Error:", error);
+
+        console.error(
+          "MSG91 Widget Error:",
+          error
+        );
+
       }
+
     };
   </script>
 
@@ -85,7 +102,9 @@
 
       <!-- OTP -->
 
-      <div id="otpSection" class="hidden">
+      <div
+        id="otpSection"
+        class="hidden">
 
         <div class="success-message">
           OTP sent successfully!
@@ -105,10 +124,15 @@
         >
 
         <div class="otp-info">
-          <span>Encrypted</span>
-          <span id="resendText">
-            Resend available in 60s
+
+          <span>
+            Encrypted
           </span>
+
+          <span id="resendText">
+            Resend available in 10s
+          </span>
+
         </div>
 
         <button
@@ -120,8 +144,7 @@
         <button
           type="button"
           id="resendOtpBtn"
-          class="secondary-btn"
-          disabled>
+          class="secondary-btn">
           Resend OTP
         </button>
 
