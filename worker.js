@@ -720,6 +720,122 @@ async function getBattle(env, battleId) {
 
 
 /* =========================================================
+   MSG91 OTP WIDGET
+   VERIFY ACCESS TOKEN
+========================================================= */
+
+async function verifyMSG91AccessToken(
+  env,
+  accessToken
+) {
+
+  const token =
+    clean(accessToken);
+
+  if (!token) {
+
+    return {
+      success: false,
+      error:
+        "MSG91 access token missing"
+    };
+
+  }
+
+  const authKey =
+    clean(env.MSG91_AUTHKEY);
+
+  if (!authKey) {
+
+    return {
+      success: false,
+      error:
+        "MSG91 authentication is not configured"
+    };
+
+  }
+
+  let response;
+
+  try {
+
+    response =
+      await fetch(
+        "https://control.msg91.com/api/v5/widget/verifyAccessToken",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            "Accept":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              authkey:
+                authKey,
+
+              "access-token":
+                token
+            })
+        }
+      );
+
+  } catch (error) {
+
+    console.error(
+      "MSG91 request error:",
+      error
+    );
+
+    return {
+      success: false,
+      error:
+        "Unable to connect to MSG91"
+    };
+
+  }
+
+  let data = {};
+
+  try {
+
+    data =
+      await response.json();
+
+  } catch {
+
+    data = {};
+
+  }
+
+  if (!response.ok) {
+
+    return {
+      success: false,
+      error:
+        data?.message ||
+        data?.error ||
+        "MSG91 access token verification failed"
+    };
+
+  }
+
+  /*
+   * MSG91 Widget returns success only
+   * after the OTP has been verified.
+   */
+  return {
+    success: true,
+    data
+  };
+}
+
+
+/* =========================================================
    MAIN WORKER
 ========================================================= */
 
@@ -917,7 +1033,8 @@ export default {
 
       /* =====================================================
          CUSTOMER LOGIN
-      ===================================================== */
+         MSG91 OTP WIDGET
+===================================================== */
 
       if (
         path === "/api/login" &&
@@ -928,10 +1045,24 @@ export default {
           await request.json();
 
         const mobile =
-          clean(body.mobile);
+          clean(
+            body.mobile
+          ).replace(
+            /\D/g,
+            ""
+          );
 
-        const otp =
-          clean(body.otp);
+        const accessToken =
+          clean(
+            body.access_token ||
+            body.accessToken ||
+            body.token
+          );
+
+
+        /* =================================================
+           CHECK MOBILE
+        ================================================= */
 
         if (
           !validMobile(mobile)
@@ -949,46 +1080,75 @@ export default {
 
         }
 
-        if (otp) {
 
-          if (
-            !/^\d{6}$/.test(otp)
-          ) {
+        /* =================================================
+           CHECK MSG91 ACCESS TOKEN
+        ================================================= */
 
-            return json({
+        if (!accessToken) {
 
-              success:
-                false,
+          return json({
 
-              error:
-                "Valid 6-digit OTP required"
+            success:
+              false,
 
-            }, 400);
+            error:
+              "OTP verification token required"
 
-          }
+          }, 400);
 
-          let customer =
-            await env.DB.prepare(`
-              SELECT *
-              FROM customers
-              WHERE mobile = ?
-            `)
-            .bind(mobile)
-            .first();
+        }
 
-          if (!customer) {
 
-            return json({
+        /* =================================================
+           VERIFY OTP WITH MSG91
+        ================================================= */
 
-              success:
-                false,
+        const verification =
+          await verifyMSG91AccessToken(
+            env,
+            accessToken
+          );
 
-              error:
-                "Mobile number not registered"
+        if (
+          !verification.success
+        ) {
 
-            }, 404);
+          return json({
 
-          }
+            success:
+              false,
+
+            error:
+              verification.error ||
+              "OTP verification failed"
+
+          }, 401);
+
+        }
+
+
+        /* =================================================
+           OTP VERIFIED
+           NOW LOAD CUSTOMER
+        ================================================= */
+
+        let customer =
+          await env.DB.prepare(`
+            SELECT *
+            FROM customers
+            WHERE mobile = ?
+            LIMIT 1
+          `)
+          .bind(mobile)
+          .first();
+
+
+        /* =================================================
+           EXISTING CUSTOMER
+        ================================================= */
+
+        if (customer) {
 
           if (
             !customer.referral_code
@@ -1015,68 +1175,11 @@ export default {
                 SELECT *
                 FROM customers
                 WHERE id = ?
+                LIMIT 1
               `)
-              .bind(customer.id)
-              .first();
-
-          }
-
-          return json({
-
-            success:
-              true,
-
-            existing:
-              true,
-
-            customer:
-              customerResponse(
-                customer
+              .bind(
+                customer.id
               )
-
-          });
-
-        }
-
-
-        let existing =
-          await env.DB.prepare(`
-            SELECT *
-            FROM customers
-            WHERE mobile = ?
-          `)
-          .bind(mobile)
-          .first();
-
-        if (existing) {
-
-          if (
-            !existing.referral_code
-          ) {
-
-            const newCode =
-              await generateUniqueReferralCode(
-                env
-              );
-
-            await env.DB.prepare(`
-              UPDATE customers
-              SET referral_code = ?
-              WHERE id = ?
-            `)
-            .bind(
-              newCode,
-              existing.id
-            )
-            .run();
-
-            existing =
-              await env.DB.prepare(`
-                SELECT *
-                FROM customers
-                WHERE id = ?
-              `)
-              .bind(existing.id)
               .first();
 
           }
@@ -1090,17 +1193,22 @@ export default {
               true,
 
             message:
-              "OTP request accepted",
+              "Login successful",
 
             customer:
               customerResponse(
-                existing
+                customer
               )
 
           });
 
         }
 
+
+        /* =================================================
+           NEW CUSTOMER
+           CREATE ONLY AFTER OTP SUCCESS
+        ================================================= */
 
         const customerId =
           "CUS" +
@@ -1109,13 +1217,16 @@ export default {
             .slice(0, 10)
             .toUpperCase();
 
+
         const referralCode =
           await generateUniqueReferralCode(
             env
           );
 
+
         const createdAt =
           Date.now();
+
 
         await env.DB.prepare(`
           INSERT INTO customers (
@@ -1159,14 +1270,19 @@ export default {
         )
         .run();
 
-        const customer =
+
+        const newCustomer =
           await env.DB.prepare(`
             SELECT *
             FROM customers
             WHERE id = ?
+            LIMIT 1
           `)
-          .bind(customerId)
+          .bind(
+            customerId
+          )
           .first();
+
 
         return json({
 
@@ -1177,11 +1293,11 @@ export default {
             false,
 
           message:
-            "OTP request accepted",
+            "Account created and login successful",
 
           customer:
             customerResponse(
-              customer
+              newCustomer
             )
 
         });
