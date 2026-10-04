@@ -1,11 +1,13 @@
 /* =========================================
    BALAJI LUDO KING
-   MSG91 OTP WIDGET LOGIN
+   REAL MSG91 OTP LOGIN
 ========================================= */
 
 let loginMobile = "";
 let otpReqId = "";
 let resendTimer = null;
+let isSendingOTP = false;
+let isVerifyingOTP = false;
 
 
 /* =========================================
@@ -33,8 +35,15 @@ function showMessage(text, color) {
 
 function sendOTP() {
 
+  if (isSendingOTP) {
+    return;
+  }
+
   const input =
     document.getElementById("mobileNumber");
+
+  const sendButton =
+    document.getElementById("sendOtpBtn");
 
   if (!input) return;
 
@@ -43,10 +52,12 @@ function sendOTP() {
       .replace(/\D/g, "")
       .slice(0, 10);
 
-  if (!/^[6-9]\d{9}$/.test(mobile)) {
+  /* ONLY VALID INDIAN MOBILE */
+
+  if (!/^[6-9][0-9]{9}$/.test(mobile)) {
 
     showMessage(
-      "Please enter a valid 10-digit mobile number.",
+      "Please enter a valid 10-digit Indian mobile number.",
       "#d32945"
     );
 
@@ -54,18 +65,33 @@ function sendOTP() {
   }
 
   loginMobile = mobile;
+  otpReqId = "";
+
+  isSendingOTP = true;
+
+  if (sendButton) {
+    sendButton.disabled = true;
+  }
 
   showMessage(
     "Sending OTP...",
     "#18864b"
   );
 
+  /* MSG91 SDK CHECK */
+
   if (
     typeof window.sendOtp !== "function"
   ) {
 
+    isSendingOTP = false;
+
+    if (sendButton) {
+      sendButton.disabled = false;
+    }
+
     showMessage(
-      "MSG91 OTP service is not ready. Please refresh.",
+      "MSG91 OTP service is not ready. Please refresh the page.",
       "#d32945"
     );
 
@@ -75,6 +101,11 @@ function sendOTP() {
 
     return;
   }
+
+
+  /* =====================================
+     SEND REAL OTP
+  ===================================== */
 
   window.sendOtp(
 
@@ -87,12 +118,25 @@ function sendOTP() {
         data
       );
 
+      isSendingOTP = false;
+
       otpReqId =
         data?.reqId ||
         data?.req_id ||
         data?.data?.reqId ||
         data?.data?.req_id ||
         "";
+
+      if (!otpReqId) {
+
+        console.warn(
+          "MSG91 request ID was not returned:",
+          data
+        );
+      }
+
+
+      /* SHOW OTP SECTION */
 
       const otpSection =
         document.getElementById("otpSection");
@@ -104,12 +148,34 @@ function sendOTP() {
         otpSection.style.display = "flex";
       }
 
+
+      /* DISABLE SEND BUTTON */
+
+      if (sendButton) {
+        sendButton.disabled = true;
+      }
+
+
       showMessage(
         "OTP sent successfully.",
         "#18864b"
       );
 
+
+      /* START RESEND TIMER */
+
       startResendTimer();
+
+
+      /* FOCUS OTP */
+
+      const otpInput =
+        document.getElementById("otpInput");
+
+      if (otpInput) {
+        otpInput.focus();
+      }
+
     },
 
     function (error) {
@@ -118,6 +184,12 @@ function sendOTP() {
         "MSG91 SEND ERROR:",
         error
       );
+
+      isSendingOTP = false;
+
+      if (sendButton) {
+        sendButton.disabled = false;
+      }
 
       showMessage(
         "Unable to send OTP. Please try again.",
@@ -134,25 +206,54 @@ function sendOTP() {
 
 function verifyOTP() {
 
+  if (isVerifyingOTP) {
+    return;
+  }
+
   const otpInput =
     document.getElementById("otpInput");
 
+  const verifyButton =
+    document.getElementById("verifyOtpBtn");
+
   if (!otpInput) return;
+
+
+  /* GET ONLY DIGITS */
 
   const otp =
     otpInput.value
       .replace(/\D/g, "")
-      .slice(0, 6);
+      .slice(0, 4);
 
-  if (!/^\d{6}$/.test(otp)) {
+
+  /* 4 DIGIT OTP */
+
+  if (!/^[0-9]{4}$/.test(otp)) {
 
     showMessage(
-      "Please enter the 6-digit OTP.",
+      "Please enter the 4-digit OTP.",
       "#d32945"
     );
 
     return;
   }
+
+
+  /* MOBILE CHECK */
+
+  if (!/^[6-9][0-9]{9}$/.test(loginMobile)) {
+
+    showMessage(
+      "Invalid mobile number. Please request OTP again.",
+      "#d32945"
+    );
+
+    return;
+  }
+
+
+  /* MSG91 SDK CHECK */
 
   if (
     typeof window.verifyOtp !== "function"
@@ -170,25 +271,32 @@ function verifyOTP() {
     return;
   }
 
+
+  isVerifyingOTP = true;
+
+  if (verifyButton) {
+    verifyButton.disabled = true;
+  }
+
   showMessage(
     "Verifying OTP...",
     "#18864b"
   );
 
+
   console.log(
     "MSG91 VERIFY REQUEST:",
     {
+      mobile: loginMobile,
       otpLength: otp.length,
       reqIdPresent: !!otpReqId
     }
   );
 
 
-  /*
-    MSG91 Web SDK verification.
-    Login continues ONLY after MSG91
-    reports successful OTP verification.
-  */
+  /* =====================================
+     MSG91 REAL OTP VERIFICATION
+  ===================================== */
 
   window.verifyOtp(
 
@@ -201,6 +309,13 @@ function verifyOTP() {
         data
       );
 
+
+      /*
+        MSG91 must return a secure access token.
+        Without this token, backend login
+        MUST NOT continue.
+      */
+
       const accessToken =
         data?.access_token ||
         data?.accessToken ||
@@ -210,6 +325,7 @@ function verifyOTP() {
         data?.data?.token ||
         "";
 
+
       if (!accessToken) {
 
         console.error(
@@ -217,13 +333,25 @@ function verifyOTP() {
           data
         );
 
+        isVerifyingOTP = false;
+
+        if (verifyButton) {
+          verifyButton.disabled = false;
+        }
+
         showMessage(
-          "OTP verified, but secure login token was not received.",
+          "OTP verification failed. Secure token was not received.",
           "#d32945"
         );
 
         return;
       }
+
+
+      /*
+        ONLY NOW send login request
+        to Cloudflare backend.
+      */
 
       loginToBalaji(
         accessToken
@@ -238,6 +366,12 @@ function verifyOTP() {
         error
       );
 
+      isVerifyingOTP = false;
+
+      if (verifyButton) {
+        verifyButton.disabled = false;
+      }
+
       showMessage(
         "Wrong or expired OTP.",
         "#d32945"
@@ -250,7 +384,7 @@ function verifyOTP() {
 
 
 /* =========================================
-   CLOUDFLARE LOGIN
+   CLOUDFLARE SECURE LOGIN
 ========================================= */
 
 async function loginToBalaji(
@@ -261,6 +395,7 @@ async function loginToBalaji(
     "OTP verified. Logging in...",
     "#18864b"
   );
+
 
   try {
 
@@ -283,13 +418,31 @@ async function loginToBalaji(
         }
       );
 
-    const data =
-      await response.json();
+
+    let data = {};
+
+    try {
+
+      data =
+        await response.json();
+
+    } catch {
+
+      data = {};
+
+    }
+
 
     console.log(
       "BALAJI BACKEND LOGIN RESPONSE:",
       data
     );
+
+
+    /*
+      BACKEND MUST ACCEPT LOGIN ONLY
+      AFTER MSG91 TOKEN VERIFICATION.
+    */
 
     if (
       !response.ok ||
@@ -352,6 +505,10 @@ async function loginToBalaji(
     );
 
 
+    /* =====================================
+       REDIRECT HOME
+    ===================================== */
+
     setTimeout(
       function () {
 
@@ -369,6 +526,15 @@ async function loginToBalaji(
       "BALAJI LOGIN ERROR:",
       error
     );
+
+    isVerifyingOTP = false;
+
+    const verifyButton =
+      document.getElementById("verifyOtpBtn");
+
+    if (verifyButton) {
+      verifyButton.disabled = false;
+    }
 
     showMessage(
       error.message ||
@@ -395,6 +561,7 @@ function resendOTP() {
     return;
   }
 
+
   if (
     typeof window.retryOtp !== "function"
   ) {
@@ -406,6 +573,15 @@ function resendOTP() {
 
     return;
   }
+
+
+  const resendButton =
+    document.getElementById("resendOtpBtn");
+
+  if (resendButton) {
+    resendButton.disabled = true;
+  }
+
 
   showMessage(
     "Resending OTP...",
@@ -424,6 +600,7 @@ function resendOTP() {
         data
       );
 
+
       otpReqId =
         data?.reqId ||
         data?.req_id ||
@@ -431,12 +608,24 @@ function resendOTP() {
         data?.data?.req_id ||
         otpReqId;
 
+
       showMessage(
         "OTP resent successfully.",
         "#18864b"
       );
 
+
       startResendTimer();
+
+
+      const otpInput =
+        document.getElementById("otpInput");
+
+      if (otpInput) {
+        otpInput.value = "";
+        otpInput.focus();
+      }
+
     },
 
     function (error) {
@@ -445,6 +634,12 @@ function resendOTP() {
         "MSG91 RESEND ERROR:",
         error
       );
+
+
+      if (resendButton) {
+        resendButton.disabled = false;
+      }
+
 
       showMessage(
         "Unable to resend OTP.",
@@ -471,9 +666,11 @@ function startResendTimer() {
 
   if (!resendButton) return;
 
+
   resendButton.disabled = true;
 
   let seconds = 10;
+
 
   if (resendTimer) {
 
@@ -481,6 +678,7 @@ function startResendTimer() {
       resendTimer
     );
   }
+
 
   if (resendText) {
 
@@ -490,19 +688,22 @@ function startResendTimer() {
       "s";
   }
 
+
   resendTimer =
     setInterval(
       function () {
 
         seconds--;
 
+
         if (resendText) {
 
           resendText.textContent =
             "Resend available in " +
-            seconds +
+            Math.max(seconds, 0) +
             "s";
         }
+
 
         if (seconds <= 0) {
 
@@ -510,8 +711,11 @@ function startResendTimer() {
             resendTimer
           );
 
+          resendTimer = null;
+
           resendButton.disabled =
             false;
+
 
           if (resendText) {
 
@@ -538,6 +742,7 @@ function backToLogin() {
   const otpInput =
     document.getElementById("otpInput");
 
+
   if (otpSection) {
 
     otpSection.classList.add("hidden");
@@ -546,17 +751,21 @@ function backToLogin() {
       "none";
   }
 
+
   if (otpInput) {
 
     otpInput.value = "";
   }
 
+
   otpReqId = "";
 
   showMessage("", "");
 
+
   const mobileInput =
     document.getElementById("mobileNumber");
+
 
   if (mobileInput) {
 
@@ -573,8 +782,12 @@ document.addEventListener(
   "DOMContentLoaded",
   function () {
 
+
+    /* MOBILE INPUT */
+
     const mobileInput =
       document.getElementById("mobileNumber");
+
 
     if (mobileInput) {
 
@@ -591,8 +804,11 @@ document.addEventListener(
     }
 
 
+    /* OTP INPUT */
+
     const otpInput =
       document.getElementById("otpInput");
+
 
     if (otpInput) {
 
@@ -603,14 +819,17 @@ document.addEventListener(
           this.value =
             this.value
               .replace(/\D/g, "")
-              .slice(0, 6);
+              .slice(0, 4);
         }
       );
     }
 
 
+    /* SEND OTP */
+
     const sendButton =
       document.getElementById("sendOtpBtn");
+
 
     if (sendButton) {
 
@@ -621,8 +840,11 @@ document.addEventListener(
     }
 
 
+    /* VERIFY OTP */
+
     const verifyButton =
       document.getElementById("verifyOtpBtn");
+
 
     if (verifyButton) {
 
@@ -633,8 +855,11 @@ document.addEventListener(
     }
 
 
+    /* RESEND OTP */
+
     const resendButton =
       document.getElementById("resendOtpBtn");
+
 
     if (resendButton) {
 
@@ -646,7 +871,7 @@ document.addEventListener(
 
 
     console.log(
-      "BALAJI LUDO KING - MSG91 OTP LOGIN READY"
+      "BALAJI LUDO KING - REAL MSG91 OTP LOGIN READY"
     );
 
   }
