@@ -1,71 +1,106 @@
 // =========================================================
-// BALAJI LUDO KING - HOME.JS - BAJIGER THEME
+// BALAJI LUDO KING - HOME.JS - FINAL BAJIGER THEME
+// FULL CODE IN ONE FILE
 // =========================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   
-  // 1. Wallet Balance Show Karna
   const walletEl = document.getElementById("walletBalance");
-  let balance = localStorage.getItem("balaji_wallet") || 0;
-  
-  if (walletEl) {
-    walletEl.innerText = balance;
-    // Animation ke liye
-    walletEl.style.color = "#ffcc00";
+  const battleListEl = document.getElementById("battleList");
+
+  // --- 1. WALLET BALANCE ---
+  let localBal = localStorage.getItem("balaji_wallet") || "0";
+  if (walletEl) walletEl.innerText = localBal;
+
+  // Firebase se Real Balance (Agar Firebase hai to)
+  try {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+          localStorage.setItem("balaji_user", user.uid);
+          const db = firebase.firestore();
+          const doc = await db.collection("users").doc(user.uid).get();
+          if (doc.exists) {
+            let realBal = doc.data().wallet || 0;
+            if (walletEl) walletEl.innerText = realBal;
+            localStorage.setItem("balaji_wallet", realBal);
+          }
+        } else {
+          // Login nahi hai to login page pe bhejo
+          // window.location.href = "login.html";
+        }
+      });
+    }
+  } catch (e) {
+    console.log("Firebase not connected, using local wallet");
   }
 
-  // 2. Agar Login nahi hai to Login pe bhejo
-  const user = localStorage.getItem("balaji_user");
-  // Agar user chahe to isko comment kar sakta hai
-  // if (!user) {
-  //   window.location.href = "login.html";
-  // }
+  // --- 2. LIVE BATTLES LOAD (Demo Data) ---
+  // Aap isko Firebase se bhi load kara sakte ho
+  const demoBattles = [
+    { amount: 10, win: 18, players: 2 },
+    { amount: 25, win: 45, players: 5 },
+    { amount: 50, win: 90, players: 12 },
+    { amount: 100, win: 180, players: 8 },
+    { amount: 500, win: 900, players: 3 },
+  ];
 
-  // 3. Play Buttons par Click Effect
-  const playBtns = document.querySelectorAll(".game-card .right, .btn-gold, .btn-outline");
-  playBtns.forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      // Click animation
-      btn.style.transform = "scale(0.95)";
-      setTimeout(() => btn.style.transform = "scale(1)", 150);
-      
-      // Battle page pe jao
-      // e.preventDefault(); // agar direct jana hai to hata do
-      console.log("Going to battle...");
+  function renderBattles() {
+    if (!battleListEl) return;
+    battleListEl.innerHTML = "";
+    demoBattles.forEach(b => {
+      battleListEl.innerHTML += `
+        <div class="game-card">
+          <div class="left">
+            <h3>₹${b.amount} Battle</h3>
+            <p>Win ₹${b.win} • ${b.players} Playing</p>
+          </div>
+          <a href="battle.html?amount=${b.amount}" class="right">PLAY</a>
+        </div>
+      `;
     });
+  }
+  renderBattles();
+
+  // --- 3. BUTTON CLICK ANIMATION ---
+  document.addEventListener("click", (e) => {
+    if (e.target.closest(".right") || e.target.closest(".btn-gold")) {
+      let btn = e.target.closest(".right") || e.target.closest(".btn-gold");
+      btn.style.transform = "scale(0.92)";
+      setTimeout(() => btn.style.transform = "scale(1)", 150);
+    }
   });
 
-  // 4. Stats ko live jaisa dikhana (Bajiger jaisa)
-  function animateStats() {
-    const stats = document.querySelectorAll(".stat-box b");
-    if (stats.length >= 2) {
-      // Players count ko har 3 sec me badhao
-      setInterval(() => {
-        let players = document.querySelector(".quick-stats .stat-box:first-child b");
-        if (players) {
-          let count = Math.floor(Math.random() * 500) + 100000;
-          players.innerText = (count / 1000).toFixed(1) + "K+";
-        }
-      }, 3000);
+  // --- 4. LIVE PLAYER COUNT (Bajiger Style) ---
+  setInterval(() => {
+    const players = document.querySelector(".quick-stats .stat-box:first-child b");
+    if (players) {
+      let count = Math.floor(Math.random() * 900) + 100200;
+      players.innerText = (count / 1000).toFixed(1) + "K+";
     }
-  }
-  animateStats();
+  }, 3500);
 
-  // 5. WhatsApp Support Click
-  const supportBtn = document.querySelector('a[href*="wa.me"]');
-  if (supportBtn) {
-    supportBtn.addEventListener("click", () => {
-      console.log("Support opened: 8619706213");
+  // --- 5. SUPPORT BUTTON ---
+  const waBtn = document.querySelector('a[href*="wa.me"]');
+  if (waBtn) {
+    waBtn.addEventListener("click", () => {
+      console.log("Support: 8619706213");
     });
   }
 
-  console.log("✅ Balaji Ludo King Home Loaded - Bajiger Theme Active");
+  console.log("✅ BALAJI LUDO KING - Home.js Loaded");
 });
 
-// 6. Global Function - Wallet Update ke liye
+// --- 6. GLOBAL FUNCTIONS ---
 function updateWallet(amount) {
   let current = parseInt(localStorage.getItem("balaji_wallet") || 0);
   let newBal = current + amount;
   localStorage.setItem("balaji_wallet", newBal);
-  document.getElementById("walletBalance").innerText = newBal;
+  const el = document.getElementById("walletBalance");
+  if (el) el.innerText = newBal;
+  return newBal;
+}
+
+function goToBattle(amount) {
+  window.location.href = `battle.html?amount=${amount}`;
 }
