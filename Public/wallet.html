@@ -1,188 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Balaji Ludo King - Wallet</title>
-
-  <link rel="stylesheet" href="wallet.css">
+  <title>Wallet - Balaji Ludo King</title>
+  <link rel="stylesheet" href="home.css">
+  <style>
+    .wallet-hero {
+      margin:16px; background:linear-gradient(135deg,#ffcc00,#ffb800);
+      border-radius:22px; padding:24px; color:#000; text-align:center;
+    }
+    .wallet-hero p { opacity:0.7; font-weight:700; font-size:13px; letter-spacing:1px; }
+    .wallet-hero h1 { font-size:42px; font-weight:900; margin:8px 0; }
+    .wallet-hero small { background:#000; color:#ffcc00; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:800; }
+    .wallet-actions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px; }
+    .w-btn { padding:16px; border-radius:14px; text-align:center; font-weight:900; text-decoration:none; font-size:14px; }
+    .w-btn.add { background:#11172f; color:#fff; border:1px solid #ffffff15; }
+    .w-btn.withdraw { background:#ffcc00; color:#000; }
+    .txn-title { margin:20px 16px 10px; font-weight:800; font-size:16px; }
+    .txn { background:#11172f; border:1px solid #ffffff10; border-radius:12px; margin:0 16px 8px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; }
+    .txn b { font-size:14px; } .txn span { font-size:11px; color:#8a93b2; display:block; margin-top:2px; }
+    .txn .amt { font-weight:900; } .txn .amt.plus{ color:#00ff88; } .txn .amt.minus{ color:#ff4455; }
+  </style>
 </head>
-
 <body>
-
-  <!-- HEADER -->
-  <header class="topbar">
-
-    <div class="brand">
-
-      <div class="logo">
-        ₹
-      </div>
-
-      <div>
-        <h1>BALAJI LUDO KING</h1>
-        <p>Official Gaming</p>
-      </div>
-
-    </div>
-
-  </header>
-
-
-  <!-- WALLET -->
-  <main class="wallet-page">
-
-    <section class="wallet-card">
-
-      <p class="wallet-label">
-        TOTAL BALANCE
-      </p>
-
-      <h2 id="balance">
-        ₹0.00
-      </h2>
-
-      <div class="wallet-buttons">
-
-        <button
-          id="addMoneyBtn"
-          class="primary-btn"
-          type="button">
-
-          + Add Money
-
-        </button>
-
-        <button
-          id="withdrawBtn"
-          class="secondary-btn"
-          type="button">
-
-          Withdraw
-
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- QUICK ACTIONS -->
-    <section class="section-card">
-
-      <h3>
-        Wallet
-      </h3>
-
-      <div class="action-list">
-
-        <button
-          id="addMoneyAction"
-          type="button">
-
-          <span>💰</span>
-
-          <div>
-            <strong>Add Money</strong>
-            <small>Add funds to your wallet</small>
-          </div>
-
-        </button>
-
-
-        <button
-          id="withdrawAction"
-          type="button">
-
-          <span>🏦</span>
-
-          <div>
-            <strong>Withdraw</strong>
-            <small>Withdraw your available balance</small>
-          </div>
-
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- TRANSACTIONS -->
-    <section class="section-card">
-
-      <h3>
-        Recent Transactions
-      </h3>
-
-      <div
-        id="transactions"
-        class="transactions">
-
-        <div class="empty-state">
-          No transactions yet
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-
-    <a
-      href="home.html">
-
-      <span>⌂</span>
-      <small>Home</small>
-
-    </a>
-
-
-    <a
-      href="refer.html">
-
-      <span>🎁</span>
-      <small>Refer</small>
-
-    </a>
-
-
-    <a
-      href="wallet.html"
-      class="active">
-
-      <span>₹</span>
-      <small>Wallet</small>
-
-    </a>
-
-
-    <a
-      href="support.html">
-
-      <span>💬</span>
-      <small>Support</small>
-
-    </a>
-
-
-    <a
-      href="profile.html">
-
-      <span>👤</span>
-      <small>Profile</small>
-
-    </a>
-
-  </nav>
-
-
-  <script src="wallet.js"></script>
-
+<header class="home-header">
+  <a href="home.html" style="color:#fff; text-decoration:none; font-weight:900;">← Back</a>
+  <div class="logo-text"><b>BALAJI</b><span>WALLET</span></div>
+  <div style="width:40px"></div>
+</header>
+
+<div class="wallet-hero">
+  <p>TOTAL BALANCE</p>
+  <h1>₹<span id="walletBalance">0</span></h1>
+  <small>✔️ 100% Safe & Secure</small>
+</div>
+
+<div class="wallet-actions">
+  <a href="#" onclick="addMoney()" class="w-btn add">➕ Add Cash</a>
+  <a href="#" onclick="withdrawMoney()" class="w-btn withdraw">🏦 Withdraw</a>
+</div>
+
+<div class="txn-title">Recent Transactions</div>
+<div id="txnList">
+  <div class="txn"><div><b>Signup Bonus</b><span>Today, 10:30 AM</span></div><div class="amt plus">+₹50</div></div>
+  <div class="txn"><div><b>Battle Win - ₹50</b><span>Today, 09:15 AM</span></div><div class="amt plus">+₹90</div></div>
+  <div class="txn"><div><b>Battle Join - ₹50</b><span>Today, 09:14 AM</span></div><div class="amt minus">-₹50</div></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="home.html"><span>🏠</span>Home</a>
+  <a href="refer.html"><span>👥</span>Refer</a>
+  <a href="wallet.html" class="active"><span>💰</span>Wallet</a>
+  <a href="support.html"><span>💬</span>Support</a>
+</nav>
+
+<script src="home.js"></script>
+<script>
+function addMoney(){
+  let amt = prompt("Kitna amount add karna hai? (Min ₹10)");
+  if(!amt) return;
+  amt = parseInt(amt);
+  if(amt < 10){ alert("Min ₹10"); return; }
+  alert("UPI Payment: ₹"+amt+" - Demo me direct wallet me add ho jayega");
+  updateWallet(amt);
+  location.reload();
+}
+function withdrawMoney(){
+  let amt = prompt("Withdraw Amount? (Min ₹100)");
+  if(!amt) return;
+  amt = parseInt(amt);
+  let bal = parseInt(localStorage.getItem("balaji_wallet")||0);
+  if(amt > bal){ alert("Balance kam hai!"); return; }
+  alert("Withdraw request ₹"+amt+" - 30 sec me UPI pe aa jayega. Support: 8619706213");
+  updateWallet(-amt);
+  location.reload();
+}
+</script>
 </body>
 </html>
