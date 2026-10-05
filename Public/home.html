@@ -1,36 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Balaji Ludo King - Match Room</title>
-  <link rel="stylesheet" href="room.css">
-  <style>
-    /* === BAJIGER THEME PATCH FOR ROOM === */
-    body{background:#080d1f!important;color:#fff!important;font-family:Poppins,sans-serif}
-    .topbar{background:#0a1026!important;border-bottom:2px solid #ffcc0020!important;padding:12px 5%!important}
-    .brand-name{color:#ffcc00!important} .brand-sub{color:#fff!important}
-    .card{background:#11172f!important;border:1px solid #ffcc0025!important;border-radius:16px!important;box-shadow:0 0 20px #ffcc0010}
-    .status-badge{background:#ffcc00!important;color:#000!important;font-weight:900!important}
-    .info-box{background:#151e42!important;border:1px solid #ffffff10!important;border-radius:10px!important}
-    .info-box strong{color:#ffcc00!important}
-    .vs span{background:#ffcc00;color:#000;width:45px;height:45px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:900;box-shadow:0 0 15px #ffcc00}
-    .room-code-box{background:linear-gradient(90deg,#ffcc00,#ffb800)!important;color:#000!important;border:none!important;border-radius:10px!important}
-    .copy-btn,.play-btn,.result-btn{background:#ffcc00!important;color:#000!important;font-weight:800!important;border-radius:8px!important;width:100%;padding:14px!important;border:none!important;margin-top:10px;cursor:pointer}
-    .bottom-nav{background:#0a1026!important;border-top:1px solid #ffffff10!important}
-    .bottom-nav a{color:#888!important} .bottom-nav a:hover{color:#ffcc00!important}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balaji Ludo King - Play & Win</title>
+  <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- Aapka same HTML structure rahega, bas CSS se Bajiger look aa jayega -->
 
-<header class="topbar">
-  <button class="back-btn" id="backBtn" style="background:#1a2347;color:#ffcc00;border:none;padding:8px 12px;border-radius:6px">←</button>
-  <div class="brand"><div class="crown">👑</div><div><div class="brand-name">BALAJI</div><div class="brand-sub">LUDO KING</div></div></div>
-  <div class="status-dot" style="width:10px;height:10px;background:#22c55e;border-radius:50%;box-shadow:0 0 10px #22c55e"></div>
+<!-- TOP BAR -->
+<header class="home-header">
+  <div class="logo-area">
+    <div class="crown">👑</div>
+    <div class="logo-text"><b>BALAJI</b><span>LUDO KING</span></div>
+  </div>
+  <a href="wallet.html" class="wallet-top">💰 ₹<span id="walletBalance">0</span></a>
 </header>
-<!-- Baaki aapka same code niche -->
 
-<!-- WhatsApp Support Fixed -->
-<a href="https://wa.me/918619706213" style="position:fixed;bottom:80px;right:15px;background:#25D366;color:#fff;padding:10px 14px;border-radius:50px;text-decoration:none;font-weight:bold;z-index:999">💬</a>
+<!-- HERO BANNER - BAJIGER STYLE -->
+<section class="hero-banner">
+  <h1>PLAY LUDO<br><span>WIN REAL CASH</span></h1>
+  <p>₹50 Bonus on Signup • Instant UPI Withdrawal • 100K+ Players Online</p>
+  <div class="hero-btns">
+    <a href="battle.html" class="btn-gold">⬇ DOWNLOAD APK</a>
+    <a href="battle.html" class="btn-outline">PLAY NOW</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="quick-stats">
+  <div class="stat-box"><b>100K+</b><span>Players</span></div>
+  <div class="stat-box"><b>₹10L+</b><span>Daily Winnings</span></div>
+  <div class="stat-box"><b>Instant</b><span>Withdrawal</span></div>
+</div>
+
+<!-- BATTLE TABLES -->
+<div class="section-title"><span>🔥 Hot Battles</span><small>LIVE • 1.2k Playing</small></div>
+
+<div class="game-card">
+  <div class="left"><h3>₹10 Battle</h3><p>Win ₹18 • 2 Players</p></div>
+  <a href="battle.html" class="right">PLAY</a>
+</div>
+<div class="game-card">
+  <div class="left"><h3>₹50 Battle</h3><p>Win ₹90 • 2 Players</p></div>
+  <a href="battle.html" class="right">PLAY</a>
+</div>
+<div class="game-card">
+  <div class="left"><h3>₹100 Battle</h3><p>Win ₹180 • Fast Play</p></div>
+  <a href="battle.html" class="right">PLAY</a>
+</div>
+<div class="game-card">
+  <div class="left"><h3>₹500 Battle</h3><p>Win ₹900 • High Stakes</p></div>
+  <a href="battle.html" class="right">PLAY</a>
+</div>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="feat"><span>⚡</span><b>Instant Withdraw</b><p>UPI • 30 sec me paisa</p></div>
+  <div class="feat"><span>🛡️</span><b>100% Safe</b><p>Anti-cheat protected</p></div>
+  <div class="feat"><span>🎁</span><b>Refer & Earn</b><p>Har refer pe ₹20</p></div>
+  <div class="feat"><span>💬</span><b>24x7 Support</b><p>WhatsApp: 8619706213</p></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="home.html" class="active"><span>🏠</span>Home</a>
+  <a href="refer.html"><span>👥</span>Refer</a>
+  <a href="wallet.html"><span>💰</span>Wallet</a>
+  <a href="support.html"><span>💬</span>Support</a>
+</nav>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/918619706213?text=Hi%20Balaji%20Ludo%20King" style="position:fixed;bottom:85px;right:15px;background:#25D366;color:#fff;padding:10px 16px;border-radius:50px;text-decoration:none;font-weight:bold;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.3)">💬 Support</a>
+
+<script src="home.js"></script>
 </body>
 </html>
