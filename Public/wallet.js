@@ -1,84 +1,108 @@
-// ======================================
-// BALAJI LUDO KING - WALLET
-// ======================================
+// =========================================================
+// BALAJI LUDO KING - WALLET.JS - BAJIGER THEME
+// =========================================================
 
-const balanceElement = document.getElementById("balance");
-const transactionsElement = document.getElementById("transactions");
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Balance dikhao
+  const walletEl = document.getElementById("walletBalance");
+  let bal = localStorage.getItem("balaji_wallet") || "0";
+  if (walletEl) walletEl.innerText = bal;
 
-const addMoneyBtn = document.getElementById("addMoneyBtn");
-const withdrawBtn = document.getElementById("withdrawBtn");
+  // 2. Firebase se real balance (agar hai to)
+  try {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+          const db = firebase.firestore();
+          const doc = await db.collection("users").doc(user.uid).get();
+          if (doc.exists && walletEl) {
+            walletEl.innerText = doc.data().wallet || 0;
+          }
+        }
+      });
+    }
+  } catch(e) {}
+});
 
-const addMoneyAction = document.getElementById("addMoneyAction");
-const withdrawAction = document.getElementById("withdrawAction");
-
-
-// ======================================
-// LOAD WALLET
-// ======================================
-
-function loadWallet() {
-
-  const savedBalance =
-    localStorage.getItem("balajiWalletBalance");
-
-  const balance = savedBalance
-    ? Number(savedBalance)
-    : 0;
-
-  balanceElement.textContent =
-    `₹${balance.toFixed(2)}`;
-}
-
-
-// ======================================
-// ADD MONEY
-// ======================================
-
+// --- ADD MONEY ---
 function addMoney() {
+  let amt = prompt("Kitna amount add karna hai?\nMin: ₹10");
+  if (!amt) return;
+  amt = parseInt(amt);
 
-  alert(
-    "Add Money section is ready.\nPayment integration will be connected later."
-  );
-}
-
-
-// ======================================
-// WITHDRAW
-// ======================================
-
-function withdrawMoney() {
-
-  const savedBalance =
-    localStorage.getItem("balajiWalletBalance");
-
-  const balance = savedBalance
-    ? Number(savedBalance)
-    : 0;
-
-  if (balance <= 0) {
-    alert("Your wallet balance is ₹0.00");
+  if (isNaN(amt) || amt < 10) {
+    alert("Minimum ₹10 add kar sakte ho");
     return;
   }
 
-  alert(
-    "Withdraw section is ready.\nWithdrawal system will be connected later."
-  );
+  // Demo ke liye direct add - Real me Razorpay / UPI lagega
+  if (confirm(`₹${amt} add karna hai?\nUPI: Demo me direct wallet me jayega`)) {
+    updateWallet(amt);
+    addTxn(`Add Cash`, `+₹${amt}`, "plus");
+    alert(`₹${amt} Added Successfully! 💰`);
+    setTimeout(() => location.reload(), 500);
+  }
 }
 
+// --- WITHDRAW MONEY ---
+function withdrawMoney() {
+  let bal = parseInt(localStorage.getItem("balaji_wallet") || 0);
+  if (bal < 100) {
+    alert(`Withdraw ke liye min ₹100 hona chahiye\nAapka balance: ₹${bal}`);
+    return;
+  }
 
-// ======================================
-// EVENTS
-// ======================================
+  let amt = prompt(`Withdraw Amount? (Min ₹100)\nAapka Balance: ₹${bal}`);
+  if (!amt) return;
+  amt = parseInt(amt);
 
-addMoneyBtn.addEventListener("click", addMoney);
-addMoneyAction.addEventListener("click", addMoney);
+  if (isNaN(amt) || amt < 100) {
+    alert("Minimum ₹100 withdraw");
+    return;
+  }
+  if (amt > bal) {
+    alert("Balance kam hai!");
+    return;
+  }
 
-withdrawBtn.addEventListener("click", withdrawMoney);
-withdrawAction.addEventListener("click", withdrawMoney);
+  let upi = prompt("Apna UPI ID daalo (e.g. 8619706213@paytm)");
+  if (!upi) return;
 
+  if (confirm(`₹${amt} withdraw karna hai?\nUPI: ${upi}\n30 sec me paisa aayega`)) {
+    updateWallet(-amt);
+    addTxn(`Withdraw to ${upi}`, `-₹${amt}`, "minus");
+    alert(`Withdraw Request Success! ₹${amt}\nSupport: 8619706213 pe contact karo`);
+    setTimeout(() => location.reload(), 500);
+  }
+}
 
-// ======================================
-// START
-// ======================================
+// --- Helper Functions ---
+function updateWallet(amount) {
+  let current = parseInt(localStorage.getItem("balaji_wallet") || 0);
+  let newBal = current + amount;
+  localStorage.setItem("balaji_wallet", newBal);
+  const el = document.getElementById("walletBalance");
+  if (el) el.innerText = newBal;
+  
+  // Firebase me bhi update karo
+  try {
+    if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+      const uid = firebase.auth().currentUser.uid;
+      firebase.firestore().collection("users").doc(uid).update({
+        wallet: newBal
+      });
+    }
+  } catch(e) {}
+  return newBal;
+}
 
-loadWallet();
+function addTxn(title, amount, type) {
+  let txns = JSON.parse(localStorage.getItem("balaji_txns") || "[]");
+  txns.unshift({
+    title: title,
+    amount: amount,
+    type: type,
+    time: new Date().toLocaleString()
+  });
+  localStorage.setItem("balaji_txns", JSON.stringify(txns));
+}
