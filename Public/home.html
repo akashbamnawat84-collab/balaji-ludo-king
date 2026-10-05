@@ -1,192 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Balaji Ludo King - Match Room</title>
   <link rel="stylesheet" href="room.css">
+  <style>
+    /* === BAJIGER THEME PATCH FOR ROOM === */
+    body{background:#080d1f!important;color:#fff!important;font-family:Poppins,sans-serif}
+    .topbar{background:#0a1026!important;border-bottom:2px solid #ffcc0020!important;padding:12px 5%!important}
+    .brand-name{color:#ffcc00!important} .brand-sub{color:#fff!important}
+    .card{background:#11172f!important;border:1px solid #ffcc0025!important;border-radius:16px!important;box-shadow:0 0 20px #ffcc0010}
+    .status-badge{background:#ffcc00!important;color:#000!important;font-weight:900!important}
+    .info-box{background:#151e42!important;border:1px solid #ffffff10!important;border-radius:10px!important}
+    .info-box strong{color:#ffcc00!important}
+    .vs span{background:#ffcc00;color:#000;width:45px;height:45px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:900;box-shadow:0 0 15px #ffcc00}
+    .room-code-box{background:linear-gradient(90deg,#ffcc00,#ffb800)!important;color:#000!important;border:none!important;border-radius:10px!important}
+    .copy-btn,.play-btn,.result-btn{background:#ffcc00!important;color:#000!important;font-weight:800!important;border-radius:8px!important;width:100%;padding:14px!important;border:none!important;margin-top:10px;cursor:pointer}
+    .bottom-nav{background:#0a1026!important;border-top:1px solid #ffffff10!important}
+    .bottom-nav a{color:#888!important} .bottom-nav a:hover{color:#ffcc00!important}
+  </style>
 </head>
-
 <body>
+<!-- Aapka same HTML structure rahega, bas CSS se Bajiger look aa jayega -->
 
-  <header class="topbar">
-    <button class="back-btn" id="backBtn">←</button>
+<header class="topbar">
+  <button class="back-btn" id="backBtn" style="background:#1a2347;color:#ffcc00;border:none;padding:8px 12px;border-radius:6px">←</button>
+  <div class="brand"><div class="crown">👑</div><div><div class="brand-name">BALAJI</div><div class="brand-sub">LUDO KING</div></div></div>
+  <div class="status-dot" style="width:10px;height:10px;background:#22c55e;border-radius:50%;box-shadow:0 0 10px #22c55e"></div>
+</header>
+<!-- Baaki aapka same code niche -->
 
-    <div class="brand">
-      <div class="crown">👑</div>
-      <div>
-        <div class="brand-name">BALAJI</div>
-        <div class="brand-sub">LUDO KING</div>
-      </div>
-    </div>
-
-    <div class="status-dot"></div>
-  </header>
-
-  <main class="room-container">
-
-    <!-- Loading -->
-    <div id="loadingCard" class="card loading-card">
-      <div class="loader">⏳</div>
-      <h2>Loading Match...</h2>
-      <p>Please wait</p>
-    </div>
-
-    <!-- Match Card -->
-    <section id="matchCard" class="card hidden">
-
-      <div class="match-title">
-        <div>
-          <span class="small-label">BATTLE MATCH</span>
-          <h1>Player Match</h1>
-        </div>
-
-        <span id="statusBadge" class="status-badge">WAITING</span>
-      </div>
-
-      <div class="players">
-
-        <div class="player player-one">
-          <div class="avatar">👤</div>
-          <div class="player-label">PLAYER 1</div>
-          <div id="playerOneName" class="player-name">Player 1</div>
-        </div>
-
-        <div class="vs">
-          <span>VS</span>
-        </div>
-
-        <div class="player player-two">
-          <div class="avatar">👤</div>
-          <div class="player-label">PLAYER 2</div>
-          <div id="playerTwoName" class="player-name">Waiting...</div>
-        </div>
-
-      </div>
-
-      <div class="battle-info">
-
-        <div class="info-box">
-          <span>Entry Fee</span>
-          <strong id="entryAmount">₹0</strong>
-        </div>
-
-        <div class="info-box">
-          <span>Winning Prize</span>
-          <strong id="winningAmount">₹0</strong>
-        </div>
-
-      </div>
-
-      <!-- Waiting -->
-      <div id="waitingSection" class="room-section">
-
-        <div class="waiting-icon">⏳</div>
-
-        <h2>Waiting for Player 2</h2>
-
-        <p>
-          Share your battle details with your opponent.
-          The match will become ready after both players join.
-        </p>
-
-        <div class="refresh-note">
-          🔄 Match status refreshes automatically
-        </div>
-
-      </div>
-
-      <!-- Room Ready -->
-      <div id="readySection" class="room-section hidden">
-
-        <div class="ready-icon">🎮</div>
-
-        <h2>Match Ready!</h2>
-
-        <p class="ready-text">
-          Both players have joined. Use the room code below
-          to play the match in the Ludo King app.
-        </p>
-
-        <div class="room-code-box">
-          <span>ROOM CODE</span>
-          <strong id="roomCode">--------</strong>
-        </div>
-
-        <button id="copyRoomBtn" class="copy-btn">
-          📋 Copy Room Code
-        </button>
-
-        <button id="playLudoBtn" class="play-btn">
-          🎲 Play in Ludo King
-        </button>
-
-        <div class="play-note">
-          Open the Ludo King app and enter the room code.
-        </div>
-
-      </div>
-
-      <!-- Result -->
-      <div id="resultSection" class="room-section hidden">
-
-        <div class="result-icon">🏆</div>
-
-        <h2>Match Finished?</h2>
-
-        <p>
-          After completing the game in Ludo King,
-          submit your result with your screenshot.
-        </p>
-
-        <button id="resultBtn" class="result-btn">
-          Submit Match Result
-        </button>
-
-      </div>
-
-    </section>
-
-    <!-- Error -->
-    <div id="errorCard" class="card error-card hidden">
-      <div class="error-icon">⚠️</div>
-      <h2>Match Not Found</h2>
-      <p id="errorMessage">
-        We could not load this battle.
-      </p>
-
-      <button id="retryBtn" class="retry-btn">
-        Try Again
-      </button>
-    </div>
-
-  </main>
-
-  <nav class="bottom-nav">
-
-    <a href="home.html">
-      <span>🏠</span>
-      <small>Home</small>
-    </a>
-
-    <a href="refer.html">
-      <span>👥</span>
-      <small>Refer</small>
-    </a>
-
-    <a href="wallet.html">
-      <span>💰</span>
-      <small>Wallet</small>
-    </a>
-
-    <a href="support.html">
-      <span>💬</span>
-      <small>Support</small>
-    </a>
-
-  </nav>
-
-  <script src="room.js"></script>
-
+<!-- WhatsApp Support Fixed -->
+<a href="https://wa.me/918619706213" style="position:fixed;bottom:80px;right:15px;background:#25D366;color:#fff;padding:10px 14px;border-radius:50px;text-decoration:none;font-weight:bold;z-index:999">💬</a>
 </body>
 </html>
