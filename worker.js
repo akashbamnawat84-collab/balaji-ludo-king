@@ -204,32 +204,27 @@ function calculateWinningPrize(amount) {
 
 /* =========================================================
    ADMIN AUTHENTICATION
+   D1 SESSION + SECURE HTTPONLY COOKIE
 ========================================================= */
 
 const ADMIN_SESSION_TIME =
   6 * 60 * 60 * 1000;
 
-const adminSessions = new Map();
+const ADMIN_COOKIE =
+  "balaji_admin_session";
 
 
-function getAdminToken(request) {
+async function ensureAdminSessionTable(env) {
 
-  const authorization =
-    request.headers.get("Authorization");
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS admin_sessions (
+      token TEXT PRIMARY KEY,
+      admin_id TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      expires_at INTEGER NOT NULL
+    )
+  `).run();
 
-  if (!authorization) {
-    return "";
-  }
-
-  if (
-    authorization.startsWith("Bearer ")
-  ) {
-    return clean(
-      authorization.slice(7)
-    );
-  }
-
-  return "";
 }
 
 
@@ -249,48 +244,195 @@ function createAdminToken() {
 }
 
 
-function saveAdminSession(token) {
+function getCookie(request, name) {
 
-  adminSessions.set(
-    token,
-    Date.now()
+  const cookieHeader =
+    request.headers.get("Cookie") || "";
+
+  const cookies =
+    cookieHeader.split(";");
+
+  for (const cookie of cookies) {
+
+    const index =
+      cookie.indexOf("=");
+
+    if (index === -1) {
+      continue;
+    }
+
+    const key =
+      cookie.slice(0, index).trim();
+
+    const value =
+      cookie.slice(index + 1).trim();
+
+    if (key === name) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
+
+function getAdminToken(request) {
+
+  const authorization =
+    request.headers.get("Authorization");
+
+  if (
+    authorization &&
+    authorization.startsWith("Bearer ")
+  ) {
+
+    return clean(
+      authorization.slice(7)
+    );
+
+  }
+
+  return clean(
+    getCookie(
+      request,
+      ADMIN_COOKIE
+    )
   );
 }
 
 
-function validAdminSession(token) {
+async function saveAdminSession(
+  env,
+  token,
+  adminId
+) {
 
-  if (!token) {
-    return false;
-  }
+  await ensureAdminSessionTable(env);
 
-  const createdAt =
-    adminSessions.get(token);
+  const now =
+    Date.now();
 
-  if (!createdAt) {
-    return false;
-  }
+  const expiresAt =
+    now + ADMIN_SESSION_TIME;
 
-  if (
-    Date.now() - createdAt >
-    ADMIN_SESSION_TIME
-  ) {
+  await env.DB.prepare(`
+    INSERT INTO admin_sessions (
+      token,
+      admin_id,
+      created_at,
+      expires_at
+    )
+    VALUES (?, ?, ?, ?)
+  `)
+  .bind(
+    token,
+    adminId,
+    now,
+    expiresAt
+  )
+  .run();
 
-    adminSessions.delete(token);
-
-    return false;
-  }
-
-  return true;
+  return {
+    createdAt: now,
+    expiresAt
+  };
 }
 
 
-function requireAdmin(request) {
+async function validAdminSession(
+  env,
+  token
+) {
+
+  if (!token) {
+    return null;
+  }
+
+  await ensureAdminSessionTable(env);
+
+  const session =
+    await env.DB.prepare(`
+      SELECT *
+      FROM admin_sessions
+      WHERE token = ?
+      LIMIT 1
+    `)
+    .bind(token)
+    .first();
+
+  if (!session) {
+    return null;
+  }
+
+  const expiresAt =
+    Number(
+      session.expires_at
+    );
+
+  if (
+    !Number.isFinite(expiresAt) ||
+    Date.now() >= expiresAt
+  ) {
+
+    await env.DB.prepare(`
+      DELETE FROM admin_sessions
+      WHERE token = ?
+    `)
+    .bind(token)
+    .run();
+
+    return null;
+  }
+
+  return session;
+}
+
+
+async function requireAdmin(
+  request,
+  env
+) {
 
   const token =
     getAdminToken(request);
 
-  return validAdminSession(token);
+  if (!token) {
+    return null;
+  }
+
+  return await validAdminSession(
+    env,
+    token
+  );
+}
+
+
+function adminCookie(
+  token,
+  maxAge
+) {
+
+  return [
+    `${ADMIN_COOKIE}=${token}`,
+    "Path=/",
+    "HttpOnly",
+    "Secure",
+    "SameSite=Lax",
+    `Max-Age=${maxAge}`
+  ].join("; ");
+}
+
+
+function clearAdminCookie() {
+
+  return [
+    `${ADMIN_COOKIE}=`,
+    "Path=/",
+    "HttpOnly",
+    "Secure",
+    "SameSite=Lax",
+    "Max-Age=0"
+  ].join("; ");
 }
 
 
@@ -739,7 +881,6 @@ async function verifyMSG91AccessToken(
       error:
         "MSG91 access token missing"
     };
-
   }
 
   const authKey =
@@ -752,7 +893,6 @@ async function verifyMSG91AccessToken(
       error:
         "MSG91 authentication is not configured"
     };
-
   }
 
   let response;
@@ -796,7 +936,6 @@ async function verifyMSG91AccessToken(
       error:
         "Unable to connect to MSG91"
     };
-
   }
 
   let data = {};
@@ -832,13 +971,8 @@ async function verifyMSG91AccessToken(
         data?.msg ||
         "MSG91 access token verification failed"
     };
-
   }
 
-  /*
-   * Reject an explicitly failed/invalid/unverified
-   * verification response.
-   */
   const statusValues = [
     data?.type,
     data?.status,
@@ -878,13 +1012,8 @@ async function verifyMSG91AccessToken(
       error:
         "Invalid or expired OTP verification"
     };
-
   }
 
-  /*
-   * MSG91 Widget access token is generated
-   * after successful OTP verification.
-   */
   return {
     success: true,
     data
@@ -908,7 +1037,6 @@ export default {
         status: 204,
         headers: corsHeaders
       });
-
     }
 
     const url =
@@ -954,7 +1082,6 @@ export default {
             error:
               "Admin ID and password required"
           }, 400);
-
         }
 
         const savedAdminId =
@@ -977,7 +1104,6 @@ export default {
             error:
               "Admin authentication is not configured on the server"
           }, 500);
-
         }
 
         if (
@@ -990,31 +1116,62 @@ export default {
             error:
               "Invalid Admin ID or Password"
           }, 401);
-
         }
+
+        await ensureAdminSessionTable(env);
+
+        await env.DB.prepare(`
+          DELETE FROM admin_sessions
+          WHERE admin_id = ?
+        `)
+        .bind(savedAdminId)
+        .run();
 
         const token =
           createAdminToken();
 
-        saveAdminSession(token);
+        const session =
+          await saveAdminSession(
+            env,
+            token,
+            savedAdminId
+          );
 
-        return json({
+        const cookie =
+          adminCookie(
+            token,
+            Math.floor(
+              ADMIN_SESSION_TIME / 1000
+            )
+          );
 
-          success:
-            true,
+        return json(
+          {
+            success: true,
 
-          message:
-            "Admin login successful",
+            message:
+              "Admin login successful",
 
-          token,
+            admin: {
+              name:
+                savedAdminId
+            },
 
-          admin: {
-            name:
-              savedAdminId
+            expires_at:
+              session.expiresAt
+          },
+          200,
+          {
+            "Set-Cookie":
+              cookie,
+
+            "Cache-Control":
+              "no-store, no-cache, must-revalidate, max-age=0",
+
+            "Pragma":
+              "no-cache"
           }
-
-        });
-
+        );
       }
 
 
@@ -1031,60 +1188,114 @@ export default {
           getAdminToken(request);
 
         if (token) {
-          adminSessions.delete(token);
+
+          await ensureAdminSessionTable(env);
+
+          await env.DB.prepare(`
+            DELETE FROM admin_sessions
+            WHERE token = ?
+          `)
+          .bind(token)
+          .run();
         }
 
-        return json({
+        return json(
+          {
+            success:
+              true,
 
-          success:
-            true,
+            message:
+              "Admin logged out"
+          },
+          200,
+          {
+            "Set-Cookie":
+              clearAdminCookie(),
 
-          message:
-            "Admin logged out"
-
-        });
-
+            "Cache-Control":
+              "no-store"
+          }
+        );
       }
 
 
       /* =====================================================
-         ADMIN SESSION
+         ADMIN SESSION + ADMIN ME
       ===================================================== */
 
       if (
-        path === "/api/admin/session" &&
+        (
+          path === "/api/admin/session" ||
+          path === "/api/admin/me"
+        ) &&
         request.method === "GET"
       ) {
 
-        if (
-          !requireAdmin(request)
-        ) {
+        const session =
+          await requireAdmin(
+            request,
+            env
+          );
 
-          return json({
+        if (!session) {
 
-            success:
-              false,
+          return json(
+            {
+              success:
+                false,
 
-            authenticated:
-              false,
+              authenticated:
+                false,
 
-            error:
-              "Admin authentication required"
+              error:
+                "Admin authentication required"
+            },
+            401,
+            {
+              "Cache-Control":
+                "no-store, no-cache, must-revalidate, max-age=0",
 
-          }, 401);
-
+              "Pragma":
+                "no-cache"
+            }
+          );
         }
 
-        return json({
+        return json(
+          {
+            success:
+              true,
 
-          success:
-            true,
+            authenticated:
+              true,
 
-          authenticated:
-            true
+            admin: {
+              id:
+                session.admin_id,
 
-        });
+              name:
+                session.admin_id
+            },
 
+            created_at:
+              Number(
+                session.created_at
+              ),
+
+            expires_at:
+              Number(
+                session.expires_at
+              )
+          },
+          200,
+          {
+            "Cache-Control":
+              "no-store, no-cache, must-revalidate, max-age=0",
+
+            "Pragma":
+              "no-cache"
+          }
+        );
       }
 
 
@@ -1116,38 +1327,29 @@ export default {
             body.token
           );
 
-
         if (
           !validMobile(mobile)
         ) {
 
           return json({
-
             success:
               false,
 
             error:
               "Valid 10-digit mobile number required"
-
           }, 400);
-
         }
-
 
         if (!accessToken) {
 
           return json({
-
             success:
               false,
 
             error:
               "OTP verification token required"
-
           }, 400);
-
         }
-
 
         const verification =
           await verifyMSG91AccessToken(
@@ -1160,18 +1362,14 @@ export default {
         ) {
 
           return json({
-
             success:
               false,
 
             error:
               verification.error ||
               "OTP verification failed"
-
           }, 401);
-
         }
-
 
         let customer =
           await env.DB.prepare(`
@@ -1182,7 +1380,6 @@ export default {
           `)
           .bind(mobile)
           .first();
-
 
         if (customer) {
 
@@ -1217,11 +1414,9 @@ export default {
                 customer.id
               )
               .first();
-
           }
 
           return json({
-
             success:
               true,
 
@@ -1235,11 +1430,8 @@ export default {
               customerResponse(
                 customer
               )
-
           });
-
         }
-
 
         const customerId =
           "CUS" +
@@ -1248,16 +1440,13 @@ export default {
             .slice(0, 10)
             .toUpperCase();
 
-
         const referralCode =
           await generateUniqueReferralCode(
             env
           );
 
-
         const createdAt =
           Date.now();
-
 
         await env.DB.prepare(`
           INSERT INTO customers (
@@ -1301,7 +1490,6 @@ export default {
         )
         .run();
 
-
         const newCustomer =
           await env.DB.prepare(`
             SELECT *
@@ -1314,9 +1502,7 @@ export default {
           )
           .first();
 
-
         return json({
-
           success:
             true,
 
@@ -1330,9 +1516,7 @@ export default {
             customerResponse(
               newCustomer
             )
-
         });
-
       }
 
 
@@ -1365,7 +1549,6 @@ export default {
                 ""
               )
             );
-
         }
 
         if (!customerId) {
@@ -1379,21 +1562,17 @@ export default {
                 "customerId"
               )
             );
-
         }
 
         if (!customerId) {
 
           return json({
-
             success:
               false,
 
             error:
               "Customer ID required"
-
           }, 400);
-
         }
 
         const customer =
@@ -1408,19 +1587,15 @@ export default {
         if (!customer) {
 
           return json({
-
             success:
               false,
 
             error:
               "Customer not found"
-
           }, 404);
-
         }
 
         return json({
-
           success:
             true,
 
@@ -1428,9 +1603,7 @@ export default {
             customerResponse(
               customer
             )
-
         });
-
       }
 
 
@@ -1464,11 +1637,12 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer ID required"
           }, 400);
-
         }
 
         const customer =
@@ -1483,11 +1657,12 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer not found"
           }, 404);
-
         }
 
         await env.DB.prepare(`
@@ -1514,7 +1689,6 @@ export default {
           .first();
 
         return json({
-
           success:
             true,
 
@@ -1522,9 +1696,7 @@ export default {
             customerResponse(
               updated
             )
-
         });
-
       }
 
 
@@ -1550,11 +1722,12 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer ID required"
           }, 400);
-
         }
 
         const summary =
@@ -1566,23 +1739,21 @@ export default {
         if (!summary) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer not found"
           }, 404);
-
         }
 
         return json({
-
           success:
             true,
 
           referral:
             summary
-
         });
-
       }
 
 
@@ -1614,11 +1785,12 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer ID required"
           }, 400);
-
         }
 
         if (
@@ -1628,11 +1800,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Valid 6-digit referral code required"
           }, 400);
-
         }
 
         await ensureReferralTable(env);
@@ -1649,11 +1822,12 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer not found"
           }, 404);
-
         }
 
         const referrer =
@@ -1669,11 +1843,12 @@ export default {
         if (!referrer) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Referral code not found"
           }, 404);
-
         }
 
         if (
@@ -1681,11 +1856,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "You cannot use your own referral code"
           }, 400);
-
         }
 
         const alreadyReferred =
@@ -1701,11 +1877,12 @@ export default {
         if (alreadyReferred) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Referral already applied"
           }, 409);
-
         }
 
         await env.DB.prepare(`
@@ -1738,7 +1915,6 @@ export default {
         .run();
 
         return json({
-
           success:
             true,
 
@@ -1750,9 +1926,7 @@ export default {
 
           referral_code:
             referralCode
-
         });
-
       }
 
 
@@ -1782,11 +1956,12 @@ export default {
         if (!referrerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Referrer ID required"
           }, 400);
-
         }
 
         if (
@@ -1795,11 +1970,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Valid amount required"
           }, 400);
-
         }
 
         await ensureReferralTable(env);
@@ -1816,11 +1992,12 @@ export default {
         if (!referrer) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Referrer not found"
           }, 404);
-
         }
 
         const commission =
@@ -1854,7 +2031,6 @@ export default {
           .first();
 
         return json({
-
           success:
             true,
 
@@ -1869,9 +2045,7 @@ export default {
             Number(
               updated.referral_earned || 0
             )
-
         });
-
       }
 
 
@@ -1904,17 +2078,17 @@ export default {
               request,
               env
             );
-
         }
 
         if (!playerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Player login required"
           }, 400);
-
         }
 
         const customer =
@@ -1930,11 +2104,12 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer not found"
           }, 404);
-
         }
 
         const playerName =
@@ -1959,11 +2134,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               `Battle amount must be between ${MIN_BET} and ${MAX_BET} BALAJI LUDO Coin`
           }, 400);
-
         }
 
         if (
@@ -1971,11 +2147,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle amount must be in multiples of 50"
           }, 400);
-
         }
 
         const commission =
@@ -2077,7 +2254,6 @@ export default {
           );
 
         return json({
-
           success:
             true,
 
@@ -2088,9 +2264,7 @@ export default {
             battleResponse(
               battle
             )
-
         });
-
       }
 
 
@@ -2152,7 +2326,6 @@ export default {
         }
 
         return json({
-
           success:
             true,
 
@@ -2161,9 +2334,7 @@ export default {
 
           battles:
             active
-
         });
-
       }
 
 
@@ -2201,17 +2372,17 @@ export default {
               request,
               env
             );
-
         }
 
         if (!playerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Player login required"
           }, 400);
-
         }
 
         const result =
@@ -2230,7 +2401,6 @@ export default {
           .all();
 
         return json({
-
           success:
             true,
 
@@ -2243,9 +2413,7 @@ export default {
             ).map(
               battleResponse
             )
-
         });
-
       }
 
 
@@ -2271,11 +2439,12 @@ export default {
         if (!battleId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle ID required"
           }, 400);
-
         }
 
         await ensureBattleTable(env);
@@ -2289,15 +2458,15 @@ export default {
         if (!battle) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle not found"
           }, 404);
-
         }
 
         return json({
-
           success:
             true,
 
@@ -2305,9 +2474,7 @@ export default {
             battleResponse(
               battle
             )
-
         });
-
       }
 
 
@@ -2346,7 +2513,6 @@ export default {
               request,
               env
             );
-
         }
 
         const playerName =
@@ -2362,11 +2528,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle and player required"
           }, 400);
-
         }
 
         const battle =
@@ -2378,11 +2545,12 @@ export default {
         if (!battle) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle not found"
           }, 404);
-
         }
 
         if (
@@ -2390,11 +2558,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "This Battle is no longer open"
           }, 409);
-
         }
 
         if (
@@ -2415,11 +2584,12 @@ export default {
           .run();
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "⏰ Battle expired after 5 minutes"
           }, 410);
-
         }
 
         if (
@@ -2428,11 +2598,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "You cannot join your own Battle"
           }, 409);
-
         }
 
         const opponent =
@@ -2447,11 +2618,12 @@ export default {
         if (!opponent) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer not found"
           }, 404);
-
         }
 
         const joinedAt =
@@ -2489,11 +2661,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle was already joined by another player"
           }, 409);
-
         }
 
         const updated =
@@ -2503,7 +2676,6 @@ export default {
           );
 
         return json({
-
           success:
             true,
 
@@ -2514,9 +2686,7 @@ export default {
             battleResponse(
               updated
             )
-
         });
-
       }
 
 
@@ -2555,7 +2725,6 @@ export default {
               request,
               env
             );
-
         }
 
         const roomCode =
@@ -2570,11 +2739,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle and player required"
           }, 400);
-
         }
 
         if (
@@ -2582,11 +2752,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "8-digit Room Code required"
           }, 400);
-
         }
 
         const battle =
@@ -2598,11 +2769,12 @@ export default {
         if (!battle) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle not found"
           }, 404);
-
         }
 
         if (
@@ -2611,11 +2783,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Only Player 1 can set the Room Code"
           }, 403);
-
         }
 
         if (
@@ -2624,11 +2797,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle is not ready for Room Code"
           }, 409);
-
         }
 
         const existingRoom =
@@ -2654,11 +2828,12 @@ export default {
           } else {
 
             return json({
-              success: false,
+              success:
+                false,
+
               error:
                 "यह Room Code पहले से मौजूद है। दूसरा code डालें।"
             }, 409);
-
           }
         }
 
@@ -2711,7 +2886,6 @@ export default {
           );
 
         return json({
-
           success:
             true,
 
@@ -2722,9 +2896,7 @@ export default {
             battleResponse(
               updated
             )
-
         });
-
       }
 
 
@@ -2763,7 +2935,6 @@ export default {
               request,
               env
             );
-
         }
 
         const reason =
@@ -2788,11 +2959,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle and player required"
           }, 400);
-
         }
 
         if (
@@ -2802,11 +2974,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Valid cancellation reason required"
           }, 400);
-
         }
 
         const battle =
@@ -2818,11 +2991,12 @@ export default {
         if (!battle) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle not found"
           }, 404);
-
         }
 
         if (
@@ -2833,11 +3007,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "You are not part of this Battle"
           }, 403);
-
         }
 
         if (
@@ -2852,11 +3027,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle result has already been submitted"
           }, 409);
-
         }
 
         await env.DB.prepare(`
@@ -2890,7 +3066,6 @@ export default {
             battle.room_code
           )
           .run();
-
         }
 
         const updated =
@@ -2900,7 +3075,6 @@ export default {
           );
 
         return json({
-
           success:
             true,
 
@@ -2911,9 +3085,7 @@ export default {
             battleResponse(
               updated
             )
-
         });
-
       }
 
 
@@ -2952,7 +3124,6 @@ export default {
               request,
               env
             );
-
         }
 
         const resultStatus =
@@ -2974,11 +3145,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle and player required"
           }, 400);
-
         }
 
         if (
@@ -2991,21 +3163,23 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Result must be WON or LOST"
           }, 400);
-
         }
 
         if (!screenshot) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Screenshot required"
           }, 400);
-
         }
 
         const battle =
@@ -3017,11 +3191,12 @@ export default {
         if (!battle) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle not found"
           }, 404);
-
         }
 
         if (
@@ -3032,11 +3207,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "You are not part of this Battle"
           }, 403);
-
         }
 
         if (
@@ -3048,11 +3224,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Result has already been submitted and cannot be changed"
           }, 409);
-
         }
 
         if (
@@ -3060,11 +3237,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle is not ready for result"
           }, 409);
-
         }
 
         if (
@@ -3075,11 +3253,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "⏰ Result submission window has expired"
           }, 410);
-
         }
 
         const submittedAt =
@@ -3116,11 +3295,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Result could not be submitted"
           }, 409);
-
         }
 
         const updated =
@@ -3130,7 +3310,6 @@ export default {
           );
 
         return json({
-
           success:
             true,
 
@@ -3141,9 +3320,7 @@ export default {
             battleResponse(
               updated
             )
-
         });
-
       }
 
 
@@ -3208,11 +3385,12 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer ID required"
           }, 400);
-
         }
 
         if (
@@ -3220,11 +3398,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Full name required"
           }, 400);
-
         }
 
         if (
@@ -3232,21 +3411,23 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Valid 10-digit mobile number required"
           }, 400);
-
         }
 
         if (!dob) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Date of birth required"
           }, 400);
-
         }
 
         const allowedDocuments = [
@@ -3263,11 +3444,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Valid KYC document type required"
           }, 400);
-
         }
 
         if (
@@ -3275,31 +3457,34 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Document number required"
           }, 400);
-
         }
 
         if (!documentFileName) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "KYC document upload required"
           }, 400);
-
         }
 
         if (!selfieFileName) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Selfie upload required"
           }, 400);
-
         }
 
         await ensureKYCTable(env);
@@ -3316,11 +3501,12 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer not found"
           }, 404);
-
         }
 
         if (
@@ -3329,11 +3515,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Mobile number does not match customer account"
           }, 403);
-
         }
 
         const pending =
@@ -3351,7 +3538,6 @@ export default {
         if (pending) {
 
           return json({
-
             success:
               true,
 
@@ -3362,7 +3548,6 @@ export default {
               "Your KYC is already pending",
 
             kyc: {
-
               id:
                 pending.id,
 
@@ -3371,11 +3556,8 @@ export default {
 
               submitted_at:
                 pending.submitted_at
-
             }
-
           });
-
         }
 
         const submittedAt =
@@ -3425,7 +3607,6 @@ export default {
         .run();
 
         return json({
-
           success:
             true,
 
@@ -3433,7 +3614,6 @@ export default {
             "KYC submitted successfully",
 
           kyc: {
-
             id:
               result.meta?.last_row_id ||
               null,
@@ -3446,11 +3626,8 @@ export default {
 
             submitted_at:
               submittedAt
-
           }
-
         });
-
       }
 
 
@@ -3475,11 +3652,12 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer ID required"
           }, 400);
-
         }
 
         await ensureKYCTable(env);
@@ -3496,14 +3674,12 @@ export default {
           .first();
 
         return json({
-
-          success: true,
+          success:
+            true,
 
           kyc:
             kyc || null
-
         });
-
       }
 
 
@@ -3516,14 +3692,20 @@ export default {
         request.method === "GET"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         await ensureKYCTable(env);
@@ -3538,7 +3720,6 @@ export default {
           .all();
 
         return json({
-
           success:
             true,
 
@@ -3547,9 +3728,7 @@ export default {
 
           kycs:
             result.results || []
-
         });
-
       }
 
 
@@ -3562,14 +3741,20 @@ export default {
         request.method === "GET"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         await ensureKYCTable(env);
@@ -3584,7 +3769,6 @@ export default {
           .all();
 
         return json({
-
           success:
             true,
 
@@ -3593,9 +3777,7 @@ export default {
 
           kycs:
             result.results || []
-
         });
-
       }
 
 
@@ -3608,14 +3790,20 @@ export default {
         request.method === "POST"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         await ensureKYCTable(env);
@@ -3633,11 +3821,12 @@ export default {
         if (!kycId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "KYC ID required"
           }, 400);
-
         }
 
         const kyc =
@@ -3652,11 +3841,12 @@ export default {
         if (!kyc) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "KYC submission not found"
           }, 404);
-
         }
 
         if (
@@ -3665,11 +3855,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "This KYC has already been reviewed"
           }, 409);
-
         }
 
         const reviewedAt =
@@ -3710,7 +3901,6 @@ export default {
           .first();
 
         return json({
-
           success:
             true,
 
@@ -3719,9 +3909,7 @@ export default {
 
           kyc:
             updated
-
         });
-
       }
 
 
@@ -3734,14 +3922,20 @@ export default {
         request.method === "POST"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         await ensureKYCTable(env);
@@ -3766,11 +3960,12 @@ export default {
         if (!kycId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "KYC ID required"
           }, 400);
-
         }
 
         const kyc =
@@ -3785,11 +3980,12 @@ export default {
         if (!kyc) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "KYC submission not found"
           }, 404);
-
         }
 
         if (
@@ -3798,11 +3994,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "This KYC has already been reviewed"
           }, 409);
-
         }
 
         const reviewedAt =
@@ -3844,7 +4041,6 @@ export default {
           .first();
 
         return json({
-
           success:
             true,
 
@@ -3853,9 +4049,7 @@ export default {
 
           kyc:
             updated
-
         });
-
       }
 
 
@@ -3868,14 +4062,20 @@ export default {
         request.method === "GET"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         await ensureBattleTable(env);
@@ -3910,11 +4110,9 @@ export default {
               LIMIT 500
             `)
             .all();
-
         }
 
         return json({
-
           success:
             true,
 
@@ -3927,9 +4125,7 @@ export default {
             ).map(
               battleResponse
             )
-
         });
-
       }
 
 
@@ -3942,14 +4138,20 @@ export default {
         request.method === "POST"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         await ensureBattleTable(env);
@@ -3986,11 +4188,12 @@ export default {
         if (!battleId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle ID required"
           }, 400);
-
         }
 
         if (
@@ -4007,11 +4210,12 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Valid Admin decision required"
           }, 400);
-
         }
 
         const battle =
@@ -4023,11 +4227,12 @@ export default {
         if (!battle) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle not found"
           }, 404);
-
         }
 
         if (
@@ -4041,13 +4246,13 @@ export default {
         ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Battle has already received a final decision"
           }, 409);
-
         }
-
 
         if (
           decision === "CANCEL" ||
@@ -4084,7 +4289,6 @@ export default {
               battle.room_code
             )
             .run();
-
           }
 
         } else {
@@ -4092,11 +4296,12 @@ export default {
           if (!winnerId) {
 
             return json({
-              success: false,
+              success:
+                false,
+
               error:
                 "Winner player ID required"
             }, 400);
-
           }
 
           const isCreator =
@@ -4121,11 +4326,12 @@ export default {
           ) {
 
             return json({
-              success: false,
+              success:
+                false,
+
               error:
                 "Winner must be a player from this Battle"
             }, 400);
-
           }
 
           const finalStatus =
@@ -4193,9 +4399,7 @@ export default {
                 winnerId
               )
               .run();
-
             }
-
           }
 
           const loserId =
@@ -4217,9 +4421,7 @@ export default {
               loserId
             )
             .run();
-
           }
-
         }
 
         const updated =
@@ -4229,7 +4431,6 @@ export default {
           );
 
         return json({
-
           success:
             true,
 
@@ -4240,9 +4441,7 @@ export default {
             battleResponse(
               updated
             )
-
         });
-
       }
 
 
@@ -4255,14 +4454,20 @@ export default {
         request.method === "GET"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         const result =
@@ -4275,7 +4480,6 @@ export default {
           .all();
 
         return json({
-
           success:
             true,
 
@@ -4288,9 +4492,7 @@ export default {
             ).map(
               customerResponse
             )
-
         });
-
       }
 
 
@@ -4303,14 +4505,20 @@ export default {
         request.method === "GET"
       ) {
 
-        if (!requireAdmin(request)) {
+        if (
+          !await requireAdmin(
+            request,
+            env
+          )
+        ) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Admin authentication required"
           }, 401);
-
         }
 
         const customerId =
@@ -4324,11 +4532,12 @@ export default {
         if (!customerId) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer ID required"
           }, 400);
-
         }
 
         const customer =
@@ -4343,15 +4552,15 @@ export default {
         if (!customer) {
 
           return json({
-            success: false,
+            success:
+              false,
+
             error:
               "Customer not found"
           }, 404);
-
         }
 
         return json({
-
           success:
             true,
 
@@ -4359,9 +4568,7 @@ export default {
             customerResponse(
               customer
             )
-
         });
-
       }
 
 
@@ -4386,7 +4593,6 @@ export default {
             request
           )
         );
-
       }
 
 
@@ -4401,7 +4607,6 @@ export default {
         return env.ASSETS.fetch(
           request
         );
-
       }
 
 
@@ -4409,8 +4614,10 @@ export default {
         "Balaji Ludo King Worker is running.",
         {
           status: 200,
+
           headers: {
             ...corsHeaders,
+
             "Content-Type":
               "text/plain; charset=UTF-8"
           }
@@ -4435,9 +4642,6 @@ export default {
           "Internal Server Error"
 
       }, 500);
-
     }
-
   }
-
 };
