@@ -1,328 +1,2315 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Balaji Ludo King - Admin Dashboard</title>
 
-  <link
-    rel="stylesheet"
-    href="/admin.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
+    :root {
+      --bg: #0d0913;
+      --panel: #171020;
+      --panel2: #21142e;
+      --purple: #7c3aed;
+      --purple2: #a855f7;
+      --border: rgba(255,255,255,.08);
+      --text: #f7f2ff;
+      --muted: #aaa0b7;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --blue: #3b82f6;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(124,58,237,.18), transparent 35%),
+        radial-gradient(circle at bottom left, rgba(168,85,247,.10), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      width: 250px;
+      background: rgba(18,11,27,.97);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+      transition: .25s;
+    }
+
+    .brand {
+      padding: 22px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .crown {
+      font-size: 27px;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 5px;
+      margin-left: 38px;
+    }
+
+    .menu {
+      padding: 14px 10px 30px;
+    }
+
+    .menu-title {
+      color: #776c81;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 13px 11px 7px;
+    }
+
+    .menu button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #bdb4c6;
+      text-align: left;
+      padding: 11px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+      margin-bottom: 2px;
+      transition: .2s;
+      font-size: 13px;
+    }
+
+    .menu button:hover {
+      background: rgba(124,58,237,.12);
+      color: white;
+    }
+
+    .menu button.active {
+      background: linear-gradient(90deg, rgba(124,58,237,.32), rgba(124,58,237,.08));
+      color: white;
+      border-left: 3px solid var(--purple2);
+    }
+
+    .menu-icon {
+      width: 24px;
+      display: inline-block;
+    }
+
+    /* MAIN */
+
+    .main {
+      margin-left: 250px;
+      width: calc(100% - 250px);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 70px;
+      background: rgba(17,10,25,.82);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mobile-menu {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: white;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .admin-badge {
+      font-size: 11px;
+      color: #d8b4fe;
+      margin-top: 3px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .top-btn {
+      border: 1px solid var(--border);
+      background: #1b1225;
+      color: #ddd5e5;
+      padding: 9px 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .top-btn:hover {
+      border-color: rgba(168,85,247,.5);
+      color: white;
+    }
+
+    .logout-btn {
+      color: #fecaca;
+    }
+
+    .content {
+      padding: 24px;
+    }
+
+    /* SECTION */
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-head {
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      font-size: 22px;
+      margin-bottom: 5px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* STATS */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: linear-gradient(145deg, rgba(33,20,46,.98), rgba(22,14,31,.98));
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 18px;
+      min-height: 125px;
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: rgba(124,58,237,.16);
+    }
+
+    .stat-value {
+      font-size: 27px;
+      font-weight: 800;
+      margin-top: 16px;
+    }
+
+    /* CARDS */
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(23,16,32,.94);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 15px 17px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-head h3 {
+      font-size: 14px;
+    }
+
+    .card-body {
+      padding: 17px;
+    }
+
+    /* TABLE */
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th {
+      color: #908697;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      font-size: 12px;
+      color: #d9d2df;
+    }
+
+    tr:hover td {
+      background: rgba(124,58,237,.04);
+    }
+
+    /* BADGES */
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .badge.green {
+      background: rgba(34,197,94,.12);
+      color: #86efac;
+    }
+
+    .badge.red {
+      background: rgba(239,68,68,.12);
+      color: #fca5a5;
+    }
+
+    .badge.yellow {
+      background: rgba(245,158,11,.12);
+      color: #fcd34d;
+    }
+
+    .badge.blue {
+      background: rgba(59,130,246,.12);
+      color: #93c5fd;
+    }
+
+    /* BUTTONS */
+
+    .btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 13px;
+      cursor: pointer;
+      color: white;
+      font-size: 12px;
+      background: #332043;
+    }
+
+    .btn:hover {
+      filter: brightness(1.15);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+    }
+
+    .btn-green {
+      background: #166534;
+    }
+
+    .btn-red {
+      background: #7f1d1d;
+    }
+
+    .btn-small {
+      padding: 6px 9px;
+      font-size: 10px;
+    }
+
+    /* QUICK ACTION */
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .quick {
+      padding: 16px;
+      border: 1px solid var(--border);
+      background: #1b1225;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      text-align: left;
+    }
+
+    .quick:hover {
+      border-color: rgba(168,85,247,.45);
+      transform: translateY(-1px);
+    }
+
+    .quick-icon {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .quick-title {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .quick-text {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    /* EMPTY */
+
+    .empty {
+      text-align: center;
+      padding: 35px 15px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .empty-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    /* SETTINGS */
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting-row:last-child {
+      border-bottom: 0;
+    }
+
+    .setting-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .setting-desc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .input {
+      width: 220px;
+      background: #100b18;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: white;
+      padding: 9px 10px;
+      outline: none;
+    }
+
+    .input:focus {
+      border-color: var(--purple);
+    }
+
+    /* NOTICE */
+
+    .notice {
+      padding: 13px 15px;
+      border-radius: 10px;
+      background: rgba(124,58,237,.09);
+      border: 1px solid rgba(124,58,237,.18);
+      color: #d8b4fe;
+      font-size: 12px;
+      margin-bottom: 17px;
+    }
+
+    /* TOAST */
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #251531;
+      border: 1px solid rgba(168,85,247,.3);
+      color: white;
+      padding: 13px 17px;
+      border-radius: 10px;
+      z-index: 1000;
+      display: none;
+      max-width: 320px;
+      font-size: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.4);
+    }
+
+    .toast.show {
+      display: block;
+      animation: toastIn .2s ease;
+    }
+
+    @keyframes toastIn {
+      from {
+        transform: translateY(10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* LOADING */
+
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 1000px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 15px 0 50px rgba(0,0,0,.5);
+      }
+
+      .main {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .mobile-menu {
+        display: block;
+      }
+
+      .topbar {
+        padding: 0 13px;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .page-title {
+        font-size: 16px;
+      }
+
+      .top-btn.refresh-text {
+        display: none;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+
+      .stat {
+        padding: 13px;
+        min-height: 105px;
+      }
+
+      .stat-value {
+        font-size: 22px;
+        margin-top: 11px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .setting-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .input {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quick-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quick {
+        padding: 12px;
+      }
+    }
+  </style>
 </head>
-
 
 <body>
 
+<div class="app">
 
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
 
-  <header class="admin-header">
+    <div class="brand">
+      <div class="brand-title">
+        <span class="crown">👑</span>
+        <span>Balaji Ludo King</span>
+      </div>
+      <div class="brand-sub">ADMIN CONTROL PANEL</div>
+    </div>
 
-    <div class="header-inner">
+    <nav class="menu">
 
-      <div class="brand">
+      <div class="menu-title">Main</div>
 
-        <div class="brand-icon">
-          👑
-        </div>
+      <button class="nav-btn active" data-section="dashboard">
+        <span class="menu-icon">📊</span> Dashboard
+      </button>
 
-        <div class="brand-text">
+      <button class="nav-btn" data-section="players">
+        <span class="menu-icon">👥</span> Players
+      </button>
 
-          <h1>
-            Balaji Ludo King
-          </h1>
+      <button class="nav-btn" data-section="kyc">
+        <span class="menu-icon">🪪</span> KYC Management
+      </button>
 
-          <p>
-            Admin Dashboard
-          </p>
+      <div class="menu-title">Money</div>
 
+      <button class="nav-btn" data-section="wallet">
+        <span class="menu-icon">💰</span> Wallet / Ledger
+      </button>
+
+      <button class="nav-btn" data-section="deposits">
+        <span class="menu-icon">➕</span> Deposits
+      </button>
+
+      <button class="nav-btn" data-section="withdrawals">
+        <span class="menu-icon">💸</span> Withdrawals
+      </button>
+
+      <div class="menu-title">Game</div>
+
+      <button class="nav-btn" data-section="battles">
+        <span class="menu-icon">⚔️</span> Battles
+      </button>
+
+      <button class="nav-btn" data-section="rooms">
+        <span class="menu-icon">🚪</span> Rooms
+      </button>
+
+      <button class="nav-btn" data-section="referrals">
+        <span class="menu-icon">🎁</span> Referrals
+      </button>
+
+      <button class="nav-btn" data-section="commission">
+        <span class="menu-icon">🪙</span> Commission
+      </button>
+
+      <div class="menu-title">Management</div>
+
+      <button class="nav-btn" data-section="support">
+        <span class="menu-icon">🎧</span> Support Tickets
+      </button>
+
+      <button class="nav-btn" data-section="notifications">
+        <span class="menu-icon">🔔</span> Notifications
+      </button>
+
+      <button class="nav-btn" data-section="reports">
+        <span class="menu-icon">📈</span> Reports & Analytics
+      </button>
+
+      <div class="menu-title">System</div>
+
+      <button class="nav-btn" data-section="settings">
+        <span class="menu-icon">⚙️</span> Settings
+      </button>
+
+      <button class="nav-btn" data-section="rules">
+        <span class="menu-icon">🎮</span> Battle/Game Rules
+      </button>
+
+      <button class="nav-btn" data-section="payment">
+        <span class="menu-icon">🏦</span> Payment Settings
+      </button>
+
+      <button class="nav-btn" data-section="audit">
+        <span class="menu-icon">📝</span> Audit Logs
+      </button>
+
+      <button class="nav-btn" data-section="roles">
+        <span class="menu-icon">🔐</span> Roles & Permissions
+      </button>
+
+      <button class="nav-btn" data-section="errors">
+        <span class="menu-icon">🚨</span> System/Error Logs
+      </button>
+
+      <button class="nav-btn" data-section="safety">
+        <span class="menu-icon">🛡️</span> Database Safety
+      </button>
+
+    </nav>
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="top-left">
+
+        <button class="mobile-menu" id="mobileMenu">
+          ☰
+        </button>
+
+        <div>
+          <div class="page-title" id="pageTitle">
+            Dashboard
+          </div>
+          <div class="admin-badge" id="adminBadge">
+            Checking secure session...
+          </div>
         </div>
 
       </div>
 
+      <div class="top-actions">
 
-      <div class="header-actions">
-
-        <button
-          type="button"
-          id="refreshBtn"
-          class="header-btn">
-
+        <button class="top-btn refresh-text" id="refreshBtn">
           ↻ Refresh
-
         </button>
 
-
-        <button
-          type="button"
-          id="logoutBtn"
-          class="header-btn logout-btn">
-
+        <button class="top-btn logout-btn" id="logoutBtn">
           Logout
-
         </button>
 
       </div>
 
+    </header>
+
+
+    <div class="content">
+
+
+      <!-- DASHBOARD -->
+      <section class="section active" id="section-dashboard">
+
+        <div class="section-head">
+          <h2>Dashboard</h2>
+          <p>Balaji Ludo King administration overview.</p>
+        </div>
+
+        <div class="notice">
+          🔐 Secure admin session is active. All administrative actions should be performed from this panel.
+        </div>
+
+        <div class="stats">
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Total Players</span>
+              <span class="stat-icon">👥</span>
+            </div>
+            <div class="stat-value" id="totalPlayers">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Pending KYC</span>
+              <span class="stat-icon">🪪</span>
+            </div>
+            <div class="stat-value" id="pendingKyc">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Active Battles</span>
+              <span class="stat-icon">⚔️</span>
+            </div>
+            <div class="stat-value" id="activeBattles">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Active Rooms</span>
+              <span class="stat-icon">🚪</span>
+            </div>
+            <div class="stat-value" id="activeRooms">0</div>
+          </div>
+
+        </div>
+
+
+        <div class="grid">
+
+          <div class="card">
+
+            <div class="card-head">
+              <h3>Quick Actions</h3>
+            </div>
+
+            <div class="card-body">
+
+              <div class="quick-grid">
+
+                <button class="quick" onclick="openSection('players')">
+                  <div class="quick-icon">👥</div>
+                  <div class="quick-title">Players</div>
+                  <div class="quick-text">Manage customers</div>
+                </button>
+
+                <button class="quick" onclick="openSection('kyc')">
+                  <div class="quick-icon">🪪</div>
+                  <div class="quick-title">KYC</div>
+                  <div class="quick-text">Review verification</div>
+                </button>
+
+                <button class="quick" onclick="openSection('withdrawals')">
+                  <div class="quick-icon">💸</div>
+                  <div class="quick-title">Withdrawals</div>
+                  <div class="quick-text">Manage withdrawal queue</div>
+                </button>
+
+                <button class="quick" onclick="openSection('battles')">
+                  <div class="quick-icon">⚔️</div>
+                  <div class="quick-title">Battles</div>
+                  <div class="quick-text">Monitor battles</div>
+                </button>
+
+              </div>
+
+            </div>
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-head">
+              <h3>System Status</h3>
+            </div>
+
+            <div class="card-body">
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-title">Admin Session</div>
+                  <div class="setting-desc">Authentication status</div>
+                </div>
+                <span class="badge green" id="sessionStatus">ACTIVE</span>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-title">Worker API</div>
+                  <div class="setting-desc">Cloudflare Worker connection</div>
+                </div>
+                <span class="badge green" id="apiStatus">ONLINE</span>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-title">Database</div>
+                  <div class="setting-desc">D1 application database</div>
+                </div>
+                <span class="badge green">CONNECTED</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- PLAYERS -->
+      <section class="section" id="section-players">
+
+        <div class="section-head">
+          <h2>Players</h2>
+          <p>Customer account management.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-head">
+            <h3>Player Management</h3>
+            <button class="btn btn-primary" onclick="loadPlayers()">
+              ↻ Load
+            </button>
+          </div>
+
+          <div id="playersContent">
+            <div class="empty">
+              <div class="empty-icon">👥</div>
+              Player data will appear here when the customer API is connected.
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- KYC -->
+      <section class="section" id="section-kyc">
+
+        <div class="section-head">
+          <h2>KYC Management</h2>
+          <p>Review player verification submissions.</p>
+        </div>
+
+        <div class="stats">
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Pending</span>
+              <span class="stat-icon">⏳</span>
+            </div>
+            <div class="stat-value" id="kycPendingCount">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Approved</span>
+              <span class="stat-icon">✓</span>
+            </div>
+            <div class="stat-value" id="kycApprovedCount">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Rejected</span>
+              <span class="stat-icon">✕</span>
+            </div>
+            <div class="stat-value" id="kycRejectedCount">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Total</span>
+              <span class="stat-icon">📋</span>
+            </div>
+            <div class="stat-value" id="kycTotalCount">0</div>
+          </div>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="card-head">
+            <h3>Pending KYC</h3>
+
+            <button class="btn btn-primary" onclick="loadKyc()">
+              ↻ Refresh
+            </button>
+          </div>
+
+          <div id="kycContent">
+            <div class="loading">
+              Loading KYC records...
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- WALLET -->
+      <section class="section" id="section-wallet">
+
+        <div class="section-head">
+          <h2>Wallet / Ledger</h2>
+          <p>Player balance and transaction ledger management.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="empty">
+              <div class="empty-icon">💰</div>
+              Wallet ledger module is ready for the transaction API.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- DEPOSITS -->
+      <section class="section" id="section-deposits">
+
+        <div class="section-head">
+          <h2>Deposits / Add Money</h2>
+          <p>Monitor player deposits and payment confirmations.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="empty">
+              <div class="empty-icon">➕</div>
+              Deposit records will appear here when the payment API is connected.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- WITHDRAWALS -->
+      <section class="section" id="section-withdrawals">
+
+        <div class="section-head">
+          <h2>Withdrawals</h2>
+          <p>Review and manage withdrawal requests.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="empty">
+              <div class="empty-icon">💸</div>
+              Withdrawal queue is ready for the withdrawal API.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- BATTLES -->
+      <section class="section" id="section-battles">
+
+        <div class="section-head">
+          <h2>Battles</h2>
+          <p>Monitor Balaji Ludo King battles.</p>
+        </div>
+
+        <div class="stats">
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Active Battles</span>
+              <span class="stat-icon">⚔️</span>
+            </div>
+            <div class="stat-value">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Waiting</span>
+              <span class="stat-icon">⏳</span>
+            </div>
+            <div class="stat-value">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Completed</span>
+              <span class="stat-icon">✓</span>
+            </div>
+            <div class="stat-value">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Today's Battles</span>
+              <span class="stat-icon">📅</span>
+            </div>
+            <div class="stat-value">0</div>
+          </div>
+
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="empty">
+              <div class="empty-icon">⚔️</div>
+              Battle management interface is ready.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ROOMS -->
+      <section class="section" id="section-rooms">
+
+        <div class="section-head">
+          <h2>Rooms</h2>
+          <p>Monitor room codes and room status.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="empty">
+              <div class="empty-icon">🚪</div>
+              Live room monitoring is ready.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- REFERRALS -->
+      <section class="section" id="section-referrals">
+
+        <div class="section-head">
+          <h2>Referrals</h2>
+          <p>Referral users and commission tracking.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Referral Commission</div>
+                <div class="setting-desc">
+                  Current player referral percentage
+                </div>
+              </div>
+
+              <strong>3%</strong>
+            </div>
+
+            <div class="empty">
+              <div class="empty-icon">🎁</div>
+              Referral records will appear here.
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- COMMISSION -->
+      <section class="section" id="section-commission">
+
+        <div class="section-head">
+          <h2>Commission Control</h2>
+          <p>Battle commission configuration.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Below ₹250</div>
+                <div class="setting-desc">Commission rate</div>
+              </div>
+
+              <strong>10%</strong>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">₹250 – ₹500</div>
+                <div class="setting-desc">Fixed commission</div>
+              </div>
+
+              <strong>₹25</strong>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Above ₹500</div>
+                <div class="setting-desc">Commission rate</div>
+              </div>
+
+              <strong>5%</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- SUPPORT -->
+      <section class="section" id="section-support">
+
+        <div class="section-head">
+          <h2>Support Tickets</h2>
+          <p>Customer support management.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="empty">
+              <div class="empty-icon">🎧</div>
+              Support ticket management will connect to the support API.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- NOTIFICATIONS -->
+      <section class="section" id="section-notifications">
+
+        <div class="section-head">
+          <h2>Notifications</h2>
+          <p>Manage system announcements and player notifications.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-head">
+            <h3>Create Notification</h3>
+          </div>
+
+          <div class="card-body">
+
+            <div style="display:grid;gap:12px">
+
+              <input
+                class="input"
+                id="notificationTitle"
+                placeholder="Notification title"
+              >
+
+              <textarea
+                class="input"
+                id="notificationMessage"
+                placeholder="Notification message"
+                style="width:100%;min-height:110px;resize:vertical"
+              ></textarea>
+
+              <button
+                class="btn btn-primary"
+                style="width:max-content"
+                onclick="showToast('Notification API will be connected here.')"
+              >
+                Send Notification
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- REPORTS -->
+      <section class="section" id="section-reports">
+
+        <div class="section-head">
+          <h2>Reports & Analytics</h2>
+          <p>Platform performance and financial reporting.</p>
+        </div>
+
+        <div class="stats">
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Today's Revenue</span>
+              <span class="stat-icon">₹</span>
+            </div>
+            <div class="stat-value">₹0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Deposits</span>
+              <span class="stat-icon">➕</span>
+            </div>
+            <div class="stat-value">₹0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Withdrawals</span>
+              <span class="stat-icon">💸</span>
+            </div>
+            <div class="stat-value">₹0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-top">
+              <span class="stat-label">Commission</span>
+              <span class="stat-icon">🪙</span>
+            </div>
+            <div class="stat-value">₹0</div>
+          </div>
+
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="empty">
+              <div class="empty-icon">📈</div>
+              Analytics charts will be connected after the reporting APIs are added.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- SETTINGS -->
+      <section class="section" id="section-settings">
+
+        <div class="section-head">
+          <h2>Settings</h2>
+          <p>General administration settings.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Platform Name</div>
+                <div class="setting-desc">Application display name</div>
+              </div>
+
+              <input
+                class="input"
+                value="Balaji Ludo King"
+                readonly
+              >
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Admin Session</div>
+                <div class="setting-desc">Current secure session duration</div>
+              </div>
+
+              <strong>6 Hours</strong>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Login Protection</div>
+                <div class="setting-desc">Maximum failed attempts</div>
+              </div>
+
+              <strong>5 Attempts / 15 Minutes</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- RULES -->
+      <section class="section" id="section-rules">
+
+        <div class="section-head">
+          <h2>Battle / Game Rules</h2>
+          <p>Current Balaji Ludo King game configuration.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Minimum Battle Entry</div>
+                <div class="setting-desc">Minimum allowed battle amount</div>
+              </div>
+              <strong>₹50</strong>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Maximum Battle Entry</div>
+                <div class="setting-desc">Maximum allowed battle amount</div>
+              </div>
+              <strong>₹10,000</strong>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Room Waiting Time</div>
+                <div class="setting-desc">Maximum waiting time</div>
+              </div>
+              <strong>5 Minutes</strong>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Result Window</div>
+                <div class="setting-desc">Time allowed for result</div>
+              </div>
+              <strong>15 Minutes</strong>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Room Code</div>
+                <div class="setting-desc">Player room code format</div>
+              </div>
+              <strong>8 Digits</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- PAYMENT -->
+      <section class="section" id="section-payment">
+
+        <div class="section-head">
+          <h2>Payment Settings</h2>
+          <p>Payment configuration area.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="notice">
+              ⚠️ Payment credentials should never be placed directly inside this HTML file.
+              Use Cloudflare Secrets/Variables for sensitive credentials.
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Payment System</div>
+                <div class="setting-desc">Current payment integration</div>
+              </div>
+              <span class="badge yellow">CONFIGURATION REQUIRED</span>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">UPI / QR</div>
+                <div class="setting-desc">Add Money QR configuration</div>
+              </div>
+              <span class="badge yellow">PENDING</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- AUDIT -->
+      <section class="section" id="section-audit">
+
+        <div class="section-head">
+          <h2>Audit Logs</h2>
+          <p>Administrative activity and security history.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="empty">
+              <div class="empty-icon">📝</div>
+              Admin activity logs are stored by the secure Worker API.
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ROLES -->
+      <section class="section" id="section-roles">
+
+        <div class="section-head">
+          <h2>Admin Roles & Permissions</h2>
+          <p>Administrator access control.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Super Admin</div>
+                <div class="setting-desc">Full platform access</div>
+              </div>
+
+              <span class="badge green">ACTIVE</span>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Admin Management</div>
+                <div class="setting-desc">Role management module</div>
+              </div>
+
+              <span class="badge yellow">READY</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ERRORS -->
+      <section class="section" id="section-errors">
+
+        <div class="section-head">
+          <h2>System / Error Logs</h2>
+          <p>Monitor application and Worker errors.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="empty">
+              <div class="empty-icon">🚨</div>
+              No error log API is connected yet.
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- SAFETY -->
+      <section class="section" id="section-safety">
+
+        <div class="section-head">
+          <h2>Database / System Safety</h2>
+          <p>System health and safety controls.</p>
+        </div>
+
+        <div class="card">
+
+          <div class="card-body">
+
+            <div class="notice">
+              🛡️ Database operations should be performed through authenticated Worker endpoints.
+              Direct database credentials must never be exposed in the browser.
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Cloudflare Worker</div>
+                <div class="setting-desc">
+                  balaji-ludo-king
+                </div>
+              </div>
+
+              <span class="badge green">ONLINE</span>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">D1 Database</div>
+                <div class="setting-desc">
+                  ludo_db
+                </div>
+              </div>
+
+              <span class="badge green">CONNECTED</span>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Admin Authentication</div>
+                <div class="setting-desc">
+                  Cookie-based secure session
+                </div>
+              </div>
+
+              <span class="badge green">ENABLED</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
     </div>
-
-  </header>
-
-
-
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
-
-  <main class="admin-container">
-
-
-    <!-- ===================================================
-         PAGE TITLE
-    ==================================================== -->
-
-    <div class="page-title">
-
-      <h2>
-        Dashboard
-      </h2>
-
-      <p>
-        Manage KYC submissions and review player verification.
-      </p>
-
-    </div>
-
-
-
-    <!-- ===================================================
-         MESSAGE
-    ==================================================== -->
-
-    <div
-      id="message"
-      class="message">
-    </div>
-
-
-
-    <!-- ===================================================
-         STATISTICS
-    ==================================================== -->
-
-    <section class="stats-grid">
-
-
-      <!-- Pending -->
-
-      <div class="stat-card">
-
-        <div class="stat-top">
-
-          <div class="stat-title">
-            Pending KYC
-          </div>
-
-          <div class="stat-icon">
-            ⏳
-          </div>
-
-        </div>
-
-        <div
-          id="pendingCount"
-          class="stat-number">
-
-          0
-
-        </div>
-
-      </div>
-
-
-
-      <!-- Approved -->
-
-      <div class="stat-card">
-
-        <div class="stat-top">
-
-          <div class="stat-title">
-            Approved
-          </div>
-
-          <div class="stat-icon">
-            ✓
-          </div>
-
-        </div>
-
-        <div
-          id="approvedCount"
-          class="stat-number">
-
-          0
-
-        </div>
-
-      </div>
-
-
-
-      <!-- Rejected -->
-
-      <div class="stat-card">
-
-        <div class="stat-top">
-
-          <div class="stat-title">
-            Rejected
-          </div>
-
-          <div class="stat-icon">
-            ✕
-          </div>
-
-        </div>
-
-        <div
-          id="rejectedCount"
-          class="stat-number">
-
-          0
-
-        </div>
-
-      </div>
-
-
-
-      <!-- Total -->
-
-      <div class="stat-card">
-
-        <div class="stat-top">
-
-          <div class="stat-title">
-            Total KYC
-          </div>
-
-          <div class="stat-icon">
-            📋
-          </div>
-
-        </div>
-
-        <div
-          id="totalCount"
-          class="stat-number">
-
-          0
-
-        </div>
-
-      </div>
-
-
-    </section>
-
-
-
-    <!-- ===================================================
-         PENDING KYC
-    ==================================================== -->
-
-    <section class="section">
-
-
-      <div class="section-header">
-
-        <h2>
-          Pending KYC
-        </h2>
-
-        <span
-          id="pendingBadge"
-          class="section-badge">
-
-          Review
-
-        </span>
-
-      </div>
-
-
-      <div
-        id="pendingList"
-        class="kyc-list">
-
-        <div class="loading">
-          Loading pending KYC...
-        </div>
-
-      </div>
-
-
-    </section>
-
-
-
-    <!-- ===================================================
-         ALL KYC
-    ==================================================== -->
-
-    <section class="section">
-
-
-      <div class="section-header">
-
-        <h2>
-          All KYC Records
-        </h2>
-
-        <span class="section-badge">
-
-          History
-
-        </span>
-
-      </div>
-
-
-      <div
-        id="allList"
-        class="kyc-list">
-
-        <div class="loading">
-          Loading KYC records...
-        </div>
-
-      </div>
-
-
-    </section>
-
-
   </main>
 
+</div>
 
 
-  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->
+<div class="toast" id="toast"></div>
 
-  <script src="/admin.js"></script>
 
+<script>
+
+  /* =========================================================
+     BALAJI LUDO KING
+     ADMIN DASHBOARD
+  ========================================================= */
+
+  const state = {
+    admin: null,
+    expiresAt: null,
+    timer: null
+  };
+
+
+  /* =========================================================
+     API HELPER
+  ========================================================= */
+
+  async function api(url, options = {}) {
+
+    const config = {
+      credentials: "include",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      }
+    };
+
+    const response = await fetch(url, config);
+
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch (e) {
+      data = {};
+    }
+
+    if (!response.ok) {
+
+      const message =
+        data.message ||
+        data.error ||
+        `Request failed (${response.status})`;
+
+      throw new Error(message);
+    }
+
+    return data;
+  }
+
+
+  /* =========================================================
+     TOAST
+  ========================================================= */
+
+  function showToast(message) {
+
+    const toast = document.getElementById("toast");
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(showToast.timer);
+
+    showToast.timer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
+  }
+
+
+  /* =========================================================
+     ADMIN SESSION
+  ========================================================= */
+
+  async function checkAdminSession() {
+
+    try {
+
+      const result = await api("/api/admin/me");
+
+      if (!result || result.ok === false) {
+        throw new Error("Admin authentication required");
+      }
+
+      const admin =
+        result.data ||
+        result.admin ||
+        result;
+
+      state.admin = admin;
+
+      document.getElementById("adminBadge").textContent =
+        admin.admin_id
+          ? `Signed in as ${admin.admin_id}`
+          : "Secure admin session active";
+
+      document.getElementById("sessionStatus").textContent =
+        "ACTIVE";
+
+      if (admin.expires_at) {
+        state.expiresAt = admin.expires_at;
+      }
+
+      startSessionTimer();
+
+      loadKyc();
+
+    } catch (error) {
+
+      document.getElementById("adminBadge").textContent =
+        "Authentication required";
+
+      document.getElementById("sessionStatus").textContent =
+        "EXPIRED";
+
+      document.getElementById("sessionStatus").className =
+        "badge red";
+
+      showToast("Admin session expired. Redirecting to login...");
+
+      setTimeout(() => {
+        window.location.href = "/admin-login.html";
+      }, 1000);
+    }
+  }
+
+
+  /* =========================================================
+     SESSION TIMER
+  ========================================================= */
+
+  function startSessionTimer() {
+
+    clearInterval(state.timer);
+
+    state.timer = setInterval(() => {
+
+      if (!state.expiresAt) return;
+
+      const expiry =
+        new Date(state.expiresAt).getTime();
+
+      const remaining =
+        expiry - Date.now();
+
+      if (remaining <= 0) {
+
+        clearInterval(state.timer);
+
+        showToast("Admin session expired.");
+
+        setTimeout(() => {
+          window.location.href = "/admin-login.html";
+        }, 700);
+
+      }
+
+    }, 10000);
+  }
+
+
+  /* =========================================================
+     LOGOUT
+  ========================================================= */
+
+  async function logout() {
+
+    try {
+
+      await api("/api/admin/logout", {
+        method: "POST"
+      });
+
+    } catch (error) {
+      console.warn(error);
+    }
+
+    window.location.href = "/admin-login.html";
+  }
+
+
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
+
+  const pageNames = {
+
+    dashboard: "Dashboard",
+    players: "Players",
+    kyc: "KYC Management",
+    wallet: "Wallet / Ledger",
+    deposits: "Deposits / Add Money",
+    withdrawals: "Withdrawals",
+    battles: "Battles",
+    rooms: "Rooms",
+    referrals: "Referrals",
+    commission: "Commission Control",
+    support: "Support Tickets",
+    notifications: "Notifications",
+    reports: "Reports & Analytics",
+    settings: "Settings",
+    rules: "Battle / Game Rules",
+    payment: "Payment Settings",
+    audit: "Audit Logs",
+    roles: "Admin Roles & Permissions",
+    errors: "System / Error Logs",
+    safety: "Database / System Safety"
+
+  };
+
+
+  function openSection(name) {
+
+    document
+      .querySelectorAll(".section")
+      .forEach(section => {
+        section.classList.remove("active");
+      });
+
+    document
+      .querySelectorAll(".nav-btn")
+      .forEach(button => {
+        button.classList.remove("active");
+      });
+
+    const section =
+      document.getElementById(`section-${name}`);
+
+    if (section) {
+      section.classList.add("active");
+    }
+
+    const button =
+      document.querySelector(
+        `.nav-btn[data-section="${name}"]`
+      );
+
+    if (button) {
+      button.classList.add("active");
+    }
+
+    document.getElementById("pageTitle").textContent =
+      pageNames[name] || "Admin Dashboard";
+
+    document
+      .getElementById("sidebar")
+      .classList.remove("open");
+
+    if (name === "kyc") {
+      loadKyc();
+    }
+  }
+
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        openSection(
+          button.dataset.section
+        );
+
+      });
+
+    });
+
+
+  /* =========================================================
+     KYC
+  ========================================================= */
+
+  async function loadKyc() {
+
+    const container =
+      document.getElementById("kycContent");
+
+    if (!container) return;
+
+    container.innerHTML =
+      `<div class="loading">Loading KYC records...</div>`;
+
+    try {
+
+      const result =
+        await api("/api/admin/kyc/pending");
+
+      const records =
+        result.data ||
+        result.records ||
+        result.kyc ||
+        [];
+
+      const list =
+        Array.isArray(records)
+          ? records
+          : [];
+
+      updateKycStats(list);
+
+      if (!list.length) {
+
+        container.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">✓</div>
+            No pending KYC submissions.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      let html = `
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+
+      list.forEach(item => {
+
+        const id =
+          item.customer_id ||
+          item.customerId ||
+          item.id ||
+          "-";
+
+        const name =
+          item.name ||
+          item.full_name ||
+          item.customer_name ||
+          "Player";
+
+        const status =
+          item.status ||
+          item.kyc_status ||
+          "PENDING";
+
+        const date =
+          item.created_at ||
+          item.submitted_at ||
+          "-";
+
+
+        html += `
+          <tr>
+
+            <td>${escapeHtml(id)}</td>
+
+            <td>${escapeHtml(name)}</td>
+
+            <td>
+              <span class="badge yellow">
+                ${escapeHtml(status)}
+              </span>
+            </td>
+
+            <td>${escapeHtml(date)}</td>
+
+            <td>
+              <button
+                class="btn btn-green btn-small"
+                onclick="approveKyc('${escapeAttr(id)}')"
+              >
+                Approve
+              </button>
+
+              <button
+                class="btn btn-red btn-small"
+                onclick="rejectKyc('${escapeAttr(id)}')"
+              >
+                Reject
+              </button>
+            </td>
+
+          </tr>
+        `;
+
+      });
+
+
+      html += `
+          </tbody>
+        </table>
+        </div>
+      `;
+
+      container.innerHTML = html;
+
+    } catch (error) {
+
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🔐</div>
+          ${escapeHtml(error.message)}
+        </div>
+      `;
+
+    }
+  }
+
+
+  function updateKycStats(records) {
+
+    const pending =
+      records.filter(item => {
+
+        const status =
+          String(
+            item.status ||
+            item.kyc_status ||
+            "PENDING"
+          ).toUpperCase();
+
+        return status === "PENDING";
+
+      }).length;
+
+
+    const pendingEl =
+      document.getElementById("kycPendingCount");
+
+    if (pendingEl) {
+      pendingEl.textContent = pending;
+    }
+
+    const dashboardPending =
+      document.getElementById("pendingKyc");
+
+    if (dashboardPending) {
+      dashboardPending.textContent = pending;
+    }
+
+    /*
+      These values are intentionally only based on
+      returned records. Full all-KYC statistics will
+      connect when the all-record API is added.
+    */
+
+    const total =
+      document.getElementById("kycTotalCount");
+
+    if (total) {
+      total.textContent = records.length;
+    }
+
+  }
+
+
+  async function approveKyc(customerId) {
+
+    if (!confirm(
+      `Approve KYC for ${customerId}?`
+    )) {
+      return;
+    }
+
+    try {
+
+      await api("/api/admin/kyc/approve", {
+        method: "POST",
+        body: JSON.stringify({
+          customer_id: customerId
+        })
+      });
+
+      showToast("KYC approved successfully.");
+
+      loadKyc();
+
+    } catch (error) {
+
+      showToast(
+        "KYC approval failed: " +
+        error.message
+      );
+
+    }
+  }
+
+
+  async function rejectKyc(customerId) {
+
+    const reason =
+      prompt(
+        "Enter rejection reason:",
+        "KYC documents could not be verified."
+      );
+
+    if (reason === null) return;
+
+    try {
+
+      await api("/api/admin/kyc/reject", {
+        method: "POST",
+        body: JSON.stringify({
+          customer_id: customerId,
+          reason
+        })
+      });
+
+      showToast("KYC rejected.");
+
+      loadKyc();
+
+    } catch (error) {
+
+      showToast(
+        "KYC rejection failed: " +
+        error.message
+      );
+
+    }
+  }
+
+
+  /* =========================================================
+     PLAYERS
+  ========================================================= */
+
+  async function loadPlayers() {
+
+    const container =
+      document.getElementById("playersContent");
+
+    container.innerHTML =
+      `<div class="loading">Loading players...</div>`;
+
+    /*
+      We deliberately do not invent a player API endpoint.
+      Once the Worker player-admin endpoint is added,
+      this section can connect without changing the UI.
+    */
+
+    setTimeout(() => {
+
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">👥</div>
+          Player admin API is not connected yet.
+        </div>
+      `;
+
+    }, 300);
+
+  }
+
+
+  /* =========================================================
+     REFRESH
+  ========================================================= */
+
+  document
+    .getElementById("refreshBtn")
+    .addEventListener("click", async () => {
+
+      showToast("Refreshing dashboard...");
+
+      await checkAdminSession();
+
+      const active =
+        document.querySelector(
+          ".section.active"
+        );
+
+      if (
+        active &&
+        active.id === "section-kyc"
+      ) {
+        loadKyc();
+      }
+
+    });
+
+
+  /* =========================================================
+     MOBILE MENU
+  ========================================================= */
+
+  document
+    .getElementById("mobileMenu")
+    .addEventListener("click", () => {
+
+      document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+    });
+
+
+  /* =========================================================
+     LOGOUT BUTTON
+  ========================================================= */
+
+  document
+    .getElementById("logoutBtn")
+    .addEventListener("click", () => {
+
+      if (
+        confirm(
+          "Logout from Balaji Ludo King Admin?"
+        )
+      ) {
+        logout();
+      }
+
+    });
+
+
+  /* =========================================================
+     ESCAPE HELPERS
+  ========================================================= */
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
+  function escapeAttr(value) {
+
+    return String(value)
+      .replaceAll("\\", "\\\\")
+      .replaceAll("'", "\\'");
+
+  }
+
+
+  /* =========================================================
+     START
+  ========================================================= */
+
+  checkAdminSession();
+
+</script>
 
 </body>
-
 </html>
