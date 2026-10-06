@@ -1,67 +1,37 @@
 /* =========================================================
    BALAJI LUDO KING
    ADMIN DASHBOARD JAVASCRIPT
-   D1 SESSION + SECURE COOKIE AUTH
+   SECURE ADMIN SESSION VERSION
 ========================================================= */
 
+const pendingList = document.getElementById("pendingList");
+const allList = document.getElementById("allList");
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+const pendingCount = document.getElementById("pendingCount");
+const approvedCount = document.getElementById("approvedCount");
+const rejectedCount = document.getElementById("rejectedCount");
+const totalCount = document.getElementById("totalCount");
 
-const pendingList =
-  document.getElementById("pendingList");
-
-const allList =
-  document.getElementById("allList");
-
-const pendingCount =
-  document.getElementById("pendingCount");
-
-const approvedCount =
-  document.getElementById("approvedCount");
-
-const rejectedCount =
-  document.getElementById("rejectedCount");
-
-const totalCount =
-  document.getElementById("totalCount");
-
-const messageBox =
-  document.getElementById("message");
-
-const refreshBtn =
-  document.getElementById("refreshBtn");
-
-const logoutBtn =
-  document.getElementById("logoutBtn");
+const messageBox = document.getElementById("message");
+const refreshBtn = document.getElementById("refreshBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
 
 /* =========================================================
    MESSAGE
 ========================================================= */
 
-function showMessage(
-  text,
-  type = "info"
-) {
+function showMessage(text, type = "info") {
 
   if (!messageBox) return;
 
   messageBox.textContent = text;
-
-  messageBox.className =
-    `message ${type}`;
+  messageBox.className = `message ${type}`;
 
   setTimeout(() => {
-
     messageBox.textContent = "";
-
-    messageBox.className =
-      "message";
-
+    messageBox.className = "message";
   }, 4000);
-
 }
 
 
@@ -71,10 +41,7 @@ function showMessage(
 
 function escapeHTML(value) {
 
-  if (
-    value === null ||
-    value === undefined
-  ) {
+  if (value === null || value === undefined) {
     return "";
   }
 
@@ -84,7 +51,6 @@ function escapeHTML(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-
 }
 
 
@@ -98,18 +64,13 @@ function maskDocumentNumber(value) {
     return "—";
   }
 
-  const text =
-    String(value);
+  const text = String(value);
 
   if (text.length <= 4) {
     return "****";
   }
 
-  return (
-    "**** **** " +
-    text.slice(-4)
-  );
-
+  return "**** **** " + text.slice(-4);
 }
 
 
@@ -125,34 +86,24 @@ function formatDate(value) {
 
   try {
 
-    const date =
-      new Date(value);
+    const date = new Date(value);
 
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
+    if (Number.isNaN(date.getTime())) {
       return value;
     }
 
-    return date.toLocaleString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      }
-    );
+    return date.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
   } catch {
 
     return value;
-
   }
-
 }
 
 
@@ -164,120 +115,100 @@ async function checkAdminSession() {
 
   try {
 
-    const response =
-      await fetch(
-        "/api/admin/session",
-        {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store",
-          headers: {
-            "Accept":
-              "application/json",
-            "Cache-Control":
-              "no-cache"
-          }
+    const response = await fetch(
+      "/api/admin/session",
+      {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache"
         }
-      );
-
+      }
+    );
 
     let data = {};
 
-
     try {
-
-      data =
-        await response.json();
-
+      data = await response.json();
     } catch {
-
       data = {};
-
     }
-
 
     if (
       !response.ok ||
+      data.success !== true ||
       data.authenticated !== true
     ) {
-
-      console.warn(
-        "Admin session invalid:",
-        data
-      );
 
       window.location.replace(
         "/admin-login.html"
       );
 
       return false;
-
     }
 
-
     return true;
-
 
   } catch (error) {
 
     console.error(
-      "Admin session check failed:",
+      "Admin session check error:",
       error
     );
 
-    showMessage(
-      "Unable to verify admin session.",
-      "error"
+    window.location.replace(
+      "/admin-login.html"
     );
 
     return false;
-
   }
-
 }
 
 
 /* =========================================================
-   AUTHENTICATED FETCH
+   SECURE ADMIN FETCH
 ========================================================= */
 
-async function adminFetch(
-  url,
-  options = {}
-) {
+async function adminFetch(url, options = {}) {
+
+  const requestOptions = {
+    ...options,
+
+    credentials: "include",
+
+    cache: "no-store",
+
+    headers: {
+      ...(options.headers || {})
+    }
+  };
+
 
   const response =
     await fetch(
       url,
-      {
-        ...options,
-
-        credentials:
-          "include",
-
-        cache:
-          "no-store"
-      }
+      requestOptions
     );
 
 
-  if (
-    response.status === 401
-  ) {
+  /*
+     Session expired / invalid
+  */
+
+  if (response.status === 401) {
 
     window.location.replace(
       "/admin-login.html"
     );
 
     throw new Error(
-      "Admin session expired"
+      "Admin session expired. Please login again."
     );
-
   }
 
 
   return response;
-
 }
 
 
@@ -287,17 +218,13 @@ async function adminFetch(
 
 async function loadPendingKYC() {
 
-  if (!pendingList) {
-    return;
-  }
-
+  if (!pendingList) return;
 
   pendingList.innerHTML = `
     <div class="loading">
       Loading pending KYC...
     </div>
   `;
-
 
   try {
 
@@ -332,10 +259,8 @@ async function loadPendingKYC() {
 
 
     if (pendingCount) {
-
       pendingCount.textContent =
         records.length;
-
     }
 
 
@@ -348,22 +273,19 @@ async function loadPendingKYC() {
       `;
 
       return;
-
     }
 
 
     pendingList.innerHTML = "";
 
 
-    records.forEach(
-      record => {
+    records.forEach(record => {
 
-        pendingList.appendChild(
-          createPendingCard(record)
-        );
+      pendingList.appendChild(
+        createPendingCard(record)
+      );
 
-      }
-    );
+    });
 
 
   } catch (error) {
@@ -376,9 +298,7 @@ async function loadPendingKYC() {
 
     pendingList.innerHTML = `
       <div class="error">
-        ${escapeHTML(
-          error.message
-        )}
+        ${escapeHTML(error.message)}
       </div>
     `;
 
@@ -387,9 +307,7 @@ async function loadPendingKYC() {
       error.message,
       "error"
     );
-
   }
-
 }
 
 
@@ -397,15 +315,10 @@ async function loadPendingKYC() {
    CREATE PENDING KYC CARD
 ========================================================= */
 
-function createPendingCard(
-  record
-) {
+function createPendingCard(record) {
 
   const card =
-    document.createElement(
-      "div"
-    );
-
+    document.createElement("div");
 
   card.className =
     "kyc-card";
@@ -430,7 +343,6 @@ function createPendingCard(
 
       </div>
 
-
       <div class="customer-id">
 
         Customer ID:
@@ -447,51 +359,40 @@ function createPendingCard(
     <div class="kyc-details">
 
       <div class="detail">
-
         <span>Mobile</span>
-
         <strong>
           ${escapeHTML(
             record.mobile ||
             "—"
           )}
         </strong>
-
       </div>
 
 
       <div class="detail">
-
         <span>Date of Birth</span>
-
         <strong>
           ${escapeHTML(
             record.dob ||
             "—"
           )}
         </strong>
-
       </div>
 
 
       <div class="detail">
-
         <span>Document</span>
-
         <strong>
           ${escapeHTML(
             record.document_type ||
             "—"
           )}
         </strong>
-
       </div>
 
 
       <div class="detail">
-
         <span>Document Number</span>
-
         <strong>
           ${escapeHTML(
             maskDocumentNumber(
@@ -499,42 +400,33 @@ function createPendingCard(
             )
           )}
         </strong>
-
       </div>
 
 
       <div class="detail">
-
         <span>Document File</span>
-
         <strong>
           ${escapeHTML(
             record.document_file_name ||
             "—"
           )}
         </strong>
-
       </div>
 
 
       <div class="detail">
-
         <span>Selfie File</span>
-
         <strong>
           ${escapeHTML(
             record.selfie_file_name ||
             "—"
           )}
         </strong>
-
       </div>
 
 
       <div class="detail full">
-
         <span>Submitted</span>
-
         <strong>
           ${escapeHTML(
             formatDate(
@@ -542,7 +434,6 @@ function createPendingCard(
             )
           )}
         </strong>
-
       </div>
 
     </div>
@@ -588,34 +479,19 @@ function createPendingCard(
     );
 
 
-  if (approveButton) {
-
-    approveButton.addEventListener(
-      "click",
-      () =>
-        approveKYC(
-          record.id
-        )
-    );
-
-  }
+  approveButton.addEventListener(
+    "click",
+    () => approveKYC(record.id)
+  );
 
 
-  if (rejectButton) {
-
-    rejectButton.addEventListener(
-      "click",
-      () =>
-        rejectKYC(
-          record.id
-        )
-    );
-
-  }
+  rejectButton.addEventListener(
+    "click",
+    () => rejectKYC(record.id)
+  );
 
 
   return card;
-
 }
 
 
@@ -625,9 +501,7 @@ function createPendingCard(
 
 async function loadAllKYC() {
 
-  if (!allList) {
-    return;
-  }
+  if (!allList) return;
 
 
   allList.innerHTML = `
@@ -670,10 +544,8 @@ async function loadAllKYC() {
 
 
     if (totalCount) {
-
       totalCount.textContent =
         records.length;
-
     }
 
 
@@ -681,45 +553,37 @@ async function loadAllKYC() {
     let rejected = 0;
 
 
-    records.forEach(
-      record => {
+    records.forEach(record => {
 
-        if (
-          record.status ===
-          "Approved"
-        ) {
-
-          approved++;
-
-        }
-
-
-        if (
-          record.status ===
-          "Rejected"
-        ) {
-
-          rejected++;
-
-        }
-
+      if (
+        String(record.status)
+          .toLowerCase() ===
+        "approved"
+      ) {
+        approved++;
       }
-    );
+
+
+      if (
+        String(record.status)
+          .toLowerCase() ===
+        "rejected"
+      ) {
+        rejected++;
+      }
+
+    });
 
 
     if (approvedCount) {
-
       approvedCount.textContent =
         approved;
-
     }
 
 
     if (rejectedCount) {
-
       rejectedCount.textContent =
         rejected;
-
     }
 
 
@@ -732,22 +596,19 @@ async function loadAllKYC() {
       `;
 
       return;
-
     }
 
 
     allList.innerHTML = "";
 
 
-    records.forEach(
-      record => {
+    records.forEach(record => {
 
-        allList.appendChild(
-          createAllCard(record)
-        );
+      allList.appendChild(
+        createAllCard(record)
+      );
 
-      }
-    );
+    });
 
 
   } catch (error) {
@@ -771,9 +632,7 @@ async function loadAllKYC() {
       error.message,
       "error"
     );
-
   }
-
 }
 
 
@@ -781,14 +640,10 @@ async function loadAllKYC() {
    CREATE ALL KYC CARD
 ========================================================= */
 
-function createAllCard(
-  record
-) {
+function createAllCard(record) {
 
   const card =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
 
   card.className =
@@ -819,10 +674,9 @@ function createAllCard(
         </h3>
 
 
-        <span
-          class="status ${escapeHTML(
-            statusClass
-          )}">
+        <span class="status ${escapeHTML(
+          statusClass
+        )}">
 
           ${escapeHTML(
             status
@@ -949,7 +803,6 @@ function createAllCard(
 
 
   return card;
-
 }
 
 
@@ -957,9 +810,7 @@ function createAllCard(
    APPROVE KYC
 ========================================================= */
 
-async function approveKYC(
-  id
-) {
+async function approveKYC(id) {
 
   if (!id) {
 
@@ -969,7 +820,6 @@ async function approveKYC(
     );
 
     return;
-
   }
 
 
@@ -990,18 +840,16 @@ async function approveKYC(
       await adminFetch(
         "/api/admin/kyc/approve",
         {
-          method:
-            "POST",
+          method: "POST",
 
           headers: {
             "Content-Type":
               "application/json"
           },
 
-          body:
-            JSON.stringify({
-              id: id
-            })
+          body: JSON.stringify({
+            id: id
+          })
         }
       );
 
@@ -1043,7 +891,6 @@ async function approveKYC(
     );
 
   }
-
 }
 
 
@@ -1051,9 +898,7 @@ async function approveKYC(
    REJECT KYC
 ========================================================= */
 
-async function rejectKYC(
-  id
-) {
+async function rejectKYC(id) {
 
   if (!id) {
 
@@ -1063,7 +908,6 @@ async function rejectKYC(
     );
 
     return;
-
   }
 
 
@@ -1090,7 +934,6 @@ async function rejectKYC(
     );
 
     return;
-
   }
 
 
@@ -1100,20 +943,17 @@ async function rejectKYC(
       await adminFetch(
         "/api/admin/kyc/reject",
         {
-          method:
-            "POST",
+          method: "POST",
 
           headers: {
             "Content-Type":
               "application/json"
           },
 
-          body:
-            JSON.stringify({
-              id: id,
-              reason:
-                cleanReason
-            })
+          body: JSON.stringify({
+            id: id,
+            reason: cleanReason
+          })
         }
       );
 
@@ -1155,7 +995,6 @@ async function rejectKYC(
     );
 
   }
-
 }
 
 
@@ -1167,46 +1006,29 @@ async function refreshDashboard() {
 
   if (refreshBtn) {
 
-    refreshBtn.disabled =
-      true;
-
+    refreshBtn.disabled = true;
     refreshBtn.textContent =
       "Refreshing...";
-
   }
 
 
   try {
-
-    const authenticated =
-      await checkAdminSession();
-
-
-    if (!authenticated) {
-      return;
-    }
-
 
     await Promise.all([
       loadPendingKYC(),
       loadAllKYC()
     ]);
 
-
   } finally {
 
     if (refreshBtn) {
 
-      refreshBtn.disabled =
-        false;
-
+      refreshBtn.disabled = false;
       refreshBtn.textContent =
         "↻ Refresh";
-
     }
 
   }
-
 }
 
 
@@ -1234,26 +1056,14 @@ if (logoutBtn) {
     "click",
     async () => {
 
-      logoutBtn.disabled =
-        true;
-
-      logoutBtn.textContent =
-        "Logging out...";
-
-
       try {
 
         await fetch(
           "/api/admin/logout",
           {
-            method:
-              "POST",
-
-            credentials:
-              "include",
-
-            cache:
-              "no-store"
+            method: "POST",
+            credentials: "include",
+            cache: "no-store"
           }
         );
 
@@ -1267,10 +1077,14 @@ if (logoutBtn) {
       }
 
 
+      /*
+         Old local storage values
+         are also removed for safety.
+      */
+
       localStorage.removeItem(
         "balaji_admin_session"
       );
-
 
       sessionStorage.removeItem(
         "balaji_admin_session"
@@ -1294,6 +1108,24 @@ if (logoutBtn) {
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
+
+    /*
+       FIRST:
+       Verify secure server session.
+
+       SECOND:
+       Load dashboard only
+       after authentication.
+    */
+
+    const authenticated =
+      await checkAdminSession();
+
+
+    if (!authenticated) {
+      return;
+    }
+
 
     await refreshDashboard();
 
