@@ -46,6 +46,8 @@
       min-height: 100vh;
     }
 
+    /* SIDEBAR */
+
     .sidebar {
       width: 250px;
       background: rgba(18,11,27,.97);
@@ -125,6 +127,8 @@
       display: inline-block;
     }
 
+    /* MAIN */
+
     .main {
       margin-left: 250px;
       width: calc(100% - 250px);
@@ -200,6 +204,8 @@
       padding: 24px;
     }
 
+    /* SECTION */
+
     .section {
       display: none;
     }
@@ -221,6 +227,8 @@
       color: var(--muted);
       font-size: 13px;
     }
+
+    /* STATS */
 
     .stats {
       display: grid;
@@ -263,6 +271,8 @@
       margin-top: 16px;
     }
 
+    /* CARDS */
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -291,6 +301,8 @@
     .card-body {
       padding: 17px;
     }
+
+    /* TABLE */
 
     .table-wrap {
       overflow-x: auto;
@@ -323,6 +335,8 @@
       background: rgba(124,58,237,.04);
     }
 
+    /* BADGES */
+
     .badge {
       display: inline-flex;
       align-items: center;
@@ -351,6 +365,8 @@
       background: rgba(59,130,246,.12);
       color: #93c5fd;
     }
+
+    /* BUTTONS */
 
     .btn {
       border: 0;
@@ -382,6 +398,8 @@
       padding: 6px 9px;
       font-size: 10px;
     }
+
+    /* QUICK ACTION */
 
     .quick-grid {
       display: grid;
@@ -420,6 +438,8 @@
       margin-top: 4px;
     }
 
+    /* EMPTY */
+
     .empty {
       text-align: center;
       padding: 35px 15px;
@@ -431,6 +451,8 @@
       font-size: 30px;
       margin-bottom: 10px;
     }
+
+    /* SETTINGS */
 
     .setting-row {
       display: flex;
@@ -470,6 +492,8 @@
       border-color: var(--purple);
     }
 
+    /* NOTICE */
+
     .notice {
       padding: 13px 15px;
       border-radius: 10px;
@@ -479,6 +503,8 @@
       font-size: 12px;
       margin-bottom: 17px;
     }
+
+    /* TOAST */
 
     .toast {
       position: fixed;
@@ -512,12 +538,16 @@
       }
     }
 
+    /* LOADING */
+
     .loading {
       text-align: center;
       padding: 25px;
       color: var(--muted);
       font-size: 12px;
     }
+
+    /* MOBILE */
 
     @media (max-width: 1000px) {
       .stats {
@@ -613,6 +643,7 @@
 
 <div class="app">
 
+  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
 
     <div class="brand">
@@ -718,6 +749,8 @@
     </nav>
   </aside>
 
+
+  <!-- MAIN -->
   <main class="main">
 
     <header class="topbar">
@@ -732,7 +765,6 @@
           <div class="page-title" id="pageTitle">
             Dashboard
           </div>
-
           <div class="admin-badge" id="adminBadge">
             Checking secure session...
           </div>
@@ -754,8 +786,11 @@
 
     </header>
 
+
     <div class="content">
 
+
+      <!-- DASHBOARD -->
       <section class="section active" id="section-dashboard">
 
         <div class="section-head">
@@ -803,6 +838,7 @@
 
         </div>
 
+
         <div class="grid">
 
           <div class="card">
@@ -844,6 +880,7 @@
             </div>
           </div>
 
+
           <div class="card">
 
             <div class="card-head">
@@ -884,6 +921,8 @@
 
       </section>
 
+
+      <!-- PLAYERS -->
       <section class="section" id="section-players">
 
         <div class="section-head">
@@ -895,7 +934,6 @@
 
           <div class="card-head">
             <h3>Player Management</h3>
-
             <button class="btn btn-primary" onclick="loadPlayers()">
               ↻ Load
             </button>
@@ -912,6 +950,8 @@
 
       </section>
 
+
+      <!-- KYC -->
       <section class="section" id="section-kyc">
 
         <div class="section-head">
@@ -955,6 +995,7 @@
 
         </div>
 
+
         <div class="card">
 
           <div class="card-head">
@@ -975,6 +1016,8 @@
 
       </section>
 
+
+      <!-- WALLET -->
       <section class="section" id="section-wallet">
 
         <div class="section-head">
@@ -993,6 +1036,8 @@
 
       </section>
 
+
+      <!-- DEPOSITS -->
       <section class="section" id="section-deposits">
 
         <div class="section-head">
@@ -1011,6 +1056,8 @@
 
       </section>
 
+
+      <!-- WITHDRAWALS -->
       <section class="section" id="section-withdrawals">
 
         <div class="section-head">
@@ -1029,6 +1076,8 @@
 
       </section>
 
+
+      <!-- BATTLES -->
       <section class="section" id="section-battles">
 
         <div class="section-head">
@@ -1083,6 +1132,8 @@
 
       </section>
 
+
+      <!-- ROOMS -->
       <section class="section" id="section-rooms">
 
         <div class="section-head">
@@ -1101,6 +1152,8 @@
 
       </section>
 
+
+      <!-- REFERRALS -->
       <section class="section" id="section-referrals">
 
         <div class="section-head">
@@ -1132,6 +1185,8 @@
 
       </section>
 
+
+      <!-- COMMISSION -->
       <section class="section" id="section-commission">
 
         <div class="section-head">
@@ -1176,6 +1231,8 @@
 
       </section>
 
+
+      <!-- SUPPORT -->
       <section class="section" id="section-support">
 
         <div class="section-head">
@@ -1194,6 +1251,8 @@
 
       </section>
 
+
+      <!-- NOTIFICATIONS -->
       <section class="section" id="section-notifications">
 
         <div class="section-head">
@@ -1240,6 +1299,8 @@
 
       </section>
 
+
+      <!-- REPORTS -->
       <section class="section" id="section-reports">
 
         <div class="section-head">
@@ -1294,6 +1355,8 @@
 
       </section>
 
+
+      <!-- SETTINGS -->
       <section class="section" id="section-settings">
 
         <div class="section-head">
@@ -1342,6 +1405,8 @@
 
       </section>
 
+
+      <!-- RULES -->
       <section class="section" id="section-rules">
 
         <div class="section-head">
@@ -1399,6 +1464,8 @@
 
       </section>
 
+
+      <!-- PAYMENT -->
       <section class="section" id="section-payment">
 
         <div class="section-head">
@@ -1437,6 +1504,8 @@
 
       </section>
 
+
+      <!-- AUDIT -->
       <section class="section" id="section-audit">
 
         <div class="section-head">
@@ -1459,6 +1528,8 @@
 
       </section>
 
+
+      <!-- ROLES -->
       <section class="section" id="section-roles">
 
         <div class="section-head">
@@ -1494,6 +1565,8 @@
 
       </section>
 
+
+      <!-- ERRORS -->
       <section class="section" id="section-errors">
 
         <div class="section-head">
@@ -1516,6 +1589,8 @@
 
       </section>
 
+
+      <!-- SAFETY -->
       <section class="section" id="section-safety">
 
         <div class="section-head">
@@ -1571,14 +1646,22 @@
 
       </section>
 
+
     </div>
   </main>
 
 </div>
 
+
 <div class="toast" id="toast"></div>
 
+
 <script>
+
+  /* =========================================================
+     BALAJI LUDO KING
+     ADMIN DASHBOARD
+  ========================================================= */
 
   const state = {
     admin: null,
@@ -1636,20 +1719,18 @@
       document.getElementById("toast");
 
     toast.textContent = message;
-
     toast.classList.add("show");
 
     clearTimeout(showToast.timer);
 
-    showToast.timer =
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 3000);
+    showToast.timer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
   }
 
 
   /* =========================================================
-     ADMIN SESSION - UPDATED
+     ADMIN SESSION
   ========================================================= */
 
   async function checkAdminSession() {
@@ -1664,7 +1745,6 @@
         result.success !== true ||
         result.authenticated !== true
       ) {
-
         throw new Error(
           "Admin authentication required"
         );
@@ -1673,45 +1753,41 @@
       const admin =
         result.admin || {};
 
-      state.admin =
-        admin;
+      state.admin = admin;
 
-      const adminBadge =
-        document.getElementById(
-          "adminBadge"
-        );
+      document.getElementById(
+        "adminBadge"
+      ).textContent =
+        admin.id
+          ? `Signed in as ${admin.id}`
+          : "Secure admin session active";
 
-      if (adminBadge) {
+      document.getElementById(
+        "sessionStatus"
+      ).textContent =
+        "ACTIVE";
 
-        adminBadge.textContent =
-          admin.id
-            ? `Signed in as ${admin.id}`
-            : "Secure admin session active";
-      }
-
-      const sessionStatus =
-        document.getElementById(
-          "sessionStatus"
-        );
-
-      if (sessionStatus) {
-
-        sessionStatus.textContent =
-          "ACTIVE";
-
-        sessionStatus.className =
-          "badge green";
-      }
+      document.getElementById(
+        "sessionStatus"
+      ).className =
+        "badge green";
 
       if (result.expires_at) {
-
         state.expiresAt =
           Number(result.expires_at);
       }
 
       startSessionTimer();
 
+      /*
+        Load existing KYC exactly as before.
+      */
       loadKyc();
+
+      /*
+        Load the 3 live dashboard numbers.
+      */
+      loadDashboardStats();
 
       return true;
 
@@ -1722,30 +1798,20 @@
         error
       );
 
-      const adminBadge =
-        document.getElementById(
-          "adminBadge"
-        );
+      document.getElementById(
+        "adminBadge"
+      ).textContent =
+        "Authentication required";
 
-      if (adminBadge) {
+      document.getElementById(
+        "sessionStatus"
+      ).textContent =
+        "EXPIRED";
 
-        adminBadge.textContent =
-          "Authentication required";
-      }
-
-      const sessionStatus =
-        document.getElementById(
-          "sessionStatus"
-        );
-
-      if (sessionStatus) {
-
-        sessionStatus.textContent =
-          "EXPIRED";
-
-        sessionStatus.className =
-          "badge red";
-      }
+      document.getElementById(
+        "sessionStatus"
+      ).className =
+        "badge red";
 
       showToast(
         "Admin session expired. Redirecting to login..."
@@ -1757,10 +1823,230 @@
           "/admin-login.html"
         );
 
-      }, 500);
+      }, 700);
 
       return false;
     }
+  }
+
+
+  /* =========================================================
+     LIVE DASHBOARD STATS
+     ========================================================= */
+
+  async function loadDashboardStats() {
+
+    /*
+      Do not show fake/demo numbers.
+      While loading, show ...
+    */
+
+    const totalPlayersEl =
+      document.getElementById(
+        "totalPlayers"
+      );
+
+    const pendingKycEl =
+      document.getElementById(
+        "pendingKyc"
+      );
+
+    const activeBattlesEl =
+      document.getElementById(
+        "activeBattles"
+      );
+
+    if (totalPlayersEl) {
+      totalPlayersEl.textContent = "...";
+    }
+
+    if (pendingKycEl) {
+      pendingKycEl.textContent = "...";
+    }
+
+    if (activeBattlesEl) {
+      activeBattlesEl.textContent = "...";
+    }
+
+
+    /*
+      TOTAL PLAYERS
+      Worker:
+      GET /api/admin/customers
+    */
+
+    try {
+
+      const result =
+        await api(
+          "/api/admin/customers"
+        );
+
+      let count =
+        Number(result.count);
+
+      /*
+        Current Worker returns count based
+        on the customers returned.
+      */
+
+      if (!Number.isFinite(count)) {
+
+        const customers =
+          Array.isArray(result.customers)
+            ? result.customers
+            : [];
+
+        count =
+          customers.length;
+      }
+
+      if (totalPlayersEl) {
+        totalPlayersEl.textContent =
+          Number.isFinite(count)
+            ? count
+            : 0;
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Total players error:",
+        error
+      );
+
+      if (totalPlayersEl) {
+        totalPlayersEl.textContent = "0";
+      }
+    }
+
+
+    /*
+      PENDING KYC
+      Worker:
+      GET /api/admin/kyc/pending
+    */
+
+    try {
+
+      const result =
+        await api(
+          "/api/admin/kyc/pending"
+        );
+
+      let count =
+        Number(result.count);
+
+      if (!Number.isFinite(count)) {
+
+        const kycs =
+          Array.isArray(result.kycs)
+            ? result.kycs
+            : [];
+
+        count =
+          kycs.length;
+      }
+
+      if (pendingKycEl) {
+        pendingKycEl.textContent =
+          Number.isFinite(count)
+            ? count
+            : 0;
+      }
+
+      /*
+        Keep KYC page pending number
+        synchronized with dashboard.
+      */
+
+      const kycPendingEl =
+        document.getElementById(
+          "kycPendingCount"
+        );
+
+      if (kycPendingEl) {
+        kycPendingEl.textContent =
+          Number.isFinite(count)
+            ? count
+            : 0;
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Pending KYC error:",
+        error
+      );
+
+      if (pendingKycEl) {
+        pendingKycEl.textContent = "0";
+      }
+    }
+
+
+    /*
+      ACTIVE BATTLES
+      Worker:
+      GET /api/admin/battles
+
+      Active statuses:
+      OPEN
+      JOINED
+      ROOM_READY
+      RESULT_SUBMITTED
+    */
+
+    try {
+
+      const result =
+        await api(
+          "/api/admin/battles"
+        );
+
+      const battles =
+        Array.isArray(result.battles)
+          ? result.battles
+          : [];
+
+      const activeStatuses = [
+        "OPEN",
+        "JOINED",
+        "ROOM_READY",
+        "RESULT_SUBMITTED"
+      ];
+
+      const activeCount =
+        battles.filter(battle => {
+
+          const status =
+            String(
+              battle.status || ""
+            ).toUpperCase();
+
+          return activeStatuses.includes(
+            status
+          );
+
+        }).length;
+
+      if (activeBattlesEl) {
+        activeBattlesEl.textContent =
+          activeCount;
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Active battles error:",
+        error
+      );
+
+      if (activeBattlesEl) {
+        activeBattlesEl.textContent = "0";
+      }
+    }
+
   }
 
 
@@ -1770,9 +2056,7 @@
 
   function startSessionTimer() {
 
-    clearInterval(
-      state.timer
-    );
+    clearInterval(state.timer);
 
     state.timer =
       setInterval(() => {
@@ -1792,6 +2076,16 @@
           clearInterval(
             state.timer
           );
+
+          document.getElementById(
+            "sessionStatus"
+          ).textContent =
+            "EXPIRED";
+
+          document.getElementById(
+            "sessionStatus"
+          ).className =
+            "badge red";
 
           showToast(
             "Admin session expired."
@@ -1827,7 +2121,11 @@
 
     } catch (error) {
 
-      console.warn(error);
+      console.warn(
+        "Logout request failed:",
+        error
+      );
+
     }
 
     window.location.replace(
@@ -1894,7 +2192,6 @@
       );
 
     if (section) {
-
       section.classList.add(
         "active"
       );
@@ -1906,7 +2203,6 @@
       );
 
     if (button) {
-
       button.classList.add(
         "active"
       );
@@ -1923,9 +2219,9 @@
       .classList.remove("open");
 
     if (name === "kyc") {
-
       loadKyc();
     }
+
   }
 
 
@@ -1972,7 +2268,17 @@
           "/api/admin/kyc/pending"
         );
 
+      /*
+        Current Worker returns:
+        {
+          success: true,
+          count: ...,
+          kycs: [...]
+        }
+      */
+
       const records =
+        result.kycs ||
         result.data ||
         result.records ||
         result.kyc ||
@@ -1983,7 +2289,10 @@
           ? records
           : [];
 
-      updateKycStats(list);
+      updateKycStats(
+        list,
+        result.count
+      );
 
       if (!list.length) {
 
@@ -1996,6 +2305,7 @@
 
         return;
       }
+
 
       let html = `
         <div class="table-wrap">
@@ -2011,6 +2321,7 @@
           </thead>
           <tbody>
       `;
+
 
       list.forEach(item => {
 
@@ -2035,6 +2346,7 @@
           item.created_at ||
           item.submitted_at ||
           "-";
+
 
         html += `
           <tr>
@@ -2074,6 +2386,7 @@
 
       });
 
+
       html += `
           </tbody>
         </table>
@@ -2096,21 +2409,29 @@
   }
 
 
-  function updateKycStats(records) {
+  function updateKycStats(
+    records,
+    serverCount
+  ) {
 
     const pending =
-      records.filter(item => {
+      Number.isFinite(
+        Number(serverCount)
+      )
+        ? Number(serverCount)
+        : records.filter(item => {
 
-        const status =
-          String(
-            item.status ||
-            item.kyc_status ||
-            "PENDING"
-          ).toUpperCase();
+            const status =
+              String(
+                item.status ||
+                item.kyc_status ||
+                "PENDING"
+              ).toUpperCase();
 
-        return status === "PENDING";
+            return status === "PENDING";
 
-      }).length;
+          }).length;
+
 
     const pendingEl =
       document.getElementById(
@@ -2118,10 +2439,10 @@
       );
 
     if (pendingEl) {
-
       pendingEl.textContent =
         pending;
     }
+
 
     const dashboardPending =
       document.getElementById(
@@ -2129,10 +2450,17 @@
       );
 
     if (dashboardPending) {
-
       dashboardPending.textContent =
         pending;
     }
+
+
+    /*
+      These values are intentionally
+      only based on returned pending records.
+      Full all-KYC statistics will connect
+      when the all-record API is added.
+    */
 
     const total =
       document.getElementById(
@@ -2140,7 +2468,6 @@
       );
 
     if (total) {
-
       total.textContent =
         records.length;
     }
@@ -2148,14 +2475,13 @@
   }
 
 
-  async function approveKyc(customerId) {
+  async function approveKyc(
+    customerId
+  ) {
 
-    if (
-      !confirm(
-        `Approve KYC for ${customerId}?`
-      )
-    ) {
-
+    if (!confirm(
+      `Approve KYC for ${customerId}?`
+    )) {
       return;
     }
 
@@ -2178,6 +2504,12 @@
 
       loadKyc();
 
+      /*
+        Refresh live dashboard
+        Pending KYC count.
+      */
+      loadDashboardStats();
+
     } catch (error) {
 
       showToast(
@@ -2189,7 +2521,9 @@
   }
 
 
-  async function rejectKyc(customerId) {
+  async function rejectKyc(
+    customerId
+  ) {
 
     const reason =
       prompt(
@@ -2210,8 +2544,7 @@
           body: JSON.stringify({
             customer_id:
               customerId,
-            reason:
-              reason
+            reason
           })
         }
       );
@@ -2221,6 +2554,12 @@
       );
 
       loadKyc();
+
+      /*
+        Refresh live dashboard
+        Pending KYC count.
+      */
+      loadDashboardStats();
 
     } catch (error) {
 
@@ -2246,6 +2585,11 @@
 
     container.innerHTML =
       `<div class="loading">Loading players...</div>`;
+
+    /*
+      Existing player section UI
+      remains unchanged.
+    */
 
     setTimeout(() => {
 
@@ -2282,6 +2626,12 @@
           return;
         }
 
+        /*
+          Always refresh live
+          dashboard numbers.
+        */
+        await loadDashboardStats();
+
         const active =
           document.querySelector(
             ".section.active"
@@ -2294,6 +2644,7 @@
         ) {
 
           loadKyc();
+
         }
 
       }
@@ -2337,6 +2688,7 @@
         ) {
 
           logout();
+
         }
 
       }
