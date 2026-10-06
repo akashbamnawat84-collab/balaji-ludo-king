@@ -1,36 +1,67 @@
 /* =========================================================
    BALAJI LUDO KING
    ADMIN DASHBOARD JAVASCRIPT
+   D1 SESSION + SECURE COOKIE AUTH
 ========================================================= */
 
-const pendingList = document.getElementById("pendingList");
-const allList = document.getElementById("allList");
 
-const pendingCount = document.getElementById("pendingCount");
-const approvedCount = document.getElementById("approvedCount");
-const rejectedCount = document.getElementById("rejectedCount");
-const totalCount = document.getElementById("totalCount");
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
-const messageBox = document.getElementById("message");
-const refreshBtn = document.getElementById("refreshBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+const pendingList =
+  document.getElementById("pendingList");
+
+const allList =
+  document.getElementById("allList");
+
+const pendingCount =
+  document.getElementById("pendingCount");
+
+const approvedCount =
+  document.getElementById("approvedCount");
+
+const rejectedCount =
+  document.getElementById("rejectedCount");
+
+const totalCount =
+  document.getElementById("totalCount");
+
+const messageBox =
+  document.getElementById("message");
+
+const refreshBtn =
+  document.getElementById("refreshBtn");
+
+const logoutBtn =
+  document.getElementById("logoutBtn");
 
 
 /* =========================================================
    MESSAGE
 ========================================================= */
 
-function showMessage(text, type = "info") {
+function showMessage(
+  text,
+  type = "info"
+) {
 
   if (!messageBox) return;
 
   messageBox.textContent = text;
-  messageBox.className = `message ${type}`;
+
+  messageBox.className =
+    `message ${type}`;
 
   setTimeout(() => {
+
     messageBox.textContent = "";
-    messageBox.className = "message";
+
+    messageBox.className =
+      "message";
+
   }, 4000);
+
 }
 
 
@@ -40,7 +71,10 @@ function showMessage(text, type = "info") {
 
 function escapeHTML(value) {
 
-  if (value === null || value === undefined) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
     return "";
   }
 
@@ -50,6 +84,7 @@ function escapeHTML(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
 }
 
 
@@ -63,13 +98,18 @@ function maskDocumentNumber(value) {
     return "—";
   }
 
-  const text = String(value);
+  const text =
+    String(value);
 
   if (text.length <= 4) {
     return "****";
   }
 
-  return "**** **** " + text.slice(-4);
+  return (
+    "**** **** " +
+    text.slice(-4)
+  );
+
 }
 
 
@@ -85,24 +125,159 @@ function formatDate(value) {
 
   try {
 
-    const date = new Date(value);
+    const date =
+      new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
       return value;
     }
 
-    return date.toLocaleString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    return date.toLocaleString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
 
   } catch {
 
     return value;
+
   }
+
+}
+
+
+/* =========================================================
+   ADMIN SESSION CHECK
+========================================================= */
+
+async function checkAdminSession() {
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/admin/session",
+        {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+          headers: {
+            "Accept":
+              "application/json",
+            "Cache-Control":
+              "no-cache"
+          }
+        }
+      );
+
+
+    let data = {};
+
+
+    try {
+
+      data =
+        await response.json();
+
+    } catch {
+
+      data = {};
+
+    }
+
+
+    if (
+      !response.ok ||
+      data.authenticated !== true
+    ) {
+
+      console.warn(
+        "Admin session invalid:",
+        data
+      );
+
+      window.location.replace(
+        "/admin-login.html"
+      );
+
+      return false;
+
+    }
+
+
+    return true;
+
+
+  } catch (error) {
+
+    console.error(
+      "Admin session check failed:",
+      error
+    );
+
+    showMessage(
+      "Unable to verify admin session.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   AUTHENTICATED FETCH
+========================================================= */
+
+async function adminFetch(
+  url,
+  options = {}
+) {
+
+  const response =
+    await fetch(
+      url,
+      {
+        ...options,
+
+        credentials:
+          "include",
+
+        cache:
+          "no-store"
+      }
+    );
+
+
+  if (
+    response.status === 401
+  ) {
+
+    window.location.replace(
+      "/admin-login.html"
+    );
+
+    throw new Error(
+      "Admin session expired"
+    );
+
+  }
+
+
+  return response;
+
 }
 
 
@@ -112,7 +287,10 @@ function formatDate(value) {
 
 async function loadPendingKYC() {
 
-  if (!pendingList) return;
+  if (!pendingList) {
+    return;
+  }
+
 
   pendingList.innerHTML = `
     <div class="loading">
@@ -120,21 +298,46 @@ async function loadPendingKYC() {
     </div>
   `;
 
+
   try {
 
-    const response = await fetch("/api/admin/kyc/pending");
+    const response =
+      await adminFetch(
+        "/api/admin/kyc/pending"
+      );
 
-    const data = await response.json();
+
+    const data =
+      await response.json();
+
 
     if (!response.ok) {
-      throw new Error(data.error || "Unable to load pending KYC");
+
+      throw new Error(
+        data.error ||
+        "Unable to load pending KYC"
+      );
+
     }
 
-    const records = Array.isArray(data)
-      ? data
-      : (data.records || data.kyc || []);
 
-    pendingCount.textContent = records.length;
+    const records =
+      Array.isArray(data)
+        ? data
+        : (
+            data.records ||
+            data.kyc ||
+            []
+          );
+
+
+    if (pendingCount) {
+
+      pendingCount.textContent =
+        records.length;
+
+    }
+
 
     if (!records.length) {
 
@@ -145,30 +348,48 @@ async function loadPendingKYC() {
       `;
 
       return;
+
     }
+
 
     pendingList.innerHTML = "";
 
-    records.forEach(record => {
 
-      pendingList.appendChild(
-        createPendingCard(record)
-      );
+    records.forEach(
+      record => {
 
-    });
+        pendingList.appendChild(
+          createPendingCard(record)
+        );
+
+      }
+    );
+
 
   } catch (error) {
 
-    console.error("Pending KYC error:", error);
+    console.error(
+      "Pending KYC error:",
+      error
+    );
+
 
     pendingList.innerHTML = `
       <div class="error">
-        ${escapeHTML(error.message)}
+        ${escapeHTML(
+          error.message
+        )}
       </div>
     `;
 
-    showMessage(error.message, "error");
+
+    showMessage(
+      error.message,
+      "error"
+    );
+
   }
+
 }
 
 
@@ -176,29 +397,48 @@ async function loadPendingKYC() {
    CREATE PENDING KYC CARD
 ========================================================= */
 
-function createPendingCard(record) {
+function createPendingCard(
+  record
+) {
 
-  const card = document.createElement("div");
+  const card =
+    document.createElement(
+      "div"
+    );
 
-  card.className = "kyc-card";
+
+  card.className =
+    "kyc-card";
+
 
   card.innerHTML = `
 
     <div class="kyc-card-header">
 
       <div>
+
         <h3>
-          ${escapeHTML(record.full_name || "Unknown User")}
+          ${escapeHTML(
+            record.full_name ||
+            "Unknown User"
+          )}
         </h3>
 
         <span class="status pending">
           Pending
         </span>
+
       </div>
 
+
       <div class="customer-id">
+
         Customer ID:
-        ${escapeHTML(record.customer_id || "—")}
+        ${escapeHTML(
+          record.customer_id ||
+          "—"
+        )}
+
       </div>
 
     </div>
@@ -207,54 +447,102 @@ function createPendingCard(record) {
     <div class="kyc-details">
 
       <div class="detail">
+
         <span>Mobile</span>
-        <strong>
-          ${escapeHTML(record.mobile || "—")}
-        </strong>
-      </div>
 
-      <div class="detail">
-        <span>Date of Birth</span>
-        <strong>
-          ${escapeHTML(record.dob || "—")}
-        </strong>
-      </div>
-
-      <div class="detail">
-        <span>Document</span>
-        <strong>
-          ${escapeHTML(record.document_type || "—")}
-        </strong>
-      </div>
-
-      <div class="detail">
-        <span>Document Number</span>
         <strong>
           ${escapeHTML(
-            maskDocumentNumber(record.document_number)
+            record.mobile ||
+            "—"
           )}
         </strong>
+
       </div>
 
+
       <div class="detail">
+
+        <span>Date of Birth</span>
+
+        <strong>
+          ${escapeHTML(
+            record.dob ||
+            "—"
+          )}
+        </strong>
+
+      </div>
+
+
+      <div class="detail">
+
+        <span>Document</span>
+
+        <strong>
+          ${escapeHTML(
+            record.document_type ||
+            "—"
+          )}
+        </strong>
+
+      </div>
+
+
+      <div class="detail">
+
+        <span>Document Number</span>
+
+        <strong>
+          ${escapeHTML(
+            maskDocumentNumber(
+              record.document_number
+            )
+          )}
+        </strong>
+
+      </div>
+
+
+      <div class="detail">
+
         <span>Document File</span>
+
         <strong>
-          ${escapeHTML(record.document_file_name || "—")}
+          ${escapeHTML(
+            record.document_file_name ||
+            "—"
+          )}
         </strong>
+
       </div>
 
+
       <div class="detail">
+
         <span>Selfie File</span>
+
         <strong>
-          ${escapeHTML(record.selfie_file_name || "—")}
+          ${escapeHTML(
+            record.selfie_file_name ||
+            "—"
+          )}
         </strong>
+
       </div>
+
 
       <div class="detail full">
+
         <span>Submitted</span>
+
         <strong>
-          ${escapeHTML(formatDate(record.submitted_at))}
+          ${escapeHTML(
+            formatDate(
+              record.submitted_at
+            )
+          )}
         </strong>
+
       </div>
 
     </div>
@@ -264,15 +552,20 @@ function createPendingCard(record) {
 
       <button
         class="approve-btn"
-        data-id="${escapeHTML(record.id)}">
+        data-id="${escapeHTML(
+          record.id
+        )}">
 
         ✓ Approve
 
       </button>
 
+
       <button
         class="reject-btn"
-        data-id="${escapeHTML(record.id)}">
+        data-id="${escapeHTML(
+          record.id
+        )}">
 
         ✕ Reject
 
@@ -284,25 +577,45 @@ function createPendingCard(record) {
 
 
   const approveButton =
-    card.querySelector(".approve-btn");
+    card.querySelector(
+      ".approve-btn"
+    );
+
 
   const rejectButton =
-    card.querySelector(".reject-btn");
+    card.querySelector(
+      ".reject-btn"
+    );
 
 
-  approveButton.addEventListener(
-    "click",
-    () => approveKYC(record.id)
-  );
+  if (approveButton) {
+
+    approveButton.addEventListener(
+      "click",
+      () =>
+        approveKYC(
+          record.id
+        )
+    );
+
+  }
 
 
-  rejectButton.addEventListener(
-    "click",
-    () => rejectKYC(record.id)
-  );
+  if (rejectButton) {
+
+    rejectButton.addEventListener(
+      "click",
+      () =>
+        rejectKYC(
+          record.id
+        )
+    );
+
+  }
 
 
   return card;
+
 }
 
 
@@ -312,7 +625,10 @@ function createPendingCard(record) {
 
 async function loadAllKYC() {
 
-  if (!allList) return;
+  if (!allList) {
+    return;
+  }
+
 
   allList.innerHTML = `
     <div class="loading">
@@ -320,43 +636,91 @@ async function loadAllKYC() {
     </div>
   `;
 
+
   try {
 
     const response =
-      await fetch("/api/admin/kyc/all");
+      await adminFetch(
+        "/api/admin/kyc/all"
+      );
+
 
     const data =
       await response.json();
 
+
     if (!response.ok) {
+
       throw new Error(
-        data.error || "Unable to load KYC records"
+        data.error ||
+        "Unable to load KYC records"
       );
+
     }
 
-    const records = Array.isArray(data)
-      ? data
-      : (data.records || data.kyc || []);
 
-    totalCount.textContent = records.length;
+    const records =
+      Array.isArray(data)
+        ? data
+        : (
+            data.records ||
+            data.kyc ||
+            []
+          );
+
+
+    if (totalCount) {
+
+      totalCount.textContent =
+        records.length;
+
+    }
+
 
     let approved = 0;
     let rejected = 0;
 
-    records.forEach(record => {
 
-      if (record.status === "Approved") {
-        approved++;
+    records.forEach(
+      record => {
+
+        if (
+          record.status ===
+          "Approved"
+        ) {
+
+          approved++;
+
+        }
+
+
+        if (
+          record.status ===
+          "Rejected"
+        ) {
+
+          rejected++;
+
+        }
+
       }
+    );
 
-      if (record.status === "Rejected") {
-        rejected++;
-      }
 
-    });
+    if (approvedCount) {
 
-    approvedCount.textContent = approved;
-    rejectedCount.textContent = rejected;
+      approvedCount.textContent =
+        approved;
+
+    }
+
+
+    if (rejectedCount) {
+
+      rejectedCount.textContent =
+        rejected;
+
+    }
 
 
     if (!records.length) {
@@ -368,33 +732,48 @@ async function loadAllKYC() {
       `;
 
       return;
+
     }
 
 
     allList.innerHTML = "";
 
 
-    records.forEach(record => {
+    records.forEach(
+      record => {
 
-      allList.appendChild(
-        createAllCard(record)
-      );
+        allList.appendChild(
+          createAllCard(record)
+        );
 
-    });
+      }
+    );
 
 
   } catch (error) {
 
-    console.error("All KYC error:", error);
+    console.error(
+      "All KYC error:",
+      error
+    );
+
 
     allList.innerHTML = `
       <div class="error">
-        ${escapeHTML(error.message)}
+        ${escapeHTML(
+          error.message
+        )}
       </div>
     `;
 
-    showMessage(error.message, "error");
+
+    showMessage(
+      error.message,
+      "error"
+    );
+
   }
+
 }
 
 
@@ -402,20 +781,28 @@ async function loadAllKYC() {
    CREATE ALL KYC CARD
 ========================================================= */
 
-function createAllCard(record) {
+function createAllCard(
+  record
+) {
 
   const card =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
-  card.className = "kyc-card";
+
+  card.className =
+    "kyc-card";
 
 
   const status =
-    record.status || "Pending";
+    record.status ||
+    "Pending";
 
 
   const statusClass =
-    status.toLowerCase();
+    String(status)
+      .toLowerCase();
 
 
   card.innerHTML = `
@@ -425,18 +812,35 @@ function createAllCard(record) {
       <div>
 
         <h3>
-          ${escapeHTML(record.full_name || "Unknown User")}
+          ${escapeHTML(
+            record.full_name ||
+            "Unknown User"
+          )}
         </h3>
 
-        <span class="status ${escapeHTML(statusClass)}">
-          ${escapeHTML(status)}
+
+        <span
+          class="status ${escapeHTML(
+            statusClass
+          )}">
+
+          ${escapeHTML(
+            status
+          )}
+
         </span>
 
       </div>
 
+
       <div class="customer-id">
+
         Customer ID:
-        ${escapeHTML(record.customer_id || "—")}
+        ${escapeHTML(
+          record.customer_id ||
+          "—"
+        )}
+
       </div>
 
     </div>
@@ -445,50 +849,95 @@ function createAllCard(record) {
     <div class="kyc-details">
 
       <div class="detail">
+
         <span>Mobile</span>
-        <strong>
-          ${escapeHTML(record.mobile || "—")}
-        </strong>
-      </div>
 
-      <div class="detail">
-        <span>Document</span>
-        <strong>
-          ${escapeHTML(record.document_type || "—")}
-        </strong>
-      </div>
-
-      <div class="detail">
-        <span>Document Number</span>
         <strong>
           ${escapeHTML(
-            maskDocumentNumber(record.document_number)
+            record.mobile ||
+            "—"
           )}
         </strong>
+
       </div>
 
+
       <div class="detail">
+
+        <span>Document</span>
+
+        <strong>
+          ${escapeHTML(
+            record.document_type ||
+            "—"
+          )}
+        </strong>
+
+      </div>
+
+
+      <div class="detail">
+
+        <span>Document Number</span>
+
+        <strong>
+          ${escapeHTML(
+            maskDocumentNumber(
+              record.document_number
+            )
+          )}
+        </strong>
+
+      </div>
+
+
+      <div class="detail">
+
         <span>Submitted</span>
+
         <strong>
-          ${escapeHTML(formatDate(record.submitted_at))}
+          ${escapeHTML(
+            formatDate(
+              record.submitted_at
+            )
+          )}
         </strong>
+
       </div>
 
+
       <div class="detail">
+
         <span>Reviewed</span>
+
         <strong>
-          ${escapeHTML(formatDate(record.reviewed_at))}
+          ${escapeHTML(
+            formatDate(
+              record.reviewed_at
+            )
+          )}
         </strong>
+
       </div>
+
 
       ${
         record.rejection_reason
           ? `
             <div class="detail full">
-              <span>Rejection Reason</span>
+
+              <span>
+                Rejection Reason
+              </span>
+
               <strong class="rejection-reason">
-                ${escapeHTML(record.rejection_reason)}
+
+                ${escapeHTML(
+                  record.rejection_reason
+                )}
+
               </strong>
+
             </div>
           `
           : ""
@@ -500,6 +949,7 @@ function createAllCard(record) {
 
 
   return card;
+
 }
 
 
@@ -507,11 +957,19 @@ function createAllCard(record) {
    APPROVE KYC
 ========================================================= */
 
-async function approveKYC(id) {
+async function approveKYC(
+  id
+) {
 
   if (!id) {
-    showMessage("Invalid KYC ID", "error");
+
+    showMessage(
+      "Invalid KYC ID",
+      "error"
+    );
+
     return;
+
   }
 
 
@@ -529,19 +987,23 @@ async function approveKYC(id) {
   try {
 
     const response =
-      await fetch("/api/admin/kyc/approve", {
+      await adminFetch(
+        "/api/admin/kyc/approve",
+        {
+          method:
+            "POST",
 
-        method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          id: id
-        })
-
-      });
+          body:
+            JSON.stringify({
+              id: id
+            })
+        }
+      );
 
 
     const data =
@@ -551,7 +1013,8 @@ async function approveKYC(id) {
     if (!response.ok) {
 
       throw new Error(
-        data.error || "KYC approval failed"
+        data.error ||
+        "KYC approval failed"
       );
 
     }
@@ -573,12 +1036,14 @@ async function approveKYC(id) {
       error
     );
 
+
     showMessage(
       error.message,
       "error"
     );
 
   }
+
 }
 
 
@@ -586,7 +1051,9 @@ async function approveKYC(id) {
    REJECT KYC
 ========================================================= */
 
-async function rejectKYC(id) {
+async function rejectKYC(
+  id
+) {
 
   if (!id) {
 
@@ -596,6 +1063,7 @@ async function rejectKYC(id) {
     );
 
     return;
+
   }
 
 
@@ -622,26 +1090,32 @@ async function rejectKYC(id) {
     );
 
     return;
+
   }
 
 
   try {
 
     const response =
-      await fetch("/api/admin/kyc/reject", {
+      await adminFetch(
+        "/api/admin/kyc/reject",
+        {
+          method:
+            "POST",
 
-        method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          id: id,
-          reason: cleanReason
-        })
-
-      });
+          body:
+            JSON.stringify({
+              id: id,
+              reason:
+                cleanReason
+            })
+        }
+      );
 
 
     const data =
@@ -651,7 +1125,8 @@ async function rejectKYC(id) {
     if (!response.ok) {
 
       throw new Error(
-        data.error || "KYC rejection failed"
+        data.error ||
+        "KYC rejection failed"
       );
 
     }
@@ -673,12 +1148,14 @@ async function rejectKYC(id) {
       error
     );
 
+
     showMessage(
       error.message,
       "error"
     );
 
   }
+
 }
 
 
@@ -690,27 +1167,46 @@ async function refreshDashboard() {
 
   if (refreshBtn) {
 
-    refreshBtn.disabled = true;
-    refreshBtn.textContent = "Refreshing...";
+    refreshBtn.disabled =
+      true;
+
+    refreshBtn.textContent =
+      "Refreshing...";
+
   }
 
 
   try {
+
+    const authenticated =
+      await checkAdminSession();
+
+
+    if (!authenticated) {
+      return;
+    }
+
 
     await Promise.all([
       loadPendingKYC(),
       loadAllKYC()
     ]);
 
+
   } finally {
 
     if (refreshBtn) {
 
-      refreshBtn.disabled = false;
-      refreshBtn.textContent = "↻ Refresh";
+      refreshBtn.disabled =
+        false;
+
+      refreshBtn.textContent =
+        "↻ Refresh";
+
     }
 
   }
+
 }
 
 
@@ -736,18 +1232,54 @@ if (logoutBtn) {
 
   logoutBtn.addEventListener(
     "click",
-    () => {
+    async () => {
+
+      logoutBtn.disabled =
+        true;
+
+      logoutBtn.textContent =
+        "Logging out...";
+
+
+      try {
+
+        await fetch(
+          "/api/admin/logout",
+          {
+            method:
+              "POST",
+
+            credentials:
+              "include",
+
+            cache:
+              "no-store"
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Logout error:",
+          error
+        );
+
+      }
+
 
       localStorage.removeItem(
         "balaji_admin_session"
       );
 
+
       sessionStorage.removeItem(
         "balaji_admin_session"
       );
 
-      window.location.href =
-        "/admin-login.html";
+
+      window.location.replace(
+        "/admin-login.html"
+      );
 
     }
   );
@@ -761,9 +1293,9 @@ if (logoutBtn) {
 
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
+  async () => {
 
-    refreshDashboard();
+    await refreshDashboard();
 
   }
 );
