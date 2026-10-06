@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b18">
 
   <title>Balaji Ludo King - Admin Login</title>
 
   <style>
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -21,317 +16,1028 @@
 
     body {
       min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, #43206b 0%, #28163d 38%, #100b18 80%);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
     }
 
-    .login-box {
+    .container {
       width: 100%;
-      max-width: 400px;
-      background: #ffffff;
-      padding: 30px 24px;
-      border-radius: 18px;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.10);
+      max-width: 430px;
     }
 
-    .logo {
+    .brand {
       text-align: center;
-      font-size: 30px;
-      font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 20px;
     }
 
-    .subtitle {
-      text-align: center;
-      color: #777;
-      margin-bottom: 28px;
+    .brand-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 12px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #7b35c8, #4c1c7c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .brand h1 {
+      font-size: 25px;
+      letter-spacing: 1px;
+    }
+
+    .brand p {
+      color: #bca9cc;
+      margin-top: 6px;
       font-size: 14px;
     }
 
+    .card {
+      background: rgba(25, 14, 37, 0.96);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      padding: 28px 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    }
+
+    .title {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 22px;
+    }
+
     .field {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .field label {
       display: block;
-      margin-bottom: 7px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #333;
+      color: #d8cbe0;
+      font-size: 13px;
+      margin-bottom: 8px;
     }
 
     .field input {
       width: 100%;
       height: 50px;
+      border-radius: 12px;
+      border: 1px solid #51366a;
+      background: #160d20;
+      color: #fff;
       padding: 0 14px;
-      border: 1px solid #d9dce3;
-      border-radius: 10px;
-      outline: none;
       font-size: 15px;
-      background: #fff;
+      outline: none;
+      transition: 0.2s;
     }
 
     .field input:focus {
-      border-color: #555;
+      border-color: #9a55d7;
+      box-shadow: 0 0 0 3px rgba(154,85,215,0.12);
     }
 
-    .login-btn {
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 55px;
+    }
+
+    .show-btn {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      height: 34px;
+      min-width: 42px;
+      border: 0;
+      border-radius: 8px;
+      background: #30203d;
+      color: #d9c5e8;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .main-btn {
       width: 100%;
       height: 52px;
-      border: none;
-      border-radius: 11px;
-      background: #111827;
+      border: 0;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #8d45d0, #60249b);
       color: white;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: bold;
       cursor: pointer;
       margin-top: 5px;
+      box-shadow: 0 8px 22px rgba(96,36,155,0.35);
     }
 
-    .login-btn:disabled {
-      opacity: 0.6;
+    .main-btn:disabled {
+      opacity: 0.55;
       cursor: not-allowed;
     }
 
+    .secondary-btn {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #54396b;
+      border-radius: 12px;
+      background: transparent;
+      color: #d8cbe0;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
     .message {
-      min-height: 22px;
-      margin-top: 15px;
+      display: none;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      line-height: 1.45;
       text-align: center;
-      font-size: 14px;
-      font-weight: 600;
     }
 
-    .back {
+    .message.error {
       display: block;
-      text-align: center;
-      margin-top: 20px;
-      color: #666;
-      text-decoration: none;
-      font-size: 14px;
+      background: rgba(190, 45, 65, 0.13);
+      border: 1px solid rgba(230, 80, 100, 0.25);
+      color: #ffb4bd;
     }
 
+    .message.success {
+      display: block;
+      background: rgba(40, 160, 95, 0.13);
+      border: 1px solid rgba(60, 190, 110, 0.25);
+      color: #9df0ba;
+    }
+
+    .message.info {
+      display: block;
+      background: rgba(100, 70, 180, 0.13);
+      border: 1px solid rgba(130, 100, 210, 0.25);
+      color: #d0c0ff;
+    }
+
+    .links {
+      display: flex;
+      justify-content: center;
+      margin-top: 17px;
+    }
+
+    .link-btn {
+      border: 0;
+      background: transparent;
+      color: #bd7cf0;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .security-note {
+      text-align: center;
+      color: #8e7c99;
+      font-size: 11px;
+      margin-top: 18px;
+      line-height: 1.5;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .top-status {
+      text-align: center;
+      background: rgba(65, 180, 105, 0.10);
+      border: 1px solid rgba(65, 180, 105, 0.20);
+      color: #9ce7b4;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .logout-btn {
+      background: rgba(180,45,65,0.12);
+      border: 1px solid rgba(220,70,90,0.25);
+      color: #ffabb5;
+    }
+
+    .small-text {
+      color: #9988a5;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 14px;
+      }
+
+      .card {
+        padding: 24px 17px;
+        border-radius: 18px;
+      }
+
+      .brand h1 {
+        font-size: 22px;
+      }
+    }
   </style>
-
 </head>
-
 
 <body>
 
+<div class="container">
 
-  <div class="login-box">
+  <!-- BRAND -->
+  <div class="brand">
+    <div class="brand-icon">👑</div>
+    <h1>BALAJI LUDO KING</h1>
+    <p>Secure Admin Panel</p>
+  </div>
 
-    <div class="logo">
-      👑 Balaji Ludo King
+
+  <!-- ================= LOGIN PANEL ================= -->
+  <div id="loginPanel" class="panel">
+
+    <div class="card">
+
+      <div class="title">Admin Login</div>
+
+      <div id="loginMessage" class="message"></div>
+
+      <form id="loginForm">
+
+        <div class="field">
+          <label for="adminId">Admin ID</label>
+          <input
+            id="adminId"
+            type="text"
+            autocomplete="username"
+            placeholder="Enter Admin ID"
+            maxlength="100"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="adminPassword">Password</label>
+
+          <div class="password-wrap">
+            <input
+              id="adminPassword"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Enter Password"
+              maxlength="128"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-btn"
+              onclick="togglePassword('adminPassword', this)"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <button
+          id="loginBtn"
+          class="main-btn"
+          type="submit"
+        >
+          LOGIN
+        </button>
+
+      </form>
+
+      <div class="links">
+        <button
+          type="button"
+          class="link-btn"
+          onclick="showResetPanel()"
+        >
+          Forgot / Reset Password?
+        </button>
+      </div>
+
+      <div class="security-note">
+        Protected admin access.<br>
+        Unauthorized access is not permitted.
+      </div>
+
     </div>
-
-    <div class="subtitle">
-      Admin Panel Login
-    </div>
-
-
-    <form id="adminLoginForm">
-
-
-      <div class="field">
-
-        <label for="adminId">
-          Admin ID
-        </label>
-
-        <input
-          id="adminId"
-          type="text"
-          placeholder="Enter Admin ID"
-          autocomplete="username"
-          required>
-
-      </div>
-
-
-      <div class="field">
-
-        <label for="password">
-          Password
-        </label>
-
-        <input
-          id="password"
-          type="password"
-          placeholder="Enter Password"
-          autocomplete="current-password"
-          required>
-
-      </div>
-
-
-      <button
-        id="loginBtn"
-        class="login-btn"
-        type="submit">
-
-        Login
-
-      </button>
-
-
-      <div
-        id="message"
-        class="message">
-      </div>
-
-
-    </form>
-
-
-    <a
-      href="/"
-      class="back">
-
-      ← Back to Website
-
-    </a>
 
   </div>
 
 
+  <!-- ================= RESET PASSWORD PANEL ================= -->
+  <div id="resetPanel" class="panel">
+
+    <div class="card">
+
+      <div class="title">Reset Admin Password</div>
+
+      <p class="small-text">
+        Enter your Admin ID and the reset secret configured in
+        Cloudflare Worker Secrets.
+      </p>
+
+      <div id="resetMessage" class="message"></div>
+
+      <form id="resetForm">
+
+        <div class="field">
+          <label for="resetAdminId">Admin ID</label>
+
+          <input
+            id="resetAdminId"
+            type="text"
+            autocomplete="username"
+            placeholder="Enter Admin ID"
+            maxlength="100"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="resetSecret">Reset Secret</label>
+
+          <div class="password-wrap">
+            <input
+              id="resetSecret"
+              type="password"
+              autocomplete="off"
+              placeholder="Enter Reset Secret"
+              maxlength="256"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-btn"
+              onclick="togglePassword('resetSecret', this)"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="newPassword">New Password</label>
+
+          <div class="password-wrap">
+            <input
+              id="newPassword"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Minimum 8 characters"
+              maxlength="128"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-btn"
+              onclick="togglePassword('newPassword', this)"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm New Password</label>
+
+          <div class="password-wrap">
+            <input
+              id="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Repeat new password"
+              maxlength="128"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-btn"
+              onclick="togglePassword('confirmPassword', this)"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <button
+          id="resetBtn"
+          class="main-btn"
+          type="submit"
+        >
+          RESET PASSWORD
+        </button>
+
+        <button
+          type="button"
+          class="secondary-btn"
+          onclick="showLoginPanel()"
+        >
+          Back to Login
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= CHANGE PASSWORD PANEL ================= -->
+  <div id="changePasswordPanel" class="panel">
+
+    <div class="card">
+
+      <div class="title">Change Password</div>
+
+      <div class="top-status">
+        Admin session is active
+      </div>
+
+      <div id="changeMessage" class="message"></div>
+
+      <form id="changeForm">
+
+        <div class="field">
+          <label for="currentPassword">Current Password</label>
+
+          <div class="password-wrap">
+            <input
+              id="currentPassword"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Current password"
+              maxlength="128"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-btn"
+              onclick="togglePassword('currentPassword', this)"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="changeNewPassword">New Password</label>
+
+          <div class="password-wrap">
+            <input
+              id="changeNewPassword"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Minimum 8 characters"
+              maxlength="128"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-btn"
+              onclick="togglePassword('changeNewPassword', this)"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="changeConfirmPassword">Confirm New Password</label>
+
+          <div class="password-wrap">
+            <input
+              id="changeConfirmPassword"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Repeat new password"
+              maxlength="128"
+              required
+            >
+
+            <button
+              type="button"
+              class="show-btn"
+              onclick="togglePassword('changeConfirmPassword', this)"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+
+        <button
+          id="changeBtn"
+          class="main-btn"
+          type="submit"
+        >
+          CHANGE PASSWORD
+        </button>
+
+        <button
+          type="button"
+          class="secondary-btn logout-btn"
+          onclick="logoutAdmin()"
+        >
+          LOGOUT
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+
 <script>
+/* =========================================================
+   BALAJI LUDO KING
+   SECURE ADMIN LOGIN
+   ========================================================= */
 
-const form = document.getElementById("adminLoginForm");
-const adminId = document.getElementById("adminId");
-const password = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const message = document.getElementById("message");
+const API = "/api/admin";
+
+let sessionTimer = null;
 
 
-function showMessage(text, success = false) {
+/* =========================================================
+   ELEMENT HELPERS
+   ========================================================= */
 
-  message.textContent = text;
-
-  if (success) {
-    message.style.color = "#16803c";
-  } else {
-    message.style.color = "#d62828";
-  }
-
+function $(id) {
+  return document.getElementById(id);
 }
 
 
-async function checkExistingLogin() {
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
+function showMessage(id, text, type = "error") {
+
+  const box = $(id);
+
+  if (!box) return;
+
+  box.textContent = text;
+  box.className = "message " + type;
+}
+
+
+function clearMessage(id) {
+
+  const box = $(id);
+
+  if (!box) return;
+
+  box.textContent = "";
+  box.className = "message";
+}
+
+
+/* =========================================================
+   PANELS
+   ========================================================= */
+
+function hideAllPanels() {
+
+  document.querySelectorAll(".panel").forEach(panel => {
+    panel.classList.remove("active");
+  });
+}
+
+
+function showLoginPanel() {
+
+  hideAllPanels();
+
+  $("loginPanel").classList.add("active");
+
+  clearMessage("resetMessage");
+  clearMessage("changeMessage");
+
+  setTimeout(() => {
+    $("adminId").focus();
+  }, 100);
+}
+
+
+function showResetPanel() {
+
+  hideAllPanels();
+
+  $("resetPanel").classList.add("active");
+
+  clearMessage("loginMessage");
+
+  setTimeout(() => {
+    $("resetAdminId").focus();
+  }, 100);
+}
+
+
+function showChangePasswordPanel() {
+
+  hideAllPanels();
+
+  $("changePasswordPanel").classList.add("active");
+
+  clearMessage("changeMessage");
+}
+
+
+/* =========================================================
+   PASSWORD SHOW / HIDE
+   ========================================================= */
+
+function togglePassword(inputId, button) {
+
+  const input = $(inputId);
+
+  if (!input) return;
+
+  if (input.type === "password") {
+
+    input.type = "text";
+    button.textContent = "Hide";
+
+  } else {
+
+    input.type = "password";
+    button.textContent = "Show";
+
+  }
+}
+
+
+/* =========================================================
+   API JSON HELPER
+   ========================================================= */
+
+async function apiRequest(url, options = {}) {
+
+  const response = await fetch(url, {
+    credentials: "include",
+    cache: "no-store",
+    ...options,
+
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  let data = {};
+
+  try {
+    data = await response.json();
+  } catch (error) {
+    data = {};
+  }
+
+  return {
+    response,
+    data
+  };
+}
+
+
+/* =========================================================
+   CHECK EXISTING ADMIN SESSION
+   ========================================================= */
+
+async function checkExistingSession() {
 
   try {
 
-    const response = await fetch(
-      "/api/admin/me",
+    const result = await apiRequest(
+      API + "/me",
       {
-        method: "GET",
-        credentials: "same-origin"
+        method: "GET"
       }
     );
 
-    if (response.ok) {
+    if (
+      result.response.ok &&
+      result.data &&
+      result.data.ok
+    ) {
 
-      window.location.replace("/admin.html");
+      startSessionTimer(
+        result.data.expires_at
+      );
 
+      showChangePasswordPanel();
+
+      return true;
     }
 
   } catch (error) {
 
-    console.log("Existing session check failed.");
+    console.log("Session check failed:", error);
 
   }
 
+  showLoginPanel();
+
+  return false;
 }
 
 
-form.addEventListener("submit", async function (event) {
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+$("loginForm").addEventListener("submit", async function(event) {
 
   event.preventDefault();
 
+  clearMessage("loginMessage");
 
-  const id = adminId.value.trim();
-  const pass = password.value;
+  const adminId =
+    $("adminId").value.trim();
 
+  const password =
+    $("adminPassword").value;
 
-  if (!id || !pass) {
+  if (!adminId) {
 
-    showMessage("Admin ID और Password डालें।");
+    showMessage(
+      "loginMessage",
+      "Please enter Admin ID."
+    );
 
     return;
+  }
+
+  if (!password) {
+
+    showMessage(
+      "loginMessage",
+      "Please enter password."
+    );
+
+    return;
+  }
+
+  if (password.length < 8) {
+
+    showMessage(
+      "loginMessage",
+      "Password must be at least 8 characters."
+    );
+
+    return;
+  }
+
+  const button = $("loginBtn");
+
+  button.disabled = true;
+  button.textContent = "LOGGING IN...";
+
+  try {
+
+    const result = await apiRequest(
+      API + "/login",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          admin_id: adminId,
+          password: password
+        })
+      }
+    );
+
+    if (
+      result.response.ok &&
+      result.data &&
+      result.data.ok
+    ) {
+
+      showMessage(
+        "loginMessage",
+        "Login successful. Opening admin panel...",
+        "success"
+      );
+
+      startSessionTimer(
+        result.data.expires_at
+      );
+
+      setTimeout(() => {
+
+        /*
+          If admin.html exists, open it.
+          Session is stored in secure HttpOnly cookie,
+          so no token is saved in localStorage.
+        */
+
+        window.location.href = "/admin.html";
+
+      }, 500);
+
+      return;
+    }
+
+    let message =
+      result.data?.error ||
+      result.data?.message ||
+      "Invalid Admin ID or password.";
+
+    if (result.response.status === 429) {
+
+      message =
+        result.data?.error ||
+        "Too many failed attempts. Please try again later.";
+
+    }
+
+    showMessage(
+      "loginMessage",
+      message
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "loginMessage",
+      "Unable to connect to the server. Please try again."
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "LOGIN";
 
   }
 
+});
 
-  loginBtn.disabled = true;
-  loginBtn.textContent = "Logging in...";
 
-  showMessage("");
+/* =========================================================
+   RESET PASSWORD
+   ========================================================= */
+
+$("resetForm").addEventListener("submit", async function(event) {
+
+  event.preventDefault();
+
+  clearMessage("resetMessage");
+
+  const adminId =
+    $("resetAdminId").value.trim();
+
+  const resetSecret =
+    $("resetSecret").value;
+
+  const newPassword =
+    $("newPassword").value;
+
+  const confirmPassword =
+    $("confirmPassword").value;
+
+
+  if (!adminId) {
+
+    showMessage(
+      "resetMessage",
+      "Please enter Admin ID."
+    );
+
+    return;
+  }
+
+
+  if (!resetSecret) {
+
+    showMessage(
+      "resetMessage",
+      "Please enter Reset Secret."
+    );
+
+    return;
+  }
+
+
+  if (newPassword.length < 8) {
+
+    showMessage(
+      "resetMessage",
+      "New password must be at least 8 characters."
+    );
+
+    return;
+  }
+
+
+  if (newPassword.length > 128) {
+
+    showMessage(
+      "resetMessage",
+      "New password is too long."
+    );
+
+    return;
+  }
+
+
+  if (newPassword !== confirmPassword) {
+
+    showMessage(
+      "resetMessage",
+      "New passwords do not match."
+    );
+
+    return;
+  }
+
+
+  const button = $("resetBtn");
+
+  button.disabled = true;
+  button.textContent = "RESETTING...";
 
 
   try {
 
-    const response = await fetch(
-      "/api/admin/login",
+    const result = await apiRequest(
+      API + "/reset-password",
       {
         method: "POST",
 
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        credentials: "same-origin",
-
         body: JSON.stringify({
-
-          admin_id: id,
-          password: pass
-
+          admin_id: adminId,
+          reset_secret: resetSecret,
+          new_password: newPassword
         })
-
       }
     );
 
 
-    let data = {};
-
-    try {
-
-      data = await response.json();
-
-    } catch (error) {
-
-      data = {};
-
-    }
-
-
-    if (response.ok && data.success) {
+    if (
+      result.response.ok &&
+      result.data &&
+      result.data.ok
+    ) {
 
       showMessage(
-        "Login successful. Opening Admin Panel...",
-        true
+        "resetMessage",
+        "Password reset successfully. You can now login with the new password.",
+        "success"
       );
 
+      $("resetSecret").value = "";
+      $("newPassword").value = "";
+      $("confirmPassword").value = "";
 
-      setTimeout(function () {
+      setTimeout(() => {
 
-        window.location.replace("/admin.html");
+        $("adminId").value = adminId;
 
-      }, 500);
+        showLoginPanel();
 
+      }, 1200);
 
       return;
-
     }
 
 
     showMessage(
-      data.error ||
-      data.message ||
-      "Invalid Admin ID or Password."
+      "resetMessage",
+      result.data?.error ||
+      result.data?.message ||
+      "Password reset failed."
     );
 
 
@@ -340,23 +1046,370 @@ form.addEventListener("submit", async function (event) {
     console.error(error);
 
     showMessage(
-      "Server connection failed. Please try again."
+      "resetMessage",
+      "Unable to connect to the server. Please try again."
     );
 
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "RESET PASSWORD";
+
   }
-
-
-  loginBtn.disabled = false;
-  loginBtn.textContent = "Login";
 
 });
 
 
-checkExistingLogin();
+/* =========================================================
+   CHANGE PASSWORD
+   ========================================================= */
 
+$("changeForm").addEventListener("submit", async function(event) {
+
+  event.preventDefault();
+
+  clearMessage("changeMessage");
+
+  const currentPassword =
+    $("currentPassword").value;
+
+  const newPassword =
+    $("changeNewPassword").value;
+
+  const confirmPassword =
+    $("changeConfirmPassword").value;
+
+
+  if (!currentPassword) {
+
+    showMessage(
+      "changeMessage",
+      "Please enter current password."
+    );
+
+    return;
+  }
+
+
+  if (newPassword.length < 8) {
+
+    showMessage(
+      "changeMessage",
+      "New password must be at least 8 characters."
+    );
+
+    return;
+  }
+
+
+  if (newPassword.length > 128) {
+
+    showMessage(
+      "changeMessage",
+      "New password is too long."
+    );
+
+    return;
+  }
+
+
+  if (newPassword !== confirmPassword) {
+
+    showMessage(
+      "changeMessage",
+      "New passwords do not match."
+    );
+
+    return;
+  }
+
+
+  if (currentPassword === newPassword) {
+
+    showMessage(
+      "changeMessage",
+      "New password must be different from current password."
+    );
+
+    return;
+  }
+
+
+  const button = $("changeBtn");
+
+  button.disabled = true;
+  button.textContent = "CHANGING...";
+
+
+  try {
+
+    const result = await apiRequest(
+      API + "/change-password",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword
+        })
+      }
+    );
+
+
+    if (
+      result.response.ok &&
+      result.data &&
+      result.data.ok
+    ) {
+
+      showMessage(
+        "changeMessage",
+        "Password changed successfully. All admin sessions have been logged out.",
+        "success"
+      );
+
+      $("currentPassword").value = "";
+      $("changeNewPassword").value = "";
+      $("changeConfirmPassword").value = "";
+
+      clearSessionTimer();
+
+      setTimeout(() => {
+
+        showLoginPanel();
+
+      }, 1500);
+
+      return;
+    }
+
+
+    if (result.response.status === 401) {
+
+      showMessage(
+        "changeMessage",
+        "Your admin session has expired. Please login again."
+      );
+
+      clearSessionTimer();
+
+      setTimeout(() => {
+
+        showLoginPanel();
+
+      }, 1000);
+
+      return;
+    }
+
+
+    showMessage(
+      "changeMessage",
+      result.data?.error ||
+      result.data?.message ||
+      "Password change failed."
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "changeMessage",
+      "Unable to connect to the server. Please try again."
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "CHANGE PASSWORD";
+
+  }
+
+});
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+async function logoutAdmin() {
+
+  try {
+
+    await apiRequest(
+      API + "/logout",
+      {
+        method: "POST"
+      }
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  } finally {
+
+    clearSessionTimer();
+
+    $("currentPassword").value = "";
+    $("changeNewPassword").value = "";
+    $("changeConfirmPassword").value = "";
+
+    showLoginPanel();
+
+    showMessage(
+      "loginMessage",
+      "You have been logged out.",
+      "success"
+    );
+
+  }
+}
+
+
+/* =========================================================
+   SESSION TIMER
+   ========================================================= */
+
+function startSessionTimer(expiresAt) {
+
+  clearSessionTimer();
+
+  if (!expiresAt) return;
+
+  const expiry =
+    new Date(expiresAt).getTime();
+
+  if (!Number.isFinite(expiry)) return;
+
+  const remaining =
+    expiry - Date.now();
+
+
+  if (remaining <= 0) {
+
+    handleSessionExpired();
+
+    return;
+  }
+
+
+  sessionTimer = setTimeout(
+    handleSessionExpired,
+    remaining
+  );
+
+}
+
+
+function clearSessionTimer() {
+
+  if (sessionTimer) {
+
+    clearTimeout(sessionTimer);
+
+    sessionTimer = null;
+
+  }
+
+}
+
+
+function handleSessionExpired() {
+
+  clearSessionTimer();
+
+  showLoginPanel();
+
+  showMessage(
+    "loginMessage",
+    "Your admin session has expired. Please login again."
+  );
+
+}
+
+
+/* =========================================================
+   PERIODIC SESSION CHECK
+   ========================================================= */
+
+setInterval(async function() {
+
+  try {
+
+    const result = await apiRequest(
+      API + "/me",
+      {
+        method: "GET"
+      }
+    );
+
+    if (
+      !result.response.ok ||
+      !result.data ||
+      !result.data.ok
+    ) {
+
+      /*
+        Only switch to login if user is currently
+        inside the authenticated panel.
+      */
+
+      if (
+        $("changePasswordPanel").classList.contains("active")
+      ) {
+
+        handleSessionExpired();
+
+      }
+
+      return;
+    }
+
+    if (result.data.expires_at) {
+
+      startSessionTimer(
+        result.data.expires_at
+      );
+
+    }
+
+  } catch (error) {
+
+    console.log("Periodic session check failed.");
+
+  }
+
+}, 60 * 1000);
+
+
+/* =========================================================
+   PREVENT BACK BUTTON AFTER LOGOUT
+   ========================================================= */
+
+window.addEventListener("pageshow", function(event) {
+
+  if (event.persisted) {
+
+    checkExistingSession();
+
+  }
+
+});
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  checkExistingSession();
+
+});
 </script>
 
-
 </body>
-
 </html>
