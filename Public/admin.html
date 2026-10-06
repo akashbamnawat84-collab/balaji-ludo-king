@@ -46,8 +46,6 @@
       min-height: 100vh;
     }
 
-    /* SIDEBAR */
-
     .sidebar {
       width: 250px;
       background: rgba(18,11,27,.97);
@@ -127,8 +125,6 @@
       display: inline-block;
     }
 
-    /* MAIN */
-
     .main {
       margin-left: 250px;
       width: calc(100% - 250px);
@@ -204,8 +200,6 @@
       padding: 24px;
     }
 
-    /* SECTION */
-
     .section {
       display: none;
     }
@@ -227,8 +221,6 @@
       color: var(--muted);
       font-size: 13px;
     }
-
-    /* STATS */
 
     .stats {
       display: grid;
@@ -271,8 +263,6 @@
       margin-top: 16px;
     }
 
-    /* CARDS */
-
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -301,8 +291,6 @@
     .card-body {
       padding: 17px;
     }
-
-    /* TABLE */
 
     .table-wrap {
       overflow-x: auto;
@@ -335,8 +323,6 @@
       background: rgba(124,58,237,.04);
     }
 
-    /* BADGES */
-
     .badge {
       display: inline-flex;
       align-items: center;
@@ -365,8 +351,6 @@
       background: rgba(59,130,246,.12);
       color: #93c5fd;
     }
-
-    /* BUTTONS */
 
     .btn {
       border: 0;
@@ -398,8 +382,6 @@
       padding: 6px 9px;
       font-size: 10px;
     }
-
-    /* QUICK ACTION */
 
     .quick-grid {
       display: grid;
@@ -438,8 +420,6 @@
       margin-top: 4px;
     }
 
-    /* EMPTY */
-
     .empty {
       text-align: center;
       padding: 35px 15px;
@@ -451,8 +431,6 @@
       font-size: 30px;
       margin-bottom: 10px;
     }
-
-    /* SETTINGS */
 
     .setting-row {
       display: flex;
@@ -492,8 +470,6 @@
       border-color: var(--purple);
     }
 
-    /* NOTICE */
-
     .notice {
       padding: 13px 15px;
       border-radius: 10px;
@@ -503,8 +479,6 @@
       font-size: 12px;
       margin-bottom: 17px;
     }
-
-    /* TOAST */
 
     .toast {
       position: fixed;
@@ -538,16 +512,12 @@
       }
     }
 
-    /* LOADING */
-
     .loading {
       text-align: center;
       padding: 25px;
       color: var(--muted);
       font-size: 12px;
     }
-
-    /* MOBILE */
 
     @media (max-width: 1000px) {
       .stats {
@@ -643,7 +613,6 @@
 
 <div class="app">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
 
     <div class="brand">
@@ -749,8 +718,6 @@
     </nav>
   </aside>
 
-
-  <!-- MAIN -->
   <main class="main">
 
     <header class="topbar">
@@ -765,6 +732,7 @@
           <div class="page-title" id="pageTitle">
             Dashboard
           </div>
+
           <div class="admin-badge" id="adminBadge">
             Checking secure session...
           </div>
@@ -786,11 +754,8 @@
 
     </header>
 
-
     <div class="content">
 
-
-      <!-- DASHBOARD -->
       <section class="section active" id="section-dashboard">
 
         <div class="section-head">
@@ -838,7 +803,6 @@
 
         </div>
 
-
         <div class="grid">
 
           <div class="card">
@@ -880,7 +844,6 @@
             </div>
           </div>
 
-
           <div class="card">
 
             <div class="card-head">
@@ -921,8 +884,6 @@
 
       </section>
 
-
-      <!-- PLAYERS -->
       <section class="section" id="section-players">
 
         <div class="section-head">
@@ -934,6 +895,7 @@
 
           <div class="card-head">
             <h3>Player Management</h3>
+
             <button class="btn btn-primary" onclick="loadPlayers()">
               ↻ Load
             </button>
@@ -950,8 +912,6 @@
 
       </section>
 
-
-      <!-- KYC -->
       <section class="section" id="section-kyc">
 
         <div class="section-head">
@@ -995,7 +955,6 @@
 
         </div>
 
-
         <div class="card">
 
           <div class="card-head">
@@ -1016,8 +975,6 @@
 
       </section>
 
-
-      <!-- WALLET -->
       <section class="section" id="section-wallet">
 
         <div class="section-head">
@@ -1036,8 +993,6 @@
 
       </section>
 
-
-      <!-- DEPOSITS -->
       <section class="section" id="section-deposits">
 
         <div class="section-head">
@@ -1056,8 +1011,6 @@
 
       </section>
 
-
-      <!-- WITHDRAWALS -->
       <section class="section" id="section-withdrawals">
 
         <div class="section-head">
@@ -1076,8 +1029,6 @@
 
       </section>
 
-
-      <!-- BATTLES -->
       <section class="section" id="section-battles">
 
         <div class="section-head">
@@ -1132,8 +1083,6 @@
 
       </section>
 
-
-      <!-- ROOMS -->
       <section class="section" id="section-rooms">
 
         <div class="section-head">
@@ -1152,8 +1101,6 @@
 
       </section>
 
-
-      <!-- REFERRALS -->
       <section class="section" id="section-referrals">
 
         <div class="section-head">
@@ -1185,8 +1132,6 @@
 
       </section>
 
-
-      <!-- COMMISSION -->
       <section class="section" id="section-commission">
 
         <div class="section-head">
@@ -1231,8 +1176,6 @@
 
       </section>
 
-
-      <!-- SUPPORT -->
       <section class="section" id="section-support">
 
         <div class="section-head">
@@ -1251,8 +1194,6 @@
 
       </section>
 
-
-      <!-- NOTIFICATIONS -->
       <section class="section" id="section-notifications">
 
         <div class="section-head">
@@ -1299,8 +1240,6 @@
 
       </section>
 
-
-      <!-- REPORTS -->
       <section class="section" id="section-reports">
 
         <div class="section-head">
@@ -1355,8 +1294,6 @@
 
       </section>
 
-
-      <!-- SETTINGS -->
       <section class="section" id="section-settings">
 
         <div class="section-head">
@@ -1405,8 +1342,6 @@
 
       </section>
 
-
-      <!-- RULES -->
       <section class="section" id="section-rules">
 
         <div class="section-head">
@@ -1464,8 +1399,6 @@
 
       </section>
 
-
-      <!-- PAYMENT -->
       <section class="section" id="section-payment">
 
         <div class="section-head">
@@ -1504,8 +1437,6 @@
 
       </section>
 
-
-      <!-- AUDIT -->
       <section class="section" id="section-audit">
 
         <div class="section-head">
@@ -1528,8 +1459,6 @@
 
       </section>
 
-
-      <!-- ROLES -->
       <section class="section" id="section-roles">
 
         <div class="section-head">
@@ -1565,8 +1494,6 @@
 
       </section>
 
-
-      <!-- ERRORS -->
       <section class="section" id="section-errors">
 
         <div class="section-head">
@@ -1589,8 +1516,6 @@
 
       </section>
 
-
-      <!-- SAFETY -->
       <section class="section" id="section-safety">
 
         <div class="section-head">
@@ -1646,22 +1571,14 @@
 
       </section>
 
-
     </div>
   </main>
 
 </div>
 
-
 <div class="toast" id="toast"></div>
 
-
 <script>
-
-  /* =========================================================
-     BALAJI LUDO KING
-     ADMIN DASHBOARD
-  ========================================================= */
 
   const state = {
     admin: null,
@@ -1715,72 +1632,134 @@
 
   function showToast(message) {
 
-    const toast = document.getElementById("toast");
+    const toast =
+      document.getElementById("toast");
 
     toast.textContent = message;
+
     toast.classList.add("show");
 
     clearTimeout(showToast.timer);
 
-    showToast.timer = setTimeout(() => {
-      toast.classList.remove("show");
-    }, 3000);
+    showToast.timer =
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
   }
 
 
   /* =========================================================
-     ADMIN SESSION
+     ADMIN SESSION - UPDATED
   ========================================================= */
 
   async function checkAdminSession() {
 
     try {
 
-      const result = await api("/api/admin/me");
+      const result =
+        await api("/api/admin/session");
 
-      if (!result || result.ok === false) {
-        throw new Error("Admin authentication required");
+      if (
+        !result ||
+        result.success !== true ||
+        result.authenticated !== true
+      ) {
+
+        throw new Error(
+          "Admin authentication required"
+        );
       }
 
       const admin =
-        result.data ||
-        result.admin ||
-        result;
+        result.admin || {};
 
-      state.admin = admin;
+      state.admin =
+        admin;
 
-      document.getElementById("adminBadge").textContent =
-        admin.admin_id
-          ? `Signed in as ${admin.admin_id}`
-          : "Secure admin session active";
+      const adminBadge =
+        document.getElementById(
+          "adminBadge"
+        );
 
-      document.getElementById("sessionStatus").textContent =
-        "ACTIVE";
+      if (adminBadge) {
 
-      if (admin.expires_at) {
-        state.expiresAt = admin.expires_at;
+        adminBadge.textContent =
+          admin.id
+            ? `Signed in as ${admin.id}`
+            : "Secure admin session active";
+      }
+
+      const sessionStatus =
+        document.getElementById(
+          "sessionStatus"
+        );
+
+      if (sessionStatus) {
+
+        sessionStatus.textContent =
+          "ACTIVE";
+
+        sessionStatus.className =
+          "badge green";
+      }
+
+      if (result.expires_at) {
+
+        state.expiresAt =
+          Number(result.expires_at);
       }
 
       startSessionTimer();
 
       loadKyc();
 
+      return true;
+
     } catch (error) {
 
-      document.getElementById("adminBadge").textContent =
-        "Authentication required";
+      console.error(
+        "Admin session error:",
+        error
+      );
 
-      document.getElementById("sessionStatus").textContent =
-        "EXPIRED";
+      const adminBadge =
+        document.getElementById(
+          "adminBadge"
+        );
 
-      document.getElementById("sessionStatus").className =
-        "badge red";
+      if (adminBadge) {
 
-      showToast("Admin session expired. Redirecting to login...");
+        adminBadge.textContent =
+          "Authentication required";
+      }
+
+      const sessionStatus =
+        document.getElementById(
+          "sessionStatus"
+        );
+
+      if (sessionStatus) {
+
+        sessionStatus.textContent =
+          "EXPIRED";
+
+        sessionStatus.className =
+          "badge red";
+      }
+
+      showToast(
+        "Admin session expired. Redirecting to login..."
+      );
 
       setTimeout(() => {
-        window.location.href = "/admin-login.html";
-      }, 1000);
+
+        window.location.replace(
+          "/admin-login.html"
+        );
+
+      }, 500);
+
+      return false;
     }
   }
 
@@ -1791,31 +1770,43 @@
 
   function startSessionTimer() {
 
-    clearInterval(state.timer);
+    clearInterval(
+      state.timer
+    );
 
-    state.timer = setInterval(() => {
+    state.timer =
+      setInterval(() => {
 
-      if (!state.expiresAt) return;
+        if (!state.expiresAt) {
+          return;
+        }
 
-      const expiry =
-        new Date(state.expiresAt).getTime();
+        const expiry =
+          Number(state.expiresAt);
 
-      const remaining =
-        expiry - Date.now();
+        const remaining =
+          expiry - Date.now();
 
-      if (remaining <= 0) {
+        if (remaining <= 0) {
 
-        clearInterval(state.timer);
+          clearInterval(
+            state.timer
+          );
 
-        showToast("Admin session expired.");
+          showToast(
+            "Admin session expired."
+          );
 
-        setTimeout(() => {
-          window.location.href = "/admin-login.html";
-        }, 700);
+          setTimeout(() => {
 
-      }
+            window.location.replace(
+              "/admin-login.html"
+            );
 
-    }, 10000);
+          }, 700);
+        }
+
+      }, 10000);
   }
 
 
@@ -1827,15 +1818,21 @@
 
     try {
 
-      await api("/api/admin/logout", {
-        method: "POST"
-      });
+      await api(
+        "/api/admin/logout",
+        {
+          method: "POST"
+        }
+      );
 
     } catch (error) {
+
       console.warn(error);
     }
 
-    window.location.href = "/admin-login.html";
+    window.location.replace(
+      "/admin-login.html"
+    );
   }
 
 
@@ -1874,20 +1871,33 @@
     document
       .querySelectorAll(".section")
       .forEach(section => {
-        section.classList.remove("active");
+
+        section.classList.remove(
+          "active"
+        );
+
       });
 
     document
       .querySelectorAll(".nav-btn")
       .forEach(button => {
-        button.classList.remove("active");
+
+        button.classList.remove(
+          "active"
+        );
+
       });
 
     const section =
-      document.getElementById(`section-${name}`);
+      document.getElementById(
+        `section-${name}`
+      );
 
     if (section) {
-      section.classList.add("active");
+
+      section.classList.add(
+        "active"
+      );
     }
 
     const button =
@@ -1896,17 +1906,24 @@
       );
 
     if (button) {
-      button.classList.add("active");
+
+      button.classList.add(
+        "active"
+      );
     }
 
-    document.getElementById("pageTitle").textContent =
-      pageNames[name] || "Admin Dashboard";
+    document.getElementById(
+      "pageTitle"
+    ).textContent =
+      pageNames[name] ||
+      "Admin Dashboard";
 
     document
       .getElementById("sidebar")
       .classList.remove("open");
 
     if (name === "kyc") {
+
       loadKyc();
     }
   }
@@ -1916,13 +1933,16 @@
     .querySelectorAll(".nav-btn")
     .forEach(button => {
 
-      button.addEventListener("click", () => {
+      button.addEventListener(
+        "click",
+        () => {
 
-        openSection(
-          button.dataset.section
-        );
+          openSection(
+            button.dataset.section
+          );
 
-      });
+        }
+      );
 
     });
 
@@ -1934,9 +1954,13 @@
   async function loadKyc() {
 
     const container =
-      document.getElementById("kycContent");
+      document.getElementById(
+        "kycContent"
+      );
 
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
     container.innerHTML =
       `<div class="loading">Loading KYC records...</div>`;
@@ -1944,7 +1968,9 @@
     try {
 
       const result =
-        await api("/api/admin/kyc/pending");
+        await api(
+          "/api/admin/kyc/pending"
+        );
 
       const records =
         result.data ||
@@ -1971,7 +1997,6 @@
         return;
       }
 
-
       let html = `
         <div class="table-wrap">
         <table>
@@ -1986,7 +2011,6 @@
           </thead>
           <tbody>
       `;
-
 
       list.forEach(item => {
 
@@ -2012,7 +2036,6 @@
           item.submitted_at ||
           "-";
 
-
         html += `
           <tr>
 
@@ -2029,6 +2052,7 @@
             <td>${escapeHtml(date)}</td>
 
             <td>
+
               <button
                 class="btn btn-green btn-small"
                 onclick="approveKyc('${escapeAttr(id)}')"
@@ -2042,6 +2066,7 @@
               >
                 Reject
               </button>
+
             </td>
 
           </tr>
@@ -2049,14 +2074,14 @@
 
       });
 
-
       html += `
           </tbody>
         </table>
         </div>
       `;
 
-      container.innerHTML = html;
+      container.innerHTML =
+        html;
 
     } catch (error) {
 
@@ -2087,32 +2112,37 @@
 
       }).length;
 
-
     const pendingEl =
-      document.getElementById("kycPendingCount");
+      document.getElementById(
+        "kycPendingCount"
+      );
 
     if (pendingEl) {
-      pendingEl.textContent = pending;
+
+      pendingEl.textContent =
+        pending;
     }
 
     const dashboardPending =
-      document.getElementById("pendingKyc");
+      document.getElementById(
+        "pendingKyc"
+      );
 
     if (dashboardPending) {
-      dashboardPending.textContent = pending;
+
+      dashboardPending.textContent =
+        pending;
     }
 
-    /*
-      These values are intentionally only based on
-      returned records. Full all-KYC statistics will
-      connect when the all-record API is added.
-    */
-
     const total =
-      document.getElementById("kycTotalCount");
+      document.getElementById(
+        "kycTotalCount"
+      );
 
     if (total) {
-      total.textContent = records.length;
+
+      total.textContent =
+        records.length;
     }
 
   }
@@ -2120,22 +2150,31 @@
 
   async function approveKyc(customerId) {
 
-    if (!confirm(
-      `Approve KYC for ${customerId}?`
-    )) {
+    if (
+      !confirm(
+        `Approve KYC for ${customerId}?`
+      )
+    ) {
+
       return;
     }
 
     try {
 
-      await api("/api/admin/kyc/approve", {
-        method: "POST",
-        body: JSON.stringify({
-          customer_id: customerId
-        })
-      });
+      await api(
+        "/api/admin/kyc/approve",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            customer_id:
+              customerId
+          })
+        }
+      );
 
-      showToast("KYC approved successfully.");
+      showToast(
+        "KYC approved successfully."
+      );
 
       loadKyc();
 
@@ -2158,19 +2197,28 @@
         "KYC documents could not be verified."
       );
 
-    if (reason === null) return;
+    if (reason === null) {
+      return;
+    }
 
     try {
 
-      await api("/api/admin/kyc/reject", {
-        method: "POST",
-        body: JSON.stringify({
-          customer_id: customerId,
-          reason
-        })
-      });
+      await api(
+        "/api/admin/kyc/reject",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            customer_id:
+              customerId,
+            reason:
+              reason
+          })
+        }
+      );
 
-      showToast("KYC rejected.");
+      showToast(
+        "KYC rejected."
+      );
 
       loadKyc();
 
@@ -2192,16 +2240,12 @@
   async function loadPlayers() {
 
     const container =
-      document.getElementById("playersContent");
+      document.getElementById(
+        "playersContent"
+      );
 
     container.innerHTML =
       `<div class="loading">Loading players...</div>`;
-
-    /*
-      We deliberately do not invent a player API endpoint.
-      Once the Worker player-admin endpoint is added,
-      this section can connect without changing the UI.
-    */
 
     setTimeout(() => {
 
@@ -2223,25 +2267,37 @@
 
   document
     .getElementById("refreshBtn")
-    .addEventListener("click", async () => {
+    .addEventListener(
+      "click",
+      async () => {
 
-      showToast("Refreshing dashboard...");
-
-      await checkAdminSession();
-
-      const active =
-        document.querySelector(
-          ".section.active"
+        showToast(
+          "Refreshing dashboard..."
         );
 
-      if (
-        active &&
-        active.id === "section-kyc"
-      ) {
-        loadKyc();
-      }
+        const authenticated =
+          await checkAdminSession();
 
-    });
+        if (!authenticated) {
+          return;
+        }
+
+        const active =
+          document.querySelector(
+            ".section.active"
+          );
+
+        if (
+          active &&
+          active.id ===
+            "section-kyc"
+        ) {
+
+          loadKyc();
+        }
+
+      }
+    );
 
 
   /* =========================================================
@@ -2250,13 +2306,18 @@
 
   document
     .getElementById("mobileMenu")
-    .addEventListener("click", () => {
+    .addEventListener(
+      "click",
+      () => {
 
-      document
-        .getElementById("sidebar")
-        .classList.toggle("open");
+        document
+          .getElementById("sidebar")
+          .classList.toggle(
+            "open"
+          );
 
-    });
+      }
+    );
 
 
   /* =========================================================
@@ -2265,17 +2326,21 @@
 
   document
     .getElementById("logoutBtn")
-    .addEventListener("click", () => {
+    .addEventListener(
+      "click",
+      () => {
 
-      if (
-        confirm(
-          "Logout from Balaji Ludo King Admin?"
-        )
-      ) {
-        logout();
+        if (
+          confirm(
+            "Logout from Balaji Ludo King Admin?"
+          )
+        ) {
+
+          logout();
+        }
+
       }
-
-    });
+    );
 
 
   /* =========================================================
@@ -2285,11 +2350,26 @@
   function escapeHtml(value) {
 
     return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+      .replaceAll(
+        "&",
+        "&amp;"
+      )
+      .replaceAll(
+        "<",
+        "&lt;"
+      )
+      .replaceAll(
+        ">",
+        "&gt;"
+      )
+      .replaceAll(
+        '"',
+        "&quot;"
+      )
+      .replaceAll(
+        "'",
+        "&#039;"
+      );
 
   }
 
@@ -2297,8 +2377,14 @@
   function escapeAttr(value) {
 
     return String(value)
-      .replaceAll("\\", "\\\\")
-      .replaceAll("'", "\\'");
+      .replaceAll(
+        "\\",
+        "\\\\"
+      )
+      .replaceAll(
+        "'",
+        "\\'"
+      );
 
   }
 
