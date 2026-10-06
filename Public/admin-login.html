@@ -271,7 +271,7 @@
   </div>
 
 
-  <!-- ================= LOGIN PANEL ================= -->
+  <!-- LOGIN PANEL -->
   <div id="loginPanel" class="panel">
 
     <div class="card">
@@ -284,6 +284,7 @@
 
         <div class="field">
           <label for="adminId">Admin ID</label>
+
           <input
             id="adminId"
             type="text"
@@ -298,6 +299,7 @@
           <label for="adminPassword">Password</label>
 
           <div class="password-wrap">
+
             <input
               id="adminPassword"
               type="password"
@@ -314,6 +316,7 @@
             >
               Show
             </button>
+
           </div>
         </div>
 
@@ -328,6 +331,7 @@
       </form>
 
       <div class="links">
+
         <button
           type="button"
           class="link-btn"
@@ -335,6 +339,7 @@
         >
           Forgot / Reset Password?
         </button>
+
       </div>
 
       <div class="security-note">
@@ -347,7 +352,7 @@
   </div>
 
 
-  <!-- ================= RESET PASSWORD PANEL ================= -->
+  <!-- RESET PASSWORD PANEL -->
   <div id="resetPanel" class="panel">
 
     <div class="card">
@@ -380,6 +385,7 @@
           <label for="resetSecret">Reset Secret</label>
 
           <div class="password-wrap">
+
             <input
               id="resetSecret"
               type="password"
@@ -396,6 +402,7 @@
             >
               Show
             </button>
+
           </div>
         </div>
 
@@ -403,6 +410,7 @@
           <label for="newPassword">New Password</label>
 
           <div class="password-wrap">
+
             <input
               id="newPassword"
               type="password"
@@ -419,6 +427,7 @@
             >
               Show
             </button>
+
           </div>
         </div>
 
@@ -426,6 +435,7 @@
           <label for="confirmPassword">Confirm New Password</label>
 
           <div class="password-wrap">
+
             <input
               id="confirmPassword"
               type="password"
@@ -442,6 +452,7 @@
             >
               Show
             </button>
+
           </div>
         </div>
 
@@ -468,7 +479,7 @@
   </div>
 
 
-  <!-- ================= CHANGE PASSWORD PANEL ================= -->
+  <!-- CHANGE PASSWORD PANEL -->
   <div id="changePasswordPanel" class="panel">
 
     <div class="card">
@@ -487,6 +498,7 @@
           <label for="currentPassword">Current Password</label>
 
           <div class="password-wrap">
+
             <input
               id="currentPassword"
               type="password"
@@ -503,6 +515,7 @@
             >
               Show
             </button>
+
           </div>
         </div>
 
@@ -510,6 +523,7 @@
           <label for="changeNewPassword">New Password</label>
 
           <div class="password-wrap">
+
             <input
               id="changeNewPassword"
               type="password"
@@ -526,6 +540,7 @@
             >
               Show
             </button>
+
           </div>
         </div>
 
@@ -533,6 +548,7 @@
           <label for="changeConfirmPassword">Confirm New Password</label>
 
           <div class="password-wrap">
+
             <input
               id="changeConfirmPassword"
               type="password"
@@ -549,6 +565,7 @@
             >
               Show
             </button>
+
           </div>
         </div>
 
@@ -578,6 +595,7 @@
 
 
 <script>
+
 /* =========================================================
    BALAJI LUDO KING
    SECURE ADMIN LOGIN
@@ -589,7 +607,7 @@ let sessionTimer = null;
 
 
 /* =========================================================
-   ELEMENT HELPERS
+   ELEMENT HELPER
    ========================================================= */
 
 function $(id) {
@@ -632,6 +650,7 @@ function hideAllPanels() {
   document.querySelectorAll(".panel").forEach(panel => {
     panel.classList.remove("active");
   });
+
 }
 
 
@@ -645,8 +664,11 @@ function showLoginPanel() {
   clearMessage("changeMessage");
 
   setTimeout(() => {
+
     $("adminId").focus();
+
   }, 100);
+
 }
 
 
@@ -659,8 +681,11 @@ function showResetPanel() {
   clearMessage("loginMessage");
 
   setTimeout(() => {
+
     $("resetAdminId").focus();
+
   }, 100);
+
 }
 
 
@@ -671,6 +696,7 @@ function showChangePasswordPanel() {
   $("changePasswordPanel").classList.add("active");
 
   clearMessage("changeMessage");
+
 }
 
 
@@ -695,38 +721,50 @@ function togglePassword(inputId, button) {
     button.textContent = "Show";
 
   }
+
 }
 
 
 /* =========================================================
-   API JSON HELPER
+   API REQUEST
    ========================================================= */
 
 async function apiRequest(url, options = {}) {
 
   const response = await fetch(url, {
+
     credentials: "include",
     cache: "no-store",
+
     ...options,
 
     headers: {
+
       "Content-Type": "application/json",
+
       ...(options.headers || {})
+
     }
+
   });
 
   let data = {};
 
   try {
+
     data = await response.json();
+
   } catch (error) {
+
     data = {};
+
   }
 
   return {
     response,
     data
   };
+
 }
 
 
@@ -739,16 +777,24 @@ async function checkExistingSession() {
   try {
 
     const result = await apiRequest(
+
       API + "/me",
+
       {
         method: "GET"
       }
+
     );
 
+
     if (
+
       result.response.ok &&
+
       result.data &&
+
       result.data.ok
+
     ) {
 
       startSessionTimer(
@@ -758,17 +804,23 @@ async function checkExistingSession() {
       showChangePasswordPanel();
 
       return true;
+
     }
 
   } catch (error) {
 
-    console.log("Session check failed:", error);
+    console.log(
+      "Session check failed:",
+      error
+    );
 
   }
+
 
   showLoginPanel();
 
   return false;
+
 }
 
 
@@ -776,458 +828,638 @@ async function checkExistingSession() {
    LOGIN
    ========================================================= */
 
-$("loginForm").addEventListener("submit", async function(event) {
+$("loginForm").addEventListener(
+  "submit",
+  async function(event) {
 
-  event.preventDefault();
+    event.preventDefault();
 
-  clearMessage("loginMessage");
+    clearMessage("loginMessage");
 
-  const adminId =
-    $("adminId").value.trim();
 
-  const password =
-    $("adminPassword").value;
+    const adminId =
+      $("adminId").value.trim();
 
-  if (!adminId) {
 
-    showMessage(
-      "loginMessage",
-      "Please enter Admin ID."
-    );
+    const password =
+      $("adminPassword").value;
 
-    return;
-  }
 
-  if (!password) {
-
-    showMessage(
-      "loginMessage",
-      "Please enter password."
-    );
-
-    return;
-  }
-
-  if (password.length < 8) {
-
-    showMessage(
-      "loginMessage",
-      "Password must be at least 8 characters."
-    );
-
-    return;
-  }
-
-  const button = $("loginBtn");
-
-  button.disabled = true;
-  button.textContent = "LOGGING IN...";
-
-  try {
-
-    const result = await apiRequest(
-      API + "/login",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-          admin_id: adminId,
-          password: password
-        })
-      }
-    );
-
-    if (
-      result.response.ok &&
-      result.data &&
-      result.data.ok
-    ) {
+    if (!adminId) {
 
       showMessage(
         "loginMessage",
-        "Login successful. Opening admin panel...",
-        "success"
+        "Please enter Admin ID."
       );
-
-      startSessionTimer(
-        result.data.expires_at
-      );
-
-      setTimeout(() => {
-
-        /*
-          If admin.html exists, open it.
-          Session is stored in secure HttpOnly cookie,
-          so no token is saved in localStorage.
-        */
-
-        window.location.href = "/admin.html";
-
-      }, 500);
 
       return;
+
     }
 
-    let message =
-      result.data?.error ||
-      result.data?.message ||
-      "Invalid Admin ID or password.";
 
-    if (result.response.status === 429) {
+    if (!password) {
 
-      message =
+      showMessage(
+        "loginMessage",
+        "Please enter password."
+      );
+
+      return;
+
+    }
+
+
+    if (password.length < 8) {
+
+      showMessage(
+        "loginMessage",
+        "Password must be at least 8 characters."
+      );
+
+      return;
+
+    }
+
+
+    const button =
+      $("loginBtn");
+
+
+    button.disabled = true;
+
+    button.textContent =
+      "LOGGING IN...";
+
+
+    try {
+
+      const result =
+        await apiRequest(
+
+          API + "/login",
+
+          {
+
+            method: "POST",
+
+            body: JSON.stringify({
+
+              admin_id: adminId,
+
+              password: password
+
+            })
+
+          }
+
+        );
+
+
+      if (
+
+        result.response.ok &&
+
+        result.data &&
+
+        result.data.ok
+
+      ) {
+
+        showMessage(
+
+          "loginMessage",
+
+          "Login successful. Opening admin panel...",
+
+          "success"
+
+        );
+
+
+        startSessionTimer(
+
+          result.data.expires_at
+
+        );
+
+
+        /*
+          IMPORTANT:
+          Give browser enough time to receive
+          the HttpOnly session cookie before redirect.
+        */
+
+        setTimeout(() => {
+
+          const dashboardUrl =
+            window.location.origin +
+            "/admin.html?admin=" +
+            Date.now();
+
+          window.location.replace(
+            dashboardUrl
+          );
+
+        }, 700);
+
+
+        return;
+
+      }
+
+
+      let message =
+
         result.data?.error ||
-        "Too many failed attempts. Please try again later.";
+
+        result.data?.message ||
+
+        "Invalid Admin ID or password.";
+
+
+      if (result.response.status === 429) {
+
+        message =
+
+          result.data?.error ||
+
+          "Too many failed attempts. Please try again later.";
+
+      }
+
+
+      showMessage(
+
+        "loginMessage",
+
+        message
+
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      showMessage(
+
+        "loginMessage",
+
+        "Unable to connect to the server. Please try again."
+
+      );
+
+
+    } finally {
+
+      button.disabled = false;
+
+      button.textContent =
+        "LOGIN";
 
     }
-
-    showMessage(
-      "loginMessage",
-      message
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    showMessage(
-      "loginMessage",
-      "Unable to connect to the server. Please try again."
-    );
-
-  } finally {
-
-    button.disabled = false;
-    button.textContent = "LOGIN";
 
   }
-
-});
+);
 
 
 /* =========================================================
    RESET PASSWORD
    ========================================================= */
 
-$("resetForm").addEventListener("submit", async function(event) {
+$("resetForm").addEventListener(
+  "submit",
+  async function(event) {
 
-  event.preventDefault();
+    event.preventDefault();
 
-  clearMessage("resetMessage");
-
-  const adminId =
-    $("resetAdminId").value.trim();
-
-  const resetSecret =
-    $("resetSecret").value;
-
-  const newPassword =
-    $("newPassword").value;
-
-  const confirmPassword =
-    $("confirmPassword").value;
+    clearMessage("resetMessage");
 
 
-  if (!adminId) {
-
-    showMessage(
-      "resetMessage",
-      "Please enter Admin ID."
-    );
-
-    return;
-  }
+    const adminId =
+      $("resetAdminId").value.trim();
 
 
-  if (!resetSecret) {
-
-    showMessage(
-      "resetMessage",
-      "Please enter Reset Secret."
-    );
-
-    return;
-  }
+    const resetSecret =
+      $("resetSecret").value;
 
 
-  if (newPassword.length < 8) {
-
-    showMessage(
-      "resetMessage",
-      "New password must be at least 8 characters."
-    );
-
-    return;
-  }
+    const newPassword =
+      $("newPassword").value;
 
 
-  if (newPassword.length > 128) {
-
-    showMessage(
-      "resetMessage",
-      "New password is too long."
-    );
-
-    return;
-  }
+    const confirmPassword =
+      $("confirmPassword").value;
 
 
-  if (newPassword !== confirmPassword) {
-
-    showMessage(
-      "resetMessage",
-      "New passwords do not match."
-    );
-
-    return;
-  }
-
-
-  const button = $("resetBtn");
-
-  button.disabled = true;
-  button.textContent = "RESETTING...";
-
-
-  try {
-
-    const result = await apiRequest(
-      API + "/reset-password",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-          admin_id: adminId,
-          reset_secret: resetSecret,
-          new_password: newPassword
-        })
-      }
-    );
-
-
-    if (
-      result.response.ok &&
-      result.data &&
-      result.data.ok
-    ) {
+    if (!adminId) {
 
       showMessage(
         "resetMessage",
-        "Password reset successfully. You can now login with the new password.",
-        "success"
+        "Please enter Admin ID."
       );
 
-      $("resetSecret").value = "";
-      $("newPassword").value = "";
-      $("confirmPassword").value = "";
-
-      setTimeout(() => {
-
-        $("adminId").value = adminId;
-
-        showLoginPanel();
-
-      }, 1200);
-
       return;
+
     }
 
 
-    showMessage(
-      "resetMessage",
-      result.data?.error ||
-      result.data?.message ||
-      "Password reset failed."
-    );
+    if (!resetSecret) {
+
+      showMessage(
+        "resetMessage",
+        "Please enter Reset Secret."
+      );
+
+      return;
+
+    }
 
 
-  } catch (error) {
+    if (newPassword.length < 8) {
 
-    console.error(error);
+      showMessage(
+        "resetMessage",
+        "New password must be at least 8 characters."
+      );
 
-    showMessage(
-      "resetMessage",
-      "Unable to connect to the server. Please try again."
-    );
+      return;
 
-  } finally {
+    }
 
-    button.disabled = false;
-    button.textContent = "RESET PASSWORD";
+
+    if (newPassword.length > 128) {
+
+      showMessage(
+        "resetMessage",
+        "New password is too long."
+      );
+
+      return;
+
+    }
+
+
+    if (newPassword !== confirmPassword) {
+
+      showMessage(
+        "resetMessage",
+        "New passwords do not match."
+      );
+
+      return;
+
+    }
+
+
+    const button =
+      $("resetBtn");
+
+
+    button.disabled = true;
+
+    button.textContent =
+      "RESETTING...";
+
+
+    try {
+
+      const result =
+        await apiRequest(
+
+          API + "/reset-password",
+
+          {
+
+            method: "POST",
+
+            body: JSON.stringify({
+
+              admin_id: adminId,
+
+              reset_secret: resetSecret,
+
+              new_password: newPassword
+
+            })
+
+          }
+
+        );
+
+
+      if (
+
+        result.response.ok &&
+
+        result.data &&
+
+        result.data.ok
+
+      ) {
+
+        showMessage(
+
+          "resetMessage",
+
+          "Password reset successfully. You can now login with the new password.",
+
+          "success"
+
+        );
+
+
+        $("resetSecret").value = "";
+
+        $("newPassword").value = "";
+
+        $("confirmPassword").value = "";
+
+
+        setTimeout(() => {
+
+          $("adminId").value =
+            adminId;
+
+          showLoginPanel();
+
+        }, 1200);
+
+
+        return;
+
+      }
+
+
+      showMessage(
+
+        "resetMessage",
+
+        result.data?.error ||
+
+        result.data?.message ||
+
+        "Password reset failed."
+
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      showMessage(
+
+        "resetMessage",
+
+        "Unable to connect to the server. Please try again."
+
+      );
+
+
+    } finally {
+
+      button.disabled = false;
+
+      button.textContent =
+        "RESET PASSWORD";
+
+    }
 
   }
-
-});
+);
 
 
 /* =========================================================
    CHANGE PASSWORD
    ========================================================= */
 
-$("changeForm").addEventListener("submit", async function(event) {
+$("changeForm").addEventListener(
+  "submit",
+  async function(event) {
 
-  event.preventDefault();
+    event.preventDefault();
 
-  clearMessage("changeMessage");
-
-  const currentPassword =
-    $("currentPassword").value;
-
-  const newPassword =
-    $("changeNewPassword").value;
-
-  const confirmPassword =
-    $("changeConfirmPassword").value;
+    clearMessage("changeMessage");
 
 
-  if (!currentPassword) {
-
-    showMessage(
-      "changeMessage",
-      "Please enter current password."
-    );
-
-    return;
-  }
+    const currentPassword =
+      $("currentPassword").value;
 
 
-  if (newPassword.length < 8) {
-
-    showMessage(
-      "changeMessage",
-      "New password must be at least 8 characters."
-    );
-
-    return;
-  }
+    const newPassword =
+      $("changeNewPassword").value;
 
 
-  if (newPassword.length > 128) {
-
-    showMessage(
-      "changeMessage",
-      "New password is too long."
-    );
-
-    return;
-  }
+    const confirmPassword =
+      $("changeConfirmPassword").value;
 
 
-  if (newPassword !== confirmPassword) {
+    if (!currentPassword) {
 
-    showMessage(
-      "changeMessage",
-      "New passwords do not match."
-    );
+      showMessage(
+        "changeMessage",
+        "Please enter current password."
+      );
 
-    return;
-  }
+      return;
 
-
-  if (currentPassword === newPassword) {
-
-    showMessage(
-      "changeMessage",
-      "New password must be different from current password."
-    );
-
-    return;
-  }
+    }
 
 
-  const button = $("changeBtn");
+    if (newPassword.length < 8) {
 
-  button.disabled = true;
-  button.textContent = "CHANGING...";
+      showMessage(
+        "changeMessage",
+        "New password must be at least 8 characters."
+      );
+
+      return;
+
+    }
 
 
-  try {
+    if (newPassword.length > 128) {
 
-    const result = await apiRequest(
-      API + "/change-password",
-      {
-        method: "POST",
+      showMessage(
+        "changeMessage",
+        "New password is too long."
+      );
 
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword
-        })
+      return;
+
+    }
+
+
+    if (newPassword !== confirmPassword) {
+
+      showMessage(
+        "changeMessage",
+        "New passwords do not match."
+      );
+
+      return;
+
+    }
+
+
+    if (currentPassword === newPassword) {
+
+      showMessage(
+        "changeMessage",
+        "New password must be different from current password."
+      );
+
+      return;
+
+    }
+
+
+    const button =
+      $("changeBtn");
+
+
+    button.disabled = true;
+
+    button.textContent =
+      "CHANGING...";
+
+
+    try {
+
+      const result =
+        await apiRequest(
+
+          API + "/change-password",
+
+          {
+
+            method: "POST",
+
+            body: JSON.stringify({
+
+              current_password:
+                currentPassword,
+
+              new_password:
+                newPassword
+
+            })
+
+          }
+
+        );
+
+
+      if (
+
+        result.response.ok &&
+
+        result.data &&
+
+        result.data.ok
+
+      ) {
+
+        showMessage(
+
+          "changeMessage",
+
+          "Password changed successfully. All admin sessions have been logged out.",
+
+          "success"
+
+        );
+
+
+        $("currentPassword").value = "";
+
+        $("changeNewPassword").value = "";
+
+        $("changeConfirmPassword").value = "";
+
+
+        clearSessionTimer();
+
+
+        setTimeout(() => {
+
+          showLoginPanel();
+
+        }, 1500);
+
+
+        return;
+
       }
-    );
 
 
-    if (
-      result.response.ok &&
-      result.data &&
-      result.data.ok
-    ) {
+      if (result.response.status === 401) {
+
+        showMessage(
+
+          "changeMessage",
+
+          "Your admin session has expired. Please login again."
+
+        );
+
+
+        clearSessionTimer();
+
+
+        setTimeout(() => {
+
+          showLoginPanel();
+
+        }, 1000);
+
+
+        return;
+
+      }
+
 
       showMessage(
+
         "changeMessage",
-        "Password changed successfully. All admin sessions have been logged out.",
-        "success"
+
+        result.data?.error ||
+
+        result.data?.message ||
+
+        "Password change failed."
+
       );
 
-      $("currentPassword").value = "";
-      $("changeNewPassword").value = "";
-      $("changeConfirmPassword").value = "";
 
-      clearSessionTimer();
+    } catch (error) {
 
-      setTimeout(() => {
+      console.error(error);
 
-        showLoginPanel();
-
-      }, 1500);
-
-      return;
-    }
-
-
-    if (result.response.status === 401) {
 
       showMessage(
+
         "changeMessage",
-        "Your admin session has expired. Please login again."
+
+        "Unable to connect to the server. Please try again."
+
       );
 
-      clearSessionTimer();
 
-      setTimeout(() => {
+    } finally {
 
-        showLoginPanel();
+      button.disabled = false;
 
-      }, 1000);
+      button.textContent =
+        "CHANGE PASSWORD";
 
-      return;
     }
-
-
-    showMessage(
-      "changeMessage",
-      result.data?.error ||
-      result.data?.message ||
-      "Password change failed."
-    );
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showMessage(
-      "changeMessage",
-      "Unable to connect to the server. Please try again."
-    );
-
-  } finally {
-
-    button.disabled = false;
-    button.textContent = "CHANGE PASSWORD";
 
   }
-
-});
+);
 
 
 /* =========================================================
@@ -1239,10 +1471,13 @@ async function logoutAdmin() {
   try {
 
     await apiRequest(
+
       API + "/logout",
+
       {
         method: "POST"
       }
+
     );
 
   } catch (error) {
@@ -1253,19 +1488,29 @@ async function logoutAdmin() {
 
     clearSessionTimer();
 
+
     $("currentPassword").value = "";
+
     $("changeNewPassword").value = "";
+
     $("changeConfirmPassword").value = "";
+
 
     showLoginPanel();
 
+
     showMessage(
+
       "loginMessage",
+
       "You have been logged out.",
+
       "success"
+
     );
 
   }
+
 }
 
 
@@ -1277,12 +1522,16 @@ function startSessionTimer(expiresAt) {
 
   clearSessionTimer();
 
+
   if (!expiresAt) return;
+
 
   const expiry =
     new Date(expiresAt).getTime();
 
+
   if (!Number.isFinite(expiry)) return;
+
 
   const remaining =
     expiry - Date.now();
@@ -1293,12 +1542,16 @@ function startSessionTimer(expiresAt) {
     handleSessionExpired();
 
     return;
+
   }
 
 
   sessionTimer = setTimeout(
+
     handleSessionExpired,
+
     remaining
+
   );
 
 }
@@ -1321,11 +1574,16 @@ function handleSessionExpired() {
 
   clearSessionTimer();
 
+
   showLoginPanel();
 
+
   showMessage(
+
     "loginMessage",
+
     "Your admin session has expired. Please login again."
+
   );
 
 }
@@ -1335,80 +1593,106 @@ function handleSessionExpired() {
    PERIODIC SESSION CHECK
    ========================================================= */
 
-setInterval(async function() {
+setInterval(
+  async function() {
 
-  try {
+    try {
 
-    const result = await apiRequest(
-      API + "/me",
-      {
-        method: "GET"
-      }
-    );
+      const result =
+        await apiRequest(
 
-    if (
-      !result.response.ok ||
-      !result.data ||
-      !result.data.ok
-    ) {
+          API + "/me",
 
-      /*
-        Only switch to login if user is currently
-        inside the authenticated panel.
-      */
+          {
+            method: "GET"
+          }
+
+        );
+
 
       if (
-        $("changePasswordPanel").classList.contains("active")
+
+        !result.response.ok ||
+
+        !result.data ||
+
+        !result.data.ok
+
       ) {
 
-        handleSessionExpired();
+        if (
+
+          $("changePasswordPanel")
+            .classList
+            .contains("active")
+
+        ) {
+
+          handleSessionExpired();
+
+        }
+
+        return;
 
       }
 
-      return;
-    }
 
-    if (result.data.expires_at) {
+      if (result.data.expires_at) {
 
-      startSessionTimer(
-        result.data.expires_at
+        startSessionTimer(
+
+          result.data.expires_at
+
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log(
+        "Periodic session check failed."
       );
 
     }
 
-  } catch (error) {
+  },
 
-    console.log("Periodic session check failed.");
+  60 * 1000
 
-  }
-
-}, 60 * 1000);
+);
 
 
 /* =========================================================
    PREVENT BACK BUTTON AFTER LOGOUT
    ========================================================= */
 
-window.addEventListener("pageshow", function(event) {
+window.addEventListener(
+  "pageshow",
+  function(event) {
 
-  if (event.persisted) {
+    if (event.persisted) {
 
-    checkExistingSession();
+      checkExistingSession();
+
+    }
 
   }
-
-});
+);
 
 
 /* =========================================================
    START
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
 
-  checkExistingSession();
+    checkExistingSession();
 
-});
+  }
+);
+
 </script>
 
 </body>
